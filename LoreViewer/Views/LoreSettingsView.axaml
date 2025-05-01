@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LoreViewer.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LoreViewer.Views.LoreSettingsView"
+             x:DataType="vm:LoreSettingsViewModel">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="30" />
+      <RowDefinition />
+      <RowDefinition Height="35" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+    <Label Grid.Row="0" Grid.Column="0" Content="{Binding LoreLibraryFolderPath}">&lt;FOLDER_PATH&gt;</Label>
+    
+    <UniformGrid Grid.Row="1" Grid.Column="1" Rows="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      <Border BorderBrush="Black" BorderThickness="1">
+        <StackPanel>
+          <DockPanel>
+            <Button Content="New Type" DockPanel.Dock="Right"/>
+            <Label Content="Types" DockPanel.Dock="Left"></Label>
+          </DockPanel>
+           <DataGrid Name="TypesGrid">
+          </DataGrid>
+        </StackPanel>
+      </Border>
+
+      <Border BorderBrush="Black" BorderThickness="1">
+      <StackPanel>
+        <DockPanel>
+          <Button Content="New Type Collection" DockPanel.Dock="Right"/>
+          <Label Content="Type Collections" DockPanel.Dock="Left"></Label>
+        </DockPanel>
+        <DataGrid Name="TypeCollectionsGrid">
+        </DataGrid>
+      </StackPanel>
+      </Border>
+      
+    </UniformGrid>
+    
+    <TextBlock Grid.Row="1" Grid.Column="0" Name="YAMLViewer">YAML</TextBlock>
+
+    <Border Grid.Row="2" Grid.ColumnSpan="2" Background="LightSlateGray" BorderBrush="Black" BorderThickness="1">
+      <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" HorizontalAlignment="Stretch">
+        <Button Name="BtnSave" Content="Save" Margin="2"/>
+        <Button Name="BtnClose" Content="Close" Margin="2"/>
+      </StackPanel>
+    </Border>
+  </Grid>
+</UserControl>
