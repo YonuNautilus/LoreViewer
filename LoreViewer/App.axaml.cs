@@ -18,12 +18,12 @@ namespace LoreViewer
       if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
       {
         desktop.MainWindow = new MainWindow();
-        LoreEditView readonlyView = new LoreEditView();
-        LoreViewModel viewModel = new LoreViewModel(readonlyView);
+        LoreEditView startingView = new LoreEditView();
+        LoreViewModel viewModel = new LoreViewModel(startingView);
 
-        readonlyView.DataContext = viewModel;
+        startingView.DataContext = viewModel;
 
-        ((MainWindow)desktop.MainWindow).AddControl(readonlyView);
+        ((MainWindow)desktop.MainWindow).AddControl(startingView);
       }
 
       base.OnFrameworkInitializationCompleted();
