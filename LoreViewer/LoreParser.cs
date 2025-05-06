@@ -11,6 +11,8 @@ using Markdig;
 using Markdig.Parsers;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace LoreViewer
 {
@@ -35,7 +37,12 @@ namespace LoreViewer
       if (!File.Exists(fullSettingsPath))
         throw new Exception($"Did not find file {fullSettingsPath}");
 
-      _settings.ParseSettingsFromFile(fullSettingsPath);
+      //_settings.ParseSettingsFromFile(fullSettingsPath);
+
+      var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+
+      _settings = deserializer.Deserialize<LoreSettings>(File.ReadAllText(fullSettingsPath));
+
 
       string[] files = Directory.GetFiles(FolderPath, "*.md");
 
@@ -134,13 +141,13 @@ namespace LoreViewer
 
       HeadingBlock currentBlock = doc[levelOfCurrentBlock] as HeadingBlock;
 
-      foreach (LoreFieldDefinition fieldDef in typeDef.Fields)
+      foreach (LoreFieldDefinition fieldDef in typeDef.fields)
       {
         string fieldValue = string.Empty;
-        switch (fieldDef.Style)
+        switch (fieldDef.style)
         {
           case "bullet_point":
-            fieldValue = ParseBulletPointField(doc, headingIndex, fieldDef.Name);
+            fieldValue = ParseBulletPointField(doc, headingIndex, fieldDef.name);
             break;
 
           case "body":
@@ -150,7 +157,7 @@ namespace LoreViewer
           default:
             return null;
         }
-        newNode.Attributes.Add(fieldDef.Name, fieldValue);
+        newNode.Attributes.Add(fieldDef.name, fieldValue);
       }
 
       return newNode;
@@ -168,15 +175,55 @@ namespace LoreViewer
       foreach (var item in currentList)
       {
         if (item is not ListItemBlock) { break; }
+
         var contentItem = (item as ListItemBlock)[0] as ParagraphBlock;
+        var inline = contentItem.Inline.FirstChild;
 
-        EmphasisInline inline = contentItem.Inline.FirstChild as EmphasisInline;
+        string parsedFieldName = string.Empty;
+        List<string> parsedFieldValues = new List<string>();
 
-        string foundFieldName = inline.FirstChild.ToString();
-
-        if (foundFieldName.Contains(fieldName))
+        /* FLAT PARSING
+         * ex:
+         * - **Date:** June 30, 2002
+         * - Date: June 30, 2002
+         */
+        if ((item as ListItemBlock).Count == 1)
         {
-          return inline.NextSibling.ToString();
+
+          // this format:
+          // - Date: June 30, 2002
+          if (inline is LiteralInline)
+          {
+            if ((inline as LiteralInline).NextSibling == null)
+            {
+              var fieldAndVal = inline.ToString().Split(':');
+              parsedFieldName = fieldAndVal[0];
+              parsedFieldValues.Add(fieldAndVal[1]);
+            }
+          }
+
+          // this format:
+          // - **Date:** June 30, 2002
+          else if (inline is EmphasisInline)
+          {
+            //        variable inline is "**",          FirsChild is "Date:"
+            parsedFieldName = (inline as EmphasisInline).FirstChild.ToString();
+            // Next sibling of "Date:" is another "**"
+
+            parsedFieldValues.Add((inline as EmphasisInline).NextSibling.ToString());
+          }
+          
+        }
+
+        
+        /* NESTED PARSING
+         * ex:
+         * - Name:
+         *   - Paula Mer Verdell
+         *   - Green Bean (nickname)
+         */
+        else{
+          parsedFieldName = ((item as ListItemBlock)[0] as ParagraphBlock).Inline.FirstChild.ToString();
         }
       }
 

@@ -12,8 +12,8 @@ namespace LoreViewer
 {
   internal class LoreSettings
   {
-    private Dictionary<string, LoreTypeDefinition> _types = new Dictionary<string, LoreTypeDefinition>();
-    private Dictionary<string, LoreCollectionDefinition> _collections = new Dictionary<string, LoreCollectionDefinition>();
+    public Dictionary<string, LoreTypeDefinition> types = new Dictionary<string, LoreTypeDefinition>();
+    public Dictionary<string, LoreCollectionDefinition> collections = new Dictionary<string, LoreCollectionDefinition>();
     public AppSettings Settings { get; set; }
 
     public LoreSettings()
@@ -21,10 +21,11 @@ namespace LoreViewer
       Settings = new AppSettings();
     }
 
-    public bool HasTypeDefinition(string type) => _types.ContainsKey(type);
-    public LoreTypeDefinition GetTypeDefinition(string type) => _types[type];
-    public LoreCollectionDefinition GetCollectionDefinition(string type) => _collections[type];
+    public bool HasTypeDefinition(string type) => types.ContainsKey(type);
+    public LoreTypeDefinition GetTypeDefinition(string type) => types[type];
+    public LoreCollectionDefinition GetCollectionDefinition(string type) => collections[type];
 
+    /*
     public void ParseSettingsFromFile(string settingsYamlPath)
     {
       string settingsFileContent = File.ReadAllText(settingsYamlPath);
@@ -54,39 +55,66 @@ namespace LoreViewer
 
           foreach (var fieldDefinition in fieldsNode.Children)
           {
-            LoreFieldDefinition newFieldDef = new LoreFieldDefinition() { Name = fieldDefinition.Key.ToString() };
+            LoreFieldDefinition newFieldDef = new LoreFieldDefinition() { name = fieldDefinition.Key.ToString() };
             var definitionValues = (YamlMappingNode)fieldDefinition.Value;
 
-            newFieldDef.Style = definitionValues.Children["style"].ToString();
-            newFieldDef.Required = definitionValues.Children.TryGetValue(new YamlScalarNode("required"), out var r) && bool.Parse(r.ToString());
+            newFieldDef.style = definitionValues.Children["style"].ToString();
+            newFieldDef.required = definitionValues.Children.TryGetValue(new YamlScalarNode("required"), out var r) && bool.Parse(r.ToString());
 
-            newTypeDef.Fields.Add(newFieldDef);
+            newTypeDef.fields.Add(newFieldDef);
           }
         }
-        _types.Add(typeName, newTypeDef);
+        types.Add(typeName, newTypeDef);
       }
-    }
+    }*/
   }
 
+  /// <summary>
+  /// The top-level of a lore definition. Can be used to define characters, organizations, races, etc.
+  /// </summary>
   public class LoreTypeDefinition
   {
     private List<string> RelevantFilePaths = new List<string>();
-    public List<LoreFieldDefinition> Fields { get; set; } = new List<LoreFieldDefinition>();
+
+    /// <summary>
+    /// Collection of field definitions that should be visible at the top of the markdown on a declared object of a type.
+    /// For example, a character will have a field for name, a field for race, etc.
+    /// </summary>
+    public List<LoreFieldDefinition> fields { get; set; } = new List<LoreFieldDefinition>();
+
+    /// <summary>
+    /// A collection of sections in an object's file (or section). These will contain more infomation, usually paragraphs,
+    /// that expand upon base level fields, or add new information. Sections can contain their own fields and subsections.
+    /// </summary>
+    public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
+  }
+
+  /// <summary>
+  /// A section of information owned by a lore object. A section can contain subsections or additional fields
+  /// </summary>
+  public class LoreSectionDefinition
+  {
+    public string name { get; set; }
+    public string type { get; set; }
+
+    public bool freeform { get; set; } = false;
+
+    public List<LoreFieldDefinition> fields { get; set; }
+    public List<LoreSectionDefinition> sections { get; set; }
   }
 
   public class LoreFieldDefinition
   {
-    public string Name { get; set; } = string.Empty;
+    public string name { get; set; } = string.Empty;
+    public string style { get; set; } = string.Empty; // bullet_point, bullet_list, heading_paragraph
 
-    public string Style { get; set; } = string.Empty; // bullet_point, bullet_list, heading_paragraph
+    public bool required = false;
 
-    public bool Required = false;
+    public List<LoreFieldDefinition> NestedFields { get; set; } // for fields like Date with Start/End
   }
 
   public class LoreCollectionDefinition
   {
-    public string File { get; set; } = string.Empty;
-
     public string EntryType { get; set;} = string.Empty;
     public string EntryStyle { get; set; } = string.Empty;
     public bool SortEntries { get; set; }
