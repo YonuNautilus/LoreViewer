@@ -25,48 +25,8 @@ namespace LoreViewer
     public LoreTypeDefinition GetTypeDefinition(string type) => types[type];
     public LoreCollectionDefinition GetCollectionDefinition(string type) => collections[type];
 
-    /*
-    public void ParseSettingsFromFile(string settingsYamlPath)
-    {
-      string settingsFileContent = File.ReadAllText(settingsYamlPath);
+    public string GetTypeName(LoreTypeDefinition typeDef) => types.FirstOrDefault(kvp => kvp.Value == typeDef).Key;
 
-      YamlStream stream = new YamlStream();
-      stream.Load(new StringReader(settingsFileContent));
-
-      YamlMappingNode docRoot = (YamlMappingNode)stream.Documents[0].RootNode;
-
-      YamlMappingNode types = (YamlMappingNode)docRoot.Children[new YamlScalarNode("types")];
-      ParseTypes(types);
-    }
-
-    private void ParseTypes(YamlMappingNode typesNode)
-    {
-      foreach (var typeEntry in typesNode.Children)
-      {
-        string typeName = typeEntry.Key.ToString();
-
-        LoreTypeDefinition newTypeDef = new LoreTypeDefinition();
-
-        var definitions = (YamlMappingNode)typeEntry.Value;
-
-        if (definitions["fields"] != null)
-        {
-          var fieldsNode = (YamlMappingNode)definitions["fields"];
-
-          foreach (var fieldDefinition in fieldsNode.Children)
-          {
-            LoreFieldDefinition newFieldDef = new LoreFieldDefinition() { name = fieldDefinition.Key.ToString() };
-            var definitionValues = (YamlMappingNode)fieldDefinition.Value;
-
-            newFieldDef.style = definitionValues.Children["style"].ToString();
-            newFieldDef.required = definitionValues.Children.TryGetValue(new YamlScalarNode("required"), out var r) && bool.Parse(r.ToString());
-
-            newTypeDef.fields.Add(newFieldDef);
-          }
-        }
-        types.Add(typeName, newTypeDef);
-      }
-    }*/
   }
 
   /// <summary>

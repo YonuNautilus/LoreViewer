@@ -8,12 +8,14 @@ namespace LoreViewer.LoreNodes
 {
   public class LoreNode
   {
+    public string SourcePath;
+    public int BlockIndex;
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
 
     public string Type { get; set; } = string.Empty;
 
-    public Dictionary<string, string> Attributes = new Dictionary<string, string>();
+    public Dictionary<string, LoreAttribute> Attributes = new Dictionary<string, LoreAttribute>();
 
     public Dictionary<string, LoreNode> Children = new Dictionary<string, LoreNode>();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,17 @@ namespace LoreViewer
     const string LoreSettingsFileName = "Lore_Settings.yaml";
 
     private LoreSettings _settings;
+    private string _folderPath;
+
+    private List<LoreNodeCollection> _collections = new List<LoreNodeCollection>();
+    private List<LoreNode> _nodes = new List<LoreNode>();
+
+    /// <summary>
+    /// Key is the file name (path relative to the lore folder), and value is the index of the block that is 'orphaned'
+    /// (i.e. not tagged when it needs to be)
+    /// </summary>
+    public Dictionary<string, int> OrphanedBlocks { get; set; } = new Dictionary<string, int>();
+
     public LoreParser() { }
 
     public LoreParser(LoreSettings settings)
@@ -33,6 +45,8 @@ namespace LoreViewer
 
     public void BeginParsingFromFolder(string FolderPath)
     {
+      _folderPath = FolderPath;
+
       string fullSettingsPath = Path.Combine(FolderPath, LoreSettingsFileName);
       if (!File.Exists(fullSettingsPath))
         throw new Exception($"Did not find file {fullSettingsPath}");
@@ -58,7 +72,21 @@ namespace LoreViewer
         }
       }
     }
+    private static string GetCollectionType(string fullTypeName) => Regex.Match(fullTypeName, NestedTypeTagRegex).Value;
+    private static string ExtractTag(HeadingBlock block) => Regex.Match(block.Inline.FirstChild.ToString(), TypeTagRegex)?.Value;
+    private static string ExtractTitle(HeadingBlock block)
+    {
+      string title = Regex.Match(block.Inline.FirstChild.ToString(), HeaderWithoutTagRegex)?.Value;
 
+      if (string.IsNullOrEmpty(title))
+        title = block.Inline.FirstChild.ToString();
+
+      return title;
+    }
+
+    private static bool BlockIsACollection(HeadingBlock block) => ExtractTag(block).Contains("collection:");
+
+    private static bool BlockIsANestedCollection(HeadingBlock block) => BlockIsACollection(block) && GetCollectionType(ExtractTag(block)).Contains("collection:");
     public void ParseFile(string filePath)
     {
       try
@@ -66,12 +94,50 @@ namespace LoreViewer
         string fileContent = File.ReadAllText(filePath);
         MarkdownDocument document = Markdown.Parse(fileContent);
 
-        // Start with the top level, get its type
-        if (document[0] is HeadingBlock)
+        // Once where, loop through the document, looking for headers
+
+        int curIndex = 0;
+        while(curIndex < document.Count)
         {
-          string headerText = (document[0] as HeadingBlock).Inline.FirstChild.ToString();
-          string typeTag = Regex.Match(headerText, TypeTagRegex).Value;
-          DoParse(document, 0, typeTag);
+          // Start with the top level, get its type
+          if (document[curIndex] is HeadingBlock)
+          {
+            HeadingBlock block = (HeadingBlock)document[curIndex];
+            string tag = ExtractTag(block);
+            string title = ExtractTitle(block);
+
+            if (!string.IsNullOrEmpty(tag))
+            {
+              if (BlockIsACollection(block))
+              {
+                if (BlockIsANestedCollection(block))
+                {
+                  _collections.Add(ParseCollection(document, ref curIndex, block, tag));
+                }
+                else
+                  _collections.Add(ParseCollection(document, ref curIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
+              }
+              else
+              {
+                LoreNode newNode = ParseType(document, ref curIndex, block, _settings.GetTypeDefinition(tag));
+
+                newNode.SourcePath = filePath;
+                newNode.BlockIndex = curIndex;
+
+                _nodes.Add(newNode);
+              }
+            }
+            else
+            {
+              OrphanedBlocks.Add(Path.GetRelativePath(_folderPath, filePath), curIndex);
+            }
+          }
+          else
+          {
+            OrphanedBlocks.Add(Path.GetRelativePath(_folderPath, filePath), curIndex);
+          }
+
+          curIndex++;
         }
       }
       catch (Exception ex)
@@ -80,104 +146,91 @@ namespace LoreViewer
       }
     }
 
-    private static string GetCollectionType(string fullTypeName) => Regex.Match(fullTypeName, NestedTypeTagRegex).Value;
-
-    private void DoParse(MarkdownDocument doc, int startIndex, string type)
+    private LoreNode ParseType(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef)
     {
-      switch (doc[startIndex])
+      string title = ExtractTitle(heading);
+      LoreNode newNode = new LoreNode(_settings.GetTypeName(typeDef), title);
+
+      currentIndex++;
+
+      while (currentIndex < doc.Count)
       {
-        case HeadingBlock hb:
-          int levelOfCurrentBlock = hb.Level;
-          ParseFromHeading(doc, startIndex, levelOfCurrentBlock, type);
-          break;
-        default:
-          return;
-      }
-    }
-
-    private void ParseFromHeading(MarkdownDocument doc, int headingIndex, int levelOfCurrentBlock, string type)
-    {
-      HeadingBlock block = doc[headingIndex] as HeadingBlock;
-
-      string headerTitle = Regex.Match(block.Inline.FirstChild.ToString(), HeaderWithoutTagRegex).Value;
-
-      if (type.Contains("collection"))
-      {
-        //string nameForThisHeader = block.
-        string TypeForThisHeader = GetCollectionType(type);
-        // Travel down the document until the next heading. Info encountered before next heading will be notes/additional data.
-        List<Block> additionalBlocks = new List<Block>();
-        int nextHeaderIndex = headingIndex + 1;
-
-        while (doc[nextHeaderIndex] is not HeadingBlock)
+        var currentBlock = doc[currentIndex];
+        switch (currentBlock)
         {
-          additionalBlocks.Add(doc[nextHeaderIndex]);
-          nextHeaderIndex++;
-        }
+          // Sections
+          case HeadingBlock hb:
 
-        HeadingBlock nextHeader = doc[nextHeaderIndex] as HeadingBlock;
-
-        if (nextHeader.Level < levelOfCurrentBlock)
-          throw new Exception($"Got a header {nextHeader.Level} before finding ones of higher level after {levelOfCurrentBlock}");
-
-        ParseFromHeading(doc, nextHeaderIndex, nextHeader.Level, TypeForThisHeader);
-
-        //LoreNode collectionNode = new LoreNode(type, headerTitle, _settings.Types["collection"]);
-      }
-      else
-      {
-        if (!_settings.HasTypeDefinition(type))
-          throw new Exception($"No type {type} found in lore settings");
-
-        LoreTypeDefinition typeDef = _settings.GetTypeDefinition(type);
-
-        LoreNode newNode = ParseIntoNewLoreNode(doc, headingIndex, levelOfCurrentBlock, type, headerTitle, typeDef);
-      }
-    }
-
-    private LoreNode ParseIntoNewLoreNode(MarkdownDocument doc, int headingIndex, int levelOfCurrentBlock, string type, string name, LoreTypeDefinition typeDef)
-    {
-      LoreNode newNode = new LoreNode(type, name);
-
-      HeadingBlock currentBlock = doc[levelOfCurrentBlock] as HeadingBlock;
-
-      foreach (LoreFieldDefinition fieldDef in typeDef.fields)
-      {
-        string fieldValue = string.Empty;
-        switch (fieldDef.style)
-        {
-          case "bullet_point":
-            fieldValue = ParseBulletPointField(doc, headingIndex, fieldDef.name);
             break;
 
-          case "body":
+          // freeform
+          case ParagraphBlock pb:
 
+            break;
+
+          // Fields
+          case ListBlock lb:
+            Dictionary<string, LoreAttribute> attributes = ParseBulletPointFields(doc, ref currentIndex, lb, typeDef);
+            newNode.Attributes = newNode.Attributes.Concat(attributes).ToDictionary();
             break;
 
           default:
-            return null;
+            break;
         }
-        newNode.Attributes.Add(fieldDef.name, fieldValue);
+
+        //currentIndex++;
       }
+
 
       return newNode;
     }
 
-    private string ParseBulletPointField(MarkdownDocument doc, int startHeadingIndex, string fieldName)
+    private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef)
     {
-      int currentSearchIndex = startHeadingIndex;
-      while (doc[currentSearchIndex] is not ListBlock) { currentSearchIndex++; }
+      string title = ExtractTitle(heading);
+      LoreNodeCollection newCollection = new LoreNodeCollection();
 
-      ListBlock currentList = doc[currentSearchIndex] as ListBlock;
+      currentIndex++;
 
+      while (currentIndex < doc.Count)
+      {
+        if (doc[currentIndex] is HeadingBlock)
+        {
+          HeadingBlock newHeader = (HeadingBlock)doc[currentIndex];
+          LoreNode newNode = ParseType(doc, ref currentIndex, newHeader, typeDef);
+          newCollection.Add(newNode);
+        }
+        else
+        {
+          
+        }
+
+        currentIndex++;
+      }
+
+      return newCollection;
+    }
+
+    private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, string collectionTag)
+    {
+      string title = ExtractTitle(heading);
+      LoreNodeCollection newCollection = new LoreNodeCollection();
+
+      return newCollection;
+    }
+
+    private Dictionary<string, LoreAttribute> ParseBulletPointFields(MarkdownDocument doc, ref int currentIndex, ListBlock listBlock, LoreTypeDefinition typeDef)
+    {
       string fieldValue = string.Empty;
       int listItemIndex = 0;
-      foreach (var item in currentList)
+      foreach (var item in listBlock)
       {
         if (item is not ListItemBlock) { break; }
 
         var contentItem = (item as ListItemBlock)[0] as ParagraphBlock;
         var inline = contentItem.Inline.FirstChild;
+
+        LoreAttribute newAttribute = new LoreAttribute();
 
         string parsedFieldName = string.Empty;
         List<string> parsedFieldValues = new List<string>();
@@ -227,7 +280,7 @@ namespace LoreViewer
         }
       }
 
-      return string.Empty;
+      return new Dictionary<string, LoreAttribute>();
     }
   }
 }
