@@ -73,6 +73,11 @@ namespace LoreViewer
     public List<LoreFieldDefinition> NestedFields { get; set; } // for fields like Date with Start/End
   }
 
+  public class LoreAttributeDefinition
+  {
+    
+  }
+
   public class LoreCollectionDefinition
   {
     public string EntryType { get; set;} = string.Empty;
