@@ -6,6 +6,13 @@ This tool allows you to define your own schema for different types of lore eleme
 
 ---
 
+## CURRENTLY ESTABLISH RULES FOR A WORKING PROTOTYPE (Hopefully made more flexible later)
+
+1. A defined type can have only one style of field/attribute (table or list)
+2. A type in markdown must put field/attributes FIRST before sections, text, or nested objects/collections
+
+---
+
 ## Core Concepts
 
 ### What is a LoreNode?

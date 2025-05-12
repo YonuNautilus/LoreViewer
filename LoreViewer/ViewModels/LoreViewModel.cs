@@ -4,10 +4,11 @@ using Avalonia.Platform.Storage;
 using ReactiveUI;
 using System.Reactive;
 using System.Threading.Tasks;
+using LoreViewer.Settings;
 
 namespace LoreViewer.ViewModels
 {
-  internal class LoreViewModel : ViewModelBase
+    internal class LoreViewModel : ViewModelBase
   {
     private LoreSettings _settings;
     private LoreParser _parser;
@@ -16,7 +17,6 @@ namespace LoreViewer.ViewModels
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
     public ReactiveCommand<Unit, Unit> OpenLibraryFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor {  get; }
-    public ReactiveCommand<Unit, Unit> TestParsingCommand {  get; }
 
     private Visual m_oView;
 
@@ -25,7 +25,6 @@ namespace LoreViewer.ViewModels
       m_oView = view;
       OpenLibraryFolderCommand = ReactiveCommand.CreateFromTask(HandleOpenLibraryCommandAsync);
       OpenLoreSettingsEditor = ReactiveCommand.Create(OpenLoreSettingEditorDialog);
-      TestParsingCommand = ReactiveCommand.CreateFromTask(TestParsing);
 
       _settings = new LoreSettings();
       _parser = new LoreParser(_settings);
@@ -50,21 +49,6 @@ namespace LoreViewer.ViewModels
     private void OpenLoreSettingEditorDialog()
     {
 
-    }
-
-    private async Task TestParsing()
-    {
-      var topLevel = TopLevel.GetTopLevel(m_oView);
-      var filePath = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-      {
-        Title = "Select Lore Markdown File To Test Parsing",
-        AllowMultiple = false,
-      });
-
-      if (filePath != null && filePath.Count > 0)
-      {
-        _parser.ParseFile(filePath[0].TryGetLocalPath());
-      }
     }
   }
 }

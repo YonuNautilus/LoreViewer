@@ -1,0 +1,26 @@
+﻿types:
+  TestObject:
+    fields:
+      - name: ErrorUnderTest
+        required: true
+
+  ListFieldsObject:
+    fields:
+      - name: flat
+        required: true
+      - name: flat with bold
+        required: true
+      - name: flat with italics
+        required: true
+      - name: subbullet
+        required: true
+      - name: subbullet with bold
+        required: true
+      - name: subbullet with italics
+        required: true
+      - name: multivalue
+        required: true
+      - name: multivalue with bold
+        required: true
+      - name: multivalue with italics
+        required: true

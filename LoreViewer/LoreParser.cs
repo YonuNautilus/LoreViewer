@@ -8,16 +8,22 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using LoreViewer.LoreNodes;
+using LoreViewer.Settings;
 using Markdig;
 using Markdig.Parsers;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
+using Markdig.Extensions.Tables;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using Markdig.Extensions.CustomContainers;
+using DynamicData.Kernel;
+using Avalonia.OpenGL;
+using System.Collections;
 
 namespace LoreViewer
 {
-  internal class LoreParser
+  public class LoreParser
   {
     const string HeaderWithoutTagRegex = ".+(?={)";
     const string TypeTagRegex = "(?<={).+(?=})";
@@ -26,9 +32,12 @@ namespace LoreViewer
 
     private LoreSettings _settings;
     private string _folderPath;
+    private string _currentFile;
 
-    private List<LoreNodeCollection> _collections = new List<LoreNodeCollection>();
-    private List<LoreNode> _nodes = new List<LoreNode>();
+    public List<LoreNodeCollection> _collections = new List<LoreNodeCollection>();
+    public List<LoreNode> _nodes = new List<LoreNode>();
+    public List<string> _errors = new List<string>();
+    public List<string> _warnings = new List<string>();
 
     /// <summary>
     /// Key is the file name (path relative to the lore folder), and value is the index of the block that is 'orphaned'
@@ -36,11 +45,22 @@ namespace LoreViewer
     /// </summary>
     public Dictionary<string, int> OrphanedBlocks { get; set; } = new Dictionary<string, int>();
 
+    public LoreSettings Settings { get { return _settings; } }
+
     public LoreParser() { }
 
     public LoreParser(LoreSettings settings)
     {
       _settings = settings;
+    }
+
+    public void ParseSettingsFromFile(string settingsFilePath)
+    {
+      var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+
+      string settingsText = File.ReadAllText(settingsFilePath);
+
+      _settings = deserializer.Deserialize<LoreSettings>(settingsText);
     }
 
     public void BeginParsingFromFolder(string FolderPath)
@@ -51,11 +71,7 @@ namespace LoreViewer
       if (!File.Exists(fullSettingsPath))
         throw new Exception($"Did not find file {fullSettingsPath}");
 
-      //_settings.ParseSettingsFromFile(fullSettingsPath);
-
-      var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
-
-      _settings = deserializer.Deserialize<LoreSettings>(File.ReadAllText(fullSettingsPath));
+      ParseSettingsFromFile(fullSettingsPath);
 
 
       string[] files = Directory.GetFiles(FolderPath, "*.md");
@@ -65,6 +81,10 @@ namespace LoreViewer
         try
         {
           ParseFile(filePath);
+        }
+        catch (LoreParsingException pe)
+        {
+          Console.WriteLine(pe.Message);
         }
         catch (Exception ex)
         {
@@ -81,28 +101,55 @@ namespace LoreViewer
       if (string.IsNullOrEmpty(title))
         title = block.Inline.FirstChild.ToString();
 
-      return title;
+      return title.Trim();
+    }
+
+    private string TrimFieldName(string untrimmed)
+    {
+      string ret = untrimmed.Trim();
+      if (ret.EndsWith(":"))
+        ret = ret.Substring(0, ret.Length - 1).Trim();
+
+      return ret;
     }
 
     private static bool BlockIsACollection(HeadingBlock block) => ExtractTag(block).Contains("collection:");
 
     private static bool BlockIsANestedCollection(HeadingBlock block) => BlockIsACollection(block) && GetCollectionType(ExtractTag(block)).Contains("collection:");
+
+    private static bool BlockIsASection(HeadingBlock block) => ExtractTag(block).Contains("section");
+
+    /// <summary>
+    /// The top-level, Markdown-first parsing method. Reads in a markdown file and begins parsing.
+    /// <para />
+    /// This method is where the variable <c>currentIndex</c> is declared. It gets passed as a ref to all subsequent parsing methods to keep it up to date here.
+    /// <para />
+    /// RULES/PROCESS:
+    /// <list type="number">
+    ///   <item>Before finding the first heading, any non-heading blocks get added to a list of orphaned blocks</item>
+    ///   <item>If the first heading block is not tagged with a valid type or a collection, throw an error</item>
+    ///   <item>If a type-tagged heading is found, create a <c>LoreNode</c> by calling <c>ParseType</c>. Add that node to the <c>_nodes</c> list.</item>
+    ///   <item>If a collection-tagged heading is found, create a <c>LoreNodeCollection</c> by calling <c>ParseCollection</c>. Add that collection to the <c>_collections</c> list.</item>
+    /// </list>
+    /// </summary>
+    /// <param name="filePath">Path of the Markdown file being parsed.</param>
     public void ParseFile(string filePath)
     {
+      _currentFile = filePath;
+      int currentIndex = 0;
       try
       {
         string fileContent = File.ReadAllText(filePath);
         MarkdownDocument document = Markdown.Parse(fileContent);
 
-        // Once where, loop through the document, looking for headers
+        // Once here, loop through the document, looking for headers
 
-        int curIndex = 0;
-        while(curIndex < document.Count)
+        while (currentIndex < document.Count)
         {
           // Start with the top level, get its type
-          if (document[curIndex] is HeadingBlock)
+          if (document[currentIndex] is HeadingBlock)
           {
-            HeadingBlock block = (HeadingBlock)document[curIndex];
+            HeadingBlock block = (HeadingBlock)document[currentIndex];
             string tag = ExtractTag(block);
             string title = ExtractTitle(block);
 
@@ -112,79 +159,205 @@ namespace LoreViewer
               {
                 if (BlockIsANestedCollection(block))
                 {
-                  _collections.Add(ParseCollection(document, ref curIndex, block, tag));
+                  _collections.Add(ParseCollection(document, ref currentIndex, block, tag));
                 }
                 else
-                  _collections.Add(ParseCollection(document, ref curIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
+                  _collections.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
+              }
+              else if (BlockIsASection(block))
+              {
+                throw new FirstHeadingTagException(filePath, currentIndex, block.Line + 1);
               }
               else
               {
-                LoreNode newNode = ParseType(document, ref curIndex, block, _settings.GetTypeDefinition(tag));
+                int nodeIndex = currentIndex;
+                int nodeLineInFile = block.Line;
+                LoreNode newNode = ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag));
 
                 newNode.SourcePath = filePath;
-                newNode.BlockIndex = curIndex;
+                newNode.BlockIndex = nodeIndex;
 
                 _nodes.Add(newNode);
               }
             }
             else
             {
-              OrphanedBlocks.Add(Path.GetRelativePath(_folderPath, filePath), curIndex);
+              throw new NoTagParsingException(filePath, currentIndex, block.Line + 1);
             }
           }
           else
           {
-            OrphanedBlocks.Add(Path.GetRelativePath(_folderPath, filePath), curIndex);
+            OrphanedBlocks.Add(Path.GetRelativePath(_folderPath, filePath), currentIndex);
+            currentIndex++;
           }
 
-          curIndex++;
         }
       }
       catch (Exception ex)
       {
-
+        _errors.Add(string.Join("\r\n", new string[] { filePath, currentIndex.ToString(), ex.Message }));
+        throw;
       }
     }
 
+    /// <summary>
+    /// Creates a LoreNode representing a lore element from a LoreTypeDefinition and markdown blocks representing that element.
+    /// <para />
+    /// RULES/PROCESS:
+    /// <list type="number">
+    ///   <item>Parsing fields/attributes MUST COME FIRST - if a bullet list or table is found, parse that into fields/attributes</item>
+    ///   <item>If a heading tag is {collection:type}, parse that heading as a nested collection</item>
+    ///   <item>If a tag is {type}, parse that heading as a new nested LoreNode</item>
+    ///   <item>If a heading has no tag or a {section} tag, match to the LoreTypeDefinition section definitions and parse as a Section</item>
+    ///   <item>If a tag is unrecognized, throw an error.</item>
+    /// </list>
+    /// <para/>
+    /// EXIT CONDITIONS:
+    /// <list type="bullet">
+    ///   <item>HeadingBlock found at same or lower number level -> current node ends (return)</item>
+    ///   <item>Reached the end of the markdown document -> return</item>
+    /// </list>
+    /// </summary>
+    /// <param name="doc"></param>
+    /// <param name="currentIndex"></param>
+    /// <param name="heading"></param>
+    /// <param name="typeDef"></param>
+    /// <returns></returns>
     private LoreNode ParseType(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef)
     {
+      bool parsingFields = true;
+
       string title = ExtractTitle(heading);
-      LoreNode newNode = new LoreNode(_settings.GetTypeName(typeDef), title);
+      LoreNode newNode = new LoreNode(typeDef, title);
+      newNode.BlockIndex = currentIndex;
 
       currentIndex++;
 
       while (currentIndex < doc.Count)
       {
         var currentBlock = doc[currentIndex];
-        switch (currentBlock)
+
+        if (parsingFields)
         {
-          // Sections
-          case HeadingBlock hb:
-
-            break;
-
-          // freeform
-          case ParagraphBlock pb:
-
-            break;
-
-          // Fields
-          case ListBlock lb:
+          if (currentBlock is ListBlock)
+          {
+            ListBlock lb = currentBlock as ListBlock;
             Dictionary<string, LoreAttribute> attributes = ParseBulletPointFields(doc, ref currentIndex, lb, typeDef);
             newNode.Attributes = newNode.Attributes.Concat(attributes).ToDictionary();
-            break;
-
-          default:
-            break;
+          }
+          else if (currentBlock is Table)
+          {
+            Table tb = currentBlock as Table;
+            Dictionary<string, LoreAttribute> attributes = ParseTableFields(doc, ref currentIndex, tb, typeDef);
+            newNode.Attributes = newNode.Attributes.Concat(attributes).ToDictionary();
+          }
+          else
+          {
+            parsingFields = false;
+          }
         }
 
-        //currentIndex++;
-      }
+        if (!parsingFields)
+        {
+          switch (currentBlock)
+          {
+            // Sections
+            case HeadingBlock hb:
+              // If the found heading is at same or lower number level than the heading for this node, return this node.
+              if (heading.Level >= hb.Level)
+                return newNode;
 
+              string newTag = ExtractTag(hb);
+              string newTitle = ExtractTitle(hb);
+
+              // If a tag is defined, and the tag does NOT have 'section' in the name, treat it as new nested node or nested collection.
+              if (!string.IsNullOrEmpty(newTag) && !BlockIsASection(hb))
+              {
+                // Block is tagged with {collection:...}
+                if (BlockIsACollection(hb))
+                {
+                  LoreNodeCollection newCollection;
+
+                  // if tagged like {collection:collection:type}
+                  if (BlockIsANestedCollection(hb))
+                    newCollection = ParseCollection(doc, ref currentIndex, hb, newTag);
+
+                  // otherwise, tagged as {collection:type}
+                  else
+                    newCollection = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(GetCollectionType(newTag)));
+
+
+                  newNode.CollectionChildren.Add(newTag, newCollection);
+                }
+
+                // Parse as a nested node of the type specified in the tag.
+                else if (_settings.HasTypeDefinition(newTag))
+                {
+                  LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
+                  LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
+                  newNode.Children.Add(newNodeNode.Name, newNodeNode);
+
+                }
+              }
+              // Here, if no tag or a section tag:
+              else
+              {
+                // Regardless if the block has a section tag or not, check if the block's title is present in the type definition's sections.
+                if (typeDef.HasSectionName(newTitle))
+                {
+                  LoreSectionDefinition sectionDef = typeDef.sections.FirstOrDefault(sec => newTitle.Contains(sec.name));
+                  LoreSection newSection = ParseSection(doc, ref currentIndex, hb, sectionDef);
+                  newNode.Sections.Add(newSection);
+                }
+              }
+              break;
+
+            // freeform
+            case ParagraphBlock pb:
+              KeyValuePair<string, LoreAttribute> lines = ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef);
+              if (!newNode.Attributes.ContainsKey("summary"))
+                newNode.Attributes.Add(lines.Key, lines.Value);
+              else
+                newNode.Attributes["summary"].Append(lines.Value);
+              break;
+
+            // Fields
+            case ListBlock lb:
+
+            default:
+              currentIndex++;
+              break;
+          }
+
+        }
+      }
 
       return newNode;
     }
 
+    /// <summary>
+    /// Creates a LoreNodeCollection of LoreNodes. Starts from a heading block with tag {collection:type}
+    /// <para />
+    /// RULES/PROCESS:
+    /// <list type="number">
+    ///   <item>Step forward, expect headings on level deeper than the original heading (UNSURE IF THESE HEADING NEED TYPE TAGS OR NOT)</item>
+    ///   <item>If a heading is UNTAGGED, Give a WARNING (not an error, yet)</item>
+    ///   <item>If a heading is tagged with a type not accepted by the collection, throw an error</item>
+    ///   <item>If a non-heading block is encountered before the first type heading is found, throw an error (LoreNodeCollection does not have metadata!)</item>
+    ///   <item>Each Subheading is parsed into a LoreNode with ParseType, and that node is added to the collection</item>
+    /// </list>
+    /// <para/>
+    /// EXIT CONDITIONS:
+    /// <list type="bullet">
+    ///   <item>HeadingBlock found at same or lower number level -> current node collection ends (return)</item>
+    ///   <item>Reached the end of the markdown document -> return</item>
+    /// </list>
+    /// </summary>
+    /// <param name="doc"></param>
+    /// <param name="currentIndex"></param>
+    /// <param name="heading"></param>
+    /// <param name="typeDef"></param>
+    /// <returns></returns>
     private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef)
     {
       string title = ExtractTitle(heading);
@@ -202,7 +375,7 @@ namespace LoreViewer
         }
         else
         {
-          
+
         }
 
         currentIndex++;
@@ -219,67 +392,206 @@ namespace LoreViewer
       return newCollection;
     }
 
+
+    /// <summary>
+    /// Creates a new LoreSection, where the input HeadingBlock is the one with the {section} tag.
+    /// <para/>
+    /// RULES/PROCESS:
+    /// <list type="number">
+    ///   <item>Get the title for this section, create new LoreSection to return</item>
+    ///   <item>When encountering a HeadingBlock, if it is a superheader or sibling (lower or same level number), this section is done, return.</item>
+    ///   <item>When encountering a HeadingBlock, if it is a subheader (lower level number), throw an error.</item>
+    ///   <item>Otherwise, add the block encountered to the LoreSection's Blocks list.</item>
+    /// </list>
+    /// </summary>
+    /// <param name="doc"></param>
+    /// <param name="currentIndex"></param>
+    /// <param name="heading"></param>
+    /// <param name="secDef"></param>
+    /// <returns></returns>
+    private LoreSection ParseSection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreSectionDefinition secDef)
+    {
+      LoreSection newSection = new LoreSection(ExtractTitle(heading));
+
+      currentIndex++;
+
+      while (currentIndex < doc.Count)
+      {
+        Block currentBlock = doc[currentIndex];
+
+        switch(currentBlock)
+        {
+          case HeadingBlock hb:
+            // If the header we're iterating over is subheader to the section's header, that's an error
+            if (heading.Level < hb.Level)
+              throw new HeadingLevelErrorException(_currentFile, currentIndex, hb.Line, $"Subheading of Section is not allowed: found subheader of level {hb.Level} found under section {newSection.Name} (level {heading.Level})");
+            // If it is instead a sibling or lower number header level, return this sectoin
+            else if (heading.Level >= hb.Level)
+              return newSection;
+            break;
+
+          // For any other block type, add it to the list of blocks.
+          default:
+            newSection.Blocks.Add(currentBlock);
+            break;
+        }
+
+      }
+
+      return newSection;
+    }
+
+    private KeyValuePair<string, LoreAttribute> ParseParagraphBlocks(MarkdownDocument doc, ref int currentIndex, ParagraphBlock paragraphBlock, LoreTypeDefinition typeDef)
+    {
+      LoreAttributeDefinition field = typeDef.fields.FirstOrDefault(fieldDef => fieldDef.style == EStyle.Freeform);
+      if (field == null)
+        throw new Exception($"Started parsing a Freeform paragraph attribute for a type that does not define one! Type{typeDef}");
+
+      KeyValuePair<string, LoreAttribute> paragraphs = new KeyValuePair<string, LoreAttribute>(field.name, new LoreAttribute());
+      paragraphs.Value.Values = new List<string>();
+
+      while (currentIndex < doc.Count)
+      {
+        if (doc[currentIndex] is ParagraphBlock)
+        {
+          // Get the first line from the current ParagraphBlock
+          paragraphs.Value.Values.AddRange(ParseContainerInline((doc[currentIndex] as ParagraphBlock).Inline));
+
+          currentIndex++;
+        }
+        else
+          break;
+      }
+      return paragraphs;
+    }
+
+    private List<string> ParseContainerInline(ContainerInline containerInline)
+    {
+      List<string> lines = new List<string>();
+
+      foreach (var child in containerInline)
+        if (child is LineBreakInline)
+          lines.Add("\r\n");
+        else
+          lines.Add(child.ToString());
+
+      return lines;
+    }
+
     private Dictionary<string, LoreAttribute> ParseBulletPointFields(MarkdownDocument doc, ref int currentIndex, ListBlock listBlock, LoreTypeDefinition typeDef)
     {
       string fieldValue = string.Empty;
-      int listItemIndex = 0;
-      foreach (var item in listBlock)
+      Dictionary<string, LoreAttribute> attributeDict = new Dictionary<string, LoreAttribute>();
+
+      while (currentIndex < doc.Count && doc[currentIndex] is ListBlock)
       {
-        if (item is not ListItemBlock) { break; }
+        listBlock = (ListBlock)doc[currentIndex];
 
-        var contentItem = (item as ListItemBlock)[0] as ParagraphBlock;
-        var inline = contentItem.Inline.FirstChild;
-
-        LoreAttribute newAttribute = new LoreAttribute();
-
-        string parsedFieldName = string.Empty;
-        List<string> parsedFieldValues = new List<string>();
-
-        /* FLAT PARSING
-         * ex:
-         * - **Date:** June 30, 2002
-         * - Date: June 30, 2002
-         */
-        if ((item as ListItemBlock).Count == 1)
+        foreach (var item in listBlock)
         {
+          if (item is not ListItemBlock) { break; }
 
-          // this format:
-          // - Date: June 30, 2002
-          if (inline is LiteralInline)
+          var contentItem = (item as ListItemBlock)[0] as ParagraphBlock;
+          var inline = contentItem.Inline.FirstChild;
+
+          LoreAttribute newAttribute = new LoreAttribute();
+
+          string parsedFieldName = string.Empty;
+          string parsedFieldValue = string.Empty;
+          List<string> parsedFieldValues = new List<string>();
+
+          /* FLAT PARSING
+           * ex:
+           * - **Date:** June 30, 2002
+           * - Date: June 30, 2002
+           */
+          if ((item as ListItemBlock).Count == 1)
           {
-            if ((inline as LiteralInline).NextSibling == null)
+            string parsedInlineText = GetStringFromListItemParagraphBlock(contentItem);
+
+            var fieldAndVal = parsedInlineText.Split(':');
+            parsedFieldName = TrimFieldName(fieldAndVal[0]);
+            parsedFieldValue = fieldAndVal[1];
+            newAttribute.Value = parsedFieldValue.Trim();
+
+          }
+
+
+          /* NESTED PARSING & SUBBULLET
+           * example of nested multivalue:
+           * - Name:
+           *   - Paula Mer Verdell
+           *   - Green Bean (nickname)
+           * 
+           * example of subbullet single value:
+           * - Name:
+           *   - Jimmy
+           */
+          else
+          {
+            parsedFieldName = TrimFieldName(GetStringFromListItemParagraphBlock((item as ListItemBlock)[0] as ParagraphBlock));
+
+            // Need to get the ListBlock for the indented ListItemBlocks
+
+            ListBlock lb = (item as ListItemBlock)[1] as ListBlock;
+
+            if (lb.Count > 1)
             {
-              var fieldAndVal = inline.ToString().Split(':');
-              parsedFieldName = fieldAndVal[0];
-              parsedFieldValues.Add(fieldAndVal[1]);
+              for (int i = 1; i < lb.Count; i++)
+              {
+                // For multi-value:
+                foreach (ListItemBlock lib in lb)
+                  parsedFieldValues.Add(GetStringFromListItemParagraphBlock(lib[0] as ParagraphBlock));
+              }
+              newAttribute.Values = parsedFieldValues;
+            }
+            // for single-value:
+            else
+            {
+              ListItemBlock lib = lb[0] as ListItemBlock;
+              newAttribute.Value = GetStringFromListItemParagraphBlock(lib[0] as ParagraphBlock);
+
+              if (lib.Count > 1)
+                _warnings.Add($"Nested attributes are not yet supported! File: {_currentFile}; line {lib.Line + 1}");
             }
           }
 
-          // this format:
-          // - **Date:** June 30, 2002
-          else if (inline is EmphasisInline)
-          {
-            //        variable inline is "**",          FirsChild is "Date:"
-            parsedFieldName = (inline as EmphasisInline).FirstChild.ToString();
-            // Next sibling of "Date:" is another "**"
 
-            parsedFieldValues.Add((inline as EmphasisInline).NextSibling.ToString());
-          }
-          
+          attributeDict[parsedFieldName] = newAttribute;
         }
 
-        
-        /* NESTED PARSING
-         * ex:
-         * - Name:
-         *   - Paula Mer Verdell
-         *   - Green Bean (nickname)
-         */
-        else{
-          parsedFieldName = ((item as ListItemBlock)[0] as ParagraphBlock).Inline.FirstChild.ToString();
-        }
+        currentIndex++;
       }
 
+
+      return attributeDict;
+    }
+
+
+    private string GetStringFromListItemParagraphBlock(ParagraphBlock pgBlock)
+    {
+      string ret = string.Empty;
+
+      ContainerInline contInl = pgBlock.Inline;
+
+      switch (contInl.FirstChild)
+      {
+        case EmphasisInline emph:
+          ret += emph.FirstChild.ToString();
+          //ret += emph.NextSibling.ToString();
+          break;
+        case LiteralInline lit:
+          ret += lit.ToString();
+          break;
+      }
+
+
+      return ret;
+    }
+
+
+    private Dictionary<string, LoreAttribute> ParseTableFields(MarkdownDocument doc, ref int currentIndex, Table tableBlock, LoreTypeDefinition typeDef)
+    {
       return new Dictionary<string, LoreAttribute>();
     }
   }

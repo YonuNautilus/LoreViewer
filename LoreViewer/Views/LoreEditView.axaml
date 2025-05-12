@@ -22,7 +22,8 @@
       <TextBox Text="{Binding LoreLibraryFolderPath}" IsReadOnly="True"></TextBox>
     </DockPanel>
 
-    <Button Grid.Row="1" Content="Test Parsing" Command="{Binding TestParsingCommand}"></Button>
+    <TreeView Grid.Row="1" Grid.Column="0" Name="NodesTreeView" ></TreeView>
+    <TreeView Grid.Row="2" Grid.Column="0" Name="CollectionsTreeView"></TreeView>
 
     <DockPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
       <Button Content="Open Lore Settings Editor" DockPanel.Dock="Right" Command="{Binding OpenLoreSettingsEditor}"/>

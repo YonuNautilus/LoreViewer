@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoreViewer", "LoreViewer\LoreViewer.csproj", "{D619F5C6-3301-4EE7-B501-CD9F60BF4F55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoreViewer", "LoreViewer\LoreViewer.csproj", "{D619F5C6-3301-4EE7-B501-CD9F60BF4F55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoreViewerUnitTests", "LoreViewerUnitTests\LoreViewerUnitTests.csproj", "{364FCF8D-065F-4CF3-8919-29E9B603B2FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D619F5C6-3301-4EE7-B501-CD9F60BF4F55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D619F5C6-3301-4EE7-B501-CD9F60BF4F55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D619F5C6-3301-4EE7-B501-CD9F60BF4F55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{364FCF8D-065F-4CF3-8919-29E9B603B2FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{364FCF8D-065F-4CF3-8919-29E9B603B2FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{364FCF8D-065F-4CF3-8919-29E9B603B2FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{364FCF8D-065F-4CF3-8919-29E9B603B2FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

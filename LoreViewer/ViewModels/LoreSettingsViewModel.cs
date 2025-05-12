@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+using LoreViewer.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels
 {
-  internal class LoreSettingsViewModel : ViewModelBase
+    internal class LoreSettingsViewModel : ViewModelBase
   {
 
     private string m_sLoreLibraryFolderPath = string.Empty;

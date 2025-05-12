@@ -15,7 +15,26 @@ namespace LoreViewer.LoreNodes
     public int SourceIndex { get; set; }
 
     public bool HasValue => Value != null;
-    public bool IsList => Value != null;
+    public bool IsList => Values != null;
     public bool IsNested => NestedValues != null;
+
+    public void Append(string newValue)
+    {
+      if (!IsList)
+      {
+        Values = new List<string> { Value };
+        Value = null;
+      }
+
+      Values.Add(newValue);
+    }
+
+    public void Append(IEnumerable<string> values) { foreach (string newValue in values) Append(newValue); }
+
+    public void Append(LoreAttribute newAttribute)
+    {
+      if (newAttribute.IsList) { Append(newAttribute.Values); }
+      else { Append(newAttribute.Value); }
+    }
   }
 }
