@@ -1,4 +1,11 @@
-﻿# This is a valid markdown with bullet point fields/attributes {ListFieldsObject}
+﻿# This section tests nested attributes {NestedFieldsTestObject}
+
+- flat parent:
+  - flat nested field 1:
+    - double nested field 1
+  - *bold nested field:* value
+
+# This is a valid markdown with bullet point fields/attributes {ListFieldsObject}
 
 - flat: This is a flat attribute
 - **flat with bold:** flat attribute with bold name

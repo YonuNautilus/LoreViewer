@@ -518,7 +518,13 @@ namespace LoreViewer
 
 
           /* NESTED PARSING & SUBBULLET
-           * example of nested multivalue:
+           * 
+           * example of tested values:
+           * - Occurence time
+           *   - Start date: September 9, 1999
+           *   - End date: November 11, 2011
+           * 
+           * example of multivalue:
            * - Name:
            *   - Paula Mer Verdell
            *   - Green Bean (nickname)
@@ -566,6 +572,9 @@ namespace LoreViewer
 
       return attributeDict;
     }
+
+
+    private string ParseListAttribute(MarkdownDocument doc, ref int currentIndrex, ListBlock)
 
 
     private string GetStringFromListItemParagraphBlock(ParagraphBlock pgBlock)

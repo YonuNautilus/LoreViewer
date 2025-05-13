@@ -62,7 +62,7 @@ namespace LoreViewer.Settings
     public bool required = false;
 
     // for fields like Date with Start/End
-    public List<LoreAttributeDefinition> NestedFields { get; set; } = new List<LoreAttributeDefinition>();
+    public List<LoreAttributeDefinition> nestedFields { get; set; }
   }
 
   public class LoreCollectionDefinition

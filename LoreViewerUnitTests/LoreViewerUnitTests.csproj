@@ -23,16 +23,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\ErrorTests\FieldsTest.md">
+    <None Update="TestData\ValidFiles\FieldsTest.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ErrorTests\FirstHeadingIsSection.md">
+    <None Update="TestData\ErrorFiles\FirstHeadingIsSection.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ErrorTests\TopHeadingUntagged.md">
+    <None Update="TestData\ErrorFiles\TopHeadingUntagged.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

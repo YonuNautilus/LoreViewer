@@ -24,3 +24,17 @@
         required: true
       - name: multivalue with italics
         required: true
+
+  NestedFieldsTestObject:
+    fields:
+      - name: flat parent
+        required: true
+        nestedFields:
+        - name: flat nested field 1
+          required: true
+          nestedFields:
+          - name: double nested field 1
+            required: true
+        - name: bold nested field
+          required: true
+        - name: another field

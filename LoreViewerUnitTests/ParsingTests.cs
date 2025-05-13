@@ -8,7 +8,8 @@ namespace LoreViewerUnitTests
     LoreSettings _settings;
     LoreParser _parser;
 
-    string FolderName = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ErrorTests");
+    string ErrorFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ErrorFiles");
+    string ValidFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ValidFiles");
 
     [SetUp]
     public void SetupLoreSettings()
@@ -21,28 +22,35 @@ namespace LoreViewerUnitTests
     }
 
     [Test]
+    [TestOf(typeof(LoreParser))]
     public void ValidFieldFormatsTest()
     {
       bool[] hasSingleValue = { true, true, true, true, true, true, false, false, false };
-      string fileToTest = Path.Combine(FolderName, "FieldsTest.md");
+      string fileToTest = Path.Combine(ValidFilesFolder, "FieldsTest.md");
 
       _parser.ParseFile(fileToTest);
 
-      Assert.AreEqual(1, _parser._nodes.Count);
+      Assert.That(_parser._nodes.Count, Is.EqualTo(2));
 
       LoreNode nodeToCheck = _parser._nodes[0];
 
       Assert.NotNull(nodeToCheck);
-      Assert.AreEqual("This is a valid markdown with bullet point fields/attributes", nodeToCheck.Name);
-      Assert.AreEqual(9, nodeToCheck.Attributes.Count);
+      Assert.That(nodeToCheck.Name, Is.EqualTo("This is a valid markdown with bullet point fields/attributes"));
+      Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(9));
 
-      Assert.AreEqual(hasSingleValue, nodeToCheck.Attributes.Select(kvp => kvp.Value.HasValue).ToArray());
+      Assert.That(nodeToCheck.Attributes.Select(kvp => kvp.Value.HasValue).ToArray(), Is.EqualTo(hasSingleValue));
+
+      Assert.DoesNotThrow(() => { nodeToCheck = _parser._nodes[1]; });
+      Assert.NotNull(nodeToCheck);
+
+      Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(2));
     }
 
     [Test]
+    [TestOf(typeof(LoreParser))]
     public void UntaggedFirstHeadingTest()
     {
-      string fileToTest = Path.Combine(FolderName, "TopHeadingUntagged.md");
+      string fileToTest = Path.Combine(ErrorFilesFolder, "TopHeadingUntagged.md");
 
       Assert.Throws<NoTagParsingException>(() =>
       {
@@ -51,9 +59,10 @@ namespace LoreViewerUnitTests
     }
 
     [Test]
+    [TestOf(typeof(LoreParser))]
     public void FirstHeadingIsSectionTest()
     {
-      string fileToTest =  Path.Combine(FolderName, "FirstHeadingIsSection.md");
+      string fileToTest =  Path.Combine(ErrorFilesFolder, "FirstHeadingIsSection.md");
 
       Assert.Throws<FirstHeadingTagException>(() =>
       {

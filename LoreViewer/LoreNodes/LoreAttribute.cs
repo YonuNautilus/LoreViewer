@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoreViewer.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,8 @@ namespace LoreViewer.LoreNodes
     public string? Value { get; set; } // Simple "key: value" entry, like a single date or name
     public List<string>? Values { get; set; } // "key: List<value>" entry, like alias for a character
     public Dictionary<string, string>? NestedValues { get; set; } // compusite attributes, like a start/end date
+
+    public LoreAttributeDefinition Definition;
 
     public int SourceIndex { get; set; }
 
