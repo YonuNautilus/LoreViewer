@@ -11,19 +11,19 @@ namespace LoreViewer.LoreNodes
   {
     public string? Value { get; set; } // Simple "key: value" entry, like a single date or name
     public List<string>? Values { get; set; } // "key: List<value>" entry, like alias for a character
-    public Dictionary<string, string>? NestedValues { get; set; } // compusite attributes, like a start/end date
+    public Dictionary<string, LoreAttribute>? NestedAttributes { get; set; } // compusite attributes, like a start/end date
 
     public LoreAttributeDefinition Definition;
 
     public int SourceIndex { get; set; }
 
     public bool HasValue => Value != null;
-    public bool IsList => Values != null;
-    public bool IsNested => NestedValues != null;
+    public bool HasValues => Values != null;
+    public bool IsNested => NestedAttributes != null;
 
     public void Append(string newValue)
     {
-      if (!IsList)
+      if (!HasValues)
       {
         Values = new List<string> { Value };
         Value = null;
@@ -36,7 +36,7 @@ namespace LoreViewer.LoreNodes
 
     public void Append(LoreAttribute newAttribute)
     {
-      if (newAttribute.IsList) { Append(newAttribute.Values); }
+      if (newAttribute.HasValues) { Append(newAttribute.Values); }
       else { Append(newAttribute.Value); }
     }
   }

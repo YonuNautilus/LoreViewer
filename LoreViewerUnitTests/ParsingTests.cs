@@ -35,15 +35,63 @@ namespace LoreViewerUnitTests
       LoreNode nodeToCheck = _parser._nodes[0];
 
       Assert.NotNull(nodeToCheck);
-      Assert.That(nodeToCheck.Name, Is.EqualTo("This is a valid markdown with bullet point fields/attributes"));
-      Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(9));
+      Assert.That(nodeToCheck.Name, Is.EqualTo("Vela Orion"));
+      Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(2));
 
-      Assert.That(nodeToCheck.Attributes.Select(kvp => kvp.Value.HasValue).ToArray(), Is.EqualTo(hasSingleValue));
+      // Now do an in-depth check of all attributes
+      Dictionary<string, LoreAttribute> nodeAttr = nodeToCheck.Attributes;
+      string currAttr = "Aliases";
+
+      Assert.NotNull(nodeAttr[currAttr]);
+      Assert.True(nodeAttr[currAttr].HasValues);
+      Assert.False(nodeAttr[currAttr].HasValue);
+      Assert.False(nodeAttr[currAttr].IsNested);
+
+      Assert.That(nodeAttr[currAttr].Values.Count, Is.EqualTo(3));
+      Assert.That(nodeAttr[currAttr].Values[0], Is.EqualTo("V"));
+      Assert.That(nodeAttr[currAttr].Values[1], Is.EqualTo("Orion Ghost"));
+      Assert.That(nodeAttr[currAttr].Values[2], Is.EqualTo("Silent Flame"));
+
+      currAttr = "Employment History";
+
+      Assert.NotNull(nodeAttr[currAttr]);
+
+      Assert.True(nodeAttr[currAttr].IsNested);
+      Assert.False(nodeAttr[currAttr].HasValue);
+      Assert.False(nodeAttr[currAttr].HasValues);
+
+      Assert.Null(nodeAttr[currAttr].Values);
+      Assert.Null(nodeAttr[currAttr].Value);
+      Assert.NotNull(nodeAttr[currAttr].NestedAttributes);
+
+      Assert.That(nodeAttr[currAttr].NestedAttributes.Count, Is.EqualTo(3));
+      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Organization"]);
+
+      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Organization"].Value);
+      Assert.That(nodeAttr[currAttr].NestedAttributes["Organization"].Value, Is.EqualTo("Nightfall Syndicate"));
+
+      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Roles"]);
+      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Roles"].Values);
+      Assert.That(nodeAttr[currAttr].NestedAttributes["Roles"].Values.Count, Is.EqualTo(3));
+
+      Assert.That(nodeAttr[currAttr].NestedAttributes["Roles"].Values[0], Is.EqualTo("Infiltrator"));
+      Assert.That(nodeAttr[currAttr].NestedAttributes["Roles"].Values[1], Is.EqualTo("Handler"));
+      Assert.That(nodeAttr[currAttr].NestedAttributes["Roles"].Values[2], Is.EqualTo("Intel Courier"));
+
+      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Duration"]);
+      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Duration"].Value);
+      Assert.That(nodeAttr[currAttr].NestedAttributes["Duration"].Value, Is.EqualTo("2012–2021"));
+
+
+
 
       Assert.DoesNotThrow(() => { nodeToCheck = _parser._nodes[1]; });
       Assert.NotNull(nodeToCheck);
 
-      Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(2));
+      Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(9));
+
+      bool[] foundResults = nodeToCheck.Attributes.Select(kvp => kvp.Value.HasValue).ToArray();
+      Assert.That(foundResults, Is.EqualTo(hasSingleValue));
     }
 
     [Test]

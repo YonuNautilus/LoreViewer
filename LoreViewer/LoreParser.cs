@@ -20,6 +20,7 @@ using Markdig.Extensions.CustomContainers;
 using DynamicData.Kernel;
 using Avalonia.OpenGL;
 using System.Collections;
+using SkiaSharp;
 
 namespace LoreViewer
 {
@@ -242,7 +243,7 @@ namespace LoreViewer
           if (currentBlock is ListBlock)
           {
             ListBlock lb = currentBlock as ListBlock;
-            Dictionary<string, LoreAttribute> attributes = ParseBulletPointFields(doc, ref currentIndex, lb, typeDef);
+            Dictionary<string, LoreAttribute> attributes = ParseListAttributes(doc, currentIndex, lb, typeDef.fields);
             newNode.Attributes = newNode.Attributes.Concat(attributes).ToDictionary();
           }
           else if (currentBlock is Table)
@@ -325,11 +326,11 @@ namespace LoreViewer
             case ListBlock lb:
 
             default:
-              currentIndex++;
               break;
           }
 
         }
+        currentIndex++;
       }
 
       return newNode;
@@ -478,95 +479,114 @@ namespace LoreViewer
       return lines;
     }
 
-    private Dictionary<string, LoreAttribute> ParseBulletPointFields(MarkdownDocument doc, ref int currentIndex, ListBlock listBlock, LoreTypeDefinition typeDef)
+    private bool IsFlatAttributeDeclaration(string flatInlineText) => flatInlineText.Contains(":") && !flatInlineText.EndsWith(":");
+
+    private Dictionary<string, LoreAttribute> ParseListAttributes(MarkdownDocument doc, int currentIndex, ListBlock listBlock, List<LoreAttributeDefinition> attributeDefinitions)
     {
       string fieldValue = string.Empty;
       Dictionary<string, LoreAttribute> attributeDict = new Dictionary<string, LoreAttribute>();
 
-      while (currentIndex < doc.Count && doc[currentIndex] is ListBlock)
+      //listBlock = (ListBlock)doc[currentIndex];
+
+      foreach (var item in listBlock)
       {
-        listBlock = (ListBlock)doc[currentIndex];
+        if (item is not ListItemBlock) { break; }
 
-        foreach (var item in listBlock)
+        var contentItem = (item as ListItemBlock)[0] as ParagraphBlock;
+        var inline = contentItem.Inline.FirstChild;
+
+        LoreAttribute newAttribute = new LoreAttribute();
+
+        string parsedFieldName = string.Empty;
+        string parsedFieldValue = string.Empty;
+        List<string> parsedFieldValues = new List<string>();
+
+        // STEP 1: Get the field name:.
+
+        string parsedInlineText = GetStringFromListItemParagraphBlock(contentItem);
+
+
+        /* FLAT PARSING
+         * ex:
+         * - **Date:** June 30, 2002
+         * - Date: June 30, 2002
+         */
+        if (IsFlatAttributeDeclaration(parsedInlineText))
         {
-          if (item is not ListItemBlock) { break; }
-
-          var contentItem = (item as ListItemBlock)[0] as ParagraphBlock;
-          var inline = contentItem.Inline.FirstChild;
-
-          LoreAttribute newAttribute = new LoreAttribute();
-
-          string parsedFieldName = string.Empty;
-          string parsedFieldValue = string.Empty;
-          List<string> parsedFieldValues = new List<string>();
-
-          /* FLAT PARSING
-           * ex:
-           * - **Date:** June 30, 2002
-           * - Date: June 30, 2002
-           */
-          if ((item as ListItemBlock).Count == 1)
-          {
-            string parsedInlineText = GetStringFromListItemParagraphBlock(contentItem);
-
-            var fieldAndVal = parsedInlineText.Split(':');
-            parsedFieldName = TrimFieldName(fieldAndVal[0]);
-            parsedFieldValue = fieldAndVal[1];
-            newAttribute.Value = parsedFieldValue.Trim();
-
-          }
-
-
-          /* NESTED PARSING & SUBBULLET
-           * 
-           * example of tested values:
-           * - Occurence time
-           *   - Start date: September 9, 1999
-           *   - End date: November 11, 2011
-           * 
-           * example of multivalue:
-           * - Name:
-           *   - Paula Mer Verdell
-           *   - Green Bean (nickname)
-           * 
-           * example of subbullet single value:
-           * - Name:
-           *   - Jimmy
-           */
-          else
-          {
-            parsedFieldName = TrimFieldName(GetStringFromListItemParagraphBlock((item as ListItemBlock)[0] as ParagraphBlock));
-
-            // Need to get the ListBlock for the indented ListItemBlocks
-
-            ListBlock lb = (item as ListItemBlock)[1] as ListBlock;
-
-            if (lb.Count > 1)
-            {
-              for (int i = 1; i < lb.Count; i++)
-              {
-                // For multi-value:
-                foreach (ListItemBlock lib in lb)
-                  parsedFieldValues.Add(GetStringFromListItemParagraphBlock(lib[0] as ParagraphBlock));
-              }
-              newAttribute.Values = parsedFieldValues;
-            }
-            // for single-value:
-            else
-            {
-              ListItemBlock lib = lb[0] as ListItemBlock;
-              newAttribute.Value = GetStringFromListItemParagraphBlock(lib[0] as ParagraphBlock);
-
-              if (lib.Count > 1)
-                _warnings.Add($"Nested attributes are not yet supported! File: {_currentFile}; line {lib.Line + 1}");
-            }
-          }
-
-
-          attributeDict[parsedFieldName] = newAttribute;
+          var fieldAndVal = parsedInlineText.Split(':');
+          parsedFieldName = TrimFieldName(fieldAndVal[0]);
+          parsedFieldValue = fieldAndVal[1];
+          newAttribute.Value = parsedFieldValue.Trim();
+        }
+        // otherwise, it does not have a value, just trim the inline text to a field name.
+        else
+        {
+          parsedFieldName = TrimFieldName(parsedInlineText);
         }
 
-        currentIndex++;
+        // either way, we have the field name. Let's see if we can find a definition -- if not, it remains null
+        newAttribute.Definition = attributeDefinitions.Where(lad => lad.name.Equals(parsedFieldName)).FirstOrDefault();
+
+        if (newAttribute.Definition == null)
+          throw new MissingFieldDefinitionException(string.Empty, currentIndex, contentItem.Line + 1, parsedFieldName);
+
+
+        /* NESTED PARSING & SUBBULLET
+         * 
+         * example of tested values:
+         * - Occurence time
+         *   - Start date: September 9, 1999
+         *   - End date: November 11, 2011
+         * 
+         * example of multivalue:
+         * - Name:
+         *   - Paula Mer Verdell
+         *   - Green Bean (nickname)
+         * 
+         * example of subbullet single value:
+         * - Name:
+         *   - Jimmy
+         *   
+         * or flat fields with values AND nested attributes:
+         * - Name: Jack
+         *   - Alias: Jimmy
+         */
+        else
+        {
+          // Need to get the ListBlock for the indented ListItemBlocks
+          // This ListBlock contains ListItemBlocks that are either nested fields multiple values, NEVER BOTH
+          ListBlock lb = (item as ListItemBlock)[1] as ListBlock;
+
+          // if it has nested fields
+          if (newAttribute.Definition.HasNestedFields)
+          {
+            newAttribute.NestedAttributes = ParseListAttributes(doc, currentIndex, lb, newAttribute.Definition.nestedFields);
+          }
+
+          // if it allows multiple values
+          else if (newAttribute.Definition.multivalue)
+          {
+            newAttribute.Values = new List<string>();
+            foreach(ListItemBlock block in lb)
+            {
+              newAttribute.Values.Add(GetStringFromListItemParagraphBlock(block[0] as ParagraphBlock));
+            }
+          }
+
+          // if no nested fields and not multivalue, we sure better hope this nested ListBlock is just a single value...
+          else
+          {
+            if(lb.Count > 1)
+              throw new Exception("Can't have more than one indented bullet on an attribute with single value or no nested attributes!");
+
+            ListItemBlock lib = lb[0] as ListItemBlock;
+
+            newAttribute.Value = GetStringFromListItemParagraphBlock(lib[0] as ParagraphBlock);
+          }
+        }
+
+        attributeDict[parsedFieldName] = newAttribute;
+
       }
 
 
@@ -574,7 +594,7 @@ namespace LoreViewer
     }
 
 
-    private string ParseListAttribute(MarkdownDocument doc, ref int currentIndrex, ListBlock)
+    //private string ParseListAttributes(MarkdownDocument doc, ref int currentIndrex, ListBlock listBlock, List<Lore>)
 
 
     private string GetStringFromListItemParagraphBlock(ParagraphBlock pgBlock)
@@ -583,20 +603,24 @@ namespace LoreViewer
 
       ContainerInline contInl = pgBlock.Inline;
 
-      switch (contInl.FirstChild)
+      Inline currentBlock = contInl.FirstChild;
+
+      while (currentBlock != null)
       {
-        case EmphasisInline emph:
-          ret += emph.FirstChild.ToString();
-          //ret += emph.NextSibling.ToString();
-          break;
-        case LiteralInline lit:
-          ret += lit.ToString();
-          break;
+        switch (currentBlock)
+        {
+          case EmphasisInline emph:
+            ret += emph.FirstChild.ToString();
+            break;
+          case LiteralInline lit:
+            ret += lit.ToString();
+            break;
+        }
+        currentBlock = currentBlock.NextSibling;
       }
-
-
       return ret;
     }
+
 
 
     private Dictionary<string, LoreAttribute> ParseTableFields(MarkdownDocument doc, ref int currentIndex, Table tableBlock, LoreTypeDefinition typeDef)

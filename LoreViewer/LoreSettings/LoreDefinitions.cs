@@ -61,6 +61,12 @@ namespace LoreViewer.Settings
 
     public bool required = false;
 
+    public bool multivalue = false;
+
+    public bool HasNestedFields => nestedFields != null;
+
+    public bool HasRequiredNestedFields => HasNestedFields ? nestedFields.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedFields, r => r) : false;
+
     // for fields like Date with Start/End
     public List<LoreAttributeDefinition> nestedFields { get; set; }
   }

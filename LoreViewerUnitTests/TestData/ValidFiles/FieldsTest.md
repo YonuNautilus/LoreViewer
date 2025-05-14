@@ -1,9 +1,18 @@
-﻿# This section tests nested attributes {NestedFieldsTestObject}
+﻿# Vela Orion {TestCharacter}
 
-- flat parent:
-  - flat nested field 1:
-    - double nested field 1
-  - *bold nested field:* value
+- Aliases:
+  - *V*
+  - **Orion** Ghost
+  - Silent Flame
+
+- **Employment History:**
+  - Organization: *Nightfall Syndicate*
+  - Roles:
+    - Infiltrator
+    - Handler
+    - *Intel Courier*
+  - Duration: 2012–2021
+
 
 # This is a valid markdown with bullet point fields/attributes {ListFieldsObject}
 
@@ -16,7 +25,7 @@
   - a subbullet with a bold name
 - *subbullet with italics*
   - a subbullet with italicized name
-- mutlivalue
+- multivalue
   - value 1
   - value 2
 - **multivalue with bold**
