@@ -34,3 +34,34 @@
 - *multivalue with italics*
   - value 5
   - value 6
+
+
+# Field Format Edge Case Test {FieldEdgeCases}
+
+- FlatField: Normal value, no formatting
+
+- **BoldField**: This value has no bold, just the field label
+
+- *ItalicField*: Italicized field name, regular value
+
+- ColonNoSpace:ThisShouldStillWork
+
+- ColonAfterSpace : This should work too
+
+- MixedFormatField: This *value* contains _emphasis_ and **bold**
+
+- NestedField:
+  - SubFieldOne: Value1
+  - **SubFieldBold**: Bold-labeled nested value
+  - *SubFieldItalic*: Italic-labeled nested value
+
+- MultiField:
+  - One
+  - Two
+  - **Three** (bolded value)
+
+- NestedMultiField:
+  - DetailList:
+    - Alpha
+    - _Beta_ (italic)
+    - **Gamma**

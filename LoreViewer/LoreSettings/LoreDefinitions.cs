@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.Settings
 {
@@ -50,8 +47,10 @@ namespace LoreViewer.Settings
 
     public bool freeform { get; set; } = false;
 
-    public List<LoreAttributeDefinition> fields { get; set; }
+    public bool HasFields => fields != null && fields.Count > 0;
+
     public List<LoreSectionDefinition> sections { get; set; }
+    public List<LoreAttributeDefinition> fields { get; set; }
   }
 
   public class LoreAttributeDefinition

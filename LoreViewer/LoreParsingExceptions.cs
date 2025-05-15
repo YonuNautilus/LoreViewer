@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoreViewer
+namespace LoreViewer.Exceptions
 {
   public abstract class LoreParsingException : Exception
   {
@@ -44,7 +44,7 @@ namespace LoreViewer
 
   public class FirstHeadingTagException : LoreNodeParsingException
   {
-    static string msgBase = "Error while parsing file {Path.GetFileName(filePath)}: First heading MUST define a node or collection";
+    static string msgBase = "Error while parsing file {0}: First heading MUST define a node or collection";
     public FirstHeadingTagException(string filePath, int blockIndex, int lineNumber)
       : base(filePath, blockIndex, lineNumber, String.Format(msgBase, Path.GetFileName(filePath)))
     { }
@@ -68,9 +68,23 @@ namespace LoreViewer
     }
   }
 
+  public class LoreSectionParsingException : LoreParsingException
+  {
+    public LoreSectionParsingException(string filePath, int blockIndex, int lineNumber, string msg)
+      : base(filePath, blockIndex, lineNumber, msg) { }
+ 
+    public class UnexpectedSectionNameException : LoreSectionParsingException
+    {
+      static string msgBase = "Section without definiton found. Section title: {0}; Line number {1}";
+      public UnexpectedSectionNameException(string filePath, int blockIndex, int lineNumber, string headingTitle, string subHeadingTitle)
+        : base(filePath, blockIndex, lineNumber, string.Format(msgBase, subHeadingTitle, lineNumber)) { }
+    }
+
+  }
+
   /*
    LoreAttributeParsingException
-│   ├── MissingFieldDefinitionException
+│   ├── UnexpectedFieldNameException
 │   ├── InvalidNestedStructureException
 │   ├── UnexpectedFlatValueException
 │   └── UnexpectedMultiStructureException
@@ -79,15 +93,20 @@ namespace LoreViewer
   {
     public LoreAttributeParsingException(string filePath, int blockIndex, int lineNumber, string msg)
       : base(filePath, blockIndex, lineNumber, msg) { }
-  }
-  public class MissingFieldDefinitionException : LoreAttributeParsingException
-  {
 
-    static string msgBase = "no definition found for attribute {0}, file line number {1}";
-    public MissingFieldDefinitionException(string filePath, int blockIndex, int lineNumber, string info)
-      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, info, lineNumber))
+
+    public class UnexpectedFieldNameException : LoreAttributeParsingException
     {
+      static string msgBase = "No definition found for attribute {0}, file line number {1}";
+      public UnexpectedFieldNameException(string filePath, int blockIndex, int lineNumber, string info)
+        : base(filePath, blockIndex, lineNumber, string.Format(msgBase, info, lineNumber)) { }
+    }
+    public class NestedBulletsOnSingleValueChildlessAttributeException : LoreAttributeParsingException
+    {
+      static string msgBase = "Can't have more than one indented bullet on an attribute with a single value or no nested attributes. Attribute: {0}";
 
+      public NestedBulletsOnSingleValueChildlessAttributeException(string filePath, int blockIndex, int lineNumber, string attributeName)
+        : base(filePath, blockIndex, lineNumber, string.Format(msgBase, attributeName)) { }
     }
   }
 }

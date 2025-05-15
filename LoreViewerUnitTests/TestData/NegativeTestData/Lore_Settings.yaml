@@ -1,0 +1,6 @@
+types:
+  TestObject:
+    fields:
+      - name: ErrorUnderTest
+        required: true
+

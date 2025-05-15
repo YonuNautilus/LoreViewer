@@ -1,0 +1,9 @@
+﻿types:
+  SectionNegativeType:
+    fields:
+      - name: Status
+    sections:
+      - name: Summary
+        fields:
+          - name: Theme
+      - name: Metadata

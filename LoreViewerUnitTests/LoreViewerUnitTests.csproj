@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -23,16 +23,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\ValidFiles\FieldsTest.md">
+    <None Update="TestData\NegativeTestData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\Lore_Settings.yaml">
+    <None Update="TestData\NegativeTestData\Section\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ErrorFiles\FirstHeadingIsSection.md">
+    <None Update="TestData\NegativeTestData\Section\MalformedFieldInSection.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ErrorFiles\TopHeadingUntagged.md">
+    <None Update="TestData\NegativeTestData\Section\UnknownSectionName.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\PositiveTestData\FieldsTest.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\PositiveTestData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\NegativeTestData\FirstHeadingIsSection.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\NegativeTestData\TopHeadingUntagged.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\PositiveTestData\SectionsTest.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Avalonia.Controls;
+﻿using LoreViewer.Exceptions;
 using LoreViewer.LoreNodes;
 using LoreViewer.Settings;
 using Markdig;
-using Markdig.Parsers;
+using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
-using Markdig.Extensions.Tables;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using Markdig.Extensions.CustomContainers;
-using DynamicData.Kernel;
-using Avalonia.OpenGL;
-using System.Collections;
-using SkiaSharp;
+using static LoreViewer.Exceptions.LoreAttributeParsingException;
+using static LoreViewer.Exceptions.LoreSectionParsingException;
 
 namespace LoreViewer
 {
@@ -246,12 +239,6 @@ namespace LoreViewer
             Dictionary<string, LoreAttribute> attributes = ParseListAttributes(doc, currentIndex, lb, typeDef.fields);
             newNode.Attributes = newNode.Attributes.Concat(attributes).ToDictionary();
           }
-          else if (currentBlock is Table)
-          {
-            Table tb = currentBlock as Table;
-            Dictionary<string, LoreAttribute> attributes = ParseTableFields(doc, ref currentIndex, tb, typeDef);
-            newNode.Attributes = newNode.Attributes.Concat(attributes).ToDictionary();
-          }
           else
           {
             parsingFields = false;
@@ -309,6 +296,11 @@ namespace LoreViewer
                   LoreSectionDefinition sectionDef = typeDef.sections.FirstOrDefault(sec => newTitle.Contains(sec.name));
                   LoreSection newSection = ParseSection(doc, ref currentIndex, hb, sectionDef);
                   newNode.Sections.Add(newSection);
+                  currentIndex--;
+                }
+                else
+                {
+                  throw new UnexpectedSectionNameException(_currentFile, currentIndex, currentBlock.Line + 1, title, newTitle);
                 }
               }
               break;
@@ -413,6 +405,7 @@ namespace LoreViewer
     private LoreSection ParseSection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreSectionDefinition secDef)
     {
       LoreSection newSection = new LoreSection(ExtractTitle(heading));
+      newSection.Definition = secDef;
 
       currentIndex++;
 
@@ -423,27 +416,51 @@ namespace LoreViewer
         switch(currentBlock)
         {
           case HeadingBlock hb:
-            // If the header we're iterating over is subheader to the section's header, that's an error
+            // If the header we're iterating over is subheader to the section's header..
             if (heading.Level < hb.Level)
-              throw new HeadingLevelErrorException(_currentFile, currentIndex, hb.Line, $"Subheading of Section is not allowed: found subheader of level {hb.Level} found under section {newSection.Name} (level {heading.Level})");
+            {
+              // If the subheader is not a defined section, throw error.
+              string headingTitle = ExtractTitle(hb);
+              LoreSectionDefinition subSecDef = secDef.sections?.FirstOrDefault(sd => sd.name.Equals(headingTitle));
+              if (subSecDef == null)
+                throw new UnexpectedSectionNameException(_currentFile, currentIndex, hb.Line, newSection.Name, headingTitle);
+
+              LoreSection newSubSection = ParseSection(doc, ref currentIndex, hb, subSecDef);
+              newSection.SubSections.Add(newSubSection);
+              currentIndex--;
+            }
             // If it is instead a sibling or lower number header level, return this sectoin
             else if (heading.Level >= hb.Level)
               return newSection;
             break;
 
-          // For any other block type, add it to the list of blocks.
-          default:
-            newSection.Blocks.Add(currentBlock);
+          case ParagraphBlock pb:
+            newSection.Text += GetStringFromParagraphBlock(pb);
             break;
-        }
+          
+          // ListBlock can be a list of attributes ONLY if the section definition has fields defined.
+          // Otherwise, the ListBlock is treated as text;
+          case ListBlock lb:
+            if (secDef.HasFields)
+              newSection.Attributes = ParseListAttributes(doc, currentIndex, lb, secDef.fields);
+            else
+              newSection.Text += GetStringFromListBlock(lb);
+            break;
+          default:
+            break;
 
+        }
+        newSection.Blocks.Add(currentBlock);
+
+        currentIndex++;
       }
 
       return newSection;
     }
 
+
     private KeyValuePair<string, LoreAttribute> ParseParagraphBlocks(MarkdownDocument doc, ref int currentIndex, ParagraphBlock paragraphBlock, LoreTypeDefinition typeDef)
-    {
+    { 
       LoreAttributeDefinition field = typeDef.fields.FirstOrDefault(fieldDef => fieldDef.style == EStyle.Freeform);
       if (field == null)
         throw new Exception($"Started parsing a Freeform paragraph attribute for a type that does not define one! Type{typeDef}");
@@ -503,7 +520,7 @@ namespace LoreViewer
 
         // STEP 1: Get the field name:.
 
-        string parsedInlineText = GetStringFromListItemParagraphBlock(contentItem);
+        string parsedInlineText = GetStringFromParagraphBlock(contentItem);
 
 
         /* FLAT PARSING
@@ -528,7 +545,7 @@ namespace LoreViewer
         newAttribute.Definition = attributeDefinitions.Where(lad => lad.name.Equals(parsedFieldName)).FirstOrDefault();
 
         if (newAttribute.Definition == null)
-          throw new MissingFieldDefinitionException(string.Empty, currentIndex, contentItem.Line + 1, parsedFieldName);
+          throw new UnexpectedFieldNameException(string.Empty, currentIndex, contentItem.Line + 1, parsedFieldName);
 
 
         /* NESTED PARSING & SUBBULLET
@@ -551,7 +568,7 @@ namespace LoreViewer
          * - Name: Jack
          *   - Alias: Jimmy
          */
-        else
+        if((item as ListItemBlock).Count > 1)
         {
           // Need to get the ListBlock for the indented ListItemBlocks
           // This ListBlock contains ListItemBlocks that are either nested fields multiple values, NEVER BOTH
@@ -569,7 +586,7 @@ namespace LoreViewer
             newAttribute.Values = new List<string>();
             foreach(ListItemBlock block in lb)
             {
-              newAttribute.Values.Add(GetStringFromListItemParagraphBlock(block[0] as ParagraphBlock));
+              newAttribute.Values.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock));
             }
           }
 
@@ -577,11 +594,11 @@ namespace LoreViewer
           else
           {
             if(lb.Count > 1)
-              throw new Exception("Can't have more than one indented bullet on an attribute with single value or no nested attributes!");
+              throw new NestedBulletsOnSingleValueChildlessAttributeException(_currentFile, currentIndex, lb.Line + 1, newAttribute.Definition.name);
 
             ListItemBlock lib = lb[0] as ListItemBlock;
 
-            newAttribute.Value = GetStringFromListItemParagraphBlock(lib[0] as ParagraphBlock);
+            newAttribute.Value = GetStringFromParagraphBlock(lib[0] as ParagraphBlock);
           }
         }
 
@@ -597,7 +614,7 @@ namespace LoreViewer
     //private string ParseListAttributes(MarkdownDocument doc, ref int currentIndrex, ListBlock listBlock, List<Lore>)
 
 
-    private string GetStringFromListItemParagraphBlock(ParagraphBlock pgBlock)
+    private string GetStringFromParagraphBlock(ParagraphBlock pgBlock)
     {
       string ret = string.Empty;
 
@@ -621,11 +638,18 @@ namespace LoreViewer
       return ret;
     }
 
-
-
-    private Dictionary<string, LoreAttribute> ParseTableFields(MarkdownDocument doc, ref int currentIndex, Table tableBlock, LoreTypeDefinition typeDef)
+    private string GetStringFromListBlock(ListBlock lb)
     {
-      return new Dictionary<string, LoreAttribute>();
+      string ret = string.Empty;
+
+      foreach (ListItemBlock lib in lb)
+      {
+        ParagraphBlock pb = lib.LastChild as ParagraphBlock;
+        if (pb != null)
+          ret += GetStringFromParagraphBlock(pb) + "\r\n";
+      }
+
+      return ret;
     }
   }
 }

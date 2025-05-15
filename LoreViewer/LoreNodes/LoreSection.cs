@@ -1,9 +1,6 @@
-﻿using Markdig.Syntax;
-using System;
+﻿using LoreViewer.Settings;
+using Markdig.Syntax;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.LoreNodes
 {
@@ -11,14 +8,38 @@ namespace LoreViewer.LoreNodes
   {
     public string Name;
 
-    public List<Block> Blocks;
+    private List<Block> _blocks;
+
+    public List<Block> Blocks
+    {
+      get { if (_blocks == null) _blocks = new List<Block>(); return _blocks; }
+      set { _blocks = value; }
+    }
+
+    public Dictionary<string, LoreAttribute> Attributes = new Dictionary<string, LoreAttribute>();
+
+    private List<LoreSection> _subSections;
+
+    public List<LoreSection> SubSections
+    {
+      get {
+        if (_subSections == null) _subSections = new List<LoreSection>();
+        return _subSections;
+      }
+      set { SubSections = value; }
+    }
+
+    public string Text = string.Empty;
 
     public string MarkdownBody;
+
 
     public LoreSection() { }
 
     public LoreSection(string name) { Name = name; }
 
     public LoreSection(List<Block> block) { Blocks = block; }
+
+    public LoreSectionDefinition Definition;
   }
 }
