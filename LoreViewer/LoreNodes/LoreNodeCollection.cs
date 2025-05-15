@@ -7,6 +7,8 @@ namespace LoreViewer.LoreNodes
 {
   public class LoreNodeCollection : IList<LoreNode>
   {
+    public string Name { get; set; }
+
     private readonly List<LoreNode> _nodes = new List<LoreNode>();
     public LoreNode this[int index] { get => _nodes[index]; set => _nodes[index] = value; }
 

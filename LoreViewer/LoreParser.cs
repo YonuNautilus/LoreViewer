@@ -276,8 +276,8 @@ namespace LoreViewer
                   else
                     newCollection = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(GetCollectionType(newTag)));
 
-
-                  newNode.CollectionChildren.Add(newTag, newCollection);
+                  newCollection.Name = newTitle;
+                  newNode.CollectionChildren.Add(newCollection);
                 }
 
                 // Parse as a nested node of the type specified in the tag.
@@ -285,7 +285,7 @@ namespace LoreViewer
                 {
                   LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
                   LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
-                  newNode.Children.Add(newNodeNode.Name, newNodeNode);
+                  newNode.Children.Add(newNodeNode);
 
                 }
               }

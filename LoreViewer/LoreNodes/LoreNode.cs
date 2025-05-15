@@ -17,11 +17,11 @@ namespace LoreViewer.LoreNodes
 
     public ObservableCollection<LoreAttribute> Attributes = new ObservableCollection<LoreAttribute>();
 
-    public Dictionary<string, LoreNode> Children = new Dictionary<string, LoreNode>();
+    public ObservableCollection<LoreNode> Children = new ObservableCollection<LoreNode>();
 
-    public Dictionary<string, LoreNodeCollection> CollectionChildren = new Dictionary<string, LoreNodeCollection>();
+    public ObservableCollection<LoreNodeCollection> CollectionChildren = new ObservableCollection<LoreNodeCollection>();
 
-    public List<LoreSection> Sections = new List<LoreSection>();
+    public ObservableCollection<LoreSection> Sections = new ObservableCollection<LoreSection>();
 
     public LoreNode(LoreTypeDefinition type, string name)
     {
