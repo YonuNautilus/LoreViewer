@@ -5,6 +5,8 @@ using ReactiveUI;
 using System.Reactive;
 using System.Threading.Tasks;
 using LoreViewer.Settings;
+using System.Collections.ObjectModel;
+using LoreViewer.LoreNodes;
 
 namespace LoreViewer.ViewModels
 {
@@ -15,6 +17,8 @@ namespace LoreViewer.ViewModels
 
     private string m_sLoreLibraryFolderPath = string.Empty;
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
+    public ObservableCollection<LoreNode> Nodes { get => _parser._nodes; set => this.RaiseAndSetIfChanged(ref _parser._nodes, value); }
+    public ObservableCollection<LoreNodeCollection> NodeCollections { get => _parser._collections; set => this.RaiseAndSetIfChanged(ref _parser._collections, value); }
     public ReactiveCommand<Unit, Unit> OpenLibraryFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor {  get; }
 
@@ -43,6 +47,9 @@ namespace LoreViewer.ViewModels
       {
         LoreLibraryFolderPath = folderPath[0].TryGetLocalPath();
         _parser.BeginParsingFromFolder(LoreLibraryFolderPath);
+
+        Nodes = _parser._nodes;
+        NodeCollections = _parser._collections;
       }
     }
 

@@ -30,8 +30,8 @@ namespace LoreViewer
     private string _folderPath;
     private string _currentFile;
 
-    public List<LoreNodeCollection> _collections = new List<LoreNodeCollection>();
-    public List<LoreNode> _nodes = new List<LoreNode>();
+    public ObservableCollection<LoreNodeCollection> _collections = new ObservableCollection<LoreNodeCollection>();
+    public ObservableCollection<LoreNode> _nodes = new ObservableCollection<LoreNode>();
     public List<string> _errors = new List<string>();
     public List<string> _warnings = new List<string>();
 
