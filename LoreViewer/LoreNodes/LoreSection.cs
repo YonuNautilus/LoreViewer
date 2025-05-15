@@ -1,6 +1,8 @@
 ﻿using LoreViewer.Settings;
 using Markdig.Syntax;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace LoreViewer.LoreNodes
 {
@@ -16,7 +18,7 @@ namespace LoreViewer.LoreNodes
       set { _blocks = value; }
     }
 
-    public Dictionary<string, LoreAttribute> Attributes = new Dictionary<string, LoreAttribute>();
+    public ObservableCollection<LoreAttribute> Attributes = new ObservableCollection<LoreAttribute>();
 
     private List<LoreSection> _subSections;
 
@@ -41,5 +43,10 @@ namespace LoreViewer.LoreNodes
     public LoreSection(List<Block> block) { Blocks = block; }
 
     public LoreSectionDefinition Definition;
+
+
+    public bool HasAttribute(string attrName) => Attributes.Any(a => a.Name == attrName);
+
+    public LoreAttribute? GetAttribute(string attrName) => Attributes.FirstOrDefault(a => a.Name == attrName);
   }
 }

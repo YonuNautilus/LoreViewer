@@ -1,6 +1,8 @@
 ﻿using LoreViewer.Settings;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace LoreViewer.LoreNodes
 {
@@ -13,7 +15,7 @@ namespace LoreViewer.LoreNodes
 
     public LoreTypeDefinition Type { get; set; }
 
-    public Dictionary<string, LoreAttribute> Attributes = new Dictionary<string, LoreAttribute>();
+    public ObservableCollection<LoreAttribute> Attributes = new ObservableCollection<LoreAttribute>();
 
     public Dictionary<string, LoreNode> Children = new Dictionary<string, LoreNode>();
 
@@ -26,5 +28,9 @@ namespace LoreViewer.LoreNodes
       Type = type;
       Name = name;
     }
+
+    public bool HasAttribute(string attrName) => Attributes.Any(a => a.Name == attrName);
+
+    public LoreAttribute? GetAttribute(string attrName) => Attributes.FirstOrDefault(a => a.Name == attrName);
   }
 }

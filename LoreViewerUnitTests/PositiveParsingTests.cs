@@ -41,48 +41,48 @@ namespace PositiveTests
       Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(2));
 
       // Now do an in-depth check of all attributes
-      Dictionary<string, LoreAttribute> nodeAttr = nodeToCheck.Attributes;
+      LoreAttribute[] nodeAttrs = nodeToCheck.Attributes.ToArray();
       string currAttr = "Aliases";
 
-      Assert.NotNull(nodeAttr[currAttr]);
-      Assert.True(nodeAttr[currAttr].HasValues);
-      Assert.False(nodeAttr[currAttr].HasValue);
-      Assert.False(nodeAttr[currAttr].IsNested);
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr));
+      Assert.True(nodeToCheck.GetAttribute(currAttr).HasValues);
+      Assert.False(nodeToCheck.GetAttribute(currAttr).HasValue);
+      Assert.False(nodeToCheck.GetAttribute(currAttr).IsNested);
 
-      Assert.That(nodeAttr[currAttr].Values.Count, Is.EqualTo(3));
-      Assert.That(nodeAttr[currAttr].Values[0], Is.EqualTo("V"));
-      Assert.That(nodeAttr[currAttr].Values[1], Is.EqualTo("Orion Ghost"));
-      Assert.That(nodeAttr[currAttr].Values[2], Is.EqualTo("Silent Flame"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).Values.Count, Is.EqualTo(3));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).Values[0], Is.EqualTo("V"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).Values[1], Is.EqualTo("Orion Ghost"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).Values[2], Is.EqualTo("Silent Flame"));
 
       currAttr = "Employment History";
 
-      Assert.NotNull(nodeAttr[currAttr]);
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr));
 
-      Assert.True(nodeAttr[currAttr].IsNested);
-      Assert.False(nodeAttr[currAttr].HasValue);
-      Assert.False(nodeAttr[currAttr].HasValues);
+      Assert.True(nodeToCheck.GetAttribute(currAttr).IsNested);
+      Assert.False(nodeToCheck.GetAttribute(currAttr).HasValue);
+      Assert.False(nodeToCheck.GetAttribute(currAttr).HasValues);
 
-      Assert.Null(nodeAttr[currAttr].Values);
-      Assert.Null(nodeAttr[currAttr].Value);
-      Assert.NotNull(nodeAttr[currAttr].NestedAttributes);
+      Assert.Null(nodeToCheck.GetAttribute(currAttr).Values);
+      Assert.Null(nodeToCheck.GetAttribute(currAttr).Value);
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).NestedAttributes);
 
-      Assert.That(nodeAttr[currAttr].NestedAttributes.Count, Is.EqualTo(3));
-      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Organization"]);
+      Assert.That(nodeToCheck.GetAttribute(currAttr).NestedAttributes.Count, Is.EqualTo(3));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Organization"));
 
-      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Organization"].Value);
-      Assert.That(nodeAttr[currAttr].NestedAttributes["Organization"].Value, Is.EqualTo("Nightfall Syndicate"));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Organization").Value);
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Organization").Value, Is.EqualTo("Nightfall Syndicate"));
 
-      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Roles"]);
-      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Roles"].Values);
-      Assert.That(nodeAttr[currAttr].NestedAttributes["Roles"].Values.Count, Is.EqualTo(3));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles"));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values);
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values.Count, Is.EqualTo(3));
 
-      Assert.That(nodeAttr[currAttr].NestedAttributes["Roles"].Values[0], Is.EqualTo("Infiltrator"));
-      Assert.That(nodeAttr[currAttr].NestedAttributes["Roles"].Values[1], Is.EqualTo("Handler"));
-      Assert.That(nodeAttr[currAttr].NestedAttributes["Roles"].Values[2], Is.EqualTo("Intel Courier"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values[0], Is.EqualTo("Infiltrator"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values[1], Is.EqualTo("Handler"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values[2], Is.EqualTo("Intel Courier"));
 
-      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Duration"]);
-      Assert.NotNull(nodeAttr[currAttr].NestedAttributes["Duration"].Value);
-      Assert.That(nodeAttr[currAttr].NestedAttributes["Duration"].Value, Is.EqualTo("2012–2021"));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Duration"));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Duration").Value);
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Duration").Value, Is.EqualTo("2012–2021"));
     }
 
     [Test]
@@ -97,7 +97,7 @@ namespace PositiveTests
 
       Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(9));
 
-      bool[] foundResults = nodeToCheck.Attributes.Select(kvp => kvp.Value.HasValue).ToArray();
+      bool[] foundResults = nodeToCheck.Attributes.Select(a => a.HasValue).ToArray();
       Assert.That(foundResults, Is.EqualTo(hasSingleValue));
     }
 
@@ -109,28 +109,28 @@ namespace PositiveTests
       var attrs = node.Attributes;
 
       // Flat and simple emphasis variants
-      Assert.That(attrs["FlatField"].Value, Is.EqualTo("Normal value, no formatting"));
-      Assert.That(attrs["BoldField"].Value, Is.EqualTo("This value has no bold, just the field label"));
-      Assert.That(attrs["ItalicField"].Value, Is.EqualTo("Italicized field name, regular value"));
-      Assert.That(attrs["ColonNoSpace"].Value, Is.EqualTo("ThisShouldStillWork"));
-      Assert.That(attrs["ColonAfterSpace"].Value, Is.EqualTo("This should work too"));
-      Assert.That(attrs["MixedFormatField"].Value, Is.EqualTo("This value contains emphasis and bold"));
+      Assert.That(node.GetAttribute("FlatField").Value, Is.EqualTo("Normal value, no formatting"));
+      Assert.That(node.GetAttribute("BoldField").Value, Is.EqualTo("This value has no bold, just the field label"));
+      Assert.That(node.GetAttribute("ItalicField").Value, Is.EqualTo("Italicized field name, regular value"));
+      Assert.That(node.GetAttribute("ColonNoSpace").Value, Is.EqualTo("ThisShouldStillWork"));
+      Assert.That(node.GetAttribute("ColonAfterSpace").Value, Is.EqualTo("This should work too"));
+      Assert.That(node.GetAttribute("MixedFormatField").Value, Is.EqualTo("This value contains emphasis and bold"));
 
       // Nested field parsing
-      var nested = attrs["NestedField"].NestedAttributes;
-      Assert.That(nested["SubFieldOne"].Value, Is.EqualTo("Value1"));
-      Assert.That(nested["SubFieldBold"].Value, Is.EqualTo("Bold-labeled nested value"));
-      Assert.That(nested["SubFieldItalic"].Value, Is.EqualTo("Italic-labeled nested value"));
+      var nested = node.GetAttribute("NestedField");
+      Assert.That(nested.GetNestedAttribute("SubFieldOne").Value, Is.EqualTo("Value1"));
+      Assert.That(nested.GetNestedAttribute("SubFieldBold").Value, Is.EqualTo("Bold-labeled nested value"));
+      Assert.That(nested.GetNestedAttribute("SubFieldItalic").Value, Is.EqualTo("Italic-labeled nested value"));
 
       // Multi-value flat list
-      var multi = attrs["MultiField"].Values;
+      var multi = node.GetAttribute("MultiField").Values;
       Assert.That(multi, Has.Count.EqualTo(3));
       Assert.That(multi[0], Is.EqualTo("One"));
       Assert.That(multi[1], Is.EqualTo("Two"));
       Assert.That(multi[2], Is.EqualTo("Three (bolded value)"));
 
       // Nested multi-value
-      var nestedMulti = attrs["NestedMultiField"].NestedAttributes["DetailList"].Values;
+      var nestedMulti = node.GetAttribute("NestedMultiField").GetNestedAttribute("DetailList").Values;
       Assert.That(nestedMulti, Has.Count.EqualTo(3));
       Assert.That(nestedMulti[0], Is.EqualTo("Alpha"));
       Assert.That(nestedMulti[1], Is.EqualTo("Beta (italic)"));
@@ -225,10 +225,10 @@ namespace PositiveTests
       // Check attribute parsing in Personality
       Assert.That(personality.Attributes, Is.Not.Null);
       Assert.That(personality.Attributes.Count, Is.EqualTo(2));
-      Assert.That(personality.Attributes["Tone"].Value, Is.EqualTo("Calm, careful"));
-      Assert.That(personality.Attributes["Social Tendencies"].Values, Has.Count.EqualTo(2));
-      Assert.That(personality.Attributes["Social Tendencies"].Values[0], Is.EqualTo("Avoids group settings"));
-      Assert.That(personality.Attributes["Social Tendencies"].Values[1], Is.EqualTo("Strong one-on-one engagement"));
+      Assert.That(personality.GetAttribute("Tone").Value, Is.EqualTo("Calm, careful"));
+      Assert.That(personality.GetAttribute("Social Tendencies").Values, Has.Count.EqualTo(2));
+      Assert.That(personality.GetAttribute("Social Tendencies").Values[0], Is.EqualTo("Avoids group settings"));
+      Assert.That(personality.GetAttribute("Social Tendencies").Values[1], Is.EqualTo("Strong one-on-one engagement"));
 
       // Check freeform paragraph is still preserved
       Assert.That(personality.Text, Does.Contain("She displays openness"));

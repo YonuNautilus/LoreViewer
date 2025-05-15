@@ -1,4 +1,5 @@
-﻿using LoreViewer.Exceptions;
+﻿using DynamicData;
+using LoreViewer.Exceptions;
 using LoreViewer.LoreNodes;
 using LoreViewer.Settings;
 using Markdig;
@@ -7,6 +8,7 @@ using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -236,8 +238,8 @@ namespace LoreViewer
           if (currentBlock is ListBlock)
           {
             ListBlock lb = currentBlock as ListBlock;
-            Dictionary<string, LoreAttribute> attributes = ParseListAttributes(doc, currentIndex, lb, typeDef.fields);
-            newNode.Attributes = newNode.Attributes.Concat(attributes).ToDictionary();
+            ObservableCollection<LoreAttribute> attributes = ParseListAttributes(doc, currentIndex, lb, typeDef.fields);
+            newNode.Attributes.AddRange(attributes);
           }
           else
           {
@@ -307,11 +309,11 @@ namespace LoreViewer
 
             // freeform
             case ParagraphBlock pb:
-              KeyValuePair<string, LoreAttribute> lines = ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef);
-              if (!newNode.Attributes.ContainsKey("summary"))
-                newNode.Attributes.Add(lines.Key, lines.Value);
+              LoreAttribute lines = ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef);
+              if (!newNode.HasAttribute("summary"))
+                newNode.Attributes.Add(lines);
               else
-                newNode.Attributes["summary"].Append(lines.Value);
+                newNode.GetAttribute("summary")?.Append(lines);
               break;
 
             // Fields
@@ -459,21 +461,21 @@ namespace LoreViewer
     }
 
 
-    private KeyValuePair<string, LoreAttribute> ParseParagraphBlocks(MarkdownDocument doc, ref int currentIndex, ParagraphBlock paragraphBlock, LoreTypeDefinition typeDef)
+    private LoreAttribute ParseParagraphBlocks(MarkdownDocument doc, ref int currentIndex, ParagraphBlock paragraphBlock, LoreTypeDefinition typeDef)
     { 
       LoreAttributeDefinition field = typeDef.fields.FirstOrDefault(fieldDef => fieldDef.style == EStyle.Freeform);
       if (field == null)
         throw new Exception($"Started parsing a Freeform paragraph attribute for a type that does not define one! Type{typeDef}");
 
-      KeyValuePair<string, LoreAttribute> paragraphs = new KeyValuePair<string, LoreAttribute>(field.name, new LoreAttribute());
-      paragraphs.Value.Values = new List<string>();
+      LoreAttribute paragraphs = new LoreAttribute(field.name);
+      paragraphs.Values = new List<string>();
 
       while (currentIndex < doc.Count)
       {
         if (doc[currentIndex] is ParagraphBlock)
         {
           // Get the first line from the current ParagraphBlock
-          paragraphs.Value.Values.AddRange(ParseContainerInline((doc[currentIndex] as ParagraphBlock).Inline));
+          paragraphs.Values.AddRange(ParseContainerInline((doc[currentIndex] as ParagraphBlock).Inline));
 
           currentIndex++;
         }
@@ -498,10 +500,10 @@ namespace LoreViewer
 
     private bool IsFlatAttributeDeclaration(string flatInlineText) => flatInlineText.Contains(":") && !flatInlineText.EndsWith(":");
 
-    private Dictionary<string, LoreAttribute> ParseListAttributes(MarkdownDocument doc, int currentIndex, ListBlock listBlock, List<LoreAttributeDefinition> attributeDefinitions)
+    private ObservableCollection<LoreAttribute> ParseListAttributes(MarkdownDocument doc, int currentIndex, ListBlock listBlock, List<LoreAttributeDefinition> attributeDefinitions)
     {
       string fieldValue = string.Empty;
-      Dictionary<string, LoreAttribute> attributeDict = new Dictionary<string, LoreAttribute>();
+      ObservableCollection<LoreAttribute> attributeList = new ObservableCollection<LoreAttribute>();
 
       //listBlock = (ListBlock)doc[currentIndex];
 
@@ -602,12 +604,13 @@ namespace LoreViewer
           }
         }
 
-        attributeDict[parsedFieldName] = newAttribute;
+        newAttribute.Name = parsedFieldName;
+        attributeList.Add(newAttribute);
 
       }
 
 
-      return attributeDict;
+      return attributeList;
     }
 
 
