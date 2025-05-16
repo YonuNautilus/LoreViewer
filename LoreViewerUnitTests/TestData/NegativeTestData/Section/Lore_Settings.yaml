@@ -1,5 +1,5 @@
 ﻿types:
-  SectionNegativeType:
+  - name: SectionNegativeType
     fields:
       - name: Status
     sections:

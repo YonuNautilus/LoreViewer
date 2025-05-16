@@ -1,5 +1,5 @@
 types:
-  TestObject:
+  - name: TestObject
     fields:
       - name: ErrorUnderTest
         required: true

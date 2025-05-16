@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Avalonia.Media;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LoreViewer.Settings
 {
   public class LoreSettings
   {
-    public Dictionary<string, LoreTypeDefinition> types = new Dictionary<string, LoreTypeDefinition>();
-    public Dictionary<string, LoreCollectionDefinition> collections = new Dictionary<string, LoreCollectionDefinition>();
+    public List<LoreTypeDefinition> types = new List<LoreTypeDefinition>();
+    public List<LoreCollectionDefinition> collections = new List<LoreCollectionDefinition>();
     public AppSettings Settings { get; set; }
 
     public LoreSettings()
@@ -14,11 +15,9 @@ namespace LoreViewer.Settings
 
     }
 
-    public bool HasTypeDefinition(string type) => types.ContainsKey(type);
-    public LoreTypeDefinition GetTypeDefinition(string type) => types[type];
-    public LoreCollectionDefinition GetCollectionDefinition(string type) => collections[type];
-
-    public string GetTypeName(LoreTypeDefinition typeDef) => types.FirstOrDefault(kvp => kvp.Value == typeDef).Key;
+    public bool HasTypeDefinition(string typeName) => types.Any(type => type.name.Equals(typeName));
+    public LoreTypeDefinition GetTypeDefinition(string typeName) => types.FirstOrDefault(type => type.name.Equals(typeName));
+    public LoreCollectionDefinition GetCollectionDefinition(string typeName) => collections.FirstOrDefault(type => type.name.Equals(typeName));
 
   }
   public class AppSettings

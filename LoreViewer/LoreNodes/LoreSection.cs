@@ -6,9 +6,8 @@ using System.Linq;
 
 namespace LoreViewer.LoreNodes
 {
-  public class LoreSection
+  public class LoreSection : LoreElement
   {
-    public string Name;
 
     private List<Block> _blocks;
 

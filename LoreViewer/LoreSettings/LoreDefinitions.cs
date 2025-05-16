@@ -11,12 +11,17 @@ namespace LoreViewer.Settings
     Hybrid
   }
 
+  public abstract class LoreDefinitionBase
+  {
+    public string name { get; set; } = string.Empty;
+  }
+
   /// <summary>
   /// The top-level of a lore definition. Can be used to define characters, organizations, races, etc.
   /// </summary>
-  public class LoreTypeDefinition
+  public class LoreTypeDefinition : LoreDefinitionBase
   {
-    public bool HasSectionName(string sectionName) => sections.FirstOrDefault(sec => sectionName.Contains(sec.name)) != null;
+    public bool HasSectionName(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
 
     private List<string> RelevantFilePaths = new List<string>();
 
@@ -40,9 +45,8 @@ namespace LoreViewer.Settings
   /// <summary>
   /// A section of information owned by a lore object. A section can contain subsections or additional fields
   /// </summary>
-  public class LoreSectionDefinition
+  public class LoreSectionDefinition : LoreDefinitionBase
   {
-    public string name { get; set; }
     public EStyle type { get; set; }
 
     public List<LoreSectionDefinition> sections { get; set; }
@@ -53,9 +57,8 @@ namespace LoreViewer.Settings
     public bool HasFields => fields != null && fields.Count > 0;
   }
 
-  public class LoreAttributeDefinition
+  public class LoreAttributeDefinition : LoreDefinitionBase
   {
-    public string name { get; set; } = string.Empty;
     public EStyle style { get; set; } // bullet_point, bullet_list, heading_paragraph
 
     public bool required = false;
@@ -70,7 +73,7 @@ namespace LoreViewer.Settings
     public List<LoreAttributeDefinition> nestedFields { get; set; }
   }
 
-  public class LoreCollectionDefinition
+  public class LoreCollectionDefinition : LoreDefinitionBase
   {
     public string entryType { get; set; } = string.Empty;
     public string EntryStyle { get; set; } = string.Empty;

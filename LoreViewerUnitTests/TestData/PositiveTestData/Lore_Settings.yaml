@@ -1,5 +1,5 @@
 ﻿types:
-  ListFieldsObject:
+  - name: ListFieldsObject
     fields:
       - name: flat
         required: true
@@ -23,7 +23,7 @@
         required: true
         multivalue: true
 
-  TestCharacter:
+  - name: TestCharacter
     fields:
       - name: Aliases
         multivalue: true
@@ -34,8 +34,8 @@
           - name: Roles
             multivalue: true
           - name: Duration
-
-  FieldEdgeCases:
+  
+  - name: FieldEdgeCases
     fields:
       - name: FlatField
       - name: BoldField
@@ -55,7 +55,7 @@
           - name: DetailList
             multivalue: true
 
-  SectionTest:
+  - name: SectionTest
     fields:
       - name: Label
     sections:
@@ -69,7 +69,7 @@
           - name: Later Years
       - name: Fun Facts
 
-  SectionWithFields:
+  - name: SectionWithFields
     sections:
       - name: Personality
         fields:

@@ -5,9 +5,8 @@ using System.Linq;
 
 namespace LoreViewer.LoreNodes
 {
-  public class LoreAttribute
+  public class LoreAttribute : LoreElement
   {
-    public string Name { get; set; }
     public string? Value { get; set; } // Simple "key: value" entry, like a single date or name
     public List<string>? Values { get; set; } // "key: List<value>" entry, like alias for a character
     public ObservableCollection<LoreAttribute>? NestedAttributes { get; set; } // compusite attributes, like a start/end date

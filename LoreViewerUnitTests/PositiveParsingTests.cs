@@ -34,7 +34,7 @@ namespace PositiveTests
     [Test]
     public void CharacterFieldsTest()
     {
-      LoreNode nodeToCheck = _parser._nodes[0];
+      LoreNode nodeToCheck = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion")) as LoreNode;
 
       Assert.NotNull(nodeToCheck);
       Assert.That(nodeToCheck.Name, Is.EqualTo("Vela Orion"));
@@ -92,7 +92,7 @@ namespace PositiveTests
 
       LoreNode nodeToCheck = null;
 
-      Assert.DoesNotThrow(() => { nodeToCheck = _parser._nodes[1]; });
+      Assert.DoesNotThrow(() => { nodeToCheck = _parser._nodes.FirstOrDefault(node => node.Name.Equals("This is a valid markdown with bullet point fields/attributes")) as LoreNode; } );
       Assert.NotNull(nodeToCheck);
 
       Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(9));
@@ -104,7 +104,7 @@ namespace PositiveTests
     [Test]
     public void ParseFieldEdgeCases_CorrectFormats_ParsesExpectedAttributes()
     {
-      var node = _parser._nodes[2];
+      LoreNode node = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Field Format Edge Case Test")) as LoreNode;
 
       var attrs = node.Attributes;
 
@@ -171,7 +171,9 @@ namespace PositiveTests
     [Test]
     public void ParseSectionTest_CorrectBlocksAndContent()
     {
-      var node = _parser._nodes[0];
+      LoreNode? node = _parser.GetNode("Section Target Test");
+
+      Assert.NotNull(node);
 
       Assert.That(node.Sections.Count, Is.EqualTo(3));
 
@@ -214,10 +216,11 @@ namespace PositiveTests
     [Test]
     public void ParseSectionWithFields_ParsesAttributesCorrectly()
     {
-      var node = _parser._nodes[1];
+      LoreNode? node = _parser.GetNode("Fielded Section Test");
+      Assert.NotNull(node);
 
-      var personality = node.Sections.FirstOrDefault(s => s.Name == "Personality");
-      var notes = node.Sections.FirstOrDefault(s => s.Name == "Notes");
+      LoreSection? personality = node.GetSection("Personality");
+      LoreSection? notes = node.GetSection("Notes");
 
       Assert.That(personality, Is.Not.Null);
       Assert.That(notes, Is.Not.Null);

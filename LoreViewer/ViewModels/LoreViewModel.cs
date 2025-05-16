@@ -17,8 +17,8 @@ namespace LoreViewer.ViewModels
 
     private string m_sLoreLibraryFolderPath = string.Empty;
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
-    public ObservableCollection<LoreNode> Nodes { get => _parser._nodes; set => this.RaiseAndSetIfChanged(ref _parser._nodes, value); }
-    public ObservableCollection<LoreNodeCollection> NodeCollections { get => _parser._collections; set => this.RaiseAndSetIfChanged(ref _parser._collections, value); }
+    public ObservableCollection<LoreElement> Nodes { get => _parser._nodes; set => this.RaiseAndSetIfChanged(ref _parser._nodes, value); }
+    public ObservableCollection<LoreElement> NodeCollections { get => _parser._collections; set => this.RaiseAndSetIfChanged(ref _parser._collections, value); }
     public ObservableCollection<string> Errors { get => _parser._errors; set => this.RaiseAndSetIfChanged(ref _parser._errors, value); }
     public ObservableCollection<string> Warnings { get => _parser._warnings; set => this.RaiseAndSetIfChanged(ref _parser._warnings, value); }
     public ReactiveCommand<Unit, Unit> OpenLibraryFolderCommand { get; }

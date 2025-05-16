@@ -1,18 +1,17 @@
-﻿using System;
+﻿using LoreViewer.Settings;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace LoreViewer.LoreNodes
 {
-  public class LoreNodeCollection : IList<LoreNode>
+  public class LoreNodeCollection : LoreElement, IList<LoreNode>
   {
-    public string Name { get; set; }
-
-    public string Type { get; set; }
+    public LoreTypeDefinition Type { get; set; }
 
     public LoreNodeCollection() { }
-    public LoreNodeCollection(string type) { Type = type; }
+    public LoreNodeCollection(LoreTypeDefinition type) { Type = type; }
 
     private readonly List<LoreNode> _nodes = new List<LoreNode>();
     public LoreNode this[int index] { get => _nodes[index]; set => _nodes[index] = value; }

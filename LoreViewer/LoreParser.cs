@@ -30,8 +30,8 @@ namespace LoreViewer
     private string _folderPath;
     private string _currentFile;
 
-    public ObservableCollection<LoreNodeCollection> _collections = new ObservableCollection<LoreNodeCollection>();
-    public ObservableCollection<LoreNode> _nodes = new ObservableCollection<LoreNode>();
+    public ObservableCollection<LoreElement> _collections = new ObservableCollection<LoreElement>();
+    public ObservableCollection<LoreElement> _nodes = new ObservableCollection<LoreElement>();
     public ObservableCollection<string> _errors = new ObservableCollection<string>();
     public ObservableCollection<string> _warnings = new ObservableCollection<string>();
 
@@ -49,6 +49,10 @@ namespace LoreViewer
     {
       _settings = settings;
     }
+
+    public LoreNode? GetNode(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName)) as LoreNode;
+    public bool HasNode (string nodeName) => _nodes.Any(node => node.Name.Equals(nodeName));
+
 
     public void ParseSettingsFromFile(string settingsFilePath)
     {
@@ -286,16 +290,16 @@ namespace LoreViewer
                 // the type is one seen in the parent type's collection types
                 else if (typeDef.collections != null && typeDef.collections.Any(ct => ct.entryType.Equals(newTag)))
                 {
-                  LoreNodeCollection col = newNode.CollectionChildren.FirstOrDefault(c => c.Type.Equals(newTag));
+                  LoreNodeCollection? col = newNode.GetCollectionOfTypeName(newTag);
                   if (col == null)
                   {
-                    col = new LoreNodeCollection(newTag);
+                    col = new LoreNodeCollection(_settings.GetTypeDefinition(newTag));
                     newNode.CollectionChildren.Add(col);
                   }
 
                   LoreTypeDefinition colType = _settings.GetTypeDefinition(newTag);
 
-                  newNode.CollectionChildren.First(c => c.Type.Equals(newTag)).Add(ParseType(doc, ref currentIndex, hb, colType));
+                  newNode.GetCollectionOfType(colType).Add(ParseType(doc, ref currentIndex, hb, colType));
                   continue;
                 }
 
@@ -317,7 +321,7 @@ namespace LoreViewer
                   LoreSectionDefinition sectionDef = typeDef.sections.FirstOrDefault(sec => newTitle.Contains(sec.name));
                   LoreSection newSection = ParseSection(doc, ref currentIndex, hb, sectionDef);
                   newNode.Sections.Add(newSection);
-                  //currentIndex--;
+                  continue;
                 }
                 else
                 {
