@@ -22,21 +22,80 @@
       <TextBox Text="{Binding LoreLibraryFolderPath}" IsReadOnly="True"></TextBox>
     </DockPanel>
 
-    <TreeView Grid.Row="1" ItemsSource="{Binding Nodes}" Grid.Column="0" Name="NodesTreeView" >
-      <TreeView.ItemTemplate>
-        <TreeDataTemplate>
-          <TextBlock Text="{Binding Name}" />
-        </TreeDataTemplate>
-      </TreeView.ItemTemplate>
-    </TreeView>
+    <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1">
+      <Grid >
+        <Grid.RowDefinitions>
+          <RowDefinition Height="25" />
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Label Content="Nodes" />
+        <TreeView Grid.Row="1" ItemsSource="{Binding Nodes}" Grid.Column="0" Name="NodesTreeView" >
+          <TreeView.ItemTemplate>
+            <TreeDataTemplate>
+              <TextBlock Text="{Binding Name}" />
+            </TreeDataTemplate>
+          </TreeView.ItemTemplate>
+        </TreeView>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2" BorderBrush="Black" BorderThickness="1">
+      <Grid >
+        <Grid.RowDefinitions>
+          <RowDefinition Height="25" />
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <Label Content="Collections" />
+        
+        <TreeView Grid.Row="2" ItemsSource="{Binding NodeCollections}" Grid.Column="0" Name="CollectionsTreeView">
+          <TreeView.ItemTemplate>
+            <TreeDataTemplate>
+              <TextBlock Text="{Binding Name}" />
+            </TreeDataTemplate>
+          </TreeView.ItemTemplate>
+        </TreeView>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="1">
+      <Grid >
+        <Grid.RowDefinitions>
+          <RowDefinition Height="25" />
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Label Content="Errors" />
+
+        <ListBox Grid.Row="2" ItemsSource="{Binding Errors}" Grid.Column="0" Name="ErrorsListView">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+    </Border>
     
-    <TreeView Grid.Row="2" ItemsSource="{Binding NodeCollections}" Grid.Column="0" Name="CollectionsTreeView">
-      <TreeView.ItemTemplate>
-        <TreeDataTemplate>
-          <TextBlock Text="{Binding Name}" />
-        </TreeDataTemplate>
-      </TreeView.ItemTemplate>
-    </TreeView>
+    <Border Grid.Row="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1">
+      <Grid >
+        <Grid.RowDefinitions>
+          <RowDefinition Height="25" />
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Label Content="Warnings" />
+
+        <ListBox Grid.Row="2" ItemsSource="{Binding Warnings}" Grid.Column="0" Name="WarningsListView">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+    </Border>
 
     <DockPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
       <Button Content="Open Lore Settings Editor" DockPanel.Dock="Right" Command="{Binding OpenLoreSettingsEditor}"/>

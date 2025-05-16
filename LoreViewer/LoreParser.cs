@@ -32,8 +32,8 @@ namespace LoreViewer
 
     public ObservableCollection<LoreNodeCollection> _collections = new ObservableCollection<LoreNodeCollection>();
     public ObservableCollection<LoreNode> _nodes = new ObservableCollection<LoreNode>();
-    public List<string> _errors = new List<string>();
-    public List<string> _warnings = new List<string>();
+    public ObservableCollection<string> _errors = new ObservableCollection<string>();
+    public ObservableCollection<string> _warnings = new ObservableCollection<string>();
 
     /// <summary>
     /// Key is the file name (path relative to the lore folder), and value is the index of the block that is 'orphaned'
@@ -270,7 +270,10 @@ namespace LoreViewer
 
                   // if tagged like {collection:collection:type}
                   if (BlockIsANestedCollection(hb))
+                  {
                     newCollection = ParseCollection(doc, ref currentIndex, hb, newTag);
+
+                  }
 
                   // otherwise, tagged as {collection:type}
                   else
@@ -278,6 +281,22 @@ namespace LoreViewer
 
                   newCollection.Name = newTitle;
                   newNode.CollectionChildren.Add(newCollection);
+                }
+
+                // the type is one seen in the parent type's collection types
+                else if (typeDef.collections != null && typeDef.collections.Any(ct => ct.entryType.Equals(newTag)))
+                {
+                  LoreNodeCollection col = newNode.CollectionChildren.FirstOrDefault(c => c.Type.Equals(newTag));
+                  if (col == null)
+                  {
+                    col = new LoreNodeCollection(newTag);
+                    newNode.CollectionChildren.Add(col);
+                  }
+
+                  LoreTypeDefinition colType = _settings.GetTypeDefinition(newTag);
+
+                  newNode.CollectionChildren.First(c => c.Type.Equals(newTag)).Add(ParseType(doc, ref currentIndex, hb, colType));
+                  continue;
                 }
 
                 // Parse as a nested node of the type specified in the tag.
@@ -298,7 +317,7 @@ namespace LoreViewer
                   LoreSectionDefinition sectionDef = typeDef.sections.FirstOrDefault(sec => newTitle.Contains(sec.name));
                   LoreSection newSection = ParseSection(doc, ref currentIndex, hb, sectionDef);
                   newNode.Sections.Add(newSection);
-                  currentIndex--;
+                  //currentIndex--;
                 }
                 else
                 {
@@ -465,7 +484,7 @@ namespace LoreViewer
     { 
       LoreAttributeDefinition field = typeDef.fields.FirstOrDefault(fieldDef => fieldDef.style == EStyle.Freeform);
       if (field == null)
-        throw new Exception($"Started parsing a Freeform paragraph attribute for a type that does not define one! Type{typeDef}");
+        throw new Exception($"Started parsing a Freeform paragraph attribute for a type that does not define one! Type:{typeDef}, line nuber:{paragraphBlock.Line + 1}");
 
       LoreAttribute paragraphs = new LoreAttribute(field.name);
       paragraphs.Values = new List<string>();

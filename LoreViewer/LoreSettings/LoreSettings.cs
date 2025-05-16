@@ -11,7 +11,7 @@ namespace LoreViewer.Settings
 
     public LoreSettings()
     {
-      Settings = new AppSettings();
+
     }
 
     public bool HasTypeDefinition(string type) => types.ContainsKey(type);
@@ -23,9 +23,10 @@ namespace LoreViewer.Settings
   }
   public class AppSettings
   {
-    public bool IgnoreCase { get; set; }
-    public bool SoftLinking { get; set; }
-    public string DefaultSort { get; set; } = string.Empty;
+    public bool ignoreCase = false;
+    public bool softLinking { get; set; } = false;
+    public string defaultSort { get; set; } = string.Empty;
+    public string typeSummaryName { get; set; } = string.Empty;
     public List<string> MarkdownExtensions { get; set; } = new List<string>();
   }
 }

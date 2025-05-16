@@ -45,12 +45,12 @@ namespace LoreViewer.Settings
     public string name { get; set; }
     public EStyle type { get; set; }
 
+    public List<LoreSectionDefinition> sections { get; set; }
+    public List<LoreAttributeDefinition> fields { get; set; }
+
     public bool freeform { get; set; } = false;
 
     public bool HasFields => fields != null && fields.Count > 0;
-
-    public List<LoreSectionDefinition> sections { get; set; }
-    public List<LoreAttributeDefinition> fields { get; set; }
   }
 
   public class LoreAttributeDefinition

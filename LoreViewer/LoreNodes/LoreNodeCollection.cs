@@ -9,6 +9,11 @@ namespace LoreViewer.LoreNodes
   {
     public string Name { get; set; }
 
+    public string Type { get; set; }
+
+    public LoreNodeCollection() { }
+    public LoreNodeCollection(string type) { Type = type; }
+
     private readonly List<LoreNode> _nodes = new List<LoreNode>();
     public LoreNode this[int index] { get => _nodes[index]; set => _nodes[index] = value; }
 

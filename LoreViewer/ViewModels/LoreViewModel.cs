@@ -19,6 +19,8 @@ namespace LoreViewer.ViewModels
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
     public ObservableCollection<LoreNode> Nodes { get => _parser._nodes; set => this.RaiseAndSetIfChanged(ref _parser._nodes, value); }
     public ObservableCollection<LoreNodeCollection> NodeCollections { get => _parser._collections; set => this.RaiseAndSetIfChanged(ref _parser._collections, value); }
+    public ObservableCollection<string> Errors { get => _parser._errors; set => this.RaiseAndSetIfChanged(ref _parser._errors, value); }
+    public ObservableCollection<string> Warnings { get => _parser._warnings; set => this.RaiseAndSetIfChanged(ref _parser._warnings, value); }
     public ReactiveCommand<Unit, Unit> OpenLibraryFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor {  get; }
 
@@ -36,6 +38,11 @@ namespace LoreViewer.ViewModels
 
     private async Task HandleOpenLibraryCommandAsync()
     {
+      _parser._nodes.Clear();
+      _parser._collections.Clear();
+      _parser._errors.Clear();
+      _parser._warnings.Clear();
+
       var topLevel = TopLevel.GetTopLevel(m_oView);
       var folderPath = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
       {
@@ -50,6 +57,8 @@ namespace LoreViewer.ViewModels
 
         Nodes = _parser._nodes;
         NodeCollections = _parser._collections;
+        Errors = _parser._errors;
+        Warnings = _parser._warnings;
       }
     }
 
