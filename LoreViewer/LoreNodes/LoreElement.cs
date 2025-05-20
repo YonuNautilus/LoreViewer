@@ -8,6 +8,6 @@ namespace LoreViewer.LoreNodes
 {
   public abstract class LoreElement
   {
-    public string Name {  get; set; }
+    public string Name {  get; set; } = string.Empty;
   }
 }

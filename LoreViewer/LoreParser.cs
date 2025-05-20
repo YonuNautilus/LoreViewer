@@ -299,7 +299,10 @@ namespace LoreViewer
 
                   LoreTypeDefinition colType = _settings.GetTypeDefinition(newTag);
 
-                  newNode.GetCollectionOfType(colType).Add(ParseType(doc, ref currentIndex, hb, colType));
+                  LoreNode newSubNode = ParseType(doc, ref currentIndex, hb, colType);
+                  newSubNode.Name = newTitle;
+
+                  newNode.GetCollectionOfType(colType).Add(newSubNode);
                   continue;
                 }
 

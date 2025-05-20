@@ -10,7 +10,7 @@ namespace NegativeTests
     LoreSettings _settings;
     LoreParser _parser;
 
-    string ErrorFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "NegativeTestData");
+    string ErrorFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "v0.1", "TestData", "NegativeTestData");
 
     [SetUp]
     public void SetupLoreSettings()
@@ -54,7 +54,7 @@ namespace NegativeTests
     LoreSettings _settings;
     LoreParser _parser;
     
-    string ErrorFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "NegativeTestData", "Section");
+    string ErrorFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "v0.1", "TestData", "NegativeTestData", "Section");
 
     [SetUp]
     public void SetupLoreSettings()

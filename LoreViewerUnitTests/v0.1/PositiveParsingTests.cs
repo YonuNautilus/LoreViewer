@@ -11,7 +11,7 @@ namespace PositiveTests
     public static LoreSettings _settings;
     public static LoreParser _parser;
 
-    static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "PositiveTestData");
+    static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.1", "TestData", "PositiveTestData");
 
     static string[] testFiles => new string[] { "FieldsTest.md" }.Select(s => Path.Combine(ValidFilesFolder, s)).ToArray();
 
@@ -147,7 +147,7 @@ namespace PositiveTests
     public static LoreSettings _settings;
     public static LoreParser _parser;
 
-    static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "PositiveTestData");
+    static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.1", "TestData", "PositiveTestData");
 
     static string[] testFiles => new string[] { "SectionsTest.md" }.Select(s => Path.Combine(ValidFilesFolder, s)).ToArray();
 

@@ -23,31 +23,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\NegativeTestData\Lore_Settings.yaml">
+    <None Update="v0.1\TestData\NegativeTestData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\NegativeTestData\Section\Lore_Settings.yaml">
+    <None Update="v0.1\TestData\NegativeTestData\Section\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\NegativeTestData\Section\MalformedFieldInSection.md">
+    <None Update="v0.1\TestData\NegativeTestData\Section\MalformedFieldInSection.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\NegativeTestData\Section\UnknownSectionName.md">
+    <None Update="v0.1\TestData\NegativeTestData\Section\UnknownSectionName.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\PositiveTestData\FieldsTest.md">
+    <None Update="v0.1\TestData\PositiveTestData\FieldsTest.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\PositiveTestData\Lore_Settings.yaml">
+    <None Update="v0.1\TestData\PositiveTestData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\NegativeTestData\FirstHeadingIsSection.md">
+    <None Update="v0.1\TestData\NegativeTestData\FirstHeadingIsSection.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\NegativeTestData\TopHeadingUntagged.md">
+    <None Update="v0.1\TestData\NegativeTestData\TopHeadingUntagged.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\PositiveTestData\SectionsTest.md">
+    <None Update="v0.1\TestData\PositiveTestData\SectionsTest.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
