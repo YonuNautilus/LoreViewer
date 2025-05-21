@@ -20,8 +20,8 @@ namespace LoreViewer.LoreNodes
 
     public int SourceIndex { get; set; }
 
-    public bool HasValue => Value != null;
-    public bool HasValues => Values != null;
+    public bool HasValue => Value != null && !string.IsNullOrWhiteSpace(Value);
+    public bool HasValues => Values != null && Values.Count > 0;
     public bool IsNested => NestedAttributes != null;
 
     public void Append(string newValue)

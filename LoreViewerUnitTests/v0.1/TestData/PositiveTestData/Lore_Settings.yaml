@@ -15,24 +15,24 @@
         required: true
       - name: multivalue
         required: true
-        multivalue: true
+        style: MultiValue
       - name: multivalue with bold
         required: true
-        multivalue: true
+        style: MultiValue
       - name: multivalue with italics
         required: true
-        multivalue: true
+        style: MultiValue
 
   - name: TestCharacter
     fields:
       - name: Aliases
-        multivalue: true
+        style: MultiValue
 
       - name: Employment History
         nestedFields:
           - name: Organization
           - name: Roles
-            multivalue: true
+            style: MultiValue
           - name: Duration
   
   - name: FieldEdgeCases
@@ -49,11 +49,11 @@
           - name: SubFieldBold
           - name: SubFieldItalic
       - name: MultiField
-        multivalue: true
+        style: MultiValue
       - name: NestedMultiField
         nestedFields:
           - name: DetailList
-            multivalue: true
+            style: MultiValue
 
   - name: SectionTest
     fields:
@@ -75,5 +75,5 @@
         fields:
           - name: Tone
           - name: Social Tendencies
-            multivalue: true
+            style: MultiValue
       - name: Notes

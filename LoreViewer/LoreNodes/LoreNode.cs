@@ -33,7 +33,6 @@ namespace LoreViewer.LoreNodes
       Name = name;
     }
 
-
     public bool HasCollectionOfType(LoreTypeDefinition typeDef) => CollectionChildren.Any(c => c.Type == typeDef);
 
     public LoreNodeCollection? GetCollectionOfType(LoreTypeDefinition typeDef) => CollectionChildren.FirstOrDefault(c => c.Type == typeDef);

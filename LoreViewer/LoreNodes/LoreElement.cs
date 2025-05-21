@@ -25,5 +25,12 @@ namespace LoreViewer.LoreNodes
   public abstract class LoreNarrativeElement : LoreElement
   {
     public string Summary { get; set; } = string.Empty;
+
+    public void AddNarrativeText(string textToAdd)
+    {
+      if (String.IsNullOrWhiteSpace(Summary))
+        Summary = textToAdd;
+      else Summary += "\r\n" + textToAdd;
+    }
   }
 }

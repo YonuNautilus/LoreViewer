@@ -74,7 +74,7 @@ namespace LoreViewer
       ParseSettingsFromFile(fullSettingsPath);
 
 
-      string[] files = Directory.GetFiles(FolderPath, "*.md");
+      string[] files = Directory.GetFiles(FolderPath, "*.md", SearchOption.AllDirectories);
 
       foreach (string filePath in files)
       {
@@ -284,6 +284,7 @@ namespace LoreViewer
 
                   newCollection.Name = newTitle;
                   newNode.CollectionChildren.Add(newCollection);
+                  continue;
                 }
 
                 // the type is one seen in the parent type's collection types
@@ -335,12 +336,13 @@ namespace LoreViewer
 
             // freeform
             case ParagraphBlock pb:
-              newNode.Summary += ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef);
+              newNode.AddNarrativeText(ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef));
+              //continue;
               break;
 
             // Fields
             case ListBlock lb:
-              newNode.Summary += GetStringFromListBlock(lb);
+              newNode.AddNarrativeText(GetStringFromListBlock(lb));
               break;
             default:
               break;
@@ -387,9 +389,15 @@ namespace LoreViewer
       {
         if (doc[currentIndex] is HeadingBlock)
         {
-          HeadingBlock newHeader = (HeadingBlock)doc[currentIndex];
-          LoreNode newNode = ParseType(doc, ref currentIndex, newHeader, typeDef);
-          newCollection.Add(newNode);
+          if (heading.Level >= (doc[currentIndex] as HeadingBlock).Level)
+            return newCollection;
+          else
+          {
+            HeadingBlock newHeader = (HeadingBlock)doc[currentIndex];
+            LoreNode newNode = ParseType(doc, ref currentIndex, newHeader, typeDef);
+            newCollection.Add(newNode);
+            continue;
+          }
         }
         else
         {
@@ -454,13 +462,13 @@ namespace LoreViewer
               newSection.Sections.Add(newSubSection);
               currentIndex--;
             }
-            // If it is instead a sibling or lower number header level, return this sectoin
+            // If it is instead a sibling or lower number header level, return this section
             else if (heading.Level >= hb.Level)
               return newSection;
             break;
 
           case ParagraphBlock pb:
-            newSection.Summary += GetStringFromParagraphBlock(pb);
+            newSection.AddNarrativeText(GetStringFromParagraphBlock(pb));
             break;
           
           // ListBlock can be a list of attributes ONLY if the section definition has fields defined.
@@ -469,7 +477,7 @@ namespace LoreViewer
             if (secDef.HasFields)
               newSection.Attributes = ParseListAttributes(doc, currentIndex, lb, secDef.fields);
             else
-              newSection.Summary += GetStringFromListBlock(lb);
+              newSection.AddNarrativeText(GetStringFromListBlock(lb));
             break;
           default:
             break;
@@ -494,11 +502,13 @@ namespace LoreViewer
         {
           // Get the first line from the current ParagraphBlock
           rets.Add(ParseContainerInline((doc[currentIndex] as ParagraphBlock).Inline));
-
           currentIndex++;
         }
         else
+        {
+          currentIndex--;
           break;
+        }
       }
       return string.Join("\r\n", rets);
     }
@@ -557,7 +567,7 @@ namespace LoreViewer
          */
         if (IsFlatAttributeDeclaration(parsedInlineText))
         {
-          var fieldAndVal = parsedInlineText.Split(':');
+          var fieldAndVal = parsedInlineText.Split(':', 2);
           parsedFieldName = TrimFieldName(fieldAndVal[0]);
           parsedFieldValue = fieldAndVal[1];
           newAttribute.Value = parsedFieldValue.Trim();
@@ -608,19 +618,23 @@ namespace LoreViewer
           }
 
           // if it allows multiple values
-          else if (newAttribute.Definition.multivalue)
+          else if (newAttribute.Definition.style == EStyle.MultiValue)
           {
             newAttribute.Values = new List<string>();
-            foreach(ListItemBlock block in lb)
+            foreach (ListItemBlock block in lb)
             {
-              newAttribute.Values.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock));
+              newAttribute.Values.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock).Trim());
             }
+          }
+          else if (newAttribute.Definition.style == EStyle.Textual)
+          {
+            newAttribute.Value = GetStringFromListBlock(lb);
           }
 
           // if no nested fields and not multivalue, we sure better hope this nested ListBlock is just a single value...
           else
           {
-            if(lb.Count > 1)
+            if (lb.Count > 1)
               throw new NestedBulletsOnSingleValueChildlessAttributeException(_currentFile, currentIndex, lb.Line + 1, newAttribute.Definition.name);
 
             ListItemBlock lib = lb[0] as ListItemBlock;
@@ -664,7 +678,7 @@ namespace LoreViewer
             ret += "\r\n";
             break;
         }
-        ret += "\r\n";
+        //ret += "\r\n";
         currentBlock = currentBlock.NextSibling;
       }
       return ret;

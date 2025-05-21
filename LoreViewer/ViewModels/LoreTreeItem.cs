@@ -78,13 +78,14 @@ namespace LoreViewer.ViewModels
           foreach (LoreAttribute nestedAttr in la.NestedAttributes)
             Children.Add(new LoreTreeItem(nestedAttr));
 
-        if (la.HasValue && !la.HasValues) DisplayName = DisplayName += $": {la.Value}";
-        else if (!la.HasValue && la.HasValues)
+        if (la.HasValue && !la.HasValues)
+          DisplayName = DisplayName += $": {la.Value}";
+        else if (la.HasValues)
           foreach (string v in la.Values) Children.Add(new LoreTreeItem(v));
       }
     }
 
-    public LoreTreeItem(string name) { DisplayName = name; }
+    public LoreTreeItem(string name) { DisplayName = name.Trim(); }
 
     private LoreTreeItem? CreateParentItem(IEnumerable<LoreElement> elems, string parentName)
     {

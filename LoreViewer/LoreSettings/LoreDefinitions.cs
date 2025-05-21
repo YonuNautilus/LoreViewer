@@ -5,10 +5,9 @@ namespace LoreViewer.Settings
 {
   public enum EStyle
   {
-    BulletPoint,
-    Table,
-    Freeform,
-    Hybrid
+    SingleValue,
+    MultiValue,
+    Textual
   }
 
   public abstract class LoreDefinitionBase
@@ -24,8 +23,6 @@ namespace LoreViewer.Settings
     public bool HasSectionName(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
 
     private List<string> RelevantFilePaths = new List<string>();
-
-    public EStyle field_style { get; set; }
 
     /// <summary>
     /// Collection of field definitions that should be visible at the top of the markdown on a declared object of a type.
@@ -47,8 +44,6 @@ namespace LoreViewer.Settings
   /// </summary>
   public class LoreSectionDefinition : LoreDefinitionBase
   {
-    public EStyle type { get; set; }
-
     public List<LoreSectionDefinition> sections { get; set; }
     public List<LoreAttributeDefinition> fields { get; set; }
 
@@ -59,7 +54,7 @@ namespace LoreViewer.Settings
 
   public class LoreAttributeDefinition : LoreDefinitionBase
   {
-    public EStyle style { get; set; } // bullet_point, bullet_list, heading_paragraph
+    public EStyle style { get; set; } = EStyle.SingleValue;
 
     public bool required = false;
 
