@@ -276,7 +276,6 @@ namespace LoreViewer
                   if (BlockIsANestedCollection(hb))
                   {
                     newCollection = ParseCollection(doc, ref currentIndex, hb, newTag);
-
                   }
 
                   // otherwise, tagged as {collection:type}
@@ -290,10 +289,11 @@ namespace LoreViewer
                 // the type is one seen in the parent type's collection types
                 else if (typeDef.collections != null && typeDef.collections.Any(ct => ct.entryType.Equals(newTag)))
                 {
+                  LoreCollectionDefinition colDef = typeDef.collections.First(ct => ct.entryType.Equals(newTag));
                   LoreNodeCollection? col = newNode.GetCollectionOfTypeName(newTag);
                   if (col == null)
                   {
-                    col = new LoreNodeCollection(_settings.GetTypeDefinition(newTag));
+                    col = new LoreNodeCollection(_settings.GetTypeDefinition(newTag), colDef);
                     newNode.CollectionChildren.Add(col);
                   }
 
@@ -335,16 +335,13 @@ namespace LoreViewer
 
             // freeform
             case ParagraphBlock pb:
-              LoreAttribute lines = ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef);
-              if (!newNode.HasAttribute("summary"))
-                newNode.Attributes.Add(lines);
-              else
-                newNode.GetAttribute("summary")?.Append(lines);
+              newNode.Summary += ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef);
               break;
 
             // Fields
             case ListBlock lb:
-
+              newNode.Summary += GetStringFromListBlock(lb);
+              break;
             default:
               break;
           }
@@ -454,7 +451,7 @@ namespace LoreViewer
                 throw new UnexpectedSectionNameException(_currentFile, currentIndex, hb.Line, newSection.Name, headingTitle);
 
               LoreSection newSubSection = ParseSection(doc, ref currentIndex, hb, subSecDef);
-              newSection.SubSections.Add(newSubSection);
+              newSection.Sections.Add(newSubSection);
               currentIndex--;
             }
             // If it is instead a sibling or lower number header level, return this sectoin
@@ -463,7 +460,7 @@ namespace LoreViewer
             break;
 
           case ParagraphBlock pb:
-            newSection.Text += GetStringFromParagraphBlock(pb);
+            newSection.Summary += GetStringFromParagraphBlock(pb);
             break;
           
           // ListBlock can be a list of attributes ONLY if the section definition has fields defined.
@@ -472,7 +469,7 @@ namespace LoreViewer
             if (secDef.HasFields)
               newSection.Attributes = ParseListAttributes(doc, currentIndex, lb, secDef.fields);
             else
-              newSection.Text += GetStringFromListBlock(lb);
+              newSection.Summary += GetStringFromListBlock(lb);
             break;
           default:
             break;
@@ -487,40 +484,42 @@ namespace LoreViewer
     }
 
 
-    private LoreAttribute ParseParagraphBlocks(MarkdownDocument doc, ref int currentIndex, ParagraphBlock paragraphBlock, LoreTypeDefinition typeDef)
-    { 
-      LoreAttributeDefinition field = typeDef.fields.FirstOrDefault(fieldDef => fieldDef.style == EStyle.Freeform);
-      if (field == null)
-        throw new Exception($"Started parsing a Freeform paragraph attribute for a type that does not define one! Type:{typeDef}, line nuber:{paragraphBlock.Line + 1}");
-
-      LoreAttribute paragraphs = new LoreAttribute(field.name);
-      paragraphs.Values = new List<string>();
+    private string ParseParagraphBlocks(MarkdownDocument doc, ref int currentIndex, ParagraphBlock paragraphBlock, LoreTypeDefinition typeDef)
+    {
+      List<string> rets = new List<string>();
 
       while (currentIndex < doc.Count)
       {
         if (doc[currentIndex] is ParagraphBlock)
         {
           // Get the first line from the current ParagraphBlock
-          paragraphs.Values.AddRange(ParseContainerInline((doc[currentIndex] as ParagraphBlock).Inline));
+          rets.Add(ParseContainerInline((doc[currentIndex] as ParagraphBlock).Inline));
 
           currentIndex++;
         }
         else
           break;
       }
-      return paragraphs;
+      return string.Join("\r\n", rets);
     }
 
-    private List<string> ParseContainerInline(ContainerInline containerInline)
+    private string ParseContainerInline(ContainerInline containerInline)
     {
-      List<string> lines = new List<string>();
+      string lines = string.Empty;
 
       foreach (var child in containerInline)
-        if (child is LineBreakInline)
-          lines.Add("\r\n");
-        else
-          lines.Add(child.ToString());
-
+        switch (child)
+        {
+          case LineBreakInline lb:
+            lines += "\r\n";
+            break;
+          case EmphasisInline em:
+            lines += em.LastChild.ToString();
+            break;
+          default:
+            lines += child.ToString();
+            break;
+        }
       return lines;
     }
 
@@ -661,7 +660,11 @@ namespace LoreViewer
           case LiteralInline lit:
             ret += lit.ToString();
             break;
+          default:
+            ret += "\r\n";
+            break;
         }
+        ret += "\r\n";
         currentBlock = currentBlock.NextSibling;
       }
       return ret;
@@ -676,6 +679,10 @@ namespace LoreViewer
         ParagraphBlock pb = lib.LastChild as ParagraphBlock;
         if (pb != null)
           ret += GetStringFromParagraphBlock(pb) + "\r\n";
+        else
+        {
+          ret += "\r\n";
+        }
       }
 
       return ret;

@@ -41,10 +41,10 @@
               </Grid.RowDefinitions>
 
               <Label Content="Nodes" />
-              <TreeView Grid.Row="1" ItemsSource="{Binding Nodes}" Grid.Column="0" Name="NodesTreeView" >
+              <TreeView Grid.Row="1" ItemsSource="{Binding Nodes}" SelectedItem="{Binding CurrentlySelectedTreeNode, Mode=OneWayToSource}" Grid.Column="0" Name="NodesTreeView" >
                 <TreeView.ItemTemplate>
-                  <TreeDataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                  <TreeDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding DisplayName}" />
                   </TreeDataTemplate>
                 </TreeView.ItemTemplate>
               </TreeView>
@@ -62,8 +62,8 @@
 
               <TreeView Grid.Row="2" ItemsSource="{Binding NodeCollections}" Grid.Column="0" Name="CollectionsTreeView">
                 <TreeView.ItemTemplate>
-                  <TreeDataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                  <TreeDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding DisplayName}" />
                   </TreeDataTemplate>
                 </TreeView.ItemTemplate>
               </TreeView>
@@ -119,6 +119,21 @@
         </Grid>
       </TabItem>
     </TabControl>
-    
+
+    <DockPanel Grid.Row="1" Grid.Column="1" Margin="5">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="30"/>
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label BorderBrush="Black" BorderThickness="1" Content="Node Info" />
+        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" >
+          <ScrollViewer>
+            
+            <TextBlock Margin="5" Name="CurrentNodeInfoTextBlock" Text="{Binding CurrentlySelectedTreeNode.CurrentNodeInfoText, Mode=OneWay}" TextWrapping="Wrap"/>
+          </ScrollViewer>
+        </Border>
+      </Grid>
+    </DockPanel>
   </Grid>
 </UserControl>

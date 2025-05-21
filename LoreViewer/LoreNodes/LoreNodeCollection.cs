@@ -6,12 +6,14 @@ using System.Linq;
 
 namespace LoreViewer.LoreNodes
 {
-  public class LoreNodeCollection : LoreElement, IList<LoreNode>
+  public class LoreNodeCollection : LoreNarrativeElement, IList<LoreNode>
   {
     public LoreTypeDefinition Type { get; set; }
 
     public LoreNodeCollection() { }
-    public LoreNodeCollection(LoreTypeDefinition type) { Type = type; }
+    public LoreNodeCollection(LoreTypeDefinition containedType) { Type = containedType; Name = $"Collection of {containedType.name}"; }
+    public LoreNodeCollection(LoreTypeDefinition containedType, LoreCollectionDefinition colType)
+    { Type = containedType; Name = colType.name; }
 
     private readonly List<LoreNode> _nodes = new List<LoreNode>();
     public LoreNode this[int index] { get => _nodes[index]; set => _nodes[index] = value; }

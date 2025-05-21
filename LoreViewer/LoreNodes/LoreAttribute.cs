@@ -43,6 +43,8 @@ namespace LoreViewer.LoreNodes
       else { Append(newAttribute.Value); }
     }
 
+    public bool HasNestedAttributes => NestedAttributes?.Count > 0;
+
     public bool HasNestedAttribute(string attrName) => NestedAttributes.Any(a => a.Name == attrName);
 
     public LoreAttribute? GetNestedAttribute(string attrName) => NestedAttributes.FirstOrDefault(a => a.Name == attrName);

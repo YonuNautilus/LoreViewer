@@ -39,7 +39,7 @@ namespace LoreViewer.Settings
     /// </summary>
     public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
 
-    public List<LoreCollectionDefinition> collections { get; set; }
+    public List<LoreCollectionDefinition> collections { get; set; } = new List<LoreCollectionDefinition>();
   }
 
   /// <summary>
@@ -78,6 +78,8 @@ namespace LoreViewer.Settings
     public string entryType { get; set; } = string.Empty;
     public string EntryStyle { get; set; } = string.Empty;
     public bool SortEntries { get; set; }
+
+    public string name { get; set; }
   }
 
 }

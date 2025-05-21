@@ -2,7 +2,7 @@ using LoreViewer.Exceptions;
 using Markdig.Syntax;
 using NUnit.Framework.Internal;
 
-namespace PositiveTests
+namespace v0_1.PositiveTests
 {
   [TestFixture]
   [TestOf(typeof(LoreParser))]
@@ -189,28 +189,28 @@ namespace PositiveTests
       Assert.That(funFacts, Is.Not.Null);
 
       // Check nested sections under Personality
-      Assert.That(personality.SubSections.Count, Is.EqualTo(2));
-      var strengths = personality.SubSections.FirstOrDefault(s => s.Name == "Strengths");
-      var weaknesses = personality.SubSections.FirstOrDefault(s => s.Name == "Weaknesses");
+      Assert.That(personality.Sections.Count, Is.EqualTo(2));
+      var strengths = personality.Sections.FirstOrDefault(s => s.Name == "Strengths");
+      var weaknesses = personality.Sections.FirstOrDefault(s => s.Name == "Weaknesses");
       Assert.That(strengths, Is.Not.Null);
       Assert.That(weaknesses, Is.Not.Null);
       Assert.That(strengths.Blocks.First(), Is.InstanceOf<ListBlock>());
-      Assert.That(weaknesses.Text, Does.Contain("Avoids confrontation"));
+      Assert.That(weaknesses.Summary, Does.Contain("Avoids confrontation"));
 
       // Check nested sections under History
-      Assert.That(history.SubSections.Count, Is.EqualTo(2));
-      var earlyLife = history.SubSections.FirstOrDefault(s => s.Name == "Early Life");
-      var laterYears = history.SubSections.FirstOrDefault(s => s.Name == "Later Years");
+      Assert.That(history.Sections.Count, Is.EqualTo(2));
+      var earlyLife = history.Sections.FirstOrDefault(s => s.Name == "Early Life");
+      var laterYears = history.Sections.FirstOrDefault(s => s.Name == "Later Years");
       Assert.That(earlyLife, Is.Not.Null);
       Assert.That(laterYears, Is.Not.Null);
-      Assert.That(earlyLife.Text, Does.Contain("cloudport colony"));
+      Assert.That(earlyLife.Summary, Does.Contain("cloudport colony"));
       Assert.That(earlyLife.Blocks.Any(b => b is QuoteBlock), Is.True);
-      Assert.That(laterYears.Text, Does.Contain("archival analytics"));
+      Assert.That(laterYears.Summary, Does.Contain("archival analytics"));
 
       // Fun Facts should be flat
-      Assert.That(funFacts.SubSections.Count, Is.EqualTo(0));
+      Assert.That(funFacts.Sections.Count, Is.EqualTo(0));
       Assert.That(funFacts.Blocks.First(), Is.InstanceOf<ListBlock>());
-      Assert.That(funFacts.Text, Does.Contain("ultraviolet"));
+      Assert.That(funFacts.Summary, Does.Contain("ultraviolet"));
     }
 
     [Test]
@@ -234,12 +234,12 @@ namespace PositiveTests
       Assert.That(personality.GetAttribute("Social Tendencies").Values[1], Is.EqualTo("Strong one-on-one engagement"));
 
       // Check freeform paragraph is still preserved
-      Assert.That(personality.Text, Does.Contain("She displays openness"));
+      Assert.That(personality.Summary, Does.Contain("She displays openness"));
 
       // Check Notes section did NOT parse any attributes
       Assert.That(notes.Attributes, Is.Null.Or.Empty);
       Assert.That(notes.Blocks.First(), Is.InstanceOf<ListBlock>());
-      Assert.That(notes.Text, Does.Contain("Carries a data slate"));
+      Assert.That(notes.Summary, Does.Contain("Carries a data slate"));
     }
 
   }

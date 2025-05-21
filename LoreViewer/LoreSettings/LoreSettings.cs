@@ -25,7 +25,6 @@ namespace LoreViewer.Settings
     public bool ignoreCase = false;
     public bool softLinking { get; set; } = false;
     public string defaultSort { get; set; } = string.Empty;
-    public string typeSummaryName { get; set; } = string.Empty;
     public List<string> MarkdownExtensions { get; set; } = new List<string>();
   }
 }

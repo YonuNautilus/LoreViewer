@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using LoreViewer.Interfaces;
+using LoreViewer.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,21 +8,24 @@ using System.Security.AccessControl;
 
 namespace LoreViewer.LoreNodes
 {
-  public class LoreNode : LoreElement
+  public class LoreNode : LoreNarrativeElement, IFieldContainer, ISectionContainer
   {
-    public string SourcePath;
-    public int BlockIndex;
-    public Guid Id { get; set; }
-
     public LoreTypeDefinition Type { get; set; }
 
-    public ObservableCollection<LoreAttribute> Attributes = new ObservableCollection<LoreAttribute>();
+    #region IFieldContainer Implementation
+    public ObservableCollection<LoreAttribute> Attributes { get; set; } = new ObservableCollection<LoreAttribute>();
+    public LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
+    public bool HasAttribute(string name) => Attributes.Any(a => a.Name == name);
+    #endregion
+    #region ISectionContainer Implementation
+    public ObservableCollection<LoreSection> Sections { get; set; } = new ObservableCollection<LoreSection>();
+    public LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
+    public bool HasSection(string name) => Sections.Any(s => s.Name == name);
+    #endregion
 
     public ObservableCollection<LoreNode> Children = new ObservableCollection<LoreNode>();
 
     public ObservableCollection<LoreNodeCollection> CollectionChildren = new ObservableCollection<LoreNodeCollection>();
-
-    public ObservableCollection<LoreSection> Sections = new ObservableCollection<LoreSection>();
 
     public LoreNode(LoreTypeDefinition type, string name)
     {
@@ -29,13 +33,6 @@ namespace LoreViewer.LoreNodes
       Name = name;
     }
 
-    public bool HasAttribute(string attrName) => Attributes.Any(a => a.Name == attrName);
-
-    public LoreAttribute? GetAttribute(string attrName) => Attributes.FirstOrDefault(a => a.Name == attrName);
-
-    public bool HasSection(string sectionName) => Sections.Any(s => s.Name.Equals(sectionName));
-
-    public LoreSection? GetSection(string sectionName) => Sections.FirstOrDefault(s => s.Name.Equals(sectionName));
 
     public bool HasCollectionOfType(LoreTypeDefinition typeDef) => CollectionChildren.Any(c => c.Type == typeDef);
 

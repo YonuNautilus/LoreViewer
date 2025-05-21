@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using LoreViewer.Interfaces;
+using LoreViewer.Settings;
 using Markdig.Syntax;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,8 +7,18 @@ using System.Linq;
 
 namespace LoreViewer.LoreNodes
 {
-  public class LoreSection : LoreElement
+  public class LoreSection : LoreNarrativeElement, IFieldContainer, ISectionContainer
   {
+    #region IFieldContainer Implementation
+    public ObservableCollection<LoreAttribute> Attributes { get; set; } = new ObservableCollection<LoreAttribute>();
+    public LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
+    public bool HasAttribute(string name) => Attributes.Any(a => a.Name == name);
+    #endregion
+    #region ISectionContainer Implementation
+    public ObservableCollection<LoreSection> Sections { get; set; } = new ObservableCollection<LoreSection>();
+    public LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
+    public bool HasSection(string name) => Sections.Any(s => s.Name == name);
+    #endregion
 
     private List<Block> _blocks;
 
@@ -16,23 +27,6 @@ namespace LoreViewer.LoreNodes
       get { if (_blocks == null) _blocks = new List<Block>(); return _blocks; }
       set { _blocks = value; }
     }
-
-    public ObservableCollection<LoreAttribute> Attributes = new ObservableCollection<LoreAttribute>();
-
-    private List<LoreSection> _subSections;
-
-    public List<LoreSection> SubSections
-    {
-      get {
-        if (_subSections == null) _subSections = new List<LoreSection>();
-        return _subSections;
-      }
-      set { SubSections = value; }
-    }
-
-    public string Text = string.Empty;
-
-    public string MarkdownBody;
 
 
     public LoreSection() { }
@@ -43,9 +37,5 @@ namespace LoreViewer.LoreNodes
 
     public LoreSectionDefinition Definition;
 
-
-    public bool HasAttribute(string attrName) => Attributes.Any(a => a.Name == attrName);
-
-    public LoreAttribute? GetAttribute(string attrName) => Attributes.FirstOrDefault(a => a.Name == attrName);
   }
 }
