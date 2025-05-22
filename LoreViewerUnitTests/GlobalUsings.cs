@@ -4,6 +4,6 @@ global using System.Text.RegularExpressions;
 global using System.Threading.Tasks;
 
 global using LoreViewer;
-global using LoreViewer.LoreNodes;
+global using LoreViewer.LoreElements;
 global using LoreViewer.Settings;
 global using LoreViewer;

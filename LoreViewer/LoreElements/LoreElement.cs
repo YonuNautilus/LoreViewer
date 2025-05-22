@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoreViewer.LoreNodes
+namespace LoreViewer.LoreElements
 {
   /// <summary>
   /// Abstract base class for all Lore elements. Simply implements name, source file path

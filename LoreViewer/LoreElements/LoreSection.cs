@@ -1,11 +1,11 @@
-﻿using LoreViewer.Interfaces;
+﻿using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings;
 using Markdig.Syntax;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace LoreViewer.LoreNodes
+namespace LoreViewer.LoreElements
 {
   public class LoreSection : LoreNarrativeElement, IFieldContainer, ISectionContainer
   {

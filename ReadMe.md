@@ -21,6 +21,30 @@ This tool allows you to define your own schema for different types of lore eleme
 
 ## Core Concepts
 
+### Quick Definitions: Nodes, Sections, Fields/Attributes, collections
+
+- Node
+  - represents a single object or concept (a religion, a character, spell, weapon, faction, cultural memes)
+  - Used for such objects that need
+    - organized information beyond just narrative or descriptive text
+	- have descriptive Attributes
+	- have nested objects, collections, or sections.
+- Sections
+  - represents a unit of descriptive information (a spell's side-effects, a recipe, a religious ritual, a dynamic between two characters)
+  - Must be a child of a node or section
+  - Can contain subsections and fields/attributes
+  - CANNOT contain nested nodes or collections
+- Fields/Attributes
+  - Two names for the same thing. Organized, descriptive tidbits of information, usually common within a node type.
+  - Must be in bullet point format, but can take various forms (covered later).
+  - Fields can have a single value, or multiple values.
+  - Fields have contain *either* nested fields *or* value(s)
+- Collections
+  - represents a collection of nodes usually of the same type.
+  - can only contain nodes and collection name - no attributes, no sections
+
+---
+
 ### What is a LoreNode?
 
 A `LoreNode` is a structured, typed object — like a character, timeline event, or location.

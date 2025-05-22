@@ -10,7 +10,6 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
       <RowDefinition />
-      <RowDefinition />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="400"/>
@@ -26,114 +25,128 @@
       <Button Content="Open Lore Settings Editor" DockPanel.Dock="Right" Command="{Binding OpenLoreSettingsEditor}"/>
     </DockPanel>
 
-    <TabControl Grid.Row="1" Grid.Column="0" Grid.RowSpan="2">
-      <TabItem Header="Nodes and Collections">
-        <Grid>
-          <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-          </Grid.RowDefinitions>
-          <Border BorderBrush="Black" BorderThickness="1">
-            <Grid >
-              <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
-                <RowDefinition/>
-              </Grid.RowDefinitions>
-
-              <Label Content="Nodes" />
-              <TreeView Grid.Row="1" ItemsSource="{Binding Nodes}" SelectedItem="{Binding CurrentlySelectedTreeNode, Mode=OneWayToSource}" Grid.Column="0" Name="NodesTreeView" >
-                <TreeView.ItemTemplate>
-                  <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding DisplayName}" />
-                  </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-              </TreeView>
-            </Grid>
-          </Border>
-
-          <Border Grid.Row="2" BorderBrush="Black" BorderThickness="1">
-            <Grid >
-              <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
-                <RowDefinition/>
-              </Grid.RowDefinitions>
-
-              <Label Content="Collections" />
-
-              <TreeView Grid.Row="2" ItemsSource="{Binding NodeCollections}" Grid.Column="0" Name="CollectionsTreeView">
-                <TreeView.ItemTemplate>
-                  <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding DisplayName}" />
-                  </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-              </TreeView>
-            </Grid>
-          </Border>
-        </Grid>
-        
-      </TabItem>
+    <Grid Grid.Row="1"  Grid.Column="0" Grid.ColumnSpan="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="2*"/>
+        <ColumnDefinition Width="2"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
       
-      <TabItem Header="Errors and Warnings">
+      <TabControl Grid.Column="0">
+        <TabItem Header="Nodes and Collections">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition />
+            </Grid.RowDefinitions>
+            <Border BorderBrush="Black" BorderThickness="1">
+              <Grid >
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25" />
+                  <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Content="Nodes" />
+                <TreeView Grid.Row="1" ItemsSource="{Binding Nodes}" SelectedItem="{Binding CurrentlySelectedTreeNode, Mode=OneWayToSource}" Grid.Column="0" Name="NodesTreeView" >
+                  <TreeView.ItemTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding Children}">
+                      <TextBlock Text="{Binding DisplayName}" />
+                    </TreeDataTemplate>
+                  </TreeView.ItemTemplate>
+                </TreeView>
+              </Grid>
+            </Border>
+
+            <Border Grid.Row="2" BorderBrush="Black" BorderThickness="1">
+              <Grid >
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25" />
+                  <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Content="Collections" />
+
+                <TreeView Grid.Row="2" ItemsSource="{Binding NodeCollections}" Grid.Column="0" Name="CollectionsTreeView">
+                  <TreeView.ItemTemplate>
+                    <TreeDataTemplate ItemsSource="{Binding Children}">
+                      <TextBlock Text="{Binding DisplayName}" />
+                    </TreeDataTemplate>
+                  </TreeView.ItemTemplate>
+                </TreeView>
+              </Grid>
+            </Border>
+          </Grid>
+
+        </TabItem>
+
+        <TabItem Header="Errors and Warnings">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1">
+              <Grid >
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25" />
+                  <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Content="Errors" Grid.Row="0" />
+                
+                <DataGrid Grid.Row="1" HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding Errors}" Name="ErrorsListView" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" CanUserResizeColumns="True">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="File" Width="Auto" Binding="{Binding Item1}" CanUserResize="True"/>
+                    <DataGridTextColumn Header="BlockIndex" Binding="{Binding Item2}"/>
+                    <DataGridTextColumn Header="Line#" Binding="{Binding Item3}"/>
+                    <DataGridTextColumn Header="Exception Message" Binding="{Binding Item4.Message}" Width="Auto"/>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </Grid>
+            </Border>
+
+            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1">
+              <Grid >
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25" />
+                  <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Label Content="Warnings" Grid.Row="0"/>
+
+                <ListBox Grid.Row="1" ItemsSource="{Binding Warnings}" Grid.Column="0" Name="WarningsListView">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding}" />
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Grid>
+            </Border>
+          </Grid>
+        </TabItem>
+      </TabControl>
+      
+      <GridSplitter Grid.Column="1"/>
+      
+      <DockPanel Grid.Column="2" Margin="5">
         <Grid>
           <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
           </Grid.RowDefinitions>
-          <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1">
-            <Grid >
-              <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
-                <RowDefinition/>
-              </Grid.RowDefinitions>
+          <Label BorderBrush="Black" BorderThickness="1" Content="Node Info" />
+          <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" >
+            <ScrollViewer>
 
-              <Label Content="Errors" />
-
-              <ListBox Grid.Row="2" ItemsSource="{Binding Errors}" Grid.Column="0" Name="ErrorsListView">
-                <ListBox.ItemTemplate>
-                  <DataTemplate>
-                    <TextBlock Text="{Binding}" />
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
-            </Grid>
-          </Border>
-
-          <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1">
-            <Grid >
-              <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
-                <RowDefinition/>
-              </Grid.RowDefinitions>
-
-              <Label Content="Warnings" />
-
-              <ListBox Grid.Row="2" ItemsSource="{Binding Warnings}" Grid.Column="0" Name="WarningsListView">
-                <ListBox.ItemTemplate>
-                  <DataTemplate>
-                    <TextBlock Text="{Binding}" />
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
-            </Grid>
+              <TextBlock Margin="5" Name="CurrentNodeInfoTextBlock" Text="{Binding CurrentlySelectedTreeNode.CurrentNodeInfoText, Mode=OneWay}" TextWrapping="Wrap"/>
+            </ScrollViewer>
           </Border>
         </Grid>
-      </TabItem>
-    </TabControl>
-
-    <DockPanel Grid.Row="1" Grid.Column="1" Margin="5">
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="30"/>
-          <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Label BorderBrush="Black" BorderThickness="1" Content="Node Info" />
-        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" >
-          <ScrollViewer>
-            
-            <TextBlock Margin="5" Name="CurrentNodeInfoTextBlock" Text="{Binding CurrentlySelectedTreeNode.CurrentNodeInfoText, Mode=OneWay}" TextWrapping="Wrap"/>
-          </ScrollViewer>
-        </Border>
-      </Grid>
-    </DockPanel>
+      </DockPanel>
+      
+    </Grid>
+    
+    
   </Grid>
 </UserControl>

@@ -36,7 +36,7 @@ namespace LoreViewer.Exceptions
 
   public class NoTagParsingException : LoreNodeParsingException
   {
-    static string msgBase = "Error while parsing file {0}: First heading block found is not tagged";
+    static string msgBase = "Error while parsing file {0}: Level 1 heading block found is not tagged";
     public NoTagParsingException(string filePath, int blockIndex, int lineNumber)
       : base(filePath, blockIndex, lineNumber, String.Format(msgBase, Path.GetFileName(filePath)))
     { }
@@ -44,19 +44,25 @@ namespace LoreViewer.Exceptions
 
   public class FirstHeadingTagException : LoreNodeParsingException
   {
-    static string msgBase = "Error while parsing file {0}: First heading MUST define a node or collection";
+    static string msgBase = "Error while parsing file {0}: First heading MUST be a TYPE or COLLECTION";
     public FirstHeadingTagException(string filePath, int blockIndex, int lineNumber)
       : base(filePath, blockIndex, lineNumber, String.Format(msgBase, Path.GetFileName(filePath)))
     { }
   }
 
-  public class UnexpectedBlockException : LoreNodeParsingException
+  public class DefinitionNotFoundException : LoreNodeParsingException
   {
-    public UnexpectedBlockException(string filePath, int blockIndex, int lineNumber)
-      : base(filePath, blockIndex, lineNumber, $"")
+    public DefinitionNotFoundException(string filePath, int blockIndex, int lineNumber, string newTitle)
+      : base(filePath, blockIndex, lineNumber, $"Could not find section or collection definition for a heading with title {newTitle}")
     {
 
     }
+  }
+
+  public class UnexpectedTypeNameException : LoreNodeParsingException
+  {
+    public UnexpectedTypeNameException(string filePath, int blockIndex, int lineNumber, string typeName)
+      : base(filePath, blockIndex, lineNumber, $"Found reference to a node type that was not defined: {typeName}") { }
   }
 
   public class HeadingLevelErrorException : LoreNodeParsingException

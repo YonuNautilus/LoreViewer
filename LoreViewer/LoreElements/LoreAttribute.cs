@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace LoreViewer.LoreNodes
+namespace LoreViewer.LoreElements
 {
   public class LoreAttribute : LoreElement
   {

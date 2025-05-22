@@ -6,9 +6,10 @@ using System.Reactive;
 using System.Threading.Tasks;
 using LoreViewer.Settings;
 using System.Collections.ObjectModel;
-using LoreViewer.LoreNodes;
+using LoreViewer.LoreElements;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace LoreViewer.ViewModels
 {
@@ -27,7 +28,7 @@ namespace LoreViewer.ViewModels
 
     private ObservableCollection<LoreTreeItem> _nodeCollectionTreeItems = new ObservableCollection<LoreTreeItem>();
     public ObservableCollection<LoreTreeItem> NodeCollections { get => _nodeCollectionTreeItems; set => this.RaiseAndSetIfChanged(ref _nodeCollectionTreeItems, value); }
-    public ObservableCollection<string> Errors { get => _parser._errors; set => this.RaiseAndSetIfChanged(ref _parser._errors, value); }
+    public ObservableCollection<Tuple<string, int, int, Exception>> Errors { get => _parser._errors; set => this.RaiseAndSetIfChanged(ref _parser._errors, value); }
     public ObservableCollection<string> Warnings { get => _parser._warnings; set => this.RaiseAndSetIfChanged(ref _parser._warnings, value); }
 
     private LoreTreeItem _currentlySelectedTreeNode;
@@ -66,6 +67,11 @@ namespace LoreViewer.ViewModels
         LoreLibraryFolderPath = folderPath[0].TryGetLocalPath();
         _parser.BeginParsingFromFolder(LoreLibraryFolderPath);
 
+        if (_parser.HadFatalError)
+        {
+
+        }
+
         _nodeTreeItems.Clear();
         _nodeCollectionTreeItems.Clear();
 
@@ -73,8 +79,8 @@ namespace LoreViewer.ViewModels
 
         foreach (LoreElement e in _collections) NodeCollections.Add(new LoreTreeItem(e));
 
-        Errors = _parser._errors;
-        Warnings = _parser._warnings;
+        this.RaisePropertyChanged("Errors");
+        this.RaisePropertyChanged("Warnings");
       }
     }
 

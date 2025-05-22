@@ -70,7 +70,7 @@ namespace v0_1.NegativeTests
     [Test]
     public void ParseFile_ThrowsOn_UnknownSectionName()
     {
-      Assert.Throws<UnexpectedSectionNameException>(() => _parser.ParseFile(Path.Combine(ErrorFilesFolder, "UnknownSectionName.md")));
+      Assert.Throws<DefinitionNotFoundException>(() => _parser.ParseFile(Path.Combine(ErrorFilesFolder, "UnknownSectionName.md")));
     }
 
   }

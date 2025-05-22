@@ -1,6 +1,6 @@
 ﻿using DynamicData;
 using LoreViewer.Exceptions;
-using LoreViewer.LoreNodes;
+using LoreViewer.LoreElements;
 using LoreViewer.Settings;
 using Markdig;
 using Markdig.Extensions.Tables;
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -30,9 +31,12 @@ namespace LoreViewer
     private string _folderPath;
     private string _currentFile;
 
+    private bool _hadFatalError = false;
+    public bool HadFatalError => _hadFatalError;
+
     public ObservableCollection<LoreElement> _collections = new ObservableCollection<LoreElement>();
     public ObservableCollection<LoreElement> _nodes = new ObservableCollection<LoreElement>();
-    public ObservableCollection<string> _errors = new ObservableCollection<string>();
+    public ObservableCollection<Tuple<string, int, int, Exception>> _errors = new();
     public ObservableCollection<string> _warnings = new ObservableCollection<string>();
 
     /// <summary>
@@ -51,7 +55,7 @@ namespace LoreViewer
     }
 
     public LoreNode? GetNode(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName)) as LoreNode;
-    public bool HasNode (string nodeName) => _nodes.Any(node => node.Name.Equals(nodeName));
+    public bool HasNode(string nodeName) => _nodes.Any(node => node.Name.Equals(nodeName));
 
 
     public void ParseSettingsFromFile(string settingsFilePath)
@@ -65,16 +69,29 @@ namespace LoreViewer
 
     public void BeginParsingFromFolder(string FolderPath)
     {
+      _hadFatalError = false;
       _folderPath = FolderPath;
 
       string fullSettingsPath = Path.Combine(FolderPath, LoreSettingsFileName);
       if (!File.Exists(fullSettingsPath))
         throw new Exception($"Did not find file {fullSettingsPath}");
 
-      ParseSettingsFromFile(fullSettingsPath);
+      try
+      {
+        ParseSettingsFromFile(fullSettingsPath);
+      }
+      catch (Exception e)
+      {
+        _errors.Add(new Tuple<string, int, int, Exception>("Lore_Settings.yaml", -1, -1, e));
+        _hadFatalError = true;
+        return;
+      }
 
+      IEnumerable<string> temp = Directory.EnumerateFiles(FolderPath, "*.md", SearchOption.AllDirectories);
 
-      string[] files = Directory.GetFiles(FolderPath, "*.md", SearchOption.AllDirectories);
+      string[] files = (_settings.Settings == null) ?
+        temp.ToArray() :
+        temp.Where(fp => !_settings.Settings.blockedPaths.Any(bp => fp.Contains(bp))).ToArray();
 
       foreach (string filePath in files)
       {
@@ -82,21 +99,25 @@ namespace LoreViewer
         {
           ParseFile(filePath);
         }
-        catch (LoreParsingException pe)
+        catch (LoreParsingException lpe)
         {
-          Console.WriteLine(pe.Message);
+          string pathForException = string.IsNullOrEmpty(_folderPath) ? filePath : Path.GetRelativePath(_folderPath, filePath);
+          _errors.Add(new Tuple<string, int, int, Exception>(pathForException, lpe.BlockIndex, lpe.LineNumber, lpe));
         }
         catch (Exception ex)
         {
-          Console.WriteLine($"File {Path.GetFileName(filePath)} had problem: {ex.Message}");
+          string pathForException = string.IsNullOrEmpty(_folderPath) ? filePath : Path.GetRelativePath(_folderPath, filePath);
+          _errors.Add(new Tuple<string, int, int, Exception>(pathForException, -1, -1, ex));
+          throw;
         }
       }
     }
     private static string GetCollectionType(string fullTypeName) => Regex.Match(fullTypeName, NestedTypeTagRegex).Value;
-    private static string ExtractTag(HeadingBlock block) => Regex.Match(block.Inline.FirstChild.ToString(), TypeTagRegex)?.Value;
+    private static string ExtractTag(HeadingBlock block) => Regex.Match(GetStringFromContainerInline(block.Inline), TypeTagRegex)?.Value;
     private static string ExtractTitle(HeadingBlock block)
     {
-      string title = Regex.Match(block.Inline.FirstChild.ToString(), HeaderWithoutTagRegex)?.Value;
+      string headerText = GetStringFromContainerInline(block.Inline);
+      string title = Regex.Match(headerText, HeaderWithoutTagRegex)?.Value;
 
       if (string.IsNullOrEmpty(title))
         title = block.Inline.FirstChild.ToString();
@@ -137,66 +158,56 @@ namespace LoreViewer
     {
       _currentFile = filePath;
       int currentIndex = 0;
-      try
+      string fileContent = File.ReadAllText(filePath);
+      MarkdownDocument document = Markdown.Parse(fileContent);
+
+      // Once here, loop through the document, looking for headers
+
+      while (currentIndex < document.Count)
       {
-        string fileContent = File.ReadAllText(filePath);
-        MarkdownDocument document = Markdown.Parse(fileContent);
-
-        // Once here, loop through the document, looking for headers
-
-        while (currentIndex < document.Count)
+        // Start with the top level, get its type
+        if (document[currentIndex] is HeadingBlock)
         {
-          // Start with the top level, get its type
-          if (document[currentIndex] is HeadingBlock)
-          {
-            HeadingBlock block = (HeadingBlock)document[currentIndex];
-            string tag = ExtractTag(block);
-            string title = ExtractTitle(block);
+          HeadingBlock block = (HeadingBlock)document[currentIndex];
+          string tag = ExtractTag(block);
+          string title = ExtractTitle(block);
 
-            if (!string.IsNullOrEmpty(tag))
+
+          if (!string.IsNullOrEmpty(tag))
+          {
+            if (BlockIsACollection(block))
             {
-              if (BlockIsACollection(block))
+              if (BlockIsANestedCollection(block))
               {
-                if (BlockIsANestedCollection(block))
-                {
-                  _collections.Add(ParseCollection(document, ref currentIndex, block, tag));
-                }
-                else
-                  _collections.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
-              }
-              else if (BlockIsASection(block))
-              {
-                throw new FirstHeadingTagException(filePath, currentIndex, block.Line + 1);
+                _collections.Add(ParseCollection(document, ref currentIndex, block, tag));
               }
               else
-              {
-                int nodeIndex = currentIndex;
-                int nodeLineInFile = block.Line;
-                LoreNode newNode = ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag));
-
-                newNode.SourcePath = filePath;
-                newNode.BlockIndex = nodeIndex;
-
-                _nodes.Add(newNode);
-              }
+                _collections.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
+            }
+            else if (_settings.HasTypeDefinition(tag))
+            {
+              _nodes.Add(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag)));
+            }
+            else if (BlockIsASection(block))
+            {
+              throw new FirstHeadingTagException(filePath, currentIndex, block.Line + 1);
             }
             else
             {
-              throw new NoTagParsingException(filePath, currentIndex, block.Line + 1);
+              throw new DefinitionNotFoundException(filePath, currentIndex, block.Line + 1, title);
             }
           }
           else
           {
-            OrphanedBlocks.Add(Path.GetRelativePath(_folderPath, filePath), currentIndex);
-            currentIndex++;
+            throw new NoTagParsingException(filePath, currentIndex, block.Line + 1);
           }
-
         }
-      }
-      catch (Exception ex)
-      {
-        _errors.Add(string.Join("\r\n", new string[] { filePath, currentIndex.ToString(), ex.Message }));
-        throw;
+        else
+        {
+          OrphanedBlocks.Add(Path.GetRelativePath(_folderPath, filePath), currentIndex);
+          currentIndex++;
+        }
+
       }
     }
 
@@ -264,9 +275,11 @@ namespace LoreViewer
               string newTag = ExtractTag(hb);
               string newTitle = ExtractTitle(hb);
 
-              // If a tag is defined, and the tag does NOT have 'section' in the name, treat it as new nested node or nested collection.
-              if (!string.IsNullOrEmpty(newTag) && !BlockIsASection(hb))
+
+              // If a tag IS declared in markdown, parse as its LoreElement type
+              if (!string.IsNullOrWhiteSpace(newTag))
               {
+                // CHECK FOR COLLECTIONS FIRST
                 // Block is tagged with {collection:...}
                 if (BlockIsACollection(hb))
                 {
@@ -287,8 +300,8 @@ namespace LoreViewer
                   continue;
                 }
 
-                // the type is one seen in the parent type's collection types
-                else if (typeDef.collections != null && typeDef.collections.Any(ct => ct.entryType.Equals(newTag)))
+                // the block is tagged as a section
+                else if (BlockIsASection(hb))
                 {
                   LoreCollectionDefinition colDef = typeDef.collections.First(ct => ct.entryType.Equals(newTag));
                   LoreNodeCollection? col = newNode.GetCollectionOfTypeName(newTag);
@@ -313,24 +326,51 @@ namespace LoreViewer
                   LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
                   LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
                   newNode.Children.Add(newNodeNode);
-
                 }
               }
-              // Here, if no tag or a section tag:
+              // Here if no tag in markdown
               else
               {
-                // Regardless if the block has a section tag or not, check if the block's title is present in the type definition's sections.
-                if (typeDef.HasSectionName(newTitle))
+                if (typeDef.HasCollectionDefinition(newTitle))
                 {
-                  LoreSectionDefinition sectionDef = typeDef.sections.FirstOrDefault(sec => newTitle.Contains(sec.name));
-                  LoreSection newSection = ParseSection(doc, ref currentIndex, hb, sectionDef);
-                  newNode.Sections.Add(newSection);
+                  LoreCollectionDefinition lcd = typeDef.GetCollectionDefinition(newTitle);
+
+                  if (!_settings.HasTypeDefinition(lcd.entryType))
+                    throw new UnexpectedTypeNameException(_currentFile, currentIndex, hb.Line + 1, newTitle);
+
+                  LoreNodeCollection newCol = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(lcd.entryType));
+                  newNode.CollectionChildren.Add(newCol);
+                }
+                else if (typeDef.HasSectionDefinition(newTitle))
+                {
+                  LoreSectionDefinition lsd = typeDef.GetSectionDefinition(newTitle);
+                  newNode.Sections.Add(ParseSection(doc, ref currentIndex, hb, lsd));
                   continue;
+                }
+                else
+                {
+                  throw new DefinitionNotFoundException(_currentFile, currentIndex, hb.Line + 1, newTitle);
+                }
+
+
+                LoreSectionDefinition sectionDef = null;
+                // Regardless if the block has a section tag or not, check if the block's title is present in the type definition's sections.
+                if (typeDef.HasSectionDefinition(newTitle))
+                {
+                  sectionDef = typeDef.sections.FirstOrDefault(sec => newTitle.Contains(sec.name));
+                }
+                else if (newTag.StartsWith("section"))
+                {
+                  sectionDef = new LoreSectionDefinition(newTitle, true);
                 }
                 else
                 {
                   throw new UnexpectedSectionNameException(_currentFile, currentIndex, currentBlock.Line + 1, title, newTitle);
                 }
+
+                LoreSection newSection = ParseSection(doc, ref currentIndex, hb, sectionDef);
+                newNode.Sections.Add(newSection);
+                continue;
               }
               break;
 
@@ -356,7 +396,7 @@ namespace LoreViewer
     }
 
     /// <summary>
-    /// Creates a LoreNodeCollection of LoreNodes. Starts from a heading block with tag {collection:type}
+    /// Creates a LoreNodeCollection of LoreElements. Starts from a heading block with tag {collection:type}
     /// <para />
     /// RULES/PROCESS:
     /// <list type="number">
@@ -446,17 +486,21 @@ namespace LoreViewer
       {
         Block currentBlock = doc[currentIndex];
 
-        switch(currentBlock)
+        switch (currentBlock)
         {
           case HeadingBlock hb:
-            // If the header we're iterating over is subheader to the section's header..
+            // If the heading we're iterating over is subheader to the section's heading,
+            // it must be a subsection (by rules: sections can only contain sections as subheadings)
             if (heading.Level < hb.Level)
             {
-              // If the subheader is not a defined section, throw error.
+              // If the subheading is not a defined section, check if it has a section tag. If throw error.
               string headingTitle = ExtractTitle(hb);
+              string headingTag = ExtractTag(hb);
               LoreSectionDefinition subSecDef = secDef.sections?.FirstOrDefault(sd => sd.name.Equals(headingTitle));
-              if (subSecDef == null)
+              if (subSecDef == null && !headingTag.StartsWith("section"))
                 throw new UnexpectedSectionNameException(_currentFile, currentIndex, hb.Line, newSection.Name, headingTitle);
+              else if (headingTag.StartsWith("section")) // If an undefined but {section} tagged header, force a new freeform section
+                subSecDef = new LoreSectionDefinition(headingTitle, true);
 
               LoreSection newSubSection = ParseSection(doc, ref currentIndex, hb, subSecDef);
               newSection.Sections.Add(newSubSection);
@@ -470,7 +514,7 @@ namespace LoreViewer
           case ParagraphBlock pb:
             newSection.AddNarrativeText(GetStringFromParagraphBlock(pb));
             break;
-          
+
           // ListBlock can be a list of attributes ONLY if the section definition has fields defined.
           // Otherwise, the ListBlock is treated as text;
           case ListBlock lb:
@@ -605,7 +649,7 @@ namespace LoreViewer
          * - Name: Jack
          *   - Alias: Jimmy
          */
-        if((item as ListItemBlock).Count > 1)
+        if ((item as ListItemBlock).Count > 1)
         {
           // Need to get the ListBlock for the indented ListItemBlocks
           // This ListBlock contains ListItemBlocks that are either nested fields multiple values, NEVER BOTH
@@ -614,7 +658,7 @@ namespace LoreViewer
           // if it has nested fields
           if (newAttribute.Definition.HasNestedFields)
           {
-            newAttribute.NestedAttributes = ParseListAttributes(doc, currentIndex, lb, newAttribute.Definition.nestedFields);
+            newAttribute.NestedAttributes = ParseListAttributes(doc, currentIndex, lb, newAttribute.Definition.fields);
           }
 
           // if it allows multiple values
@@ -653,11 +697,10 @@ namespace LoreViewer
     }
 
 
-    //private string ParseListAttributes(MarkdownDocument doc, ref int currentIndrex, ListBlock listBlock, List<Lore>)
-
-
-    private string GetStringFromParagraphBlock(ParagraphBlock pgBlock)
+    private static string GetStringFromParagraphBlock(ParagraphBlock pgBlock)
     {
+      return GetStringFromContainerInline(pgBlock.Inline);
+      /*
       string ret = string.Empty;
 
       ContainerInline contInl = pgBlock.Inline;
@@ -682,9 +725,39 @@ namespace LoreViewer
         currentBlock = currentBlock.NextSibling;
       }
       return ret;
+      */
     }
 
-    private string GetStringFromListBlock(ListBlock lb)
+    private static string GetStringFromContainerInline(ContainerInline cInl)
+    {
+      string ret = string.Empty;
+
+      Inline currentBlock = cInl.FirstChild;
+
+      while (currentBlock != null)
+      {
+        switch (currentBlock)
+        {
+          case EmphasisInline emph:
+            ret += emph.FirstChild.ToString();
+            break;
+          case LiteralInline lit:
+            ret += lit.ToString();
+            break;
+          case HtmlInline:
+            // Do not add HTML tags into text. For now.
+            break;
+          default:
+            ret += "\r\n";
+            break;
+        }
+        //ret += "\r\n";
+        currentBlock = currentBlock.NextSibling;
+      }
+      return ret;
+    }
+
+    private static string GetStringFromListBlock(ListBlock lb)
     {
       string ret = string.Empty;
 

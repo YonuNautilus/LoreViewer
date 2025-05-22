@@ -1,4 +1,4 @@
-﻿using LoreViewer.Interfaces;
+﻿using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.AccessControl;
 
-namespace LoreViewer.LoreNodes
+namespace LoreViewer.LoreElements
 {
   public class LoreNode : LoreNarrativeElement, IFieldContainer, ISectionContainer
   {

@@ -29,7 +29,7 @@
         style: MultiValue
 
       - name: Employment History
-        nestedFields:
+        fields:
           - name: Organization
           - name: Roles
             style: MultiValue
@@ -44,14 +44,14 @@
       - name: ColonAfterSpace
       - name: MixedFormatField
       - name: NestedField
-        nestedFields:
+        fields:
           - name: SubFieldOne
           - name: SubFieldBold
           - name: SubFieldItalic
       - name: MultiField
         style: MultiValue
       - name: NestedMultiField
-        nestedFields:
+        fields:
           - name: DetailList
             style: MultiValue
 

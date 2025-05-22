@@ -1,5 +1,5 @@
-﻿using LoreViewer.Interfaces;
-using LoreViewer.LoreNodes;
+﻿using LoreViewer.LoreElements;
+using LoreViewer.LoreElements.Interfaces;
 using ReactiveUI;
 using Splat.ApplicationPerformanceMonitoring;
 using System;
