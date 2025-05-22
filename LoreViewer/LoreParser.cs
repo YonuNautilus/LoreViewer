@@ -300,26 +300,6 @@ namespace LoreViewer
                   continue;
                 }
 
-                // the block is tagged as a section
-                else if (BlockIsASection(hb))
-                {
-                  LoreCollectionDefinition colDef = typeDef.collections.First(ct => ct.entryType.Equals(newTag));
-                  LoreNodeCollection? col = newNode.GetCollectionOfTypeName(newTag);
-                  if (col == null)
-                  {
-                    col = new LoreNodeCollection(_settings.GetTypeDefinition(newTag), colDef);
-                    newNode.CollectionChildren.Add(col);
-                  }
-
-                  LoreTypeDefinition colType = _settings.GetTypeDefinition(newTag);
-
-                  LoreNode newSubNode = ParseType(doc, ref currentIndex, hb, colType);
-                  newSubNode.Name = newTitle;
-
-                  newNode.GetCollectionOfType(colType).Add(newSubNode);
-                  continue;
-                }
-
                 // Parse as a nested node of the type specified in the tag.
                 else if (_settings.HasTypeDefinition(newTag))
                 {
@@ -351,26 +331,6 @@ namespace LoreViewer
                 {
                   throw new DefinitionNotFoundException(_currentFile, currentIndex, hb.Line + 1, newTitle);
                 }
-
-
-                LoreSectionDefinition sectionDef = null;
-                // Regardless if the block has a section tag or not, check if the block's title is present in the type definition's sections.
-                if (typeDef.HasSectionDefinition(newTitle))
-                {
-                  sectionDef = typeDef.sections.FirstOrDefault(sec => newTitle.Contains(sec.name));
-                }
-                else if (newTag.StartsWith("section"))
-                {
-                  sectionDef = new LoreSectionDefinition(newTitle, true);
-                }
-                else
-                {
-                  throw new UnexpectedSectionNameException(_currentFile, currentIndex, currentBlock.Line + 1, title, newTitle);
-                }
-
-                LoreSection newSection = ParseSection(doc, ref currentIndex, hb, sectionDef);
-                newNode.Sections.Add(newSection);
-                continue;
               }
               break;
 

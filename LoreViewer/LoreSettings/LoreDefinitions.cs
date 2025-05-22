@@ -41,7 +41,7 @@ namespace LoreViewer.Settings
 
     #region ICollectionDefinitionContainer
     public List<LoreCollectionDefinition> collections { get; set; } = new List<LoreCollectionDefinition>();
-    public bool HasCollectionDefinition(string collectionName) => collections.Any(col => collectionName.Contains(col.name));
+    public bool HasCollectionDefinition(string collectionName) => collections.Any(col => col.name == collectionName);
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
     #endregion ICollectionDefinitionContainer
 
