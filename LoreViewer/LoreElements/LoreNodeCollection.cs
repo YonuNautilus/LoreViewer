@@ -15,6 +15,8 @@ namespace LoreViewer.LoreElements
     public LoreNodeCollection(LoreTypeDefinition containedType, LoreCollectionDefinition colType)
     { Type = containedType; Name = colType.name; }
 
+    public LoreNodeCollection(LoreTypeDefinition containedType, string name) { Type = containedType; Name = name; }
+
     private readonly List<LoreNode> _nodes = new List<LoreNode>();
     public LoreNode this[int index] { get => _nodes[index]; set => _nodes[index] = value; }
 

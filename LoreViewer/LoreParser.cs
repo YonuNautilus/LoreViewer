@@ -307,6 +307,15 @@ namespace LoreViewer
                   LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
                   newNode.Children.Add(newNodeNode);
                 }
+                
+                // Parse as a section, if it has the {section} tag
+                else if (newTag.Equals("section"))
+                {
+                  // Check if there's actually a section definition. If not, make a new section
+                  LoreSectionDefinition lsd = typeDef.GetSectionDefinition(newTitle) ?? new LoreSectionDefinition(newTitle, true);
+                  newNode.Sections.Add(ParseSection(doc, ref currentIndex, hb, lsd));
+                  continue;
+                }
               }
               // Here if no tag in markdown
               else
@@ -381,7 +390,7 @@ namespace LoreViewer
     private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef)
     {
       string title = ExtractTitle(heading);
-      LoreNodeCollection newCollection = new LoreNodeCollection();
+      LoreNodeCollection newCollection = new LoreNodeCollection(typeDef, title);
 
       currentIndex++;
 
