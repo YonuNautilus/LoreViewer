@@ -163,6 +163,10 @@ namespace LoreViewer
 
       // Once here, loop through the document, looking for headers
 
+      // Start collecting a set of LoreElements for this file.
+
+      List<LoreElement> elementsInThisFile = new List<LoreElement>();
+
       while (currentIndex < document.Count)
       {
         // Start with the top level, get its type
@@ -179,14 +183,17 @@ namespace LoreViewer
             {
               if (BlockIsANestedCollection(block))
               {
-                _collections.Add(ParseCollection(document, ref currentIndex, block, tag));
+                //_collections.Add(ParseCollection(document, ref currentIndex, block, tag));
+                elementsInThisFile.Add(ParseCollection(document, ref currentIndex, block, tag));
               }
               else
-                _collections.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
+                //_collections.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
+                elementsInThisFile.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
             }
             else if (_settings.HasTypeDefinition(tag))
             {
-              _nodes.Add(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag)));
+              //_nodes.Add(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag)));
+              elementsInThisFile.Add(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag)));
             }
             else if (BlockIsASection(block))
             {
@@ -207,7 +214,19 @@ namespace LoreViewer
           OrphanedBlocks.Add(Path.GetRelativePath(_folderPath, filePath), currentIndex);
           currentIndex++;
         }
+      }
 
+      // Now, all elements have been collected.
+      LoreNode[] nodesFromThisFile = elementsInThisFile.Where(le => le is LoreNode).Cast<LoreNode>().ToArray();
+      LoreNodeCollection[] collectionsFromThisFile = elementsInThisFile.Where(le => le is LoreNodeCollection).Cast<LoreNodeCollection>().ToArray();
+
+      foreach(LoreNode ln in nodesFromThisFile)
+      {
+        LoreNode nodeWithSameName = _nodes.Cast<LoreNode>().FirstOrDefault(node => node.Name == ln.Name && node.Type == ln.Type);
+        if (nodeWithSameName != null)
+          nodeWithSameName.MergeIn(ln);
+        else
+          _nodes.Add(ln);
       }
     }
 

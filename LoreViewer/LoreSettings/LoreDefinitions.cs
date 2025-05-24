@@ -1,5 +1,6 @@
 ﻿using LoreViewer.Settings.Interfaces;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 
 namespace LoreViewer.Settings
@@ -44,6 +45,8 @@ namespace LoreViewer.Settings
     public bool HasCollectionDefinition(string collectionName) => collections.Any(col => col.name == collectionName);
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
     #endregion ICollectionDefinitionContainer
+
+    public string extends {  get; set; }
 
     private List<string> RelevantFilePaths = new List<string>();
     /// <summary>

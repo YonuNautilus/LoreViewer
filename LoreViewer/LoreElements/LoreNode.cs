@@ -40,5 +40,20 @@ namespace LoreViewer.LoreElements
     public bool HasCollectionOfTypeName(string typeName) => CollectionChildren.Any(c => c.Type.name.Equals(typeName));
 
     public LoreNodeCollection? GetCollectionOfTypeName(string typeName) => CollectionChildren.FirstOrDefault(c => c.Type.name == typeName);
+
+    public void MergeIn(LoreNode toMergeIn)
+    {
+      foreach (LoreAttribute la in toMergeIn.Attributes)
+        Attributes.Add(la);
+
+      foreach (LoreSection ls in toMergeIn.Sections)
+        Sections.Add(ls);
+
+      foreach(LoreNode ln in toMergeIn.Children)
+        Children.Add(ln);
+
+      foreach(LoreNodeCollection lnc in toMergeIn.CollectionChildren)
+        CollectionChildren.Add(lnc);
+    }
   }
 }
