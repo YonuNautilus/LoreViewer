@@ -30,12 +30,14 @@ namespace LoreViewer.Settings
 
     // for fields like Date with Start/End
     public List<LoreAttributeDefinition> fields { get; set; }
+    public bool HasFields => fields != null && fields.Count > 0;
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreAttributeDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
     #endregion IFieldDefinitionContainer implementation
 
     #region ISectionDefinitionContainer implementation
     public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
+    public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
     public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections.FirstOrDefault(s => s.name == sectionName);
     #endregion ISectionDefinitionContainer implementation
@@ -69,20 +71,20 @@ namespace LoreViewer.Settings
 
     #region ISectionDefinitionContainer implementation
     public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
+    public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
     public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections.FirstOrDefault(s => s.name == sectionName);
     #endregion ISectionDefinitionContainer implementation
 
     #region IFieldDefinitionContainer implementation
     public List<LoreAttributeDefinition> fields { get; set; }
+    public bool HasFields => fields != null && fields.Count > 0;
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreAttributeDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
 
     #endregion IFieldDefinitionContainer implementation
 
     public bool freeform { get; set; } = false;
-
-    public bool HasFields => fields != null && fields.Count > 0;
 
     public LoreSectionDefinition() { }
 
@@ -105,6 +107,7 @@ namespace LoreViewer.Settings
 
     // for fields like Date with Start/End
     public List<LoreAttributeDefinition> fields { get; set; }
+    public bool HasFields => fields != null && fields.Count > 0;
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreAttributeDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
 

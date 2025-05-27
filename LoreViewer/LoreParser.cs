@@ -3,6 +3,7 @@ using LoreViewer.Exceptions;
 using LoreViewer.LoreElements;
 using LoreViewer.Settings;
 using Markdig;
+using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -498,7 +500,7 @@ namespace LoreViewer
             break;
 
           case ParagraphBlock pb:
-            newSection.AddNarrativeText(GetStringFromParagraphBlock(pb));
+            newSection.AddNarrativeText(GetStringFromParagraphBlock(pb) + "\r\n");
             break;
 
           // ListBlock can be a list of attributes ONLY if the section definition has fields defined.
@@ -727,6 +729,9 @@ namespace LoreViewer
           case EmphasisInline emph:
             ret += emph.FirstChild.ToString();
             break;
+          case CodeInline code:
+            ret += code.Content;
+            break;
           case LiteralInline lit:
             ret += lit.ToString();
             break;
@@ -749,12 +754,29 @@ namespace LoreViewer
 
       foreach (ListItemBlock lib in lb)
       {
-        ParagraphBlock pb = lib.LastChild as ParagraphBlock;
-        if (pb != null)
-          ret += GetStringFromParagraphBlock(pb) + "\r\n";
-        else
+        ret += GetStringFromListItemBlock(lib);
+      }
+
+      return ret;
+    }
+
+    private static string GetStringFromListItemBlock(ListItemBlock lib)
+    {
+      string ret = string.Empty;
+      foreach(Block block in lib)
+      {
+        switch (block)
         {
-          ret += "\r\n";
+          case ParagraphBlock pb:
+            ret += new string(' ', lib.Column) + (lib.Parent as ListBlock).BulletType + ' ' + GetStringFromParagraphBlock(pb);
+            ret += "\r\n";
+            break;
+          case ListBlock lb:
+            ret += GetStringFromListBlock(lb);
+            break;
+          default:
+            ret += "\r\n";
+            break;
         }
       }
 

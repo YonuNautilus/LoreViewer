@@ -32,5 +32,7 @@ namespace LoreViewer.LoreElements
         Summary = textToAdd;
       else Summary += "\r\n" + textToAdd;
     }
+
+    public bool HasNarrativeText => Summary != string.Empty;
   }
 }

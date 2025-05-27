@@ -1,0 +1,40 @@
+﻿types:
+  - name: SubsectionsTest
+    sections:
+      - name: Freeform With Freeform Child
+        freeform: true
+        sections:
+          - name: Freeform Child
+            freeform: true
+      
+      - name: Fields-Section With Freeform Child
+        fields:
+          - name: Field 1
+          - name: Field 2
+            style: MultiValue
+        freeform: false
+        sections:
+          - name: Freeform Child
+            freeform: true
+      
+      - name: Fields-Section With Fields-Child
+        fields:
+          - name: Field 3
+          - name: Field 4
+            style: MultiValue
+        freeform: false
+        sections:
+          - name: Fields-Child
+            fields:
+              - name: Field 5
+              - name: Field 6
+                style: MultiValue
+      
+      - name: Freeform With Fields-Child
+        freeform: true
+        sections:
+          - name: Fields-Child
+            fields:
+              - name: Field 7
+                style: MultiValue
+              - name: Field 8

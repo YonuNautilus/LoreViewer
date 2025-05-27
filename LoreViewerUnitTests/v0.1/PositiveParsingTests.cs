@@ -15,7 +15,7 @@ namespace v0_1.PositiveTests
 
     static string[] testFiles => new string[] { "FieldsTest.md" }.Select(s => Path.Combine(ValidFilesFolder, s)).ToArray();
 
-    [SetUp]
+    [OneTimeSetUp]
     public static void SetupLoreSettings()
     {
       _parser = new LoreParser();

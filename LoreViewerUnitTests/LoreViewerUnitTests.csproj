@@ -50,6 +50,16 @@
     <None Update="v0.1\TestData\PositiveTestData\SectionsTest.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.3\TestData\PositiveTestData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.3\TestData\PositiveTestData\SectionsTest.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="v0.3\TestData\NegativeTestData\" />
   </ItemGroup>
 
 </Project>
