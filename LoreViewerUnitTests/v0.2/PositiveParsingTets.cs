@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace v0_3.PositiveTests
+﻿namespace v0_2.PositiveTests
 {
   [TestFixture]
   [TestOf(typeof(LoreParser))]
@@ -13,7 +7,7 @@ namespace v0_3.PositiveTests
     public static LoreSettings _settings;
     public static LoreParser _parser;
 
-    static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.3", "TestData", "PositiveTestData");
+    static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.2", "TestData", "PositiveTestData");
 
     static string[] testFiles => new string[] { "SectionsTest.md" }.Select(s => Path.Combine(ValidFilesFolder, s)).ToArray();
 

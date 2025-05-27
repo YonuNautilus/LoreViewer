@@ -1,7 +1,4 @@
-﻿using LoreViewer.Exceptions;
-using static LoreViewer.Exceptions.LoreSectionParsingException;
-
-namespace v0_1.NegativeTests
+﻿namespace v0_1.NegativeTests
 {
   [TestFixture]
   [TestOf(typeof(LoreParser))]
