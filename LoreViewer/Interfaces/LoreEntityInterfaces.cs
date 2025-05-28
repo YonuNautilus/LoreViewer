@@ -1,4 +1,5 @@
 ﻿using LoreViewer.LoreElements;
+using LoreViewer.Settings;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -41,8 +42,18 @@ namespace LoreViewer.LoreElements.Interfaces
   /// <summary>
   /// For any LoreEntity that needs to behave and display like a node (ie LoreNode and LoreCompositeNode)
   /// </summary>
-  public interface ILoreNode: ISectionContainer, IFieldContainer, INodeContainer
+  public interface ILoreNode: ILoreEntity, ISectionContainer, IFieldContainer, INodeContainer
   {
 
+  }
+
+  /// <summary>
+  /// Top-Level interface implemented by LoreEntity - declares Name, ID, important stuff ALL LoreEntities will need.
+  /// </summary>
+  public interface ILoreEntity
+  {
+    string Name { get; set; }
+    LoreDefinitionBase Definition { get; set; }
+    public T DefinitionAs<T>() where T : LoreDefinitionBase { return Definition as T; }
   }
 }

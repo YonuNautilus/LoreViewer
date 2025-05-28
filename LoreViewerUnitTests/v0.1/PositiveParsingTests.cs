@@ -34,7 +34,7 @@ namespace v0_1.PositiveTests
     [Test]
     public void CharacterFieldsTest()
     {
-      LoreEntity tempEntity = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion"));
+      LoreEntity tempEntity = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion")) as LoreEntity;
       LoreNode nodeToCheck = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion")) as LoreNode;
 
       Assert.NotNull(nodeToCheck);

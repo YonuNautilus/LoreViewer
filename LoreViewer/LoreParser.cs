@@ -34,7 +34,7 @@ namespace LoreViewer
     public bool HadFatalError => _hadFatalError;
 
     public ObservableCollection<LoreNodeCollection> _collections = new ObservableCollection<LoreNodeCollection>();
-    public ObservableCollection<LoreEntity> _nodes = new ObservableCollection<LoreEntity>();
+    public ObservableCollection<ILoreNode> _nodes = new ObservableCollection<ILoreNode>();
     public ObservableCollection<Tuple<string, int, int, Exception>> _errors = new();
     public ObservableCollection<string> _warnings = new ObservableCollection<string>();
 

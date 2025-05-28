@@ -1,9 +1,6 @@
-﻿using LoreViewer.Settings;
+﻿using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.Settings;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.LoreElements
 {
@@ -11,12 +8,11 @@ namespace LoreViewer.LoreElements
   /// The root-level abstract class that all parsed lore information derives from.
   /// Holds a name and an ID (which may be removed later)
   /// </summary>
-  public abstract class LoreEntity
+  public abstract class LoreEntity : ILoreEntity
   {
     public string Name { get; set; } = string.Empty;
     public abstract LoreDefinitionBase Definition { get; set; }
     public Guid Id { get; set; }
-
     public LoreEntity(String name, LoreDefinitionBase definition) { Name = name; Definition = definition; }
   }
 
