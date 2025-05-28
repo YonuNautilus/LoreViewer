@@ -1,0 +1,14 @@
+﻿types:
+  - name: TopLevelMerge
+    fields:
+      - name: Field in main file
+        required: true
+      - name: Field in another file
+        required: true
+    sections:
+      - name: Section in main file
+      - name: Section in another file
+  
+  - name: BasicNode
+    fields:
+      - name: basic field

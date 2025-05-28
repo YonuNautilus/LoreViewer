@@ -2,7 +2,7 @@
 {
   [TestFixture]
   [TestOf(typeof(LoreParser))]
-  public class PositiveSectionParsingTets
+  public class PositiveNarrativeParsingTets
   {
     public static LoreSettings _settings;
     public static LoreParser _parser;

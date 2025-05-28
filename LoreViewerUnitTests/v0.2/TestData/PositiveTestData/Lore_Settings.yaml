@@ -38,3 +38,12 @@
               - name: Field 7
                 style: MultiValue
               - name: Field 8
+  
+  - name: NodeTest
+    fields:
+      - name: Field 1
+        style: MultiValue
+    sections:
+      - name: Fields Section
+        fields:
+          - name: Field Junior
