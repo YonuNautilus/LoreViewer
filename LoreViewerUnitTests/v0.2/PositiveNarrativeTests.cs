@@ -42,8 +42,8 @@
       Assert.That(sectionToTest, Is.SameAs(nodeToTest.Sections[0]));
       Assert.IsTrue(sectionToTest.HasNarrativeText);
       Assert.That(sectionToTest.Summary.Trim(), Is.EqualTo("This is the freeform parent section\r\n\r\n- Here is a list\r\n  - here is a subvalue"));
-      Assert.IsFalse(sectionToTest.Definition.HasFields);
-      Assert.IsTrue(sectionToTest.Definition.HasSections);
+      Assert.IsFalse((sectionToTest.Definition as LoreSectionDefinition).HasFields);
+      Assert.IsTrue((sectionToTest.Definition as LoreSectionDefinition).HasSections);
       Assert.That(sectionToTest.Sections, Has.Count.EqualTo(1));
       LoreSection subsectionToTest = sectionToTest.Sections[0];
       Assert.That(sectionToTest.GetSection("Freeform Child"), Is.SameAs(subsectionToTest));
@@ -59,8 +59,8 @@
       Assert.That(nodeToTest.Sections[1], Is.SameAs(sectionToTest));
       Assert.IsTrue(sectionToTest.HasNarrativeText);
       Assert.That(sectionToTest.Summary.Trim(), Is.EqualTo("This section has fields and a freeform subsection. This text should be parsed after the fields and placed in the Summary property of the LoreSection.\r\n\r\nYou know, we have that freeform bool on the LoreSectionDefinition,  but it isn't really used for anything...\r\n\r\nI suppose this is a test to see if a section with fields can parse paragraph blocks after a list of defined fields."));
-      Assert.IsTrue(sectionToTest.Definition.HasFields);
-      Assert.IsTrue(sectionToTest.Definition.HasSections);
+      Assert.IsTrue((sectionToTest.Definition as LoreSectionDefinition).HasFields);
+      Assert.IsTrue((sectionToTest.Definition as LoreSectionDefinition).HasSections);
 
       Assert.That(sectionToTest.Attributes, Has.Count.EqualTo(2));
       LoreAttribute attributeToTest = sectionToTest.Attributes[1];
@@ -84,8 +84,8 @@
       Assert.NotNull(sectionToTest);
       Assert.That(nodeToTest.Sections[2], Is.SameAs(sectionToTest));
       Assert.IsFalse(sectionToTest.HasNarrativeText);
-      Assert.IsTrue(sectionToTest.Definition.HasFields);
-      Assert.IsTrue(sectionToTest.Definition.HasSections);
+      Assert.IsTrue((sectionToTest.Definition as LoreSectionDefinition).HasFields);
+      Assert.IsTrue((sectionToTest.Definition as LoreSectionDefinition).HasSections);
 
       Assert.That(sectionToTest.Attributes, Has.Count.EqualTo(2));
       LoreAttribute attributeToTest = sectionToTest.Attributes[1];
@@ -98,8 +98,8 @@
       Assert.That(sectionToTest.Sections, Has.Count.EqualTo(1));
       LoreSection subsectionToTest = sectionToTest.Sections[0];
       Assert.That(sectionToTest.GetSection("Fields-Child"), Is.SameAs(subsectionToTest));
-      Assert.IsTrue(subsectionToTest.Definition.HasFields);
-      Assert.That(subsectionToTest.Attributes, Has.Count.EqualTo(2));
+      Assert.IsTrue((subsectionToTest.Definition as LoreSectionDefinition).HasFields);
+      Assert.That((subsectionToTest.Definition as LoreSectionDefinition).fields, Has.Count.EqualTo(2));
       Assert.IsFalse(subsectionToTest.Attributes[1].HasValue);
       Assert.IsTrue(subsectionToTest.Attributes[1].HasValues);
     }
@@ -112,8 +112,8 @@
       Assert.NotNull(sectionToTest);
       Assert.That(nodeToTest.Sections[3], Is.SameAs(sectionToTest));
       Assert.IsTrue(sectionToTest.HasNarrativeText);
-      Assert.IsFalse(sectionToTest.Definition.HasFields);
-      Assert.IsTrue(sectionToTest.Definition.HasSections);
+      Assert.IsFalse((sectionToTest.Definition as LoreSectionDefinition).HasFields);
+      Assert.IsTrue((sectionToTest.Definition as LoreSectionDefinition).HasSections);
 
       Assert.That(sectionToTest.Attributes, Is.Empty);
 
@@ -121,7 +121,7 @@
       LoreSection subsectionToTest = sectionToTest.Sections[0];
       Assert.That(sectionToTest.GetSection("Fields-Child"), Is.SameAs(subsectionToTest));
       Assert.IsFalse(subsectionToTest.HasNarrativeText);
-      Assert.IsTrue(subsectionToTest.Definition.HasFields);
+      Assert.IsTrue((subsectionToTest.Definition as LoreSectionDefinition).HasFields);
       Assert.That(subsectionToTest.Attributes, Has.Count.EqualTo(2));
       Assert.IsFalse(subsectionToTest.Attributes[0].HasValue);
       Assert.IsTrue(subsectionToTest.Attributes[0].HasValues);

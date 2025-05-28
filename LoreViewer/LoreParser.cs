@@ -1,9 +1,9 @@
 ﻿using DynamicData;
 using LoreViewer.Exceptions;
 using LoreViewer.LoreElements;
+using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings;
 using Markdig;
-using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using System;
@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -34,8 +33,8 @@ namespace LoreViewer
     private bool _hadFatalError = false;
     public bool HadFatalError => _hadFatalError;
 
-    public ObservableCollection<LoreElement> _collections = new ObservableCollection<LoreElement>();
-    public ObservableCollection<LoreElement> _nodes = new ObservableCollection<LoreElement>();
+    public ObservableCollection<LoreNodeCollection> _collections = new ObservableCollection<LoreNodeCollection>();
+    public ObservableCollection<LoreEntity> _nodes = new ObservableCollection<LoreEntity>();
     public ObservableCollection<Tuple<string, int, int, Exception>> _errors = new();
     public ObservableCollection<string> _warnings = new ObservableCollection<string>();
 
@@ -54,8 +53,8 @@ namespace LoreViewer
       _settings = settings;
     }
 
-    public LoreNode? GetNode(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName)) as LoreNode;
-    public bool HasNode(string nodeName) => _nodes.Any(node => node.Name.Equals(nodeName));
+    public LoreNode? GetNode(string nodeName) => _nodes.Cast<LoreEntity>().FirstOrDefault(node => node.Name.Equals(nodeName)) as LoreNode;
+    public bool HasNode(string nodeName) => _nodes.Cast<LoreEntity>().Any(node => node.Name.Equals(nodeName));
 
 
     public void ParseSettingsFromFile(string settingsFilePath)
@@ -222,7 +221,7 @@ namespace LoreViewer
 
       foreach(LoreNode ln in nodesFromThisFile)
       {
-        LoreNode nodeWithSameName = _nodes.Cast<LoreNode>().FirstOrDefault(node => node.Name == ln.Name && node.Type == ln.Type);
+        LoreNode nodeWithSameName = _nodes.Cast<LoreNode>().FirstOrDefault(node => node.Name == ln.Name && node.Definition == ln.Definition);
         if (nodeWithSameName != null)
           nodeWithSameName.MergeIn(ln);
         else
@@ -258,7 +257,7 @@ namespace LoreViewer
       bool parsingFields = true;
 
       string title = ExtractTitle(heading);
-      LoreNode newNode = new LoreNode(typeDef, title);
+      LoreNode newNode = new LoreNode(title, typeDef);
       newNode.BlockIndex = currentIndex;
 
       currentIndex++;
@@ -324,7 +323,7 @@ namespace LoreViewer
                 {
                   LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
                   LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
-                  newNode.Children.Add(newNodeNode);
+                  newNode.Nodes.Add(newNodeNode);
                 }
                 
                 // Parse as a section, if it has the {section} tag
@@ -409,7 +408,7 @@ namespace LoreViewer
     private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef)
     {
       string title = ExtractTitle(heading);
-      LoreNodeCollection newCollection = new LoreNodeCollection(typeDef, title);
+      LoreNodeCollection newCollection = new LoreNodeCollection(title, typeDef);
 
       currentIndex++;
 
@@ -441,7 +440,7 @@ namespace LoreViewer
     private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, string collectionTag)
     {
       string title = ExtractTitle(heading);
-      LoreNodeCollection newCollection = new LoreNodeCollection();
+      LoreNodeCollection newCollection = new LoreNodeCollection(title, new LoreTypeDefinition());
 
       return newCollection;
     }
@@ -465,8 +464,7 @@ namespace LoreViewer
     /// <returns></returns>
     private LoreSection ParseSection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreSectionDefinition secDef)
     {
-      LoreSection newSection = new LoreSection(ExtractTitle(heading));
-      newSection.Definition = secDef;
+      LoreSection newSection = new LoreSection(ExtractTitle(heading), secDef);
 
       currentIndex++;
 
@@ -581,11 +579,9 @@ namespace LoreViewer
         var contentItem = (item as ListItemBlock)[0] as ParagraphBlock;
         var inline = contentItem.Inline.FirstChild;
 
-        LoreAttribute newAttribute = new LoreAttribute();
-
         string parsedFieldName = string.Empty;
-        string parsedFieldValue = string.Empty;
         List<string> parsedFieldValues = new List<string>();
+        List<LoreAttribute> parsedNestedAttributes = new List<LoreAttribute>();
 
         // STEP 1: Get the field name:.
 
@@ -601,8 +597,7 @@ namespace LoreViewer
         {
           var fieldAndVal = parsedInlineText.Split(':', 2);
           parsedFieldName = TrimFieldName(fieldAndVal[0]);
-          parsedFieldValue = fieldAndVal[1];
-          newAttribute.Value = parsedFieldValue.Trim();
+          parsedFieldValues.Add(fieldAndVal[1].Trim());
         }
         // otherwise, it does not have a value, just trim the inline text to a field name.
         else
@@ -611,10 +606,12 @@ namespace LoreViewer
         }
 
         // either way, we have the field name. Let's see if we can find a definition -- if not, it remains null
-        newAttribute.Definition = attributeDefinitions.Where(lad => lad.name.Equals(parsedFieldName)).FirstOrDefault();
+        LoreAttributeDefinition newDef = attributeDefinitions.Where(lad => lad.name.Equals(parsedFieldName)).FirstOrDefault();
 
-        if (newAttribute.Definition == null)
+        if (newDef == null)
           throw new UnexpectedFieldNameException(string.Empty, currentIndex, contentItem.Line + 1, parsedFieldName);
+
+        LoreAttribute newAttribute = new LoreAttribute(parsedFieldName, newDef);
 
 
         /* NESTED PARSING & SUBBULLET
@@ -644,23 +641,23 @@ namespace LoreViewer
           ListBlock lb = (item as ListItemBlock)[1] as ListBlock;
 
           // if it has nested fields
-          if (newAttribute.Definition.HasNestedFields)
+          if (newDef.HasFields)
           {
-            newAttribute.NestedAttributes = ParseListAttributes(doc, currentIndex, lb, newAttribute.Definition.fields);
+            parsedNestedAttributes.Add(ParseListAttributes(doc, currentIndex, lb, newDef.fields));
           }
 
           // if it allows multiple values
-          else if (newAttribute.Definition.style == EStyle.MultiValue)
+          else if (newDef.style == EStyle.MultiValue)
           {
             newAttribute.Values = new List<string>();
             foreach (ListItemBlock block in lb)
             {
-              newAttribute.Values.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock).Trim());
+              parsedFieldValues.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock).Trim());
             }
           }
-          else if (newAttribute.Definition.style == EStyle.Textual)
+          else if (newDef.style == EStyle.Textual)
           {
-            newAttribute.Value = GetStringFromListBlock(lb);
+            parsedFieldValues.Add(GetStringFromListBlock(lb));
           }
 
           // if no nested fields and not multivalue, we sure better hope this nested ListBlock is just a single value...
@@ -671,11 +668,12 @@ namespace LoreViewer
 
             ListItemBlock lib = lb[0] as ListItemBlock;
 
-            newAttribute.Value = GetStringFromParagraphBlock(lib[0] as ParagraphBlock);
+            parsedFieldValues.Add(GetStringFromParagraphBlock(lib[0] as ParagraphBlock));
           }
         }
 
-        newAttribute.Name = parsedFieldName;
+        newAttribute.Append(parsedFieldValues);
+        newAttribute.Attributes.Add(parsedNestedAttributes);
         attributeList.Add(newAttribute);
 
       }

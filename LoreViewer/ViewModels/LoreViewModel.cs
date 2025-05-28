@@ -20,8 +20,8 @@ namespace LoreViewer.ViewModels
 
     private string m_sLoreLibraryFolderPath = string.Empty;
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
-    private List<LoreElement> _nodes => _parser._nodes.ToList();
-    private List<LoreElement> _collections => _parser._collections.ToList();
+    private List<LoreEntity> _nodes => _parser._nodes.Cast<LoreEntity>().ToList();
+    private List<LoreNodeCollection> _collections => _parser._collections.ToList();
 
     private ObservableCollection<LoreTreeItem> _nodeTreeItems = new ObservableCollection<LoreTreeItem>();
     public ObservableCollection<LoreTreeItem> Nodes { get => _nodeTreeItems; set => this.RaiseAndSetIfChanged(ref _nodeTreeItems, value); }

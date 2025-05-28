@@ -59,8 +59,8 @@ namespace LoreViewer.ViewModels
           foreach (LoreNodeCollection childCollection in ln.CollectionChildren)
             Children.Add(new LoreTreeItem(childCollection));
 
-        if (ln.Children != null && ln.Children.Count() > 0)
-          Children.Add(CreateParentItem(ln.Children, "Nodes"));
+        if (ln.Nodes != null && ln.Nodes.Count() > 0)
+          Children.Add(CreateParentItem(ln.Nodes, "Nodes"));
       }
 
       if(e is LoreNodeCollection lnc && lnc != null && lnc.Count > 0)
@@ -74,8 +74,8 @@ namespace LoreViewer.ViewModels
       {
         LoreAttribute la = e as LoreAttribute;
 
-        if (la.HasNestedAttributes)
-          foreach (LoreAttribute nestedAttr in la.NestedAttributes)
+        if (la.HasAttributes)
+          foreach (LoreAttribute nestedAttr in la.Attributes)
             Children.Add(new LoreTreeItem(nestedAttr));
 
         if (la.HasValue && !la.HasValues)

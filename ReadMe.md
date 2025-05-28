@@ -6,6 +6,24 @@ This tool allows you to define your own schema for different types of lore eleme
 
 ---
 
+## Core Values of LoreViewer
+1. Human-Readable Markdown First
+    - Markdown files must remain human-reable. They should be intuitive to read and write without this software.
+    - Heading structure and tags are designed to be out-of-the-way but easily written by hand.
+    - The schema enforces **structure** but never obfuscates it.
+2. Precision in Exception Handling
+    - Errors are **contextual**: they include file name, block index, and node type.
+    - Exceptions are meaningful: no vague stack traces.
+    - Errors should **guide**, not confuse—especially since writers may not be developers.
+3. Schema-Driven, But ^Somewhat^ Forgiving
+    - (Currently, users cannot add attributes to a LoreElement that are not defined in schema)
+	- Allow LoreSections and LoreNodeCollections to exist even when not defined in schema.
+4. Mergable, Divisible, Decentralized Content
+    - Nodes can be written across multiple markdown files, but will still be viewed as **one element** in LoreViewer
+	- Allowing file separation is built on the understanding that human-driven file organization comes in many forms.
+
+---
+
 ## Core Rules for the Current Prototype
 
 1. A defined type can only use one field layout style (e.g. bullet list — table support is planned but not yet implemented)
@@ -81,7 +99,7 @@ types:
         style: bullet_point
         required: true
       - name: Aliases
-        multi: true
+        style: MultiValue
       - name: Employment History
         nestedFields:
           - name: Organization
@@ -155,6 +173,13 @@ Vera is gentle and diligent.
 - Hesitant
 - Easily flustered
 ```
+
+---
+
+## Errors and Exceptions
+
+A key part of LoreViewer's parsing is its ability to point out specifically what rule was violated during parsing, which file it occured in, and *where* specifically it occured.
+Parsing exceptions will contain all of this information, allowing users to know *exactly* what caused a problem.
 
 ---
 

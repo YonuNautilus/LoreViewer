@@ -4,13 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.AccessControl;
 
 namespace LoreViewer.LoreElements
 {
-  public class LoreNode : LoreNarrativeElement, IFieldContainer, ISectionContainer
+  public class LoreNode : LoreNarrativeElement, ILoreNode
   {
-    public LoreTypeDefinition Type { get; set; }
+    public override LoreDefinitionBase Definition { get => _definition ; set { _definition = value as LoreTypeDefinition; } }
+    private LoreTypeDefinition _definition;
 
     #region IFieldContainer Implementation
     public ObservableCollection<LoreAttribute> Attributes { get; set; } = new ObservableCollection<LoreAttribute>();
@@ -23,15 +25,17 @@ namespace LoreViewer.LoreElements
     public bool HasSection(string name) => Sections.Any(s => s.Name == name);
     #endregion
 
-    public ObservableCollection<LoreNode> Children = new ObservableCollection<LoreNode>();
+    #region INodeContainer Implementation
+    public ObservableCollection<LoreNode> Nodes { get; } = new ObservableCollection<LoreNode>();
+
+    public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
+
+    public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
+    #endregion
 
     public ObservableCollection<LoreNodeCollection> CollectionChildren = new ObservableCollection<LoreNodeCollection>();
 
-    public LoreNode(LoreTypeDefinition type, string name)
-    {
-      Type = type;
-      Name = name;
-    }
+    public LoreNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
 
     public bool HasCollectionOfType(LoreTypeDefinition typeDef) => CollectionChildren.Any(c => c.Type == typeDef);
 
@@ -48,11 +52,11 @@ namespace LoreViewer.LoreElements
 
       foreach (LoreSection ls in toMergeIn.Sections)
         Sections.Add(ls);
+      
+      foreach (LoreNode ln in toMergeIn.Nodes)
+        Nodes.Add(ln);
 
-      foreach(LoreNode ln in toMergeIn.Children)
-        Children.Add(ln);
-
-      foreach(LoreNodeCollection lnc in toMergeIn.CollectionChildren)
+      foreach (LoreNodeCollection lnc in toMergeIn.CollectionChildren)
         CollectionChildren.Add(lnc);
     }
   }

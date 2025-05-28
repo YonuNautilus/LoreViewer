@@ -9,6 +9,9 @@ namespace LoreViewer.LoreElements
 {
   public class LoreSection : LoreNarrativeElement, IFieldContainer, ISectionContainer
   {
+    public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreSectionDefinition; } }
+    private LoreSectionDefinition _definition;
+
     #region IFieldContainer Implementation
     public ObservableCollection<LoreAttribute> Attributes { get; set; } = new ObservableCollection<LoreAttribute>();
     public LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
@@ -28,14 +31,6 @@ namespace LoreViewer.LoreElements
       set { _blocks = value; }
     }
 
-
-    public LoreSection() { }
-
-    public LoreSection(string name) { Name = name; }
-
-    public LoreSection(List<Block> block) { Blocks = block; }
-
-    public LoreSectionDefinition Definition;
-
+    public LoreSection(string name, LoreSectionDefinition definition) : base(name, definition) { }
   }
 }

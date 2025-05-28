@@ -34,6 +34,7 @@ namespace v0_1.PositiveTests
     [Test]
     public void CharacterFieldsTest()
     {
+      LoreEntity tempEntity = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion"));
       LoreNode nodeToCheck = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion")) as LoreNode;
 
       Assert.NotNull(nodeToCheck);
@@ -64,25 +65,25 @@ namespace v0_1.PositiveTests
 
       Assert.Null(nodeToCheck.GetAttribute(currAttr).Values);
       Assert.Null(nodeToCheck.GetAttribute(currAttr).Value);
-      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).NestedAttributes);
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).HasAttributes);
 
-      Assert.That(nodeToCheck.GetAttribute(currAttr).NestedAttributes.Count, Is.EqualTo(3));
-      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Organization"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).Attributes.Count, Is.EqualTo(3));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetAttribute("Organization"));
 
-      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Organization").Value);
-      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Organization").Value, Is.EqualTo("Nightfall Syndicate"));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetAttribute("Organization").Value);
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetAttribute("Organization").Value, Is.EqualTo("Nightfall Syndicate"));
 
-      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles"));
-      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values);
-      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values.Count, Is.EqualTo(3));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetAttribute("Roles"));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetAttribute("Roles").Values);
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetAttribute("Roles").Values.Count, Is.EqualTo(3));
 
-      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values[0], Is.EqualTo("Infiltrator"));
-      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values[1], Is.EqualTo("Handler"));
-      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Roles").Values[2], Is.EqualTo("Intel Courier"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetAttribute("Roles").Values[0], Is.EqualTo("Infiltrator"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetAttribute("Roles").Values[1], Is.EqualTo("Handler"));
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetAttribute("Roles").Values[2], Is.EqualTo("Intel Courier"));
 
-      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Duration"));
-      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Duration").Value);
-      Assert.That(nodeToCheck.GetAttribute(currAttr).GetNestedAttribute("Duration").Value, Is.EqualTo("2012–2021"));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetAttribute("Duration"));
+      Assert.NotNull(nodeToCheck.GetAttribute(currAttr).GetAttribute("Duration").Value);
+      Assert.That(nodeToCheck.GetAttribute(currAttr).GetAttribute("Duration").Value, Is.EqualTo("2012–2021"));
     }
 
     [Test]
@@ -118,9 +119,9 @@ namespace v0_1.PositiveTests
 
       // Nested field parsing
       var nested = node.GetAttribute("NestedField");
-      Assert.That(nested.GetNestedAttribute("SubFieldOne").Value, Is.EqualTo("Value1"));
-      Assert.That(nested.GetNestedAttribute("SubFieldBold").Value, Is.EqualTo("Bold-labeled nested value"));
-      Assert.That(nested.GetNestedAttribute("SubFieldItalic").Value, Is.EqualTo("Italic-labeled nested value"));
+      Assert.That(nested.GetAttribute("SubFieldOne").Value, Is.EqualTo("Value1"));
+      Assert.That(nested.GetAttribute("SubFieldBold").Value, Is.EqualTo("Bold-labeled nested value"));
+      Assert.That(nested.GetAttribute("SubFieldItalic").Value, Is.EqualTo("Italic-labeled nested value"));
 
       // Multi-value flat list
       var multi = node.GetAttribute("MultiField").Values;
@@ -130,7 +131,7 @@ namespace v0_1.PositiveTests
       Assert.That(multi[2], Is.EqualTo("Three (bolded value)"));
 
       // Nested multi-value
-      var nestedMulti = node.GetAttribute("NestedMultiField").GetNestedAttribute("DetailList").Values;
+      var nestedMulti = node.GetAttribute("NestedMultiField").GetAttribute("DetailList").Values;
       Assert.That(nestedMulti, Has.Count.EqualTo(3));
       Assert.That(nestedMulti[0], Is.EqualTo("Alpha"));
       Assert.That(nestedMulti[1], Is.EqualTo("Beta (italic)"));
