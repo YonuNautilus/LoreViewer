@@ -44,7 +44,7 @@ namespace LoreViewer.LoreElements.Interfaces
   /// </summary>
   public interface ILoreNode: ILoreEntity, ISectionContainer, IFieldContainer, INodeContainer
   {
-
+    ILoreNode MergeWith(LoreNode node);
   }
 
   /// <summary>

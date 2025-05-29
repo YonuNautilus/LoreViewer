@@ -172,7 +172,7 @@ namespace v0_1.PositiveTests
     [Test]
     public void ParseSectionTest_CorrectBlocksAndContent()
     {
-      LoreNode? node = _parser.GetNode("Section Target Test");
+      LoreNode? node = _parser.GetNode("Section Target Test") as LoreNode;
 
       Assert.NotNull(node);
 
@@ -217,7 +217,7 @@ namespace v0_1.PositiveTests
     [Test]
     public void ParseSectionWithFields_ParsesAttributesCorrectly()
     {
-      LoreNode? node = _parser.GetNode("Fielded Section Test");
+      LoreNode? node = _parser.GetNode("Fielded Section Test") as LoreNode;
       Assert.NotNull(node);
 
       LoreSection? personality = node.GetSection("Personality");

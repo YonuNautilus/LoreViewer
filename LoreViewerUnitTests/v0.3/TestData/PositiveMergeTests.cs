@@ -1,4 +1,6 @@
-﻿namespace v0_3.PositiveTests
+﻿using LoreViewer.LoreElements.Interfaces;
+
+namespace v0_3.PositiveTests
 {
   [TestFixture]
   [TestOf(typeof(LoreParser))]
@@ -28,18 +30,19 @@
     public void SectionsCountTest()
     {
       Assert.That(_parser._nodes, Has.Count.EqualTo(1));
-      Assert.That(_parser._nodes[0], Is.TypeOf(typeof(LoreNode)));
-      Assert.That((_parser._nodes[0] as LoreNode).Sections, Has.Count.EqualTo(2));
-      Assert.IsTrue((_parser._nodes[0] as LoreNode).HasNarrativeText);
+      Assert.That(_parser._nodes[0], Is.TypeOf(typeof(LoreCompositeNode)));
+      Assert.That((_parser._nodes[0]).Sections, Has.Count.EqualTo(2));
+      Assert.IsTrue((_parser._nodes[0].Nodes[0]).HasNarrativeText);
     }
 
     [Test]
     public void TopLevelNodeMerge()
     {
-      LoreNode nodeToTest = _parser._nodes[0] as LoreNode;
+      ILoreNode inodeToTest = _parser._nodes[0] as LoreCompositeNode;
+      LoreCompositeNode nodeToTest = _parser._nodes[0] as LoreCompositeNode;
       Assert.NotNull(nodeToTest);
       Assert.That(nodeToTest, Is.SameAs(_parser.GetNode("Node To Merge")));
-      Assert.IsTrue(nodeToTest.HasNarrativeText);
+      Assert.IsTrue(nodeToTest.Nodes[0].HasNarrativeText);
       Assert.That(nodeToTest.Sections, Has.Count.EqualTo(2));
     }
 

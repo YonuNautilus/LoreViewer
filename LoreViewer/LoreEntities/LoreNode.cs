@@ -59,5 +59,7 @@ namespace LoreViewer.LoreElements
       foreach (LoreNodeCollection lnc in toMergeIn.CollectionChildren)
         CollectionChildren.Add(lnc);
     }
+
+    public ILoreNode MergeWith(LoreNode node) => new LoreCompositeNode(this, node);
   }
 }

@@ -53,8 +53,8 @@ namespace LoreViewer
       _settings = settings;
     }
 
-    public LoreNode? GetNode(string nodeName) => _nodes.Cast<LoreEntity>().FirstOrDefault(node => node.Name.Equals(nodeName)) as LoreNode;
-    public bool HasNode(string nodeName) => _nodes.Cast<LoreEntity>().Any(node => node.Name.Equals(nodeName));
+    public ILoreNode? GetNode(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName));
+    public bool HasNode(string nodeName) => _nodes.Any(node => node.Name.Equals(nodeName));
 
 
     public void ParseSettingsFromFile(string settingsFilePath)
@@ -164,7 +164,8 @@ namespace LoreViewer
 
       // Start collecting a set of LoreElements for this file.
 
-      List<LoreElement> elementsInThisFile = new List<LoreElement>();
+      List<ILoreNode> elementsInThisFile = new List<ILoreNode>();
+      List<LoreNodeCollection> collectionsInThisFile = new List<LoreNodeCollection>();
 
       while (currentIndex < document.Count)
       {
@@ -183,11 +184,11 @@ namespace LoreViewer
               if (BlockIsANestedCollection(block))
               {
                 //_collections.Add(ParseCollection(document, ref currentIndex, block, tag));
-                elementsInThisFile.Add(ParseCollection(document, ref currentIndex, block, tag));
+                collectionsInThisFile.Add(ParseCollection(document, ref currentIndex, block, tag));
               }
               else
                 //_collections.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
-                elementsInThisFile.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
+                collectionsInThisFile.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
             }
             else if (_settings.HasTypeDefinition(tag))
             {
@@ -216,14 +217,14 @@ namespace LoreViewer
       }
 
       // Now, all elements have been collected.
-      LoreNode[] nodesFromThisFile = elementsInThisFile.Where(le => le is LoreNode).Cast<LoreNode>().ToArray();
-      LoreNodeCollection[] collectionsFromThisFile = elementsInThisFile.Where(le => le is LoreNodeCollection).Cast<LoreNodeCollection>().ToArray();
+      IEnumerable<ILoreNode> nodesFromThisFile = elementsInThisFile.Where(le => le is LoreNode);
+      IEnumerable<LoreNodeCollection> collectionsFromThisFile = collectionsInThisFile.Where(le => le is LoreNodeCollection);
 
       foreach(LoreNode ln in nodesFromThisFile)
       {
-        LoreNode nodeWithSameName = _nodes.Cast<LoreNode>().FirstOrDefault(node => node.Name == ln.Name && node.Definition == ln.Definition);
+        ILoreNode nodeWithSameName = _nodes.FirstOrDefault(node => node.Name == ln.Name && node.Definition == ln.Definition);
         if (nodeWithSameName != null)
-          nodeWithSameName.MergeIn(ln);
+          _nodes.Replace(nodeWithSameName, nodeWithSameName.MergeWith(ln));
         else
           _nodes.Add(ln);
       }

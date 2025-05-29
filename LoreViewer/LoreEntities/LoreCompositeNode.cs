@@ -35,9 +35,14 @@ namespace LoreViewer.LoreElements
 
     public LoreCompositeNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
 
-    public LoreCompositeNode(LoreNode newNode) : base(newNode.Name, newNode.Definition)
+    public LoreCompositeNode(LoreNode newNode) : base(newNode.Name, newNode.Definition) { Nodes.Add(newNode); }
+
+    public LoreCompositeNode(LoreNode original, LoreNode newNode) : this(original) { Nodes.Add(newNode); }
+
+    public ILoreNode MergeWith(LoreNode newNode)
     {
       Nodes.Add(newNode);
+      return this;
     }
   }
 }
