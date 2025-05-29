@@ -75,9 +75,9 @@ namespace LoreViewer.ViewModels
         _nodeTreeItems.Clear();
         _nodeCollectionTreeItems.Clear();
 
-        foreach(LoreElement e in _nodes) Nodes.Add(new LoreTreeItem(e));
+        foreach(LoreEntity e in _nodes) Nodes.Add(new LoreTreeItem(e));
 
-        foreach (LoreElement e in _collections) NodeCollections.Add(new LoreTreeItem(e));
+        foreach (LoreEntity e in _collections) NodeCollections.Add(new LoreTreeItem(e));
 
         this.RaisePropertyChanged("Errors");
         this.RaisePropertyChanged("Warnings");

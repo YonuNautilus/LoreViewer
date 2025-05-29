@@ -32,10 +32,10 @@ namespace LoreViewer.ViewModels
       }
     }
 
-    public LoreElement element { get; set; }
+    public LoreEntity element { get; set; }
 
     public ObservableCollection<LoreTreeItem> Children { get; set; } = new();
-    public LoreTreeItem(LoreElement e)
+    public LoreTreeItem(LoreEntity e)
     {
       if (e == null) return;
 
@@ -60,7 +60,9 @@ namespace LoreViewer.ViewModels
             Children.Add(new LoreTreeItem(childCollection));
 
         if (ln.Nodes != null && ln.Nodes.Count() > 0)
-          Children.Add(CreateParentItem(ln.Nodes, "Nodes"));
+          //Children.Add(CreateParentItem(ln.Nodes, "Nodes"));
+          foreach(LoreNode node in ln.Nodes)
+            Children.Add(new LoreTreeItem(node));
       }
 
       if(e is LoreNodeCollection lnc && lnc != null && lnc.Count > 0)
