@@ -19,6 +19,14 @@ namespace LoreViewer.Settings
     public LoreTypeDefinition GetTypeDefinition(string typeName) => types.FirstOrDefault(type => type.name.Equals(typeName));
     public LoreCollectionDefinition GetCollectionDefinition(string typeName) => collections.FirstOrDefault(type => type.name.Equals(typeName));
 
+
+    public void PostProcess()
+    {
+      foreach (LoreTypeDefinition ltd in types)
+        ltd.PostProcess(this);
+      foreach (LoreCollectionDefinition lcd in collections)
+        lcd.PostProcess(this);
+    }
   }
   public class AppSettings
   {

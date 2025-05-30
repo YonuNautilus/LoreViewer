@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoreViewer.Settings;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -74,19 +75,19 @@ namespace LoreViewer.Exceptions
     }
   }
 
-  public class LoreSectionParsingException : LoreParsingException
+  public abstract class LoreSectionParsingException : LoreParsingException
   {
     public LoreSectionParsingException(string filePath, int blockIndex, int lineNumber, string msg)
       : base(filePath, blockIndex, lineNumber, msg) { }
- 
-    public class UnexpectedSectionNameException : LoreSectionParsingException
-    {
-      static string msgBase = "Section without definiton found. Section title: {0}; Line number {1}";
-      public UnexpectedSectionNameException(string filePath, int blockIndex, int lineNumber, string headingTitle, string subHeadingTitle)
-        : base(filePath, blockIndex, lineNumber, string.Format(msgBase, subHeadingTitle, lineNumber)) { }
-    }
-
   }
+
+  public class UnexpectedSectionNameException : LoreSectionParsingException
+  {
+    static string msgBase = "Section without definiton found. Section title: {0}; Line number {1}";
+    public UnexpectedSectionNameException(string filePath, int blockIndex, int lineNumber, string headingTitle, string subHeadingTitle)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, subHeadingTitle, lineNumber)) { }
+  }
+
 
   /*
    LoreAttributeParsingException
@@ -95,24 +96,37 @@ namespace LoreViewer.Exceptions
 │   ├── UnexpectedFlatValueException
 │   └── UnexpectedMultiStructureException
    */
-  public class LoreAttributeParsingException : LoreParsingException
+  public abstract class LoreAttributeParsingException : LoreParsingException
   {
     public LoreAttributeParsingException(string filePath, int blockIndex, int lineNumber, string msg)
       : base(filePath, blockIndex, lineNumber, msg) { }
 
+  }
 
-    public class UnexpectedFieldNameException : LoreAttributeParsingException
-    {
-      static string msgBase = "No definition found for attribute {0}, file line number {1}";
-      public UnexpectedFieldNameException(string filePath, int blockIndex, int lineNumber, string info)
-        : base(filePath, blockIndex, lineNumber, string.Format(msgBase, info, lineNumber)) { }
-    }
-    public class NestedBulletsOnSingleValueChildlessAttributeException : LoreAttributeParsingException
-    {
-      static string msgBase = "Can't have more than one indented bullet on an attribute with a single value or no nested attributes. Attribute: {0}";
+  public class UnexpectedFieldNameException : LoreAttributeParsingException
+  {
+    static string msgBase = "No definition found for attribute {0}, file line number {1}";
+    public UnexpectedFieldNameException(string filePath, int blockIndex, int lineNumber, string info)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, info, lineNumber)) { }
+  }
+  public class NestedBulletsOnSingleValueChildlessAttributeException : LoreAttributeParsingException
+  {
+    static string msgBase = "Can't have more than one indented bullet on an attribute with a single value or no nested attributes. Attribute: {0}";
 
-      public NestedBulletsOnSingleValueChildlessAttributeException(string filePath, int blockIndex, int lineNumber, string attributeName)
-        : base(filePath, blockIndex, lineNumber, string.Format(msgBase, attributeName)) { }
-    }
+    public NestedBulletsOnSingleValueChildlessAttributeException(string filePath, int blockIndex, int lineNumber, string attributeName)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, attributeName)) { }
+  }
+
+  public class LoreCollectionParsingException : LoreParsingException
+  {
+    public LoreCollectionParsingException(string filePath, int blockIndex, int lineNumber, string msg)
+      : base(filePath, blockIndex, lineNumber, msg) { }
+  }
+
+  public class InvalidContainedTypeDefinitionException: LoreCollectionParsingException
+  {
+    static string msgBase = "Tried to parse a collection with an invalid type {0}. Type can only be Type (node) or Collection";
+    public InvalidContainedTypeDefinitionException(string filePath, int blockIndex, int lineNumber, LoreDefinitionBase containedType)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, containedType)) { }
   }
 }

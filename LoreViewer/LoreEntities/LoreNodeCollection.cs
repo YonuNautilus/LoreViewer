@@ -11,54 +11,32 @@ using System.Linq;
 
 namespace LoreViewer.LoreElements
 {
-  public abstract class LoreCollection : LoreNarrativeElement
+  public class LoreCollection : LoreNarrativeElement, INodeContainer, ICollectionContainer
   {
-    public LoreCollection(string name, LoreDefinitionBase containedType) : base(name, containedType) { }
-  }
-
-  public class LoreNodeCollection : LoreCollection, INodeContainer
-  {
+    public override LoreDefinitionBase Definition { get; set; }
     #region INodeContainer Implementation
     public ObservableCollection<LoreNode> Nodes { get; set; } = new ObservableCollection<LoreNode>();
     public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
     public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
     #endregion
-
-    public override LoreDefinitionBase Definition { get; set; }
-
-    public LoreTypeDefinition Type { get; set; }
-
-    public LoreNodeCollection(string name, LoreDefinitionBase containedType) : base(name, containedType) { }
-
-    public int Count => Nodes.Count();
-
-    public void Add(LoreNode item) => Nodes.Add(item);
-
-    public IEnumerator<LoreNode> GetEnumerator() => Nodes.GetEnumerator();
-
-    public override string ToString() => $"Collection of {Definition.name}";
-  }
-
-  public class LoreCollectionCollection : LoreCollection, INodeCollectionContainer
-  {
-    public override LoreDefinitionBase Definition { get; set; }
-
     #region INodeCollectionContainer Implementation
-    public ObservableCollection<LoreNodeCollection> Collections { get; }
+    public ObservableCollection<LoreCollection> Collections { get; }
     public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
-    public LoreNodeCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
+    public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
     public bool HasCollections => Collections.Any();
-    public bool HasCollectionOfType(LoreTypeDefinition typeDef) => Collections.Any(c => c.Type == typeDef);
-    public LoreNodeCollection? GetCollectionOfType(LoreTypeDefinition typeDef) => Collections.FirstOrDefault(c => c.Type == typeDef);
-    public bool HasCollectionOfTypeName(string typeName) => Collections.Any(c => c.Type.name.Equals(typeName));
-    public LoreNodeCollection? GetCollectionOfTypeName(string typeName) => Collections.FirstOrDefault(c => c.Type.name == typeName);
+    public bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
+    public LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
+    public bool HasCollectionOfTypeName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
+    public LoreCollection? GetCollectionOfTypeName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
     #endregion
 
-    public LoreCollectionCollection(string name, LoreDefinitionBase containedType) : base(name, containedType) { }
+    public LoreCollection(string name, LoreDefinitionBase containedType) : base(name, containedType) { }
 
-    public int Count => Collections.Count();
-    public void Add(LoreNodeCollection item) => Collections.Add(item);
-    public IEnumerator<LoreNodeCollection> GetEnumerator() => Collections.GetEnumerator();
-    public override string ToString() => $"Collection of {Definition.name}";
+    public bool ContainsNodes => Definition is LoreTypeDefinition;
+    public bool ContainsCollections => Definition is LoreCollectionDefinition;
+
+    public int Count => ContainsNodes ? Nodes.Count : Collections.Count();
+
+    public IEnumerator<LoreElement> GetEnumerator() => ContainsNodes ? Nodes.GetEnumerator() : Collections.GetEnumerator();
   }
 }

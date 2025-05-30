@@ -1,7 +1,9 @@
-﻿using LoreViewer.Settings.Interfaces;
+﻿using LoreViewer.LoreElements;
+using LoreViewer.Settings.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Threading;
 
 namespace LoreViewer.Settings
 {
@@ -12,6 +14,12 @@ namespace LoreViewer.Settings
     Textual
   }
 
+  public enum ECollectionMode
+  {
+    Nodes,
+    Collections
+  }
+
   public abstract class LoreDefinitionBase
   {
     public string name { get; set; } = string.Empty;
@@ -19,6 +27,8 @@ namespace LoreViewer.Settings
     public LoreDefinitionBase() { }
 
     public LoreDefinitionBase(string name) { this.name = name; }
+
+    public abstract void PostProcess(LoreSettings settings);
   }
 
   /// <summary>
@@ -51,16 +61,12 @@ namespace LoreViewer.Settings
     public string extends {  get; set; }
 
     private List<string> RelevantFilePaths = new List<string>();
-    /// <summary>
-    /// Collection of field definitions that should be visible at the top of the markdown on a declared object of a type.
-    /// For example, a character will have a field for name, a field for race, etc.
-    /// </summary>
 
-    /// <summary>
-    /// A collection of sections in an object's file (or section). These will contain more infomation, usually paragraphs,
-    /// that expand upon base level fields, or add new information. Sections can contain their own fields and subsections.
-    /// </summary>
-
+    public override void PostProcess(LoreSettings settings)
+    {
+      foreach(LoreCollectionDefinition colDef in collections)
+        colDef.PostProcess(settings);
+    }
   }
 
   /// <summary>
@@ -89,10 +95,20 @@ namespace LoreViewer.Settings
     public LoreSectionDefinition() { }
 
     public LoreSectionDefinition(string name, bool isFreeForm) : base(name) { freeform = isFreeForm; }
+
+    public override void PostProcess(LoreSettings settings) { }
   }
 
   public class LoreAttributeDefinition : LoreDefinitionBase, IFieldDefinitionContainer
   {
+    #region IFieldDefinitionContainer implementation
+    // for fields like Date with Start/End
+    public List<LoreAttributeDefinition> fields { get; set; }
+    public bool HasFields => fields != null && fields.Count > 0;
+    public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
+    public LoreAttributeDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
+    #endregion IFieldDefinitionContainer implementation
+
     public EStyle style { get; set; } = EStyle.SingleValue;
 
     public bool required = false;
@@ -103,28 +119,21 @@ namespace LoreViewer.Settings
 
     public bool HasRequiredNestedFields => HasNestedFields ? fields.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedFields, r => r) : false;
 
-    #region IFieldDefinitionContainer implementation
-
-    // for fields like Date with Start/End
-    public List<LoreAttributeDefinition> fields { get; set; }
-    public bool HasFields => fields != null && fields.Count > 0;
-    public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
-    public LoreAttributeDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
-
-    #endregion IFieldDefinitionContainer implementation
+    public override void PostProcess(LoreSettings settings) { }
   }
 
-  public class LoreCollectionDefinition : LoreDefinitionBase, ICollectionDefinitionContainer
+  public class LoreCollectionDefinition : LoreDefinitionBase
   {
-    #region ICollectionDefinitionContainer
-    public List<LoreCollectionDefinition> collections { get; set; } = new List<LoreCollectionDefinition>();
-    public bool HasCollectionDefinition(string collectionName) => collections.Any(col => collectionName.Contains(col.name));
-    public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
-    #endregion ICollectionDefinitionContainer
-
-    public string entryType { get; set; } = string.Empty;
-    public string EntryStyle { get; set; } = string.Empty;
+    public string entryTypeName { get; set; } = string.Empty;
+    public LoreDefinitionBase ContainedType { get; set; }
     public bool SortEntries { get; set; }
 
+    public override void PostProcess(LoreSettings settings)
+    {
+      if (settings.HasTypeDefinition(this.entryTypeName))
+        ContainedType = settings.GetTypeDefinition(this.entryTypeName);
+      else
+        throw new System.Exception($"Could not find type ({entryTypeName}) definition for collection {this.name}");
+    }
   }
 }

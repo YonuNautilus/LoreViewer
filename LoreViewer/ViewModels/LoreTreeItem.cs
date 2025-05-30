@@ -41,8 +41,8 @@ namespace LoreViewer.ViewModels
 
       this.element = e;
 
-      if (e is LoreNodeCollection)
-        DisplayName = $"{e.Name} - {((LoreNodeCollection)e).Count} items";
+      if (e is LoreCollection)
+        DisplayName = $"{e.Name} - {((LoreCollection)e).Count} items";
       else
         DisplayName = e.Name;
 
@@ -56,7 +56,7 @@ namespace LoreViewer.ViewModels
       {
         ILoreNode ln = e as ILoreNode;
         if (ln.Collections != null && ln.Collections.Count() > 0)
-          foreach (LoreNodeCollection childCollection in ln.Collections)
+          foreach (LoreCollection childCollection in ln.Collections)
             Children.Add(new LoreTreeItem(childCollection));
 
         if(ln is LoreNode)
@@ -66,7 +66,7 @@ namespace LoreViewer.ViewModels
               Children.Add(new LoreTreeItem(node));
       }
 
-      if(e is LoreNodeCollection lnc && lnc != null && lnc.Count > 0)
+      if(e is LoreCollection lnc && lnc != null && lnc.Count > 0)
         foreach(LoreElement elem in lnc)
           Children.Add(new LoreTreeItem(elem));
 

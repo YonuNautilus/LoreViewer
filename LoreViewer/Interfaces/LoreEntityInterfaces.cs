@@ -20,16 +20,16 @@ namespace LoreViewer.LoreElements.Interfaces
     public LoreSection? GetSection(string sectionName) => Sections.FirstOrDefault(s => s.Name == sectionName);
     public bool HasSections => Sections.Any();
   }
-  public interface INodeCollectionContainer
+  public interface ICollectionContainer
   {
-    ObservableCollection<LoreNodeCollection> Collections { get; }
+    ObservableCollection<LoreCollection> Collections { get; }
     public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
-    public LoreNodeCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
+    public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
     public bool HasCollections => Collections.Any();
-    public bool HasCollectionOfType(LoreTypeDefinition typeDef) => Collections.Any(c => c.Type == typeDef);
-    public LoreNodeCollection? GetCollectionOfType(LoreTypeDefinition typeDef) => Collections.FirstOrDefault(c => c.Type == typeDef);
-    public bool HasCollectionOfTypeName(string typeName) => Collections.Any(c => c.Type.name.Equals(typeName));
-    public LoreNodeCollection? GetCollectionOfTypeName(string typeName) => Collections.FirstOrDefault(c => c.Type.name == typeName);
+    public bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
+    public LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
+    public bool HasCollectionOfTypeName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
+    public LoreCollection? GetCollectionOfTypeName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
   }
 
   public interface INodeContainer
@@ -43,7 +43,7 @@ namespace LoreViewer.LoreElements.Interfaces
   /// <summary>
   /// For any LoreEntity that needs to behave and display like a node (ie LoreNode and LoreCompositeNode)
   /// </summary>
-  public interface ILoreNode: ILoreEntity, ISectionContainer, IFieldContainer, INodeContainer, INodeCollectionContainer
+  public interface ILoreNode: ILoreEntity, ISectionContainer, IFieldContainer, INodeContainer, ICollectionContainer
   {
     ILoreNode MergeWith(LoreNode node);
   }

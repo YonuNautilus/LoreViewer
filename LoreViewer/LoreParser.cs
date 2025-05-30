@@ -33,7 +33,7 @@ namespace LoreViewer
     private bool _hadFatalError = false;
     public bool HadFatalError => _hadFatalError;
 
-    public ObservableCollection<LoreNodeCollection> _collections = new ObservableCollection<LoreNodeCollection>();
+    public ObservableCollection<LoreCollection> _collections = new ObservableCollection<LoreCollection>();
     public ObservableCollection<ILoreNode> _nodes = new ObservableCollection<ILoreNode>();
     public ObservableCollection<Tuple<string, int, int, Exception>> _errors = new();
     public ObservableCollection<string> _warnings = new ObservableCollection<string>();
@@ -151,7 +151,7 @@ namespace LoreViewer
     ///   <item>Before finding the first heading, any non-heading blocks get added to a list of orphaned blocks</item>
     ///   <item>If the first heading block is not tagged with a valid type or a collection, throw an error</item>
     ///   <item>If a type-tagged heading is found, create a <c>LoreNode</c> by calling <c>ParseType</c>. AddNode that node to the <c>_nodes</c> list.</item>
-    ///   <item>If a collection-tagged heading is found, create a <c>LoreNodeCollection</c> by calling <c>ParseCollection</c>. AddNode that collection to the <c>_collections</c> list.</item>
+    ///   <item>If a collection-tagged heading is found, create a <c>LoreCollection</c> by calling <c>ParseCollection</c>. AddNode that collection to the <c>_collections</c> list.</item>
     /// </list>
     /// </summary>
     /// <param name="filePath">Path of the Markdown file being parsed.</param>
@@ -167,7 +167,7 @@ namespace LoreViewer
       // Start collecting a set of LoreElements for this file.
 
       List<ILoreNode> elementsInThisFile = new List<ILoreNode>();
-      List<LoreNodeCollection> collectionsInThisFile = new List<LoreNodeCollection>();
+      List<LoreCollection> collectionsInThisFile = new List<LoreCollection>();
 
       while (currentIndex < document.Count)
       {
@@ -186,7 +186,7 @@ namespace LoreViewer
               if (BlockIsANestedCollection(block))
               {
                 //_collections.AddNode(ParseCollection(document, ref currentIndex, block, tag));
-                collectionsInThisFile.Add(ParseCollection(document, ref currentIndex, block, tag));
+                collectionsInThisFile.Add(ParseCollection(document, ref currentIndex, block, MakeNestedDefinitions(tag)));
               }
               else
                 //_collections.AddNode(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
@@ -220,7 +220,7 @@ namespace LoreViewer
 
       // Now, all elements have been collected.
       IEnumerable<ILoreNode> nodesFromThisFile = elementsInThisFile.Where(le => le is LoreNode);
-      IEnumerable<LoreNodeCollection> collectionsFromThisFile = collectionsInThisFile.Where(le => le is LoreNodeCollection);
+      IEnumerable<LoreCollection> collectionsFromThisFile = collectionsInThisFile.Where(le => le is LoreCollection);
 
       foreach(LoreNode ln in nodesFromThisFile)
       {
@@ -304,12 +304,12 @@ namespace LoreViewer
                 // Block is tagged with {collection:...}
                 if (BlockIsACollection(hb))
                 {
-                  LoreNodeCollection newCollection;
+                  LoreCollection newCollection;
 
                   // if tagged like {collection:collection:type}
                   if (BlockIsANestedCollection(hb))
                   {
-                    newCollection = ParseCollection(doc, ref currentIndex, hb, newTag);
+                    newCollection = ParseCollection(doc, ref currentIndex, hb, MakeNestedDefinitions(newTag));
                   }
 
                   // otherwise, tagged as {collection:type}
@@ -345,10 +345,10 @@ namespace LoreViewer
                 {
                   LoreCollectionDefinition lcd = typeDef.GetCollectionDefinition(newTitle);
 
-                  if (!_settings.HasTypeDefinition(lcd.entryType))
+                  if (!_settings.HasTypeDefinition(lcd.entryTypeName))
                     throw new UnexpectedTypeNameException(_currentFile, currentIndex, hb.Line + 1, newTitle);
 
-                  LoreNodeCollection newCol = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(lcd.entryType));
+                  LoreCollection newCol = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(lcd.entryTypeName));
                   newNode.Collections.Add(newCol);
                 }
                 else if (typeDef.HasSectionDefinition(newTitle))
@@ -386,14 +386,14 @@ namespace LoreViewer
     }
 
     /// <summary>
-    /// Creates a LoreNodeCollection of LoreElements. Starts from a heading block with tag {collection:type}
+    /// Creates a LoreCollection of LoreElements. Starts from a heading block with tag {collection:type}
     /// <para />
     /// RULES/PROCESS:
     /// <list type="number">
     ///   <item>Step forward, expect headings on level deeper than the original heading (UNSURE IF THESE HEADING NEED TYPE TAGS OR NOT)</item>
     ///   <item>If a heading is UNTAGGED, Give a WARNING (not an error, yet)</item>
     ///   <item>If a heading is tagged with a type not accepted by the collection, throw an error</item>
-    ///   <item>If a non-heading block is encountered before the first type heading is found, throw an error (LoreNodeCollection does not have metadata!)</item>
+    ///   <item>If a non-heading block is encountered before the first type heading is found, throw an error (LoreCollection does not have metadata!)</item>
     ///   <item>Each Subheading is parsed into a LoreNode with ParseType, and that node is added to the collection</item>
     /// </list>
     /// <para/>
@@ -408,10 +408,10 @@ namespace LoreViewer
     /// <param name="heading"></param>
     /// <param name="typeDef"></param>
     /// <returns></returns>
-    private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef)
+    private LoreCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef)
     {
       string title = ExtractTitle(heading);
-      LoreNodeCollection newCollection = new LoreNodeCollection(title, typeDef);
+      LoreCollection newCollection = new LoreCollection(title, typeDef);
 
       currentIndex++;
 
@@ -425,7 +425,7 @@ namespace LoreViewer
           {
             HeadingBlock newHeader = (HeadingBlock)doc[currentIndex];
             LoreNode newNode = ParseType(doc, ref currentIndex, newHeader, typeDef);
-            newCollection.AddNode(newNode);
+            newCollection.Nodes.Add(newNode);
             continue;
           }
         }
@@ -440,17 +440,30 @@ namespace LoreViewer
       return newCollection;
     }
 
+    private LoreCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreDefinitionBase colType)
+    {
+      switch (colType)
+      {
+        case LoreCollectionDefinition lcd:
+          return ParseCollection(doc, ref currentIndex, heading, colType as LoreCollectionDefinition);
+          break;
+        case LoreTypeDefinition ltd:
+          return ParseCollection(doc, ref currentIndex, heading, ltd);
+          break;
+        default:
+          throw new InvalidContainedTypeDefinitionException(_currentFile, currentIndex, doc[currentIndex].Line + 1, colType);
+      }
+    }
+
     private LoreCollectionDefinition MakeNestedDefinitions(string innerTag)
     {
       LoreCollectionDefinition lcd = new LoreCollectionDefinition();
 
       if (TagIsANestedCollection(innerTag))
-        lcd.collections.Add(MakeNestedDefinitions(GetCollectionType(innerTag)));
+        lcd.ContainedType = MakeNestedDefinitions(GetCollectionType(innerTag));
       else if (_settings.HasTypeDefinition(GetCollectionType(innerTag)))
       {
-        LoreCollectionDefinition nestedLcd = new LoreCollectionDefinition();
-        nestedLcd.entryType = GetCollectionType(innerTag);
-        lcd.collections.Add(nestedLcd);
+        lcd.ContainedType = _settings.GetTypeDefinition(GetCollectionType(innerTag));
       }
       else
       {
@@ -460,12 +473,11 @@ namespace LoreViewer
       return lcd;
     }
 
-    private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, string collectionTag)
+    private LoreCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreCollectionDefinition colType)
     {
       string title = ExtractTitle(heading);
-      string innerTag = GetCollectionType(collectionTag);
 
-      LoreNodeCollection newCollection = new LoreNodeCollection(title, MakeNestedDefinitions(collectionTag));
+      LoreCollection newCollection = new LoreCollection(title, colType);
 
       currentIndex++;
 
@@ -480,10 +492,7 @@ namespace LoreViewer
             break;
           case HeadingBlock hb:
             if (hb.Level >= heading.Level)
-              if (TagIsANestedCollection(innerTag))
-                newCollection.AddCollection(ParseCollection(doc, ref currentIndex, hb, innerTag));
-              else
-                newCollection.AddCollection(ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(GetCollectionType(innerTag))));
+              newCollection.Collections.Add(ParseCollection(doc, ref currentIndex, hb, colType.ContainedType));
             else
               return newCollection;
             currentIndex--;
