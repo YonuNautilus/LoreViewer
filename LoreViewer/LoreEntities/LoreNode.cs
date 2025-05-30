@@ -24,7 +24,6 @@ namespace LoreViewer.LoreElements
     public LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
     public bool HasSection(string name) => Sections.Any(s => s.Name == name);
     #endregion
-
     #region INodeContainer Implementation
     public ObservableCollection<LoreNode> Nodes { get; } = new ObservableCollection<LoreNode>();
 
@@ -32,18 +31,19 @@ namespace LoreViewer.LoreElements
 
     public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
     #endregion
-
-    public ObservableCollection<LoreNodeCollection> CollectionChildren = new ObservableCollection<LoreNodeCollection>();
+    #region INodeCollectionContainer Implementation
+    public ObservableCollection<LoreNodeCollection> Collections { get; } = new ObservableCollection<LoreNodeCollection>();
+    public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
+    public LoreNodeCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
+    public bool HasCollections => Collections.Any();
+    public bool HasCollectionOfType(LoreTypeDefinition typeDef) => Collections.Any(c => c.Type == typeDef);
+    public LoreNodeCollection? GetCollectionOfType(LoreTypeDefinition typeDef) => Collections.FirstOrDefault(c => c.Type == typeDef);
+    public bool HasCollectionOfTypeName(string typeName) => Collections.Any(c => c.Type.name.Equals(typeName));
+    public LoreNodeCollection? GetCollectionOfTypeName(string typeName) => Collections.FirstOrDefault(c => c.Type.name == typeName);
+    #endregion
 
     public LoreNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
 
-    public bool HasCollectionOfType(LoreTypeDefinition typeDef) => CollectionChildren.Any(c => c.Type == typeDef);
-
-    public LoreNodeCollection? GetCollectionOfType(LoreTypeDefinition typeDef) => CollectionChildren.FirstOrDefault(c => c.Type == typeDef);
-
-    public bool HasCollectionOfTypeName(string typeName) => CollectionChildren.Any(c => c.Type.name.Equals(typeName));
-
-    public LoreNodeCollection? GetCollectionOfTypeName(string typeName) => CollectionChildren.FirstOrDefault(c => c.Type.name == typeName);
 
     public void MergeIn(LoreNode toMergeIn)
     {
@@ -56,8 +56,8 @@ namespace LoreViewer.LoreElements
       foreach (LoreNode ln in toMergeIn.Nodes)
         Nodes.Add(ln);
 
-      foreach (LoreNodeCollection lnc in toMergeIn.CollectionChildren)
-        CollectionChildren.Add(lnc);
+      foreach (LoreNodeCollection lnc in toMergeIn.Collections)
+        Collections.Add(lnc);
     }
 
     public ILoreNode MergeWith(LoreNode node) => new LoreCompositeNode(this, node);

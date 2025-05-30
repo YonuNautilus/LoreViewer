@@ -137,6 +137,8 @@ namespace LoreViewer
 
     private static bool BlockIsANestedCollection(HeadingBlock block) => BlockIsACollection(block) && GetCollectionType(ExtractTag(block)).Contains("collection:");
 
+    private static bool TagIsANestedCollection(string tag) => Regex.Count(tag, "collection") > 1;
+
     private static bool BlockIsASection(HeadingBlock block) => ExtractTag(block).Contains("section");
 
     /// <summary>
@@ -148,8 +150,8 @@ namespace LoreViewer
     /// <list type="number">
     ///   <item>Before finding the first heading, any non-heading blocks get added to a list of orphaned blocks</item>
     ///   <item>If the first heading block is not tagged with a valid type or a collection, throw an error</item>
-    ///   <item>If a type-tagged heading is found, create a <c>LoreNode</c> by calling <c>ParseType</c>. Add that node to the <c>_nodes</c> list.</item>
-    ///   <item>If a collection-tagged heading is found, create a <c>LoreNodeCollection</c> by calling <c>ParseCollection</c>. Add that collection to the <c>_collections</c> list.</item>
+    ///   <item>If a type-tagged heading is found, create a <c>LoreNode</c> by calling <c>ParseType</c>. AddNode that node to the <c>_nodes</c> list.</item>
+    ///   <item>If a collection-tagged heading is found, create a <c>LoreNodeCollection</c> by calling <c>ParseCollection</c>. AddNode that collection to the <c>_collections</c> list.</item>
     /// </list>
     /// </summary>
     /// <param name="filePath">Path of the Markdown file being parsed.</param>
@@ -183,16 +185,16 @@ namespace LoreViewer
             {
               if (BlockIsANestedCollection(block))
               {
-                //_collections.Add(ParseCollection(document, ref currentIndex, block, tag));
+                //_collections.AddNode(ParseCollection(document, ref currentIndex, block, tag));
                 collectionsInThisFile.Add(ParseCollection(document, ref currentIndex, block, tag));
               }
               else
-                //_collections.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
+                //_collections.AddNode(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
                 collectionsInThisFile.Add(ParseCollection(document, ref currentIndex, block, _settings.GetTypeDefinition(GetCollectionType(tag))));
             }
             else if (_settings.HasTypeDefinition(tag))
             {
-              //_nodes.Add(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag)));
+              //_nodes.AddNode(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag)));
               elementsInThisFile.Add(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag)));
             }
             else if (BlockIsASection(block))
@@ -315,7 +317,7 @@ namespace LoreViewer
                     newCollection = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(GetCollectionType(newTag)));
 
                   newCollection.Name = newTitle;
-                  newNode.CollectionChildren.Add(newCollection);
+                  newNode.Collections.Add(newCollection);
                   continue;
                 }
 
@@ -347,7 +349,7 @@ namespace LoreViewer
                     throw new UnexpectedTypeNameException(_currentFile, currentIndex, hb.Line + 1, newTitle);
 
                   LoreNodeCollection newCol = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(lcd.entryType));
-                  newNode.CollectionChildren.Add(newCol);
+                  newNode.Collections.Add(newCol);
                 }
                 else if (typeDef.HasSectionDefinition(newTitle))
                 {
@@ -423,7 +425,7 @@ namespace LoreViewer
           {
             HeadingBlock newHeader = (HeadingBlock)doc[currentIndex];
             LoreNode newNode = ParseType(doc, ref currentIndex, newHeader, typeDef);
-            newCollection.Add(newNode);
+            newCollection.AddNode(newNode);
             continue;
           }
         }
@@ -438,10 +440,60 @@ namespace LoreViewer
       return newCollection;
     }
 
+    private LoreCollectionDefinition MakeNestedDefinitions(string innerTag)
+    {
+      LoreCollectionDefinition lcd = new LoreCollectionDefinition();
+
+      if (TagIsANestedCollection(innerTag))
+        lcd.collections.Add(MakeNestedDefinitions(GetCollectionType(innerTag)));
+      else if (_settings.HasTypeDefinition(GetCollectionType(innerTag)))
+      {
+        LoreCollectionDefinition nestedLcd = new LoreCollectionDefinition();
+        nestedLcd.entryType = GetCollectionType(innerTag);
+        lcd.collections.Add(nestedLcd);
+      }
+      else
+      {
+        throw new Exception();
+      }
+
+      return lcd;
+    }
+
     private LoreNodeCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, string collectionTag)
     {
       string title = ExtractTitle(heading);
-      LoreNodeCollection newCollection = new LoreNodeCollection(title, new LoreTypeDefinition());
+      string innerTag = GetCollectionType(collectionTag);
+
+      LoreNodeCollection newCollection = new LoreNodeCollection(title, MakeNestedDefinitions(collectionTag));
+
+      currentIndex++;
+
+      while(currentIndex < doc.Count)
+      {
+        Block currentBlock = doc[currentIndex];
+
+        switch (currentBlock)
+        {
+          case ParagraphBlock pb:
+            newCollection.AddNarrativeText(GetStringFromParagraphBlock(pb));
+            break;
+          case HeadingBlock hb:
+            if (hb.Level >= heading.Level)
+              if (TagIsANestedCollection(innerTag))
+                newCollection.AddCollection(ParseCollection(doc, ref currentIndex, hb, innerTag));
+              else
+                newCollection.AddCollection(ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(GetCollectionType(innerTag))));
+            else
+              return newCollection;
+            currentIndex--;
+            break;
+          default:
+            break;
+        }
+        currentIndex++;
+      }
+
 
       return newCollection;
     }

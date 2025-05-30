@@ -46,23 +46,24 @@ namespace LoreViewer.ViewModels
       else
         DisplayName = e.Name;
 
-      if(e is IFieldContainer ife && ife.Attributes != null && ife.Attributes.Count() > 0)
+      if(e is IFieldContainer ife && ife.HasAttributes)
         Children.Add(CreateParentItem(ife.Attributes, "Attributes"));
 
-      if(e is ISectionContainer isc && isc.Sections != null && isc.Sections.Count() > 0)
+      if(e is ISectionContainer isc && isc.HasSections)
         Children.Add(CreateParentItem(isc.Sections, "Sections"));
 
-      if (e is LoreNode)
+      if (e is ILoreNode)
       {
-        LoreNode ln = e as LoreNode;
-        if (ln.CollectionChildren != null && ln.CollectionChildren.Count() > 0)
-          foreach (LoreNodeCollection childCollection in ln.CollectionChildren)
+        ILoreNode ln = e as ILoreNode;
+        if (ln.Collections != null && ln.Collections.Count() > 0)
+          foreach (LoreNodeCollection childCollection in ln.Collections)
             Children.Add(new LoreTreeItem(childCollection));
 
-        if (ln.Nodes != null && ln.Nodes.Count() > 0)
-          //Children.Add(CreateParentItem(ln.Nodes, "Nodes"));
-          foreach(LoreNode node in ln.Nodes)
-            Children.Add(new LoreTreeItem(node));
+        if(ln is LoreNode)
+          if (ln.Nodes != null && ln.Nodes.Count() > 0)
+            //Children.AddNode(CreateParentItem(ln.Nodes, "Nodes"));
+            foreach(LoreNode node in ln.Nodes)
+              Children.Add(new LoreTreeItem(node));
       }
 
       if(e is LoreNodeCollection lnc && lnc != null && lnc.Count > 0)
