@@ -1,4 +1,5 @@
 ﻿using DynamicData;
+using LoreViewer.Exceptions;
 using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
@@ -30,7 +31,20 @@ namespace LoreViewer.LoreElements
     public LoreCollection? GetCollectionOfTypeName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
     #endregion
 
-    public LoreCollection(string name, LoreDefinitionBase containedType) : base(name, containedType) { }
+    public LoreCollection(string name, LoreDefinitionBase containedType) : base(name, containedType)
+    {
+      switch (containedType)
+      {
+        case LoreTypeDefinition ltd:
+          Nodes = new ObservableCollection<LoreNode>();
+          break;
+        case LoreCollectionDefinition lcd:
+          Collections = new ObservableCollection<LoreCollection>();
+          break;
+        default:
+          break;
+      }
+    }
 
     public bool ContainsNodes => Definition is LoreTypeDefinition;
     public bool ContainsCollections => Definition is LoreCollectionDefinition;

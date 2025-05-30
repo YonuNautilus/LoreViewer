@@ -444,8 +444,12 @@ namespace LoreViewer
     {
       switch (colType)
       {
+        // If the contained type of this collection is a collection...
         case LoreCollectionDefinition lcd:
-          return ParseCollection(doc, ref currentIndex, heading, colType as LoreCollectionDefinition);
+          if(lcd.ContainedType is LoreCollection)
+            return ParseCollection(doc, ref currentIndex, heading, lcd.ContainedType as LoreCollectionDefinition);
+          else
+            return ParseCollection(doc, ref currentIndex, heading, lcd.ContainedType as LoreTypeDefinition);
           break;
         case LoreTypeDefinition ltd:
           return ParseCollection(doc, ref currentIndex, heading, ltd);
@@ -491,8 +495,13 @@ namespace LoreViewer
             newCollection.AddNarrativeText(GetStringFromParagraphBlock(pb));
             break;
           case HeadingBlock hb:
-            if (hb.Level >= heading.Level)
-              newCollection.Collections.Add(ParseCollection(doc, ref currentIndex, hb, colType.ContainedType));
+            if (hb.Level > heading.Level)
+            {
+              if (colType.ContainedType is LoreCollectionDefinition)
+                newCollection.Collections.Add(ParseCollection(doc, ref currentIndex, hb, colType.ContainedType));
+              else if (colType.ContainedType is LoreTypeDefinition)
+                newCollection.Nodes.Add(ParseType(doc, ref currentIndex, hb, colType.ContainedType as LoreTypeDefinition));
+            }
             else
               return newCollection;
             currentIndex--;
