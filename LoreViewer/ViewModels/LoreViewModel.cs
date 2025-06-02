@@ -34,6 +34,7 @@ namespace LoreViewer.ViewModels
     private LoreTreeItem _currentlySelectedTreeNode;
     public LoreTreeItem CurrentlySelectedTreeNode { get => _currentlySelectedTreeNode; set => this.RaiseAndSetIfChanged(ref _currentlySelectedTreeNode, value); }
     public ReactiveCommand<Unit, Unit> OpenLibraryFolderCommand { get; }
+    public ReactiveCommand<Unit, Unit> ReloadLibraryCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor {  get; }
 
     private Visual m_oView;
@@ -43,6 +44,7 @@ namespace LoreViewer.ViewModels
       m_oView = view;
       OpenLibraryFolderCommand = ReactiveCommand.CreateFromTask(HandleOpenLibraryCommandAsync);
       OpenLoreSettingsEditor = ReactiveCommand.Create(OpenLoreSettingEditorDialog);
+      ReloadLibraryCommand = ReactiveCommand.Create(ReloadLoreFolder);
 
       _settings = new LoreSettings();
       _parser = new LoreParser(_settings);
@@ -50,11 +52,6 @@ namespace LoreViewer.ViewModels
 
     private async Task HandleOpenLibraryCommandAsync()
     {
-      _parser._nodes.Clear();
-      _parser._collections.Clear();
-      _parser._errors.Clear();
-      _parser._warnings.Clear();
-
       var topLevel = TopLevel.GetTopLevel(m_oView);
       var folderPath = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
       {
@@ -65,6 +62,32 @@ namespace LoreViewer.ViewModels
       if (folderPath != null && folderPath.Count > 0)
       {
         LoreLibraryFolderPath = folderPath[0].TryGetLocalPath();
+        LoadLoreFromFolder();
+      }
+    }
+
+    private void ReloadLoreFolder()
+    {
+      LoadLoreFromFolder();
+    }
+
+    private void OpenLoreSettingEditorDialog()
+    {
+
+    }
+
+    private void LoadLoreFromFolder()
+    {
+      try
+      {
+        _parser._nodes.Clear();
+        _parser._collections.Clear();
+        _parser._errors.Clear();
+        _parser._warnings.Clear();
+
+        _nodeTreeItems.Clear();
+        _nodeCollectionTreeItems.Clear();
+
         _parser.BeginParsingFromFolder(LoreLibraryFolderPath);
 
         if (_parser.HadFatalError)
@@ -72,21 +95,19 @@ namespace LoreViewer.ViewModels
 
         }
 
-        _nodeTreeItems.Clear();
-        _nodeCollectionTreeItems.Clear();
-
-        foreach(LoreEntity e in _nodes) Nodes.Add(new LoreTreeItem(e));
+        foreach (LoreEntity e in _nodes) Nodes.Add(new LoreTreeItem(e));
 
         foreach (LoreEntity e in _collections) NodeCollections.Add(new LoreTreeItem(e));
-
+      }
+      catch(Exception e)
+      {
+        _parser._errors.Add(new Tuple<string, int, int, Exception>(e.Message, -1, -1, e));
+      }
+      finally
+      {
         this.RaisePropertyChanged("Errors");
         this.RaisePropertyChanged("Warnings");
       }
-    }
-
-    private void OpenLoreSettingEditorDialog()
-    {
-
     }
   }
 }

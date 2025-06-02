@@ -16,10 +16,11 @@
       <ColumnDefinition />
     </Grid.ColumnDefinitions>
 
-    <DockPanel Grid.Row="0" Grid.Column="0">
+    <StackPanel Grid.Row="0" Grid.Column="0" FlowDirection="LeftToRight" Orientation="Horizontal">
+      <TextBox Text="{Binding LoreLibraryFolderPath}" IsReadOnly="True" Width="250"></TextBox>
       <Button Name="BtnOpenFolder" Command="{Binding OpenLibraryFolderCommand}" DockPanel.Dock="Right" Content="Select Lore Library Folder" Width="160"></Button>
-      <TextBox Text="{Binding LoreLibraryFolderPath}" IsReadOnly="True"></TextBox>
-    </DockPanel>
+      <Button Name="BtnRefreshFolder" Command="{Binding ReloadLibraryCommand}" Content="Reload Lore Library"></Button>
+    </StackPanel>
 
     <DockPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
       <Button Content="Open Lore Settings Editor" DockPanel.Dock="Right" Command="{Binding OpenLoreSettingsEditor}"/>

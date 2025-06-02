@@ -130,6 +130,13 @@ namespace LoreViewer.Exceptions
     public InvalidContainedTypeDefinitionException(string filePath, int blockIndex, int lineNumber, LoreDefinitionBase containedType)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, containedType)) { }
   }
+
+  public class CollectionWithUnknownTypeException: LoreCollectionParsingException
+  {
+    static string msgBase = "Tried to parse a collection with an undefined type {0}.";
+    public CollectionWithUnknownTypeException(string filePath, int blockIndex, int lineNumber, string type)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, type)) { }
+  }
   #endregion
 
   #region Settings parsing Exceptions

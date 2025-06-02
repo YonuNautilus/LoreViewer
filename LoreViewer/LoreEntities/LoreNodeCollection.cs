@@ -46,8 +46,8 @@ namespace LoreViewer.LoreElements
       }
     }
 
-    public bool ContainsNodes => Definition is LoreTypeDefinition;
-    public bool ContainsCollections => Definition is LoreCollectionDefinition;
+    public bool ContainsNodes => (Definition as LoreCollectionDefinition).ContainedType is LoreTypeDefinition;
+    public bool ContainsCollections => (Definition as LoreCollectionDefinition).ContainedType is LoreCollectionDefinition;
 
     public int Count => ContainsNodes ? Nodes.Count : Collections.Count();
 
