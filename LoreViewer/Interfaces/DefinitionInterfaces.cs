@@ -9,12 +9,12 @@ namespace LoreViewer.Settings.Interfaces
 {
   public interface IFieldDefinitionContainer
   {
-    List<LoreAttributeDefinition> fields { get; }
+    List<LoreFieldDefinition> fields { get; }
     public bool HasFields => fields != null && fields.Count > 0;
 
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
 
-    public LoreAttributeDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
+    public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
 
   }
 

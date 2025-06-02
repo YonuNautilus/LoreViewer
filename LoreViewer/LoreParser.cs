@@ -64,6 +64,8 @@ namespace LoreViewer
       string settingsText = File.ReadAllText(settingsFilePath);
 
       _settings = deserializer.Deserialize<LoreSettings>(settingsText);
+
+      _settings.PostProcess();
     }
 
     public void BeginParsingFromFolder(string FolderPath)
@@ -345,11 +347,16 @@ namespace LoreViewer
                 {
                   LoreCollectionDefinition lcd = typeDef.GetCollectionDefinition(newTitle);
 
-                  if (!_settings.HasTypeDefinition(lcd.entryTypeName))
+                  if (!_settings.HasTypeDefinition(lcd.entryTypeName) && lcd == null)
                     throw new UnexpectedTypeNameException(_currentFile, currentIndex, hb.Line + 1, newTitle);
 
-                  LoreCollection newCol = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(lcd.entryTypeName));
-                  newNode.Collections.Add(newCol);
+                  if(lcd.IsCollectionOfCollections)
+                    newNode.Collections.Add(ParseCollection(doc, ref currentIndex, hb, lcd));
+                  else
+                  {
+                    LoreCollection newCol = ParseCollection(doc, ref currentIndex, hb, _settings.GetTypeDefinition(lcd.entryTypeName));
+                    newNode.Collections.Add(newCol);
+                  }
                 }
                 else if (typeDef.HasSectionDefinition(newTitle))
                 {
@@ -446,7 +453,7 @@ namespace LoreViewer
       {
         // If the contained type of this collection is a collection...
         case LoreCollectionDefinition lcd:
-          if(lcd.ContainedType is LoreCollection)
+          if(lcd.IsCollectionOfCollections)
             return ParseCollection(doc, ref currentIndex, heading, lcd.ContainedType as LoreCollectionDefinition);
           else
             return ParseCollection(doc, ref currentIndex, heading, lcd.ContainedType as LoreTypeDefinition);
@@ -497,7 +504,7 @@ namespace LoreViewer
           case HeadingBlock hb:
             if (hb.Level > heading.Level)
             {
-              if (colType.ContainedType is LoreCollectionDefinition)
+              if (colType.IsCollectionOfCollections)
                 newCollection.Collections.Add(ParseCollection(doc, ref currentIndex, hb, colType.ContainedType));
               else if (colType.ContainedType is LoreTypeDefinition)
                 newCollection.Nodes.Add(ParseType(doc, ref currentIndex, hb, colType.ContainedType as LoreTypeDefinition));
@@ -636,7 +643,7 @@ namespace LoreViewer
 
     private bool IsFlatAttributeDeclaration(string flatInlineText) => flatInlineText.Contains(":") && !flatInlineText.EndsWith(":");
 
-    private ObservableCollection<LoreAttribute> ParseListAttributes(MarkdownDocument doc, int currentIndex, ListBlock listBlock, List<LoreAttributeDefinition> attributeDefinitions)
+    private ObservableCollection<LoreAttribute> ParseListAttributes(MarkdownDocument doc, int currentIndex, ListBlock listBlock, List<LoreFieldDefinition> attributeDefinitions)
     {
       string fieldValue = string.Empty;
       ObservableCollection<LoreAttribute> attributeList = new ObservableCollection<LoreAttribute>();
@@ -677,7 +684,7 @@ namespace LoreViewer
         }
 
         // either way, we have the field name. Let's see if we can find a definition -- if not, it remains null
-        LoreAttributeDefinition newDef = attributeDefinitions.Where(lad => lad.name.Equals(parsedFieldName)).FirstOrDefault();
+        LoreFieldDefinition newDef = attributeDefinitions.Where(lad => lad.name.Equals(parsedFieldName)).FirstOrDefault();
 
         if (newDef == null)
           throw new UnexpectedFieldNameException(string.Empty, currentIndex, contentItem.Line + 1, parsedFieldName);

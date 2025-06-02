@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace LoreViewer.Exceptions
 {
+  #region Parsing Exceptions
   public abstract class LoreParsingException : Exception
   {
     public readonly string MarkdownFilePath;
@@ -129,4 +130,24 @@ namespace LoreViewer.Exceptions
     public InvalidContainedTypeDefinitionException(string filePath, int blockIndex, int lineNumber, LoreDefinitionBase containedType)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, containedType)) { }
   }
+  #endregion
+
+  #region Settings parsing Exceptions
+  public abstract class SettingsParsingException : Exception
+  {
+    LoreDefinitionBase definition;
+
+    public SettingsParsingException(LoreDefinitionBase definition, string msg) : base(msg)
+    {
+      this.definition = definition;
+    }
+  }
+
+  public class CollectionWithTypeAndCollectionDefined : SettingsParsingException
+  {
+    public static string msgBase = "Collection {0} was found to have both entryTypeName and entryCollection defined - this is invalid. Collection can have EITHER type contents OR collection contents.";
+    public CollectionWithTypeAndCollectionDefined(LoreDefinitionBase definitionBase)
+      : base(definitionBase, string.Format(msgBase, definitionBase.name)) { }
+  }
+  #endregion 
 }

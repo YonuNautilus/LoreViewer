@@ -8,8 +8,8 @@ namespace LoreViewer.LoreElements
 {
   public class LoreAttribute : LoreElement, IFieldContainer
   {
-    public override LoreDefinitionBase Definition { get => _definition as LoreAttributeDefinition; set { _definition = value as LoreAttributeDefinition; } }
-    private LoreAttributeDefinition _definition;
+    public override LoreDefinitionBase Definition { get => _definition as LoreFieldDefinition; set { _definition = value as LoreFieldDefinition; } }
+    private LoreFieldDefinition _definition;
 
     #region IFieldContainer Implementation
     public ObservableCollection<LoreAttribute> Attributes { get; } = new ObservableCollection<LoreAttribute>();
@@ -21,7 +21,7 @@ namespace LoreViewer.LoreElements
     public string? Value { get; set; } // Simple "key: value" entry, like a single date or name
     public List<string>? Values { get; set; } // "key: List<value>" entry, like alias for a character
 
-    public LoreAttribute(string name, LoreAttributeDefinition definition) : base(name, definition) { }
+    public LoreAttribute(string name, LoreFieldDefinition definition) : base(name, definition) { }
 
     public int SourceIndex { get; set; }
 
