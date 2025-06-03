@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace LoreViewer.Settings
 {
+  /// <summary>
+  /// Represents the Lore's schema with all references hooked up (the post-processed raw settings deserialized directly from YAML)
+  /// </summary>
   public class LoreSettings
   {
     public List<LoreTypeDefinition> types = new List<LoreTypeDefinition>();

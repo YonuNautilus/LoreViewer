@@ -9,6 +9,27 @@ using System.Threading.Tasks;
 
 namespace LoreViewer.LoreElements
 {
+  /// <summary>
+  /// An Composite Node represents a single object or idea in lore (i.e. Character, spell, location, faction),
+  /// concatenating <c>LoreNode</c>s of the same kind (same name and type definition) from different files.
+  /// <para/>
+  /// As long as two top-level nodes have identical name and type definition, they will be compiled under a composite node.
+  /// Attributes, collections, sections and child nodes of each node within the composite are concatenated into a single
+  /// accessable list on the LoreCompositeNode.
+  /// <para/>
+  /// Supports narrative/descriptive text.
+  /// <para/>
+  /// Definition Type: LoreTypeDefinition
+  /// <br/>
+  /// <br/>
+  /// <c>LoreCompositeNode</c> can contain:
+  /// <list type="bullet">
+  /// <item>Attributes</item>
+  /// <item>Sections</item>
+  /// <item>Collections</item>
+  /// <item>Nodes</item>
+  /// </list>
+  /// </summary>
   public class LoreCompositeNode : LoreEntity, ILoreNode
   {
     public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreTypeDefinition; } }

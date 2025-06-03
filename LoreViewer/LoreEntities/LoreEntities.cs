@@ -6,7 +6,7 @@ namespace LoreViewer.LoreElements
 {
   /// <summary>
   /// The root-level abstract class that all parsed lore information derives from.
-  /// Holds a name and an ID (which may be removed later)
+  /// Holds a name, definition, and ID (which may be removed later)
   /// </summary>
   public abstract class LoreEntity : ILoreEntity
   {
@@ -17,8 +17,8 @@ namespace LoreViewer.LoreElements
   }
 
   /// <summary>
-  /// Abstract base class for all Lore elements. Simply implements name, source file path
-  /// and starting block index of the MarkdownDocument
+  /// Abstract base class for all single lore elements.
+  /// Holds the file path to the source of the object and the starting block index of the MarkdownDocument
   /// </summary>
   public abstract class LoreElement : LoreEntity
   {

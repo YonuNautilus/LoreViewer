@@ -6,6 +6,17 @@ using System.Linq;
 
 namespace LoreViewer.LoreElements
 {
+  /// <summary>
+  /// An Attribute a single value for a lore element's field (i.e. name, species, magic type, biome).
+  /// <para/>
+  /// Definition Type: LoreFieldDefinition
+  /// <br/>
+  /// <br/>
+  /// Attributes can contain:
+  /// <list type="bullet">
+  /// <item>Attributes</item>
+  /// </list>
+  /// </summary>
   public class LoreAttribute : LoreElement, IFieldContainer
   {
     public override LoreDefinitionBase Definition { get => _definition as LoreFieldDefinition; set { _definition = value as LoreFieldDefinition; } }

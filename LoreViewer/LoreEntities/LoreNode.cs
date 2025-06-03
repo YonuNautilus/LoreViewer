@@ -9,6 +9,22 @@ using System.Security.AccessControl;
 
 namespace LoreViewer.LoreElements
 {
+  /// <summary>
+  /// An Node represents a single object or idea in lore (i.e. Character, spell, location, faction).
+  /// <para/>
+  /// Supports narrative/descriptive text.
+  /// <para/>
+  /// Definition Type: LoreTypeDefinition
+  /// <br/>
+  /// <br/>
+  /// <c>LoreNode</c> can contain:
+  /// <list type="bullet">
+  /// <item>Attributes</item>
+  /// <item>Sections</item>
+  /// <item>Collections</item>
+  /// <item>Nodes</item>
+  /// </list>
+  /// </summary>
   public class LoreNode : LoreNarrativeElement, ILoreNode
   {
     public override LoreDefinitionBase Definition { get => _definition ; set { _definition = value as LoreTypeDefinition; } }

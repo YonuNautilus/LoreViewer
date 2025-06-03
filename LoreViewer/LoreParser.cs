@@ -232,6 +232,8 @@ namespace LoreViewer
         else
           _nodes.Add(ln);
       }
+
+      _collections.AddRange(collectionsFromThisFile);
     }
 
     /// <summary>
@@ -333,6 +335,7 @@ namespace LoreViewer
                   LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
                   LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
                   newNode.Nodes.Add(newNodeNode);
+                  continue;
                 }
                 
                 // Parse as a section, if it has the {section} tag

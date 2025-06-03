@@ -12,6 +12,20 @@ using System.Linq;
 
 namespace LoreViewer.LoreElements
 {
+  /// <summary>
+  /// An Collection represents a set of Nodes of the same type definition.
+  /// <para/>
+  /// Supports narrative/descriptive text.
+  /// <para/>
+  /// Definition Type: LoreCollectionDefinition
+  /// <br/>
+  /// <br/>
+  /// <c>LoreCollection</c> can contain:
+  /// <list type="bullet">
+  /// <item>Collections</item>
+  /// <item>Nodes</item>
+  /// </list>
+  /// </summary>
   public class LoreCollection : LoreNarrativeElement, INodeContainer, ICollectionContainer
   {
     public override LoreDefinitionBase Definition { get; set; }

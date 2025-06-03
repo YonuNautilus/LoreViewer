@@ -1,14 +1,9 @@
 ﻿using DynamicData;
 using LoreViewer.Exceptions;
-using LoreViewer.LoreElements;
 using LoreViewer.Settings.Interfaces;
-using Splat.ApplicationPerformanceMonitoring;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel.Design;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
 
 namespace LoreViewer.Settings
 {
@@ -37,9 +32,9 @@ namespace LoreViewer.Settings
   }
 
   /// <summary>
-  /// The top-level of a lore definition. Can be used to define characters, organizations, races, etc.
+  /// The top-level of a lore definition. Can be used to define types like character, organization, race, etc.
   /// </summary>
-  public class LoreTypeDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, ICollectionDefinitionContainer
+  public class LoreTypeDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, ICollectionDefinitionContainer, ITypeDefinitionContainer
   {
     #region IFieldDefinitionContainer implementation
 
@@ -63,16 +58,24 @@ namespace LoreViewer.Settings
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
     #endregion ICollectionDefinitionContainer
 
+    #region ITypeDefinitionContainer Implementation
+    public List<LoreTypeDefinition> types { get; set; } = new List<LoreTypeDefinition>();
+    public List<string> subTypeReferences { get; set; } = new List<string>();
+    public bool HasTypeDefinition(string typeName) => types.Any(t => typeName == t.name);
+    public LoreTypeDefinition? GetTypeDefinition(string typeName) => types.FirstOrDefault(t => typeName == t.name);
+    #endregion ITypeDefinitionContainer Implementation
+
     public string extends {  get; set; }
     public LoreTypeDefinition ParentType { get; set; }
     public bool isExtendedType => ParentType != null;
-
-    private List<string> RelevantFilePaths = new List<string>();
 
     public override void PostProcess(LoreSettings settings)
     {
       foreach(LoreCollectionDefinition colDef in collections)
         colDef.PostProcess(settings);
+
+      foreach (LoreTypeDefinition typeDefinition in types)
+        typeDefinition.PostProcess(settings);
 
       if (!string.IsNullOrEmpty(extends))
       {

@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels
 {
+  /// <summary>
+  /// A ViewModel for LoreElements to be displayed
+  /// </summary>
   public class LoreTreeItem : ReactiveObject
   {
     public string DisplayName { get; set; }

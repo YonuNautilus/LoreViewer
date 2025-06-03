@@ -29,7 +29,16 @@ namespace LoreViewer.Settings.Interfaces
   public interface ICollectionDefinitionContainer
   {
     List<LoreCollectionDefinition> collections { get; }
-    public bool HasCollectionDefinition(string collectionName) => collections.Any(col => collectionName.Contains(col.name));
+    public bool HasCollectionDefinition(string collectionName) => collections.Any(col => collectionName == col.name);
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
+  }
+
+  public interface ITypeDefinitionContainer
+  {
+    List<LoreTypeDefinition> types { get; }
+    List<string> subTypeReferences { get; }
+    public bool HasTypeDefinition(string typeName) => types.Any(t => typeName == t.name);
+    public LoreTypeDefinition? GetTypeDefinition(string typeName) => types.FirstOrDefault(t => typeName == t.name);
+
   }
 }

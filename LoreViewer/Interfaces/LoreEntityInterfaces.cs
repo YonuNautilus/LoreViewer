@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace LoreViewer.LoreElements.Interfaces
 {
+  /// <summary>
+  /// Interface for LoreElements that can contain field definitions/attributes.
+  /// </summary>
   public interface IFieldContainer
   {
     ObservableCollection<LoreAttribute> Attributes { get; }
@@ -13,6 +16,10 @@ namespace LoreViewer.LoreElements.Interfaces
     public bool HasAttributes => Attributes.Any();
   }
 
+
+  /// <summary>
+  /// Interface for LoreElements that can contain sections.
+  /// </summary>
   public interface ISectionContainer
   {
     ObservableCollection<LoreSection> Sections { get; }
@@ -20,6 +27,11 @@ namespace LoreViewer.LoreElements.Interfaces
     public LoreSection? GetSection(string sectionName) => Sections.FirstOrDefault(s => s.Name == sectionName);
     public bool HasSections => Sections.Any();
   }
+
+
+  /// <summary>
+  /// Interface for LoreElements that can contain collections.
+  /// </summary>
   public interface ICollectionContainer
   {
     ObservableCollection<LoreCollection> Collections { get; }
@@ -32,6 +44,10 @@ namespace LoreViewer.LoreElements.Interfaces
     public LoreCollection? GetCollectionOfTypeName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
   }
 
+
+  /// <summary>
+  /// Interface for LoreElements that can contain child nodes.
+  /// </summary>
   public interface INodeContainer
   {
     ObservableCollection<LoreNode> Nodes { get; }

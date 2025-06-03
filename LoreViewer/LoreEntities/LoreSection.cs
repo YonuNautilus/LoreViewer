@@ -7,6 +7,20 @@ using System.Linq;
 
 namespace LoreViewer.LoreElements
 {
+  /// <summary>
+  /// A Section represents a descriptive or narrative unit of a Node (i.e. Character's background, spell's effects, location's origin, faction's goals).
+  /// <para/>
+  /// Supports narrative/descriptive text.
+  /// <para/>
+  /// Definition Type: LoreSectionDefinition
+  /// <br/>
+  /// <br/>
+  /// Sections can contain:
+  /// <list type="bullet">
+  /// <item>Sections</item>
+  /// <item>Attributes</item>
+  /// </list>
+  /// </summary>
   public class LoreSection : LoreNarrativeElement, IFieldContainer, ISectionContainer
   {
     public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreSectionDefinition; } }

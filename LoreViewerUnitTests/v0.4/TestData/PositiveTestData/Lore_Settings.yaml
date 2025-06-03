@@ -1,0 +1,6 @@
+﻿types:
+  - name: TestType
+    nodes:
+      - name: Sub Object
+  
+  -
