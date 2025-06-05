@@ -59,6 +59,7 @@ namespace LoreViewer.LoreElements
     #endregion
 
     public LoreNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
+    public LoreNode(string name, LoreTypeDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
 
 
     public void MergeIn(LoreNode toMergeIn)

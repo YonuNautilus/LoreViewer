@@ -26,8 +26,15 @@ namespace LoreViewer.LoreElements
   public abstract class LoreElement : LoreEntity
   {
     public LoreElement(string name, LoreDefinitionBase definition) : base(name, definition) { }
+    public LoreElement(string name, LoreDefinitionBase definition, string filePath, int blockIndex, int lineNUmber) : base(name, definition)
+    {
+      SourcePath = filePath;
+      BlockIndex = blockIndex;
+      LineNumber = lineNUmber;
+    }
     public string SourcePath = string.Empty;
     public int BlockIndex;
+    public int LineNumber;
   }
 
   /// <summary>
@@ -46,5 +53,6 @@ namespace LoreViewer.LoreElements
     }
 
     public LoreNarrativeElement(string name, LoreDefinitionBase definition) : base(name, definition) { }
+    public LoreNarrativeElement(string name, LoreDefinitionBase definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
   }
 }

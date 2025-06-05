@@ -45,9 +45,9 @@ namespace LoreViewer.LoreElements
     public LoreCollection? GetCollectionWithDefinedName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
     #endregion
 
-    public LoreCollection(string name, LoreDefinitionBase containedType) : base(name, containedType)
+    public LoreCollection(string name, LoreDefinitionBase colType) : base(name, colType)
     {
-      switch (containedType)
+      switch (colType)
       {
         case LoreTypeDefinition ltd:
           Nodes = new ObservableCollection<LoreNode>();
@@ -59,6 +59,22 @@ namespace LoreViewer.LoreElements
           break;
       }
     }
+
+    public LoreCollection(string name, LoreDefinitionBase colType, string filePath, int blockIndex, int lineNumber) : base(name, colType, filePath, blockIndex, lineNumber)
+    {
+      switch (colType)
+      {
+        case LoreTypeDefinition ltd:
+          Nodes = new ObservableCollection<LoreNode>();
+          break;
+        case LoreCollectionDefinition lcd:
+          Collections = new ObservableCollection<LoreCollection>();
+          break;
+        default:
+          break;
+      }
+    }
+
 
     public bool ContainsNodes => (Definition as LoreCollectionDefinition).ContainedType is LoreTypeDefinition;
     public bool ContainsCollections => (Definition as LoreCollectionDefinition).ContainedType is LoreCollectionDefinition;

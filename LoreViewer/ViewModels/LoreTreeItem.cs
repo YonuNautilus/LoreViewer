@@ -49,7 +49,7 @@ namespace LoreViewer.ViewModels
       else
         DisplayName = e.Name;
 
-      if(e is IFieldContainer ife && ife.HasAttributes)
+      if(e is IAttributeContainer ife && ife.HasAttributes)
         Children.Add(CreateParentItem(ife.Attributes, "Attributes"));
 
       if(e is ISectionContainer isc && isc.HasSections)

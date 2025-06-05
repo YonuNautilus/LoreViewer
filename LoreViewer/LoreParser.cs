@@ -264,7 +264,7 @@ namespace LoreViewer
       bool parsingFields = true;
 
       string title = ExtractTitle(heading);
-      LoreNode newNode = new LoreNode(title, typeDef);
+      LoreNode newNode = new LoreNode(title, typeDef, _currentFile, currentIndex, doc[currentIndex].Line + 1);
       newNode.BlockIndex = currentIndex;
 
       currentIndex++;
@@ -460,7 +460,7 @@ namespace LoreViewer
     {
       string title = ExtractTitle(heading);
 
-      LoreCollection newCollection = new LoreCollection(title, colType);
+      LoreCollection newCollection = new LoreCollection(title, colType, _currentFile, currentIndex, doc[currentIndex].Line + 1);
 
       currentIndex++;
 
@@ -515,7 +515,7 @@ namespace LoreViewer
     /// <returns></returns>
     private LoreSection ParseSection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreSectionDefinition secDef)
     {
-      LoreSection newSection = new LoreSection(ExtractTitle(heading), secDef);
+      LoreSection newSection = new LoreSection(ExtractTitle(heading), secDef, _currentFile, currentIndex, doc[currentIndex].Line + 1);
 
       currentIndex++;
 
@@ -662,7 +662,7 @@ namespace LoreViewer
         if (newDef == null)
           throw new UnexpectedFieldNameException(string.Empty, currentIndex, contentItem.Line + 1, parsedFieldName);
 
-        LoreAttribute newAttribute = new LoreAttribute(parsedFieldName, newDef);
+        LoreAttribute newAttribute = new LoreAttribute(parsedFieldName, newDef, _currentFile, contentItem.Parent.IndexOf(contentItem), contentItem.Line + 1);
 
 
         /* NESTED PARSING & SUBBULLET

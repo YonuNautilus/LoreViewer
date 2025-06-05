@@ -8,7 +8,7 @@ namespace LoreViewer.LoreElements.Interfaces
   /// <summary>
   /// Interface for LoreElements that can contain field definitions/attributes.
   /// </summary>
-  public interface IFieldContainer
+  public interface IAttributeContainer
   {
     ObservableCollection<LoreAttribute> Attributes { get; }
     public bool HasAttribute(string attrName) => Attributes.Any(a => a.Name == attrName);
@@ -59,7 +59,7 @@ namespace LoreViewer.LoreElements.Interfaces
   /// <summary>
   /// For any LoreEntity that needs to behave and display like a node (ie LoreNode and LoreCompositeNode)
   /// </summary>
-  public interface ILoreNode: ILoreEntity, ISectionContainer, IFieldContainer, INodeContainer, ICollectionContainer
+  public interface ILoreNode: ILoreEntity, ISectionContainer, IAttributeContainer, INodeContainer, ICollectionContainer
   {
     ILoreNode MergeWith(LoreNode node);
   }

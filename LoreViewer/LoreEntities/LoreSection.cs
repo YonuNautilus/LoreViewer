@@ -21,7 +21,7 @@ namespace LoreViewer.LoreElements
   /// <item>Attributes</item>
   /// </list>
   /// </summary>
-  public class LoreSection : LoreNarrativeElement, IFieldContainer, ISectionContainer
+  public class LoreSection : LoreNarrativeElement, IAttributeContainer, ISectionContainer
   {
     public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreSectionDefinition; } }
     private LoreSectionDefinition _definition;
@@ -46,5 +46,6 @@ namespace LoreViewer.LoreElements
     }
 
     public LoreSection(string name, LoreSectionDefinition definition) : base(name, definition) { }
+    public LoreSection(string name, LoreSectionDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
   }
 }

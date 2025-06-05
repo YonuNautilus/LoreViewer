@@ -17,7 +17,7 @@ namespace LoreViewer.LoreElements
   /// <item>Attributes</item>
   /// </list>
   /// </summary>
-  public class LoreAttribute : LoreElement, IFieldContainer
+  public class LoreAttribute : LoreElement, IAttributeContainer
   {
     public override LoreDefinitionBase Definition { get => _definition as LoreFieldDefinition; set { _definition = value as LoreFieldDefinition; } }
     private LoreFieldDefinition _definition;
@@ -33,6 +33,7 @@ namespace LoreViewer.LoreElements
     public List<string>? Values { get; set; } // "key: List<value>" entry, like alias for a character
 
     public LoreAttribute(string name, LoreFieldDefinition definition) : base(name, definition) { }
+    public LoreAttribute(string name, LoreFieldDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
 
     public int SourceIndex { get; set; }
 

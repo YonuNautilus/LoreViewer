@@ -1,15 +1,16 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using LoreViewer.LoreElements;
+using LoreViewer.Settings;
 using ReactiveUI;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
-using LoreViewer.Settings;
-using System.Collections.ObjectModel;
-using LoreViewer.LoreElements;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 
 namespace LoreViewer.ViewModels
 {
@@ -94,6 +95,9 @@ namespace LoreViewer.ViewModels
         {
 
         }
+
+        //List<LoreValidationError> valErrs = LoreValidator.Validate(_settings, _parser);
+
 
         foreach (LoreEntity e in _nodes) Nodes.Add(new LoreTreeItem(e));
 
