@@ -65,7 +65,13 @@
     <None Update="v0.3\TestData\PositiveTestData\MainFile.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.4\TestData\NegativeTestData\Invalid_Embedded_Type.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v0.4\TestData\NegativeTestData\Lore_Settings_Cyclic.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.4\TestData\NegativeTestData\Lore_Settings_Invalid_Embedded_Type.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.4\TestData\NegativeTestData\Lore_Settings_Missing.yaml">

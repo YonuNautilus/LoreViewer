@@ -76,6 +76,13 @@ namespace LoreViewer.Exceptions
     }
   }
 
+  public class EmbeddedNodeTypeNotAllowedException : LoreNodeParsingException
+  {
+    private static string msgBase = "Node type {0} does not allow node type {1} as an embedded node.";
+    public EmbeddedNodeTypeNotAllowedException(string filePath, int blockIndex, int lineNumber, string typeNameParent, string typeNameChild)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, typeNameParent, typeNameChild)) { }
+  }
+
   public abstract class LoreSectionParsingException : LoreParsingException
   {
     public LoreSectionParsingException(string filePath, int blockIndex, int lineNumber, string msg)

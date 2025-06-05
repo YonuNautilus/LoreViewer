@@ -334,12 +334,18 @@ namespace LoreViewer
                 {
                   // had to make sure the type definition existed first
                   LoreTypeDefinition newTypeDef = _settings.GetTypeDefinition(newTag);
-                  if (typeDef.HasTypeDefinition(newTypeDef))
+                  // If the type of node we have found is allowed as an embedded type in this current node...
+                  if (typeDef.AllowsEmbeddedType(newTypeDef))
                   {
                     LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
                     LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
                     newNode.Nodes.Add(newNodeNode);
                     continue;
+                  }
+                  // If the node (the one this method returns) does NOT allow this embedded type...
+                  else
+                  {
+                    throw new EmbeddedNodeTypeNotAllowedException(_currentFile, currentIndex, currentBlock.Line + 1, typeDef.name, newTag);
                   }
                 }
                 

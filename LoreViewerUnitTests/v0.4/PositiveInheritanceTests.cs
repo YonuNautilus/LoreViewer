@@ -845,6 +845,5 @@ namespace v0_4.PositiveTests
       Assert.NotNull(node.GetNode("A Deeply Embedded Node Derived From The Defined Type"));
 
     }
-
   }
 }

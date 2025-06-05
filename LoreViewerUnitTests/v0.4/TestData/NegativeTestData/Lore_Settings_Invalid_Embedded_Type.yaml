@@ -1,0 +1,8 @@
+﻿types:
+  - name: Parent
+    allowedEmbeddedNodeTypes:
+      - Child
+
+  - name: Child
+  
+  - name: Frog

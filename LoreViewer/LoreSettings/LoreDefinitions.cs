@@ -68,9 +68,11 @@ namespace LoreViewer.Settings
     public List<LoreTypeDefinition> types { get; set; } = new List<LoreTypeDefinition>();
     public List<string> allowedEmbeddedNodeTypes { get; set; } = new List<string>();
     public bool HasTypeDefinition(string typeName) => types.Any(t => (typeName == t.name));
-    public bool HasTypeDefinition(LoreTypeDefinition typeDef) => types.Any(t => (typeDef == t) || t.IsParentOf(typeDef));
+    public bool HasTypeDefinition(LoreTypeDefinition typeDef) => types.Any(t => typeDef == t);
     public LoreTypeDefinition? GetTypeDefinition(string typeName) => types.FirstOrDefault(t => typeName == t.name);
     #endregion ITypeDefinitionContainer Implementation
+
+    public bool AllowsEmbeddedType(LoreTypeDefinition typeDef) => HasTypeDefinition(typeDef) || this.IsParentOf(typeDef);
 
     public string extends {  get; set; }
     public LoreTypeDefinition ParentType { get; set; }
