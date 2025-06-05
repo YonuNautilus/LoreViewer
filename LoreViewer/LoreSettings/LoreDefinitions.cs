@@ -13,7 +13,8 @@ namespace LoreViewer.Settings
   {
     SingleValue,
     MultiValue,
-    Textual
+    Textual,
+    PickList
   }
 
   public enum ECollectionMode
