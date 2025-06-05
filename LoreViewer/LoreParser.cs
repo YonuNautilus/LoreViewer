@@ -332,10 +332,15 @@ namespace LoreViewer
                 // Parse as a nested node of the type specified in the tag.
                 else if (_settings.HasTypeDefinition(newTag))
                 {
-                  LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
-                  LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
-                  newNode.Nodes.Add(newNodeNode);
-                  continue;
+                  // had to make sure the type definition existed first
+                  LoreTypeDefinition newTypeDef = _settings.GetTypeDefinition(newTag);
+                  if (typeDef.HasTypeDefinition(newTypeDef))
+                  {
+                    LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
+                    LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
+                    newNode.Nodes.Add(newNodeNode);
+                    continue;
+                  }
                 }
                 
                 // Parse as a section, if it has the {section} tag

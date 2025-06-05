@@ -60,8 +60,8 @@ namespace LoreViewer.LoreElements
     public bool HasCollections => Collections.Any();
     public bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
     public LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
-    public bool HasCollectionOfTypeName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
-    public LoreCollection? GetCollectionOfTypeName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
+    public bool HasCollectionOfDefinedName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
+    public LoreCollection? GetCollectionWithDefinedName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
     #endregion
 
     public LoreCompositeNode(string name, LoreTypeDefinition definition) : base(name, definition) { }

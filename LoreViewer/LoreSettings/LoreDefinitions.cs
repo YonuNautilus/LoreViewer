@@ -4,6 +4,8 @@ using LoreViewer.Settings.Interfaces;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection.Metadata;
+using YamlDotNet.Serialization;
 
 namespace LoreViewer.Settings
 {
@@ -29,6 +31,10 @@ namespace LoreViewer.Settings
     public LoreDefinitionBase(string name) { this.name = name; }
 
     public abstract void PostProcess(LoreSettings settings);
+
+    public override string ToString() => name;
+
+    public bool processed = false;
   }
 
   /// <summary>
@@ -60,8 +66,9 @@ namespace LoreViewer.Settings
 
     #region ITypeDefinitionContainer Implementation
     public List<LoreTypeDefinition> types { get; set; } = new List<LoreTypeDefinition>();
-    public List<string> subTypeReferences { get; set; } = new List<string>();
-    public bool HasTypeDefinition(string typeName) => types.Any(t => typeName == t.name);
+    public List<string> allowedEmbeddedNodeTypes { get; set; } = new List<string>();
+    public bool HasTypeDefinition(string typeName) => types.Any(t => (typeName == t.name));
+    public bool HasTypeDefinition(LoreTypeDefinition typeDef) => types.Any(t => (typeDef == t) || t.IsParentOf(typeDef));
     public LoreTypeDefinition? GetTypeDefinition(string typeName) => types.FirstOrDefault(t => typeName == t.name);
     #endregion ITypeDefinitionContainer Implementation
 
@@ -69,21 +76,36 @@ namespace LoreViewer.Settings
     public LoreTypeDefinition ParentType { get; set; }
     public bool isExtendedType => ParentType != null;
 
+    public void SetParent(LoreTypeDefinition type)
+    {
+      ParentType = type;
+      collections = ParentType.collections.Concat(collections).ToList();
+      fields = DefinitionMergeManager.MergeFields(ParentType.fields, fields);
+      sections = DefinitionMergeManager.MergeSections(ParentType.sections, sections);
+    }
+
+    public bool IsParentOf(LoreTypeDefinition typeDef) => typeDef.isExtendedType && (typeDef.ParentType == this || this.IsParentOf(typeDef));
+
     public override void PostProcess(LoreSettings settings)
     {
+      foreach(string typeName in allowedEmbeddedNodeTypes)
+      {
+        LoreTypeDefinition embeddedType = settings.GetTypeDefinition(typeName);
+        if (embeddedType == null)
+          throw new EmbeddedTypeUnknownException(this, typeName);
+        else
+          types.Add(settings.GetTypeDefinition(typeName));
+      }
+
+      processed = true;
+
       foreach(LoreCollectionDefinition colDef in collections)
-        colDef.PostProcess(settings);
+        if (!colDef.processed)
+          colDef.PostProcess(settings);
 
       foreach (LoreTypeDefinition typeDefinition in types)
-        typeDefinition.PostProcess(settings);
-
-      if (!string.IsNullOrEmpty(extends))
-      {
-        ParentType = settings.GetTypeDefinition(extends);
-        collections = ParentType.collections.Concat(collections).ToList();
-        fields = DefinitionMergeManager.MergeFields(ParentType.fields, fields);
-        sections = ParentType.sections.Concat(sections).ToList();
-      }
+        if(!typeDefinition.processed)
+          typeDefinition.PostProcess(settings);
     }
   }
 
@@ -113,6 +135,16 @@ namespace LoreViewer.Settings
     public LoreSectionDefinition() { }
 
     public LoreSectionDefinition(string name, bool isFreeForm) : base(name) { freeform = isFreeForm; }
+
+
+    /// <summary>
+    /// Takes base definition, adds info like nested fields from the parent and merges them into this child field definition
+    /// </summary>
+    /// <param name="parentField"></param>
+    public void MergeFrom(LoreSectionDefinition parentField)
+    {
+      this.freeform |= parentField.freeform;
+    }
 
     public override void PostProcess(LoreSettings settings) { }
   }
@@ -182,6 +214,12 @@ namespace LoreViewer.Settings
   {
     public static List<LoreFieldDefinition> MergeFields(List<LoreFieldDefinition> baseFields, List<LoreFieldDefinition> childFields)
     {
+      if (baseFields == null && childFields == null) return null;
+
+      if (baseFields == null && childFields != null) return childFields;
+
+      if (baseFields != null && childFields == null) return baseFields;
+
       List<LoreFieldDefinition> ret = new List<LoreFieldDefinition>(baseFields);
 
       foreach (LoreFieldDefinition childField in childFields)
@@ -195,8 +233,37 @@ namespace LoreViewer.Settings
           childField.MergeFrom(parentFieldIfDefined);
           ret.Replace(parentFieldIfDefined, childField);
         }
-        else 
+        else
           ret.Add(childField);
+
+      }
+
+      return ret;
+    }
+    public static List<LoreSectionDefinition> MergeSections(List<LoreSectionDefinition> baseSections, List<LoreSectionDefinition> childSections)
+    {
+      if (baseSections == null && childSections == null) return null;
+
+      if (baseSections == null && childSections != null) return childSections;
+
+      if (baseSections != null && childSections == null) return baseSections;
+
+      List<LoreSectionDefinition> ret = new List<LoreSectionDefinition>(baseSections);
+
+      foreach (LoreSectionDefinition childSection in childSections)
+      {
+        // Look for a match, if this child field has a field of the same name described in the parent list.
+        LoreSectionDefinition parentSectionIfDefined = ret.Find(f => f.name == childSection.name);
+
+        if (parentSectionIfDefined != null)
+        {
+          childSection.fields = MergeFields(parentSectionIfDefined.fields, childSection.fields);
+          childSection.sections = MergeSections(parentSectionIfDefined.sections, childSection.sections);
+          childSection.MergeFrom(parentSectionIfDefined);
+          ret.Replace(parentSectionIfDefined, childSection);
+        }
+        else
+          ret.Add(childSection);
 
       }
 

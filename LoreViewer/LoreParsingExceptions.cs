@@ -156,5 +156,29 @@ namespace LoreViewer.Exceptions
     public CollectionWithTypeAndCollectionDefined(LoreDefinitionBase definitionBase)
       : base(definitionBase, string.Format(msgBase, definitionBase.name)) { }
   }
-  #endregion 
+
+  public class CyclicalInheritanceException : SettingsParsingException
+  {
+    public static string msgBase = "Inheritance cycle detected at type {0}";
+
+    public CyclicalInheritanceException(LoreTypeDefinition typeDef)
+      : base(typeDef, string.Format(msgBase, typeDef.name)) { }
+  }
+
+  public class InheritingMissingTypeDefinitionException : SettingsParsingException
+  {
+    public static string msgBase = "Something is trying to inherit from a non-defined type: {0}";
+
+    public InheritingMissingTypeDefinitionException(string typeName)
+      : base(null, string.Format(msgBase, typeName)) { }
+  }
+
+  public class EmbeddedTypeUnknownException : SettingsParsingException
+  {
+    public static string msgBase = "Type {0} has an allowed embedded type {1}, but {1} was not defined";
+
+    public EmbeddedTypeUnknownException(LoreTypeDefinition typeDef, string unknownType)
+      : base(typeDef, string.Format(msgBase, typeDef.name, unknownType)) { }
+  }
+  #endregion
 }

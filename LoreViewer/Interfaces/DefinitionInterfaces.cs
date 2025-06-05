@@ -36,8 +36,9 @@ namespace LoreViewer.Settings.Interfaces
   public interface ITypeDefinitionContainer
   {
     List<LoreTypeDefinition> types { get; }
-    List<string> subTypeReferences { get; }
+    List<string> allowedEmbeddedNodeTypes { get; }
     public bool HasTypeDefinition(string typeName) => types.Any(t => typeName == t.name);
+    public bool HasTypeDefinition(LoreTypeDefinition typeDef) => types.Any(t => t.IsParentOf(typeDef));
     public LoreTypeDefinition? GetTypeDefinition(string typeName) => types.FirstOrDefault(t => typeName == t.name);
 
   }

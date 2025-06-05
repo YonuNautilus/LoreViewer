@@ -1,0 +1,6 @@
+﻿types:
+  - name: TypeA
+  - name: TypeB
+    extends: TypeC
+  - name: TypeC
+    extends: TypeD

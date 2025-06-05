@@ -1,6 +1,106 @@
 ﻿types:
-  - name: TestType
-    nodes:
-      - name: Sub Object
+  # Inheritance
+  - name: TypeBase
+    fields:
+      - name: Awards
+        fields:
+          - name: Oscar
+      - name: Who
+      - name: What
+    sections:
+      - name: First Section
+    collections:
+      - name: First Collection
+        entryTypeName: CollectionItem1
+
+  - name: TypeChild
+    extends: TypeBase
+    fields:
+      - name: Awards
+        fields:
+          - name: Tony
+      - name: When
+      - name: Where
+    sections:
+      - name: Second Section
+    collections:
+      - name: Second Collection
+        entryTypeName: CollectionItem2
+    
+  - name: TypeGrandchild
+    extends: TypeChild
+    fields:
+      - name: Awards
+        fields:
+          - name: Emmy
+      - name: Why
+    sections:
+      - name: Third Section
+    collections:
+      - name: Third Collection
+        entryTypeName: CollectionItem3
   
-  -
+  - name: Uncle
+    extends: TypeBase
+    fields:
+      - name: Awards
+        fields:
+          - name: Pulitzer
+          - name: Nobel
+      - name: How
+    sections:
+      - name: Stinky Section
+    collections:
+      - name: Stinky Collection
+        entryTypeName: CollectionItem4
+
+  - name: CollectionItem1
+    sections:
+      - name: CI1 Info
+        fields:
+          - name: CI1 Field
+        sections:
+          - name: CI1 Subinfo
+
+  - name: CollectionItem2
+    extends: CollectionItem1
+    sections:
+      - name: CI1 Info
+        fields:
+          - name: CI1 Field
+            multivalue: true
+      - name: CI2 Info
+
+  - name: CollectionItem3
+    extends: CollectionItem2
+    fields:
+      - name: CI3 Field
+    sections:
+      - name: CI3 Info
+      - name: CI1 Info
+        sections:
+          - name: CI1 Subinfo
+            sections:
+              - name: CI1 Subsubinfo
+          - name: CI1 Subinfo 2
+
+  - name: CollectionItem4
+    extends: CollectionItem1
+    sections:
+      - name: CI4 Info
+
+  
+  # Embedded Types With Inheritance
+  - name: BothTestType
+    allowedEmbeddedNodeTypes:
+      - EmbeddedType1
+      - EmbeddedType2
+
+  - name: EmbeddedType1
+    allowedEmbeddedNodeTypes:
+      - EmbeddedType1
+
+  - name: EmbeddedType2
+  
+  - name: EmbeddedType3
+    extends: EmbeddedType1

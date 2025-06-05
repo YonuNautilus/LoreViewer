@@ -65,6 +65,24 @@
     <None Update="v0.3\TestData\PositiveTestData\MainFile.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.4\TestData\NegativeTestData\Lore_Settings_Cyclic.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.4\TestData\NegativeTestData\Lore_Settings_Missing.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.4\TestData\NegativeTestData\Lore_Settings_Missing_Embedded.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.4\TestData\PositiveTestData\Inheritance.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.4\TestData\PositiveTestData\InheritanceAndEmbedded.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.4\TestData\PositiveTestData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

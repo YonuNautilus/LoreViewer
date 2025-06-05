@@ -12,6 +12,9 @@ namespace LoreViewer.LoreElements
   {
     public string Name { get; set; } = string.Empty;
     public abstract LoreDefinitionBase Definition { get; set; }
+
+    public virtual T DefinitionAs<T>() where T : LoreDefinitionBase => Definition as T;
+
     public Guid Id { get; set; }
     public LoreEntity(String name, LoreDefinitionBase definition) { Name = name; Definition = definition; }
   }
