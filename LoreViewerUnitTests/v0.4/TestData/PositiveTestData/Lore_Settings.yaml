@@ -92,13 +92,13 @@
   
   # Embedded Types With Inheritance
   - name: BothTestType
-    allowedEmbeddedNodeTypes:
-      - EmbeddedType1
-      - EmbeddedType2
+    embeddedNodeDefs:
+      - entryTypeName: EmbeddedType1
+      - entryTypeName: EmbeddedType2
 
   - name: EmbeddedType1
-    allowedEmbeddedNodeTypes:
-      - EmbeddedType1
+    embeddedNodeDefs:
+      - entryTypeName: EmbeddedType1
 
   - name: EmbeddedType2
   

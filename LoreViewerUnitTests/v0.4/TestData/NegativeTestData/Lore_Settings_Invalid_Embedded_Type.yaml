@@ -1,7 +1,7 @@
 ﻿types:
   - name: Parent
-    allowedEmbeddedNodeTypes:
-      - Child
+    embeddedNodeDefs:
+      - entryTypeName: Child
 
   - name: Child
   

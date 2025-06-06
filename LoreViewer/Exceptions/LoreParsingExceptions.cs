@@ -8,9 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoreViewer.Exceptions
+namespace LoreViewer.Exceptions.LoreParsingExceptions
 {
-  #region Parsing Exceptions
   public abstract class LoreParsingException : Exception
   {
     public readonly string MarkdownFilePath;
@@ -144,48 +143,19 @@ namespace LoreViewer.Exceptions
     public CollectionWithUnknownTypeException(string filePath, int blockIndex, int lineNumber, string type)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, type)) { }
   }
-  #endregion
 
-  #region Settings parsing Exceptions
-  public abstract class SettingsParsingException : Exception
+  
+  public abstract class EmbeddedNodeParsingException : LoreParsingException
   {
-    LoreDefinitionBase definition;
-
-    public SettingsParsingException(LoreDefinitionBase definition, string msg) : base(msg)
-    {
-      this.definition = definition;
-    }
+    public EmbeddedNodeParsingException(string filePath, int blockIndex, int lineNumber, string msg)
+      : base(filePath, blockIndex, lineNumber, msg) { }
   }
 
-  public class CollectionWithTypeAndCollectionDefined : SettingsParsingException
+  public class EmbeddedNodeInvalidNameException : EmbeddedNodeParsingException
   {
-    public static string msgBase = "Collection {0} was found to have both entryTypeName and entryCollection defined - this is invalid. Collection can have EITHER type contents OR collection contents.";
-    public CollectionWithTypeAndCollectionDefined(LoreDefinitionBase definitionBase)
-      : base(definitionBase, string.Format(msgBase, definitionBase.name)) { }
+    static string msgBase = "Tried to add embedded node of type {1} to a node of type {0} - but embedded node title '{2}' is not allowed!";
+
+    public EmbeddedNodeInvalidNameException(string filePath, int blockIndex, int lineNumber, LoreTypeDefinition parentNodeType, LoreTypeDefinition embeddedNodeType, string actualEmbeddedNodeTitle)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, parentNodeType.name, embeddedNodeType.name, actualEmbeddedNodeTitle)) { }
   }
-
-  public class CyclicalInheritanceException : SettingsParsingException
-  {
-    public static string msgBase = "Inheritance cycle detected at type {0}";
-
-    public CyclicalInheritanceException(LoreTypeDefinition typeDef)
-      : base(typeDef, string.Format(msgBase, typeDef.name)) { }
-  }
-
-  public class InheritingMissingTypeDefinitionException : SettingsParsingException
-  {
-    public static string msgBase = "Something is trying to inherit from a non-defined type: {0}";
-
-    public InheritingMissingTypeDefinitionException(string typeName)
-      : base(null, string.Format(msgBase, typeName)) { }
-  }
-
-  public class EmbeddedTypeUnknownException : SettingsParsingException
-  {
-    public static string msgBase = "Type {0} has an allowed embedded type {1}, but {1} was not defined";
-
-    public EmbeddedTypeUnknownException(LoreTypeDefinition typeDef, string unknownType)
-      : base(typeDef, string.Format(msgBase, typeDef.name, unknownType)) { }
-  }
-  #endregion
 }

@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LoreViewer.Exceptions;
+using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings;
@@ -335,12 +335,19 @@ namespace LoreViewer
                   // had to make sure the type definition existed first
                   LoreTypeDefinition newTypeDef = _settings.GetTypeDefinition(newTag);
                   // If the type of node we have found is allowed as an embedded type in this current node...
-                  if (typeDef.AllowsEmbeddedType(newTypeDef))
+                  if (typeDef.IsAllowedEmbeddedType(newTypeDef))
                   {
-                    LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
-                    LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
-                    newNode.Nodes.Add(newNodeNode);
-                    continue;
+                    if (typeDef.IsAllowedEmbeddedNode(newTypeDef, newTitle))
+                    {
+                      LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
+                      LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
+                      newNode.Nodes.Add(newNodeNode);
+                      continue;
+                    }
+                    else
+                    {
+                      throw new EmbeddedNodeInvalidNameException(_currentFile, currentIndex, currentBlock.Line + 1, typeDef, newTypeDef, newTitle);
+                    }
                   }
                   // If the node (the one this method returns) does NOT allow this embedded type...
                   else

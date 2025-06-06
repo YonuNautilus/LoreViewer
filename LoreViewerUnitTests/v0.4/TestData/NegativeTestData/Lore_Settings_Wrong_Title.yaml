@@ -1,0 +1,10 @@
+﻿types:
+  - name: MainNode
+    embeddedNodeDefs:
+      - name: Allowed Title Embedded Node
+        entryTypeName: Embedded1
+      - name: Another Allowed Title Embedded Node
+        entryTypeName: Embedded2
+
+  - name: Embedded1
+  - name: Embedded2

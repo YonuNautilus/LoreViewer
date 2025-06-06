@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,20 +14,28 @@ namespace v0_4.NegativeTests
 
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.4", "TestData", "NegativeTestData");
 
-    [OneTimeSetUp]
-    public static void SetupLoreSettings()
+    [Test]
+    public void InvalidEmbeddedNodeType()
     {
       _parser = new LoreParser();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Invalid_Embedded_Type.yaml"));
 
       _settings = _parser.Settings;
+
+      Assert.Throws<EmbeddedNodeTypeNotAllowedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Invalid_Embedded_Type.md")));
     }
 
     [Test]
-    public void InvalidEmbeddedNodeType()
+    public void InvalidEmbeddedNodeTitle()
     {
-      Assert.Throws<EmbeddedNodeTypeNotAllowedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Invalid_Embedded_Type.md")));
+      _parser = new LoreParser();
+
+      _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Wrong_Title.yaml"));
+
+      _settings = _parser.Settings;
+
+      Assert.Throws<EmbeddedNodeInvalidNameException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Node_Wrong_Title.md")));
     }
   }
 }

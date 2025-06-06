@@ -1,5 +1,6 @@
 ﻿using DynamicData;
 using LoreViewer.Exceptions;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -41,7 +42,7 @@ namespace LoreViewer.Settings
   /// <summary>
   /// The top-level of a lore definition. Can be used to define types like character, organization, race, etc.
   /// </summary>
-  public class LoreTypeDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, ICollectionDefinitionContainer, ITypeDefinitionContainer
+  public class LoreTypeDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, ICollectionDefinitionContainer, IEmbeddedNodeDefinitionContainer
   {
     #region IFieldDefinitionContainer implementation
 
@@ -65,13 +66,21 @@ namespace LoreViewer.Settings
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
     #endregion ICollectionDefinitionContainer
 
-    #region ITypeDefinitionContainer Implementation
-    public List<LoreTypeDefinition> types { get; set; } = new List<LoreTypeDefinition>();
-    public List<string> allowedEmbeddedNodeTypes { get; set; } = new List<string>();
-    public bool HasTypeDefinition(string typeName) => types.Any(t => (typeName == t.name));
-    public bool HasTypeDefinition(LoreTypeDefinition typeDef) => types.Any(t => typeDef == t);
-    public LoreTypeDefinition? GetTypeDefinition(string typeName) => types.FirstOrDefault(t => typeName == t.name);
-    #endregion ITypeDefinitionContainer Implementation
+    #region IEmbeddedNodeDefinitionContainer Implementation
+    public List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; set; } = new List<LoreEmbeddedNodeDefinition>();
+    public bool HasTypeDefinition(string typeName) => embeddedNodeDefs.Any(t => typeName == t.name);
+    public bool HasTypeDefinition(LoreTypeDefinition typeDef) => embeddedNodeDefs.Any(t => t.nodeType.IsParentOf(typeDef));
+
+    // Check if the TYPE, regardless of title, is allowed as an embedded node.
+    public bool IsAllowedEmbeddedType(LoreTypeDefinition typeDefinition) => embeddedNodeDefs.Any(t => t.nodeType == typeDefinition || t.nodeType.IsParentOf(typeDefinition));
+
+    // If the node type we found is the same or extends the LoreEmbeddedNodeDefinition's node type definition, it is allowed.
+    // If the LoreEmbeddedNodeDefinition does not have a title defined, it can have any title. Otherwise, title must match.
+    public bool IsAllowedEmbeddedNode(LoreTypeDefinition typeDef, string nodeTitle) => embeddedNodeDefs.Any(
+          t =>
+          (t.nodeType == typeDef || t.nodeType.IsParentOf(typeDef)) &&
+          (!string.IsNullOrWhiteSpace(t.name) ? t.name == nodeTitle : true));
+    #endregion IEmbeddedNodeDefinitionContainer
 
     public bool AllowsEmbeddedType(LoreTypeDefinition typeDef) => HasTypeDefinition(typeDef) || this.IsParentOf(typeDef);
 
@@ -91,24 +100,14 @@ namespace LoreViewer.Settings
 
     public override void PostProcess(LoreSettings settings)
     {
-      foreach(string typeName in allowedEmbeddedNodeTypes)
-      {
-        LoreTypeDefinition embeddedType = settings.GetTypeDefinition(typeName);
-        if (embeddedType == null)
-          throw new EmbeddedTypeUnknownException(this, typeName);
-        else
-          types.Add(settings.GetTypeDefinition(typeName));
-      }
+      foreach(LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
+        lend.PostProcess(settings);
 
       processed = true;
 
       foreach(LoreCollectionDefinition colDef in collections)
         if (!colDef.processed)
           colDef.PostProcess(settings);
-
-      foreach (LoreTypeDefinition typeDefinition in types)
-        if(!typeDefinition.processed)
-          typeDefinition.PostProcess(settings);
     }
   }
 
@@ -210,6 +209,26 @@ namespace LoreViewer.Settings
       else if (entryCollection != null)
         ContainedType = entryCollection;
 
+    }
+  }
+
+  public class LoreEmbeddedNodeDefinition : LoreDefinitionBase
+  {
+    public string entryTypeName { get; set; }
+    public LoreTypeDefinition nodeType { get; set; }
+    public bool required { get; set; }
+
+    public override void PostProcess(LoreSettings settings)
+    {
+      if (string.IsNullOrEmpty(entryTypeName))
+        throw new EmbeddedTypeNotGivenException(this);
+
+      LoreTypeDefinition foundNodeType = settings.GetTypeDefinition(entryTypeName);
+
+      if (foundNodeType == null)
+        throw new EmbeddedTypeUnknownException(this, entryTypeName);
+      else
+        nodeType = foundNodeType;
     }
   }
 

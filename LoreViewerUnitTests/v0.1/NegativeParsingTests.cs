@@ -1,4 +1,6 @@
-﻿namespace v0_1.NegativeTests
+﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+
+namespace v0_1.NegativeTests
 {
   [TestFixture]
   [TestOf(typeof(LoreParser))]

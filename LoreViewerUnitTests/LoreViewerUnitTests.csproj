@@ -65,6 +65,9 @@
     <None Update="v0.3\TestData\PositiveTestData\MainFile.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.4\TestData\NegativeTestData\Embedded_Node_Wrong_Title.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v0.4\TestData\NegativeTestData\Invalid_Embedded_Type.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -78,6 +81,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.4\TestData\NegativeTestData\Lore_Settings_Missing_Embedded.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.4\TestData\NegativeTestData\Lore_Settings_Wrong_Title.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.4\TestData\PositiveTestData\Inheritance.md">

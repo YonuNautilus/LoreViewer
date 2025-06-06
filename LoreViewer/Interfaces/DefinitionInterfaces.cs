@@ -33,13 +33,17 @@ namespace LoreViewer.Settings.Interfaces
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
   }
 
-  public interface ITypeDefinitionContainer
+  public interface IEmbeddedNodeDefinitionContainer
   {
-    List<LoreTypeDefinition> types { get; }
-    List<string> allowedEmbeddedNodeTypes { get; }
-    public bool HasTypeDefinition(string typeName) => types.Any(t => typeName == t.name);
-    public bool HasTypeDefinition(LoreTypeDefinition typeDef) => types.Any(t => t.IsParentOf(typeDef));
-    public LoreTypeDefinition? GetTypeDefinition(string typeName) => types.FirstOrDefault(t => typeName == t.name);
+    List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; }
+    public bool HasTypeDefinition(string typeName) => embeddedNodeDefs.Any(t => typeName == t.name);
+    public bool HasTypeDefinition(LoreTypeDefinition typeDef) => embeddedNodeDefs.Any(t => t.nodeType.IsParentOf(typeDef));
 
+    // If the node type we found is the same or extends the LoreEmbeddedNodeDefinition's node type definition, it is allowed.
+    // If the LoreEmbeddedNodeDefinition does not have a title defined, it can have any title. Otherwise, title must match.
+    public bool IsAllowedEmbeddedNode(LoreTypeDefinition typeDef, string nodeTitle) => embeddedNodeDefs.Any(
+          t =>
+          (t.nodeType == typeDef || t.nodeType.IsParentOf(typeDef)) &&
+          (!string.IsNullOrWhiteSpace(t.name) ? t.name == nodeTitle : true));
   }
 }

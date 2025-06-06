@@ -1,7 +1,7 @@
 ﻿types:
   - name: TypeWithMissingAllowedEmbedded
-    allowedEmbeddedNodeTypes:
-      - ExistingType
-      - NonexistingType
+    embeddedNodeDefs:
+      - entryTypeName: ExistingType
+      - entryTypeName: NonexistingType
 
   - name: ExistingType

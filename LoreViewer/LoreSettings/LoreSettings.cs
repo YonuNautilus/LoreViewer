@@ -1,5 +1,6 @@
 ﻿using Avalonia.Media;
 using LoreViewer.Exceptions;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -57,7 +58,7 @@ namespace LoreViewer.Settings
 
     /// <summary>
     /// Resolving inheritance is no laughing matter. We must ensure resolving inheritance is done in the correct order.
-    /// This method takes all types, and gives a list of the LoreTypeDefinitions in an order that will not break inheritance
+    /// This method takes all embeddedNodeDefs, and gives a list of the LoreTypeDefinitions in an order that will not break inheritance
     /// when inheritance resolution occurs.
     /// </summary>
     /// <param name="allTypes"></param>

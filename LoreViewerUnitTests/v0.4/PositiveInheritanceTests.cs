@@ -810,14 +810,14 @@ namespace v0_4.PositiveTests
     public void Settings_Inher_And_Embed()
     {
       Assert.NotNull(_settings.GetTypeDefinition("BothTestType"));
-      Assert.That(_settings.GetTypeDefinition("BothTestType").types, Has.Count.EqualTo(2));
+      Assert.That(_settings.GetTypeDefinition("BothTestType").embeddedNodeDefs, Has.Count.EqualTo(2));
 
       Assert.NotNull(_settings.GetTypeDefinition("EmbeddedType1"));
-      Assert.That(_settings.GetTypeDefinition("EmbeddedType1").types, Has.Count.EqualTo(1));
-      Assert.That(_settings.GetTypeDefinition("EmbeddedType1").types[0], Is.SameAs(_settings.GetTypeDefinition("EmbeddedType1")));
+      Assert.That(_settings.GetTypeDefinition("EmbeddedType1").embeddedNodeDefs, Has.Count.EqualTo(1));
+      Assert.That(_settings.GetTypeDefinition("EmbeddedType1").embeddedNodeDefs[0].nodeType, Is.SameAs(_settings.GetTypeDefinition("EmbeddedType1")));
 
       Assert.NotNull(_settings.GetTypeDefinition("EmbeddedType2"));
-      Assert.That(_settings.GetTypeDefinition("EmbeddedType2"), Is.SameAs(_settings.GetTypeDefinition("BothTestType").types[1]));
+      Assert.That(_settings.GetTypeDefinition("EmbeddedType2"), Is.SameAs(_settings.GetTypeDefinition("BothTestType").embeddedNodeDefs[1].nodeType));
 
       Assert.NotNull(_settings.GetTypeDefinition("EmbeddedType3"));
       Assert.That(_settings.GetTypeDefinition("EmbeddedType3").ParentType, Is.SameAs(_settings.GetTypeDefinition("EmbeddedType1")));
@@ -827,7 +827,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_Inher_And_Embed()
     {
-      Assert.NotNull(_parser.GetNode("Test Node"));
+      Assert.That(_parser.GetNode("Test Node"), Is.Not.Null);
       Assert.That(_parser.GetNode("Test Node").Nodes, Has.Count.EqualTo(2));
 
       LoreNode node = (LoreNode)_parser.GetNode("Test Node");
