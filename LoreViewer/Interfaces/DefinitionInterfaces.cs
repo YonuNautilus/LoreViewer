@@ -39,6 +39,9 @@ namespace LoreViewer.Settings.Interfaces
     public bool HasTypeDefinition(string typeName) => embeddedNodeDefs.Any(t => typeName == t.name);
     public bool HasTypeDefinition(LoreTypeDefinition typeDef) => embeddedNodeDefs.Any(t => t.nodeType.IsParentOf(typeDef));
 
+    // Check if the TYPE, regardless of title, is allowed as an embedded node.
+    public bool IsAllowedEmbeddedType(LoreTypeDefinition typeDefinition) => embeddedNodeDefs.Any(t => t.nodeType == typeDefinition || t.nodeType.IsParentOf(typeDefinition));
+
     // If the node type we found is the same or extends the LoreEmbeddedNodeDefinition's node type definition, it is allowed.
     // If the LoreEmbeddedNodeDefinition does not have a title defined, it can have any title. Otherwise, title must match.
     public bool IsAllowedEmbeddedNode(LoreTypeDefinition typeDef, string nodeTitle) => embeddedNodeDefs.Any(

@@ -1,0 +1,9 @@
+﻿types:
+  - name: TwoWithSameTitle
+    embeddedNodeDefs:
+      - entryTypeName: SecondLevel
+        name: Embedded Node 1
+      - entryTypeName: SecondLevel
+        name: Embedded Node 1
+
+  - name: SecondLevel

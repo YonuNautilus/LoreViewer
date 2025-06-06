@@ -62,6 +62,59 @@ namespace LoreViewer.LoreElements
     public LoreNode(string name, LoreTypeDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
 
 
+    // Check if the embedded node already exists.
+    public bool ContainsEmbeddedNode(LoreTypeDefinition embeddedNodeType, string embeddedNodeTitle)
+    {
+      // titles of embedded nodes cannot be the same, do that check first, will be quicker than the other checks
+      if (Nodes.Any(n => n.Name == embeddedNodeTitle)) return true;
+
+      // Otherwise, we have to check embedded node definitions.
+      List<LoreEmbeddedNodeDefinition> matchingEmbeddedDefByType = DefinitionAs<LoreTypeDefinition>().embeddedNodeDefs.Where(d => embeddedNodeType.IsATypeOf(d.nodeType)).ToList();
+
+      // If there are NONE, that really shouldn't happen since we had other checks preventing an embedded node of unallowed type being added... So throw an exception
+      if (matchingEmbeddedDefByType.Count == 0)
+        throw new Exception($"TRIED TO ADD EMBEDDED NODE ({embeddedNodeTitle}) OF DISALLOWED TYPE {embeddedNodeType} TO NODE {this.Name} OF TYPE {this.Definition.name}");
+
+      // If there's only one embedded node definition for the new embedded node's type, that's an easy check -- see if the Nodes list has any nodes which are a type of the one specified in the definition.
+      // Note that, if there's only one matching embedded definition that shares a type or is an ancestor type of the node we are trying to add, it doesn't matter what the name of the definition or the 
+      //    title of the node we are trying to add are.
+      //
+      // If there is, the node already exists, return true.
+      if(matchingEmbeddedDefByType.Count == 1)
+      {
+        LoreEmbeddedNodeDefinition lend = matchingEmbeddedDefByType[0];
+        return Nodes.Any(n => n.DefinitionAs<LoreTypeDefinition>().IsATypeOf(lend.nodeType));
+      }
+
+      
+
+      // If there are multiple, we need to start checking more specifics.
+      // Essentially we are finding embedded node definitions (from matchingEmbeddedDefByType) that are not yet satisfied by nodes in the Nodes list.
+      else
+      {
+        foreach (LoreEmbeddedNodeDefinition def in matchingEmbeddedDefByType)
+        {
+          bool defIsSatisfied = Nodes.Any(n =>
+              n.DefinitionAs<LoreTypeDefinition>().IsATypeOf(def.nodeType) && (def.hasTitleRequirement ? n.Name == def.name : true)
+          );
+
+          if (!defIsSatisfied)
+          {
+            // This definition is available. Would the incoming node satisfy it?
+            bool matchesThisDefinition =
+                (def.name == null || def.name == embeddedNodeTitle);
+
+            if (matchesThisDefinition)
+            {
+              // A valid slot for this node is open, and no conflicts found
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    }
+
     public void MergeIn(LoreNode toMergeIn)
     {
       foreach (LoreAttribute la in toMergeIn.Attributes)

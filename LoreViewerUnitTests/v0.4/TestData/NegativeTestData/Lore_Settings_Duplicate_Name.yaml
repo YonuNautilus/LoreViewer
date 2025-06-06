@@ -1,0 +1,13 @@
+﻿types:
+  - name: TypeA
+    extends: TypeB
+  
+  - name: TypeB
+    extends: TypeC
+
+  - name: TypeC
+    extends: TypeA
+
+collections:
+  - name: TypeB
+    entryTypeName: TypeC  

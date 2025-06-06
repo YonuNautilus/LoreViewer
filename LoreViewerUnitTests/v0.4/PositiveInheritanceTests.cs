@@ -813,8 +813,9 @@ namespace v0_4.PositiveTests
       Assert.That(_settings.GetTypeDefinition("BothTestType").embeddedNodeDefs, Has.Count.EqualTo(2));
 
       Assert.NotNull(_settings.GetTypeDefinition("EmbeddedType1"));
-      Assert.That(_settings.GetTypeDefinition("EmbeddedType1").embeddedNodeDefs, Has.Count.EqualTo(1));
+      Assert.That(_settings.GetTypeDefinition("EmbeddedType1").embeddedNodeDefs, Has.Count.EqualTo(2));
       Assert.That(_settings.GetTypeDefinition("EmbeddedType1").embeddedNodeDefs[0].nodeType, Is.SameAs(_settings.GetTypeDefinition("EmbeddedType1")));
+      Assert.That(_settings.GetTypeDefinition("EmbeddedType1").embeddedNodeDefs[1].nodeType, Is.SameAs(_settings.GetTypeDefinition("EmbeddedType1")));
 
       Assert.NotNull(_settings.GetTypeDefinition("EmbeddedType2"));
       Assert.That(_settings.GetTypeDefinition("EmbeddedType2"), Is.SameAs(_settings.GetTypeDefinition("BothTestType").embeddedNodeDefs[1].nodeType));

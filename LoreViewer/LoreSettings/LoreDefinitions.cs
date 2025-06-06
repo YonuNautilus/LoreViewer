@@ -80,9 +80,10 @@ namespace LoreViewer.Settings
           t =>
           (t.nodeType == typeDef || t.nodeType.IsParentOf(typeDef)) &&
           (!string.IsNullOrWhiteSpace(t.name) ? t.name == nodeTitle : true));
-    #endregion IEmbeddedNodeDefinitionContainer
 
+    #endregion IEmbeddedNodeDefinitionContainer
     public bool AllowsEmbeddedType(LoreTypeDefinition typeDef) => HasTypeDefinition(typeDef) || this.IsParentOf(typeDef);
+
 
     public string extends {  get; set; }
     public LoreTypeDefinition ParentType { get; set; }
@@ -96,12 +97,37 @@ namespace LoreViewer.Settings
       sections = DefinitionMergeManager.MergeSections(ParentType.sections, sections);
     }
 
-    public bool IsParentOf(LoreTypeDefinition typeDef) => typeDef.isExtendedType && (typeDef.ParentType == this || this.IsParentOf(typeDef));
+    public bool IsParentOf(LoreTypeDefinition subTypeDef) => subTypeDef.isExtendedType && (subTypeDef.ParentType == this || this.IsParentOf(subTypeDef.ParentType));
+    public bool IsATypeOf(LoreTypeDefinition parentTypeDef) => this == parentTypeDef || parentTypeDef.IsParentOf(this);
 
     public override void PostProcess(LoreSettings settings)
     {
-      foreach(LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
+
+      /* Check for embedded node rule violations:
+       *   1. Two embedded nodes under the same parent node cannot have the same title
+       *   2. Regarding multiple embedded nodes on the same type inheritance tree:
+       *      1. The LEAST ABSTRACT type of embedded node does not nead a title
+       *      2. Any nodes types that are MORE ABSTRACT must have a title
+       */
+
+      // Check rule 1 before any postprocessing
+      IEnumerable<LoreEmbeddedNodeDefinition> dupedTitles = embeddedNodeDefs.Where(d => d.hasTitleRequirement).GroupBy(d => d.name).Where(c => c.Count() > 1).Select(name => name.First());
+      if (dupedTitles.Any())
+        throw new EmbeddedNodesWithSameTitleException(dupedTitles.First(), dupedTitles.First().name);
+
+      foreach (LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
         lend.PostProcess(settings);
+
+
+      // Now check for rule 2 violations.
+      // Iterate through each embedded node def. Assuming it is the least abstract, get all embedded node defs whose type is a parent
+      foreach(LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
+      {
+        IEnumerable<LoreEmbeddedNodeDefinition> matchingTypeOrParentType = embeddedNodeDefs.Except(new LoreEmbeddedNodeDefinition[] { lend }).Where(d => lend.nodeType.IsATypeOf(d.nodeType));
+        LoreEmbeddedNodeDefinition firstWithoutNameReq = matchingTypeOrParentType.FirstOrDefault(d => !d.hasTitleRequirement);
+        if (firstWithoutNameReq != null)
+          throw new EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException(firstWithoutNameReq);
+      }
 
       processed = true;
 
@@ -217,6 +243,8 @@ namespace LoreViewer.Settings
     public string entryTypeName { get; set; }
     public LoreTypeDefinition nodeType { get; set; }
     public bool required { get; set; }
+
+    public bool hasTitleRequirement => !string.IsNullOrWhiteSpace(name);
 
     public override void PostProcess(LoreSettings settings)
     {

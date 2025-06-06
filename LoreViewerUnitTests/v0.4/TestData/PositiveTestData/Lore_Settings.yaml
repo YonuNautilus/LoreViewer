@@ -98,7 +98,10 @@
 
   - name: EmbeddedType1
     embeddedNodeDefs:
-      - entryTypeName: EmbeddedType1
+      - name: A Deeply Embedded Node Derived From The Defined Type
+        entryTypeName: EmbeddedType1
+      - name: A Deeply Embedded Node Of The Defined Type
+        entryTypeName: EmbeddedType1
 
   - name: EmbeddedType2
   

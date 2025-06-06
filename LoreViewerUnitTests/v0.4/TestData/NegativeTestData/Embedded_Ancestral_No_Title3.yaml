@@ -1,0 +1,13 @@
+﻿types:
+  - name: ParentNode
+    embeddedNodeDefs:
+      - name: NodeWithTitle
+        entryTypeName: SubNode
+      - entryTypeName: SubNode2
+      - entryTypeName: SubNode3
+  
+  - name: SubNode
+  - name: SubNode2
+    extends: SubNode
+  - name: SubNode3
+    extends: SubNode2

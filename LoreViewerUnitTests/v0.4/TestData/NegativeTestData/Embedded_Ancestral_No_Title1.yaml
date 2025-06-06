@@ -1,0 +1,8 @@
+﻿types:
+  - name: ParentNode
+    embeddedNodeDefs:
+      - name: NodeWithTitle
+        entryTypeName: SubNode
+      - entryTypeName: SubNode
+  
+  - name: SubNode

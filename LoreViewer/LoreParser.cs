@@ -181,6 +181,7 @@ namespace LoreViewer
 
           if (!string.IsNullOrEmpty(tag))
           {
+            // Parse collection based on {collection:...} tag
             if (BlockIsACollection(block))
             {
               if (BlockIsANestedCollection(block))
@@ -193,6 +194,11 @@ namespace LoreViewer
                 LoreCollectionDefinition lcd = new LoreCollectionDefinition() { ContainedType = _settings.GetTypeDefinition(GetCollectionType(tag)) };
                 collectionsInThisFile.Add(ParseCollection(document, ref currentIndex, block, lcd));
               }
+            }
+            // Parse collection based on the collection definition
+            else if (_settings.HasCollectionDefinition(tag))
+            {
+              collectionsInThisFile.Add(ParseCollection(document, ref currentIndex, block, _settings.GetCollectionDefinition(tag)));
             }
             else if (_settings.HasTypeDefinition(tag))
             {
@@ -339,10 +345,15 @@ namespace LoreViewer
                   {
                     if (typeDef.IsAllowedEmbeddedNode(newTypeDef, newTitle))
                     {
-                      LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
-                      LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
-                      newNode.Nodes.Add(newNodeNode);
-                      continue;
+                      if (!newNode.ContainsEmbeddedNode(newTypeDef, newTitle))
+                      {
+                        LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag);
+                        LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType);
+                        newNode.Nodes.Add(newNodeNode);
+                        continue;
+                      }
+                      else
+                        throw new EmbeddedNodeAlreadyAddedException(_currentFile, currentIndex, currentBlock.Line + 1, newNode, newTypeDef, newTitle);
                     }
                     else
                     {

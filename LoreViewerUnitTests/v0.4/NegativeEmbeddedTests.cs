@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace v0_4.NegativeTests
     public static LoreParser _parser;
 
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.4", "TestData", "NegativeTestData");
+
+    #region Lore Parsing Tests
 
     [Test]
     public void InvalidEmbeddedNodeType()
@@ -37,5 +40,62 @@ namespace v0_4.NegativeTests
 
       Assert.Throws<EmbeddedNodeInvalidNameException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Node_Wrong_Title.md")));
     }
+
+    [Test]
+    public void EmbeddedAlreadyAddedSameType()
+    {
+      _parser = new LoreParser();
+
+      _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Embedded_Already_Added.yaml"));
+
+      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Same.md")));
+      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Parent.md")));
+      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Child.md")));
+    }
+    #endregion Lore Parsing Tests
+
+    #region Settings Parsing Tests
+
+    [Test]
+    public void ParsingEmbeddedDefsWithSameTitle()
+    {
+      _parser = new LoreParser();
+
+      Assert.Throws<EmbeddedNodesWithSameTitleException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Emb_Defs_Same_Title.yaml")));
+    }
+
+    [Test]
+    public void ParsingEmbeddedDefsWithSimilarTypeNoTitle1()
+    {
+      _parser = new LoreParser();
+
+      Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title1.yaml")));
+    }
+    
+
+    [Test]
+    public void ParsingEmbeddedDefsWithSimilarTypeNoTitle2()
+    {
+      _parser = new LoreParser();
+
+      Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title2.yaml")));
+    }
+
+    [Test]
+    public void ParsingEmbeddedDefsWithSimilarTypeNoTitle3()
+    {
+      _parser = new LoreParser();
+
+      Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title3.yaml")));
+    }
+
+    [Test]
+    public void ParsingEmbeddedDefsWithSimilarTypeNoTitle4()
+    {
+      _parser = new LoreParser();
+
+      Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title4.yaml")));
+    }
+    #endregion Settings Parsing Tests
   }
 }

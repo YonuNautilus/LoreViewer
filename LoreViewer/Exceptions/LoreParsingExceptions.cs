@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using LoreViewer.LoreElements;
+using LoreViewer.Settings;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -157,5 +158,12 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
 
     public EmbeddedNodeInvalidNameException(string filePath, int blockIndex, int lineNumber, LoreTypeDefinition parentNodeType, LoreTypeDefinition embeddedNodeType, string actualEmbeddedNodeTitle)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, parentNodeType.name, embeddedNodeType.name, actualEmbeddedNodeTitle)) { }
+  }
+
+  public class EmbeddedNodeAlreadyAddedException : EmbeddedNodeParsingException
+  {
+    static string msgBase = "Tried to add embedded node '{0}' of type {1} to parent node {2} (type: {3}), but the embedded node could not be added because existing embedded nodes satisfied all applicable embedded node definitions";
+    public EmbeddedNodeAlreadyAddedException(string filePath, int blockIndex, int lineNumber, LoreNode parentNode, LoreTypeDefinition newNodeType, string newNodeTitle)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, newNodeType, newNodeType.name, parentNode.Name, parentNode.Definition.name)) { }
   }
 }

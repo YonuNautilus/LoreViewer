@@ -22,14 +22,26 @@ namespace LoreViewer.Settings
 
     public bool HasTypeDefinition(string typeName) => types.Any(type => type.name.Equals(typeName));
     public LoreTypeDefinition GetTypeDefinition(string typeName) => types.FirstOrDefault(type => type.name.Equals(typeName));
+    public bool HasCollectionDefinition(string collectionName) => collections.Any(col => col.name.Equals(collectionName));
     public LoreCollectionDefinition GetCollectionDefinition(string typeName) => collections.FirstOrDefault(type => type.name.Equals(typeName));
 
 
     public void PostProcess()
     {
+      CheckDuplicateNames();
+
       ResolveTypeInheritance();
 
       ResolveReferencedTypes();
+    }
+
+    private void CheckDuplicateNames()
+    {
+      IEnumerable<LoreDefinitionBase> defsWithSameName = types.Concat<LoreDefinitionBase>(collections).GroupBy(d => d.name).Where(group => group.Count() > 1).SelectMany(def => def);
+      if (defsWithSameName.Any())
+      {
+        throw new DuplicateDefinitionNamesException(defsWithSameName.First());
+      }
     }
 
     private void ResolveTypeInheritance()
