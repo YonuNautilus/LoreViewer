@@ -1,0 +1,43 @@
+﻿types:
+  - name: Simple Node
+    sections:
+      - name: Simple Section
+  
+  - name: Simple Node 2
+    extends: Simple Node
+    fields:
+      - name: Simple Required Field
+        required: true
+
+  - name: MainNodeType
+    fields:
+      - name: required field
+        required: true
+      - name: field with required
+        fields:
+          - name: required nested field
+            required: true
+          - name: non-required nested field
+      - name: grandparent of required field
+        fields:
+          - name: parent of required field
+            fields:
+              - name: double-nested required field
+                required: true
+    sections:
+      - name: Non-Required Section
+        sections:
+          - name: Required nested section
+            required: true
+        fields:
+          - name: required section-nested field
+            required: true
+      - name: Required Section
+        required: true
+    embeddedNodeDefs:
+      - name: Required Nested Node
+        required: true
+        entryTypeName: Simple Node
+      - name: Optional Nested Node
+        entryTypeName: Simple Node
+    

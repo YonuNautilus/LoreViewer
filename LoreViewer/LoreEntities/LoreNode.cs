@@ -46,21 +46,6 @@ namespace LoreViewer.LoreElements
     public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
 
     public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
-    #endregion
-    #region ICollectionContainer Implementation
-    public ObservableCollection<LoreCollection> Collections { get; } = new ObservableCollection<LoreCollection>();
-    public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
-    public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
-    public bool HasCollections => Collections.Any();
-    public bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
-    public LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
-    public bool HasCollectionOfDefinedName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
-    public LoreCollection? GetCollectionWithDefinedName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
-    #endregion
-
-    public LoreNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
-    public LoreNode(string name, LoreTypeDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
-
 
     // Check if the embedded node already exists.
     public bool ContainsEmbeddedNode(LoreTypeDefinition embeddedNodeType, string embeddedNodeTitle)
@@ -80,13 +65,13 @@ namespace LoreViewer.LoreElements
       //    title of the node we are trying to add are.
       //
       // If there is, the node already exists, return true.
-      if(matchingEmbeddedDefByType.Count == 1)
+      if (matchingEmbeddedDefByType.Count == 1)
       {
         LoreEmbeddedNodeDefinition lend = matchingEmbeddedDefByType[0];
         return Nodes.Any(n => n.DefinitionAs<LoreTypeDefinition>().IsATypeOf(lend.nodeType));
       }
 
-      
+
 
       // If there are multiple, we need to start checking more specifics.
       // Essentially we are finding embedded node definitions (from matchingEmbeddedDefByType) that are not yet satisfied by nodes in the Nodes list.
@@ -114,6 +99,23 @@ namespace LoreViewer.LoreElements
       }
       return true;
     }
+
+    #endregion
+    #region ICollectionContainer Implementation
+    public ObservableCollection<LoreCollection> Collections { get; } = new ObservableCollection<LoreCollection>();
+    public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
+    public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
+    public bool HasCollections => Collections.Any();
+    public bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
+    public LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
+    public bool HasCollectionOfDefinedName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
+    public LoreCollection? GetCollectionWithDefinedName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
+    #endregion
+
+    public LoreNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
+    public LoreNode(string name, LoreTypeDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
+
+    
 
     public void MergeIn(LoreNode toMergeIn)
     {

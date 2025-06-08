@@ -81,6 +81,8 @@ namespace LoreViewer.Settings
           (t.nodeType == typeDef || t.nodeType.IsParentOf(typeDef)) &&
           (!string.IsNullOrWhiteSpace(t.name) ? t.name == nodeTitle : true));
 
+    public bool HasNestedNodes => embeddedNodeDefs != null && embeddedNodeDefs.Count() > 0;
+
     #endregion IEmbeddedNodeDefinitionContainer
     public bool AllowsEmbeddedType(LoreTypeDefinition typeDef) => HasTypeDefinition(typeDef) || this.IsParentOf(typeDef);
 
@@ -88,6 +90,8 @@ namespace LoreViewer.Settings
     public string extends {  get; set; }
     public LoreTypeDefinition ParentType { get; set; }
     public bool isExtendedType => ParentType != null;
+
+    public bool HasRequiredEmbeddedNodes => HasNestedNodes ? embeddedNodeDefs.Aggregate(false, (sum, next) => sum || next.required || next.nodeType.HasRequiredEmbeddedNodes, r => r) : false;
 
     public void SetParent(LoreTypeDefinition type)
     {
@@ -157,6 +161,10 @@ namespace LoreViewer.Settings
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
 
     #endregion IFieldDefinitionContainer implementation
+
+    public bool required = false;
+    public bool HasRequiredNestedSections => HasSections ? sections.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedSections, r => r) : false;
+
 
     public bool freeform { get; set; } = false;
 

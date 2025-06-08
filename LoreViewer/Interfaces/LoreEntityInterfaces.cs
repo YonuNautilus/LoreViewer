@@ -54,12 +54,20 @@ namespace LoreViewer.LoreElements.Interfaces
     public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
     public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
     public bool HasNodes => Nodes.Any();
+
+  }
+
+  public interface IEmbeddedNodeContainer : INodeContainer
+  {
+
+    // Check if the embedded node already exists.
+    public bool ContainsEmbeddedNode(LoreTypeDefinition embeddedNodeType, string embeddedNodeTitle);
   }
 
   /// <summary>
   /// For any LoreEntity that needs to behave and display like a node (ie LoreNode and LoreCompositeNode)
   /// </summary>
-  public interface ILoreNode: ILoreEntity, ISectionContainer, IAttributeContainer, INodeContainer, ICollectionContainer
+  public interface ILoreNode: ILoreEntity, ISectionContainer, IAttributeContainer, IEmbeddedNodeContainer, ICollectionContainer
   {
     ILoreNode MergeWith(LoreNode node);
   }

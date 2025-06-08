@@ -134,6 +134,27 @@
     <None Update="v0.4\TestData\PositiveTestData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.5\TestData\NegativeTestData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\NegativeTestData\MissingNestedChildNode.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\NegativeTestData\MissingNestedNode.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\NegativeTestData\MissingFieldsOnFirst.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\PositiveTestData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\PositiveTestData\SimpleTestFile.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\PositiveTestData\SimpleTestFile2.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

@@ -36,6 +36,10 @@ namespace LoreViewer
     public ObservableCollection<Tuple<string, int, int, Exception>> _errors = new();
     public ObservableCollection<string> _warnings = new ObservableCollection<string>();
 
+    public IEnumerable<LoreEntity> AllEntities => _nodes.Cast<LoreEntity>().Concat<LoreEntity>(_collections);
+
+    public LoreValidator validator;
+
     /// <summary>
     /// Key is the file name (path relative to the lore folder), and value is the index of the block that is 'orphaned'
     /// (i.e. not tagged when it needs to be)
@@ -64,6 +68,12 @@ namespace LoreViewer
       _settings = deserializer.Deserialize<LoreSettings>(settingsText);
 
       _settings.PostProcess();
+    }
+
+    public void Validate()
+    {
+      validator = new LoreValidator();
+      validator.Validate(AllEntities);
     }
 
     public void BeginParsingFromFolder(string FolderPath)
@@ -110,7 +120,10 @@ namespace LoreViewer
           throw;
         }
       }
+
+      Validate();
     }
+
     private static string GetCollectionType(string fullTypeName) => Regex.Match(fullTypeName, NestedTypeTagRegex).Value;
     private static string ExtractTag(HeadingBlock block) => Regex.Match(GetStringFromContainerInline(block.Inline), TypeTagRegex)?.Value;
     private static string ExtractTitle(HeadingBlock block)
