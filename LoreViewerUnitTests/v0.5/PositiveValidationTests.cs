@@ -26,6 +26,17 @@ namespace v0_5.PositiveTests
       _parser.Validate();
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(0));
+
+      Assert.That(_parser._nodes, Has.Count.EqualTo(1));
+      Assert.That(_parser._nodes[0].Collections, Has.Count.EqualTo(1));
+      Assert.That(_parser._nodes[0].Collections[0], Has.Count.EqualTo(2));
+    }
+
+
+    [Test]
+    public void ExtraCollectionExceptionTest()
+    {
+
     }
   }
 }

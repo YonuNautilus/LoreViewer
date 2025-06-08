@@ -137,6 +137,9 @@
     <None Update="v0.5\TestData\NegativeTestData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.5\TestData\NegativeTestData\MissingCollection.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v0.5\TestData\NegativeTestData\MissingNestedChildNode.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -144,6 +147,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.5\TestData\NegativeTestData\MissingFieldsOnFirst.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\NewExceptionsTest\CollectionExceptionBadType.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\NewExceptionsTest\CollectionExceptionUnknownType.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.5\TestData\NewExceptionsTest\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.5\TestData\PositiveTestData\Lore_Settings.yaml">

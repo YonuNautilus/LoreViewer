@@ -138,6 +138,20 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, containedType)) { }
   }
 
+  public class UnknownTypeInCollectionException: LoreCollectionParsingException
+  {
+    static string msgBase = "Tried to parse a node of UNKNOWN type {0} int a collection of type {1}!";
+    public UnknownTypeInCollectionException(string filePath, int blockIndex, int lineNumber, string unknownTypeTag, LoreDefinitionBase containedType)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, unknownTypeTag, containedType)) { }
+  }
+
+  public class InvalidTypeInCollectionException: LoreCollectionParsingException
+  {
+    static string msgBase = "Tried to parse a node of type {0} int a collection of type {1}. Should only add nodes of the defined type {1} or derived types!";
+    public InvalidTypeInCollectionException(string filePath, int blockIndex, int lineNumber, string invalidTypeTag, LoreDefinitionBase containedType)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, invalidTypeTag, containedType)) { }
+  }
+
   public class CollectionWithUnknownTypeException: LoreCollectionParsingException
   {
     static string msgBase = "Tried to parse a collection with an undefined type {0}.";

@@ -104,7 +104,7 @@ namespace LoreViewer
         {
           bool contains = container.ContainsEmbeddedNode(def.nodeType, def.name ?? def.nodeType.name);
 
-          if ((def.required || def.nodeType.HasRequiredEmbeddedNodes) && !contains)
+          if ((def.required) && !contains)
           {
             result.LogError(entity, $"Missing required embedded node '{def.name ?? def.nodeType.name}'");
             result.LoreEntityValidationStates[entity] = EValidationState.Failed;
@@ -129,13 +129,41 @@ namespace LoreViewer
     {
       if (entity != container) throw new Exception($"PARSING ERROR ON ENTITY {entity.Name}");
 
+      if (entity.Definition is ICollectionDefinitionContainer defWithFields)
+      {
+        var defs = ((ICollectionDefinitionContainer)entity.Definition).collections;
+        if (defs != null)
+        {
+          foreach (var def in defs)
+          {
+            bool contains = container.HasCollection(def.name);
+
+            if ((def.required) && !contains)
+            {
+              result.LogError(entity, $"Missing required collection '{def.name}'");
+              result.LoreEntityValidationStates[entity] = EValidationState.Failed;
+            }
+          }
+        }
+        // Validate nested fields recursively
+        foreach (var child in container.Collections)
+        {
+          ValidateEntity(child, result);
+
+          if (result.LoreEntityValidationStates.TryGetValue(child, out var state)
+              && state != EValidationState.Passed)
+          {
+            result.PropagateDescendentError(entity);
+          }
+        }
+      }
     }
 
     internal void ValidateAttributes(IAttributeContainer container, LoreEntity entity, LoreValidationResult result)
     {
       if (entity != container) throw new Exception($"PARSING ERROR ON ENTITY {entity.Name}");
 
-      if (entity.Definition is IEmbeddedNodeDefinitionContainer defWithEmbedded)
+      if (entity.Definition is IFieldDefinitionContainer defWithFields)
       {
         var defs = ((IFieldDefinitionContainer)entity.Definition).fields;
         if (defs != null)
@@ -144,7 +172,7 @@ namespace LoreViewer
           {
             bool contains = container.HasAttribute(def.name);
 
-            if ((def.required || def.HasRequiredNestedFields) && !contains)
+            if ((def.required) && !contains)
             {
               result.LogError(entity, $"Missing required attribute '{def.name}'");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
@@ -169,7 +197,7 @@ namespace LoreViewer
     {
       if (entity != container) throw new Exception($"PARSING ERROR ON ENTITY {entity.Name}");
 
-      if (entity.Definition is ISectionDefinitionContainer defWithEmbedded)
+      if (entity.Definition is ISectionDefinitionContainer defWithSections)
       {
         var defs = ((ISectionDefinitionContainer)entity.Definition).sections;
         if (defs != null)
@@ -178,7 +206,7 @@ namespace LoreViewer
           {
             bool contains = container.HasSection(def.name);
 
-            if ((def.required || def.HasRequiredNestedSections) && !contains)
+            if ((def.required) && !contains)
             {
               result.LogError(entity, $"Missing required attribute '{def.name}'");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;

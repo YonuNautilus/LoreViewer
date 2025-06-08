@@ -510,7 +510,22 @@ namespace LoreViewer
               if (colType.IsCollectionOfCollections)
                 newCollection.Collections.Add(ParseCollection(doc, ref currentIndex, hb, colType.ContainedType as LoreCollectionDefinition));
               else
-                newCollection.Nodes.Add(ParseType(doc, ref currentIndex, hb, colType.ContainedType as LoreTypeDefinition));
+              {
+                // If we're putting a type of node that is derived from the required type, it is allowed -- but the node must be tagged with that derived type!
+                // Otherwise it is assmed to be the base type
+                LoreTypeDefinition nodeType = colType.ContainedType as LoreTypeDefinition;
+                string tag = ExtractTag(hb);
+                if (!string.IsNullOrWhiteSpace(tag))
+                {
+                  nodeType = _settings.GetTypeDefinition(tag);
+                  if (nodeType == null)
+                    throw new UnknownTypeInCollectionException(_currentFile, currentIndex, hb.Line + 1, tag, colType.ContainedType);
+
+                  if (!nodeType.IsATypeOf(colType.ContainedType as LoreTypeDefinition))
+                    throw new InvalidTypeInCollectionException(_currentFile, currentIndex, hb.Line + 1, tag, colType.ContainedType);
+                }
+                newCollection.Nodes.Add(ParseType(doc, ref currentIndex, hb, nodeType));
+              }
               continue;
             }
             else

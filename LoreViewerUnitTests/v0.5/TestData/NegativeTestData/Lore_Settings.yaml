@@ -48,4 +48,8 @@
         entryTypeName: Simple Node
       - name: Parent Of Required Nested Node
         entryTypeName: SimpleTypeWithRequiredNode
+    collections:
+      - name: Required Collection
+        entryTypeName: Simple Node
+        required: true
     

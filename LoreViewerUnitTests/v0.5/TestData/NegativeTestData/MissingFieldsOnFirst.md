@@ -2,6 +2,8 @@
 
 - field with required:
   - required nested field: value
+- grandparent of required field:
+  - parent of required field:
 
 This node will be missing the required field "required field"
 It will ALSO be missing the grandparent of the required field
@@ -41,3 +43,9 @@ This node is not required directly, but its child is
 ### Required Grandchild {Simple Node}
 
 This node IS required.
+
+## Required Collection
+
+### Simple Node {Simple Node 2}
+
+- Simple Required Field: VALUE

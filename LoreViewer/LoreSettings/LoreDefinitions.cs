@@ -4,6 +4,7 @@ using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection.Metadata;
 using YamlDotNet.Serialization;
@@ -144,7 +145,7 @@ namespace LoreViewer.Settings
   /// <summary>
   /// A section of information owned by a lore object. A section can contain subsections or additional fields
   /// </summary>
-  public class LoreSectionDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer
+  public class LoreSectionDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, IRequirable
   {
 
     #region ISectionDefinitionContainer implementation
@@ -162,7 +163,7 @@ namespace LoreViewer.Settings
 
     #endregion IFieldDefinitionContainer implementation
 
-    public bool required = false;
+    public bool required { get; set; }
     public bool HasRequiredNestedSections => HasSections ? sections.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedSections, r => r) : false;
 
 
@@ -185,7 +186,7 @@ namespace LoreViewer.Settings
     public override void PostProcess(LoreSettings settings) { }
   }
 
-  public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer
+  public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable
   {
     #region IFieldDefinitionContainer implementation
     // for fields like Date with Start/End
@@ -197,7 +198,7 @@ namespace LoreViewer.Settings
 
     public EStyle style { get; set; } = EStyle.SingleValue;
 
-    public bool required = false;
+    public bool required { get; set; }
 
     public bool multivalue = false;
 
@@ -216,12 +217,13 @@ namespace LoreViewer.Settings
     }
   }
 
-  public class LoreCollectionDefinition : LoreDefinitionBase
+  public class LoreCollectionDefinition : LoreDefinitionBase, IRequirable
   {
     public string entryTypeName { get; set; } = string.Empty;
     public LoreCollectionDefinition entryCollection { get; set; }
     public LoreDefinitionBase ContainedType { get; set; }
     public bool SortEntries { get; set; }
+    public bool required { get; set; }
 
     public bool IsCollectionOfCollections => ContainedType is LoreCollectionDefinition;
 
@@ -246,7 +248,7 @@ namespace LoreViewer.Settings
     }
   }
 
-  public class LoreEmbeddedNodeDefinition : LoreDefinitionBase
+  public class LoreEmbeddedNodeDefinition : LoreDefinitionBase, IRequirable
   {
     public string entryTypeName { get; set; }
     public LoreTypeDefinition nodeType { get; set; }

@@ -40,4 +40,8 @@
         entryTypeName: Simple Node
       - name: Optional Nested Node
         entryTypeName: Simple Node
+    collections:
+      - name: Required Collection
+        entryTypeName: Simple Node
+        required: true
     

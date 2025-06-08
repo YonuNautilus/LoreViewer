@@ -1,0 +1,11 @@
+﻿types:
+  - name: BaseType
+    collections:
+      - name: Required Collection
+        required: true
+        entryTypeName: ColType2
+  - name: ColType1
+  - name: ColType2
+    extends: ColType1
+  - name: ColType3
+    extends: ColType2

@@ -36,3 +36,10 @@ This node is not required directly, but its child is
 ### Required Grandchild {Simple Node}
 
 This node IS required.
+
+
+## Required Collection
+
+### Simple Node {Simple Node 2}
+
+- Simple Required Field: VALUE

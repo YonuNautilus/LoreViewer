@@ -26,7 +26,7 @@
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(2));
 
       Assert.That(_parser.validator.ValidationResult.Errors[0].Message, Contains.Substring("required field"));
-      Assert.That(_parser.validator.ValidationResult.Errors[1].Message, Contains.Substring("grandparent of required field"));
+      Assert.That(_parser.validator.ValidationResult.Errors[1].Message, Contains.Substring("double-nested required field"));
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node") as LoreNode));
 
@@ -61,6 +61,22 @@
       Assert.That(_parser.validator.ValidationResult.Errors[0].Message, Contains.Substring("Required Grandchild"));
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node").GetNode("Parent Of Required Nested Node") as LoreNode));
+
+      _parser._nodes.Clear();
+      _parser._collections.Clear();
+    }
+
+    [Test]
+    public void MissingCollectionTest()
+    {
+      _parser.ParseFile(Path.Combine(ValidFilesFolder, "MissingCollection.md"));
+      _parser.Validate();
+
+      Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));
+
+      Assert.That(_parser.validator.ValidationResult.Errors[0].Message, Contains.Substring("Required Collection"));
+
+      Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node") as LoreNode));
 
       _parser._nodes.Clear();
       _parser._collections.Clear();

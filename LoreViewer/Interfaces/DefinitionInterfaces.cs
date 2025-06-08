@@ -49,4 +49,9 @@ namespace LoreViewer.Settings.Interfaces
           (t.nodeType == typeDef || t.nodeType.IsParentOf(typeDef)) &&
           (!string.IsNullOrWhiteSpace(t.name) ? t.name == nodeTitle : true));
   }
+
+  public interface IRequirable
+  {
+    bool required { get; set; }
+  }
 }
