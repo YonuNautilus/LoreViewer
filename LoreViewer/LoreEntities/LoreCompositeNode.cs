@@ -1,4 +1,5 @@
-﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+﻿using DynamicData;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings;
 using System;
@@ -67,11 +68,13 @@ namespace LoreViewer.LoreElements
 
     private List<LoreNode> _internalNodes = new List<LoreNode>();
 
+    public List<LoreNode> InternalNodes { get { return _internalNodes; } }
+
     public LoreCompositeNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
 
-    public LoreCompositeNode(LoreNode newNode) : base(newNode.Name, newNode.Definition) { Nodes.Add(newNode); }
+    public LoreCompositeNode(LoreNode newNode) : base(newNode.Name, newNode.Definition) { _internalNodes.Add(newNode); }
 
-    public LoreCompositeNode(LoreNode original, LoreNode newNode) : this(original) { Nodes.Add(newNode); }
+    public LoreCompositeNode(LoreNode original, LoreNode newNode) : this(original) { _internalNodes.Add(newNode); }
 
     public ILoreNode MergeWith(LoreNode newNode)
     {

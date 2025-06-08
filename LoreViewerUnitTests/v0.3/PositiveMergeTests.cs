@@ -32,7 +32,7 @@ namespace v0_3.PositiveTests
       Assert.That(_parser._nodes, Has.Count.EqualTo(1));
       Assert.That(_parser._nodes[0], Is.TypeOf(typeof(LoreCompositeNode)));
       Assert.That((_parser._nodes[0]).Sections, Has.Count.EqualTo(2));
-      Assert.IsTrue((_parser._nodes[0].Nodes[0]).HasNarrativeText);
+      Assert.IsTrue(((_parser._nodes[0] as LoreCompositeNode).InternalNodes[0]).HasNarrativeText);
     }
 
     [Test]
@@ -42,7 +42,7 @@ namespace v0_3.PositiveTests
       LoreCompositeNode nodeToTest = _parser._nodes[0] as LoreCompositeNode;
       Assert.NotNull(nodeToTest);
       Assert.That(nodeToTest, Is.SameAs(_parser.GetNode("Node To Merge")));
-      Assert.IsTrue(nodeToTest.Nodes[0].HasNarrativeText);
+      Assert.IsTrue(nodeToTest.InternalNodes[0].HasNarrativeText);
       Assert.That(nodeToTest.Sections, Has.Count.EqualTo(2));
     }
 
