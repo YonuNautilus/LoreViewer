@@ -1,41 +1,33 @@
 ﻿using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
-using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using YamlDotNet.Core;
-using YamlDotNet.Serialization.NamingConventions;
 
-namespace LoreViewer
+namespace LoreViewer.Validation
 {
   public enum EValidationState
   {
     Passed,
+    ChildFailed,
     Failed,
-    ChildFailed
   }
 
   public class LoreValidationResult
   {
     public Dictionary<LoreEntity, EValidationState> LoreEntityValidationStates { get; set; } = new Dictionary<LoreEntity, EValidationState>();
-    public List<LoreValidationError> Errors { get; set; } = new List<LoreValidationError>();
+    public Dictionary<LoreEntity, List<LoreValidationError>> Errors { get; set; } = new();
 
     public void LogError(LoreEntity entity, string message)
     {
-      Errors.Add(new LoreValidationError
+      LoreValidationError newErr = new LoreValidationError
       {
         Entity = entity,
         Message = message
-      });
+      };
+
+      if (Errors.ContainsKey(entity)) Errors[entity].Add(newErr);
+      else Errors.Add(entity, [.. new LoreValidationError[] { newErr }]);
 
       if (LoreEntityValidationStates.ContainsKey(entity))
       {
@@ -46,22 +38,21 @@ namespace LoreViewer
         LoreEntityValidationStates.Add(entity, EValidationState.Failed);
     }
 
-    public void PropagateDescendentError(LoreEntity parent)
+    public void PropagateDescendentError(LoreEntity parent, LoreEntity child)
     {
-      if (LoreEntityValidationStates.TryGetValue(parent, out var validationState))
+      if (LoreEntityValidationStates.TryGetValue(parent, out var validationState) && LoreEntityValidationStates.TryGetValue(child, out var childValidationState))
       {
-        if (validationState != EValidationState.Failed)
+        if (childValidationState > EValidationState.Passed && validationState < EValidationState.Failed)
           LoreEntityValidationStates[parent] = EValidationState.ChildFailed;
       }
-      else
-        LoreEntityValidationStates[parent] = EValidationState.ChildFailed;
     }
   }
 
   public class LoreValidationError
   {
     public LoreEntity Entity;
-    public string Message;
+    public string Message { get; set; } = string.Empty;
+    public override string ToString() => Message;
   }
 
   public class LoreValidator
@@ -80,6 +71,8 @@ namespace LoreViewer
 
     private void ValidateEntity(LoreEntity entity, LoreValidationResult result)
     {
+      result.LoreEntityValidationStates[entity] = EValidationState.Passed;
+
       if (entity is IEmbeddedNodeContainer nodeCont)
         ValidateEmbeddedNodes(nodeCont, entity, result);
       if (entity is IAttributeContainer attrCont)
@@ -88,12 +81,22 @@ namespace LoreViewer
         ValidateSections(secCont, entity, result);
       if (entity is ICollectionContainer colCont)
         ValidateCollections(colCont, entity, result);
-
     }
 
     private void ValidateEmbeddedNodes(IEmbeddedNodeContainer container, LoreEntity entity, LoreValidationResult result)
     {
       if (entity != container) throw new Exception($"PARSING ERROR ON ENTITY {entity.Name}");
+
+      // Validate embedded nodes recursively
+      foreach (var child in container.Nodes)
+      {
+        ValidateEntity(child, result);
+
+        if (result.LoreEntityValidationStates.TryGetValue(child, out var state) && state != EValidationState.Passed)
+        {
+          result.PropagateDescendentError(entity, child);
+        }
+      }
 
       // If this is a node with embedding nodes
       if (entity.Definition is IEmbeddedNodeDefinitionContainer defWithEmbedded)
@@ -110,18 +113,6 @@ namespace LoreViewer
             result.LoreEntityValidationStates[entity] = EValidationState.Failed;
           }
         }
-
-        // Validate embedded nodes recursively
-        foreach (var child in container.Nodes)
-        {
-          ValidateEntity(child, result);
-
-          if (result.LoreEntityValidationStates.TryGetValue(child, out var state)
-              && state != EValidationState.Passed)
-          {
-            result.PropagateDescendentError(entity);
-          }
-        }
       }
     }
 
@@ -132,6 +123,18 @@ namespace LoreViewer
       if (entity.Definition is ICollectionDefinitionContainer defWithFields)
       {
         var defs = ((ICollectionDefinitionContainer)entity.Definition).collections;
+
+        // Validate nested fields recursively
+        foreach (var child in container.Collections)
+        {
+          ValidateEntity(child, result);
+
+          if (result.LoreEntityValidationStates.TryGetValue(child, out var state) && state != EValidationState.Passed)
+          {
+            result.PropagateDescendentError(entity, child);
+          }
+        }
+
         if (defs != null)
         {
           foreach (var def in defs)
@@ -145,17 +148,6 @@ namespace LoreViewer
             }
           }
         }
-        // Validate nested fields recursively
-        foreach (var child in container.Collections)
-        {
-          ValidateEntity(child, result);
-
-          if (result.LoreEntityValidationStates.TryGetValue(child, out var state)
-              && state != EValidationState.Passed)
-          {
-            result.PropagateDescendentError(entity);
-          }
-        }
       }
     }
 
@@ -166,6 +158,18 @@ namespace LoreViewer
       if (entity.Definition is IFieldDefinitionContainer defWithFields)
       {
         var defs = ((IFieldDefinitionContainer)entity.Definition).fields;
+
+        // Validate nested fields recursively
+        foreach (var child in container.Attributes)
+        {
+          ValidateEntity(child, result);
+
+          if (result.LoreEntityValidationStates.TryGetValue(child, out var state) && state != EValidationState.Passed)
+          {
+            result.PropagateDescendentError(entity, child);
+          }
+        }
+
         if (defs != null)
         {
           foreach (var def in defs)
@@ -179,23 +183,23 @@ namespace LoreViewer
             }
           }
         }
-        // Validate nested fields recursively
-        foreach (var child in container.Attributes)
-        {
-          ValidateEntity(child, result);
-
-          if (result.LoreEntityValidationStates.TryGetValue(child, out var state)
-              && state != EValidationState.Passed)
-          {
-            result.PropagateDescendentError(entity);
-          }
-        }
       }
     }
 
     internal void ValidateSections(ISectionContainer container, LoreEntity entity, LoreValidationResult result)
     {
       if (entity != container) throw new Exception($"PARSING ERROR ON ENTITY {entity.Name}");
+
+      // Validate nested fields recursively
+      foreach (var child in container.Sections)
+      {
+        ValidateEntity(child, result);
+
+        if (result.LoreEntityValidationStates.TryGetValue(child, out var state) && state != EValidationState.Passed)
+        {
+          result.PropagateDescendentError(entity, child);
+        }
+      }
 
       if (entity.Definition is ISectionDefinitionContainer defWithSections)
       {
@@ -210,17 +214,6 @@ namespace LoreViewer
             {
               result.LogError(entity, $"Missing required attribute '{def.name}'");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
-            }
-          }
-          // Validate nested fields recursively
-          foreach (var child in container.Sections)
-          {
-            ValidateEntity(child, result);
-
-            if (result.LoreEntityValidationStates.TryGetValue(child, out var state)
-                && state != EValidationState.Passed)
-            {
-              result.PropagateDescendentError(entity);
             }
           }
         }

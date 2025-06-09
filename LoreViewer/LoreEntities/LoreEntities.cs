@@ -17,6 +17,8 @@ namespace LoreViewer.LoreElements
 
     public Guid Id { get; set; }
     public LoreEntity(String name, LoreDefinitionBase definition) { Name = name; Definition = definition; }
+
+    public virtual string ErrMsg => $"{Name}";
   }
 
   /// <summary>
@@ -35,6 +37,8 @@ namespace LoreViewer.LoreElements
     public string SourcePath = string.Empty;
     public int BlockIndex;
     public int LineNumber;
+
+    public override string ErrMsg => $"Go To: {SourcePath}:{LineNumber}";
   }
 
   /// <summary>

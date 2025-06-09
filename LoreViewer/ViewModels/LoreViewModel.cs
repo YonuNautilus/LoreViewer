@@ -1,23 +1,28 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data.Converters;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using LoreViewer.LoreElements;
 using LoreViewer.Settings;
+using LoreViewer.Validation;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels
 {
-    internal class LoreViewModel : ViewModelBase
+  internal class LoreViewModel : ViewModelBase
   {
-    private LoreSettings _settings;
-    private LoreParser _parser;
+    public static LoreSettings _settings;
+    public static LoreParser _parser;
 
     private string m_sLoreLibraryFolderPath = string.Empty;
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
@@ -36,7 +41,8 @@ namespace LoreViewer.ViewModels
     public LoreTreeItem CurrentlySelectedTreeNode { get => _currentlySelectedTreeNode; set => this.RaiseAndSetIfChanged(ref _currentlySelectedTreeNode, value); }
     public ReactiveCommand<Unit, Unit> OpenLibraryFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> ReloadLibraryCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor {  get; }
+    public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor { get; }
+    public ReactiveCommand<LoreEntity, Unit> OpenFileToLine { get; }
 
     private Visual m_oView;
 
@@ -46,6 +52,7 @@ namespace LoreViewer.ViewModels
       OpenLibraryFolderCommand = ReactiveCommand.CreateFromTask(HandleOpenLibraryCommandAsync);
       OpenLoreSettingsEditor = ReactiveCommand.Create(OpenLoreSettingEditorDialog);
       ReloadLibraryCommand = ReactiveCommand.Create(ReloadLoreFolder);
+      OpenFileToLine = ReactiveCommand.Create<LoreEntity>(GoToFileAtLine);
 
       _settings = new LoreSettings();
       _parser = new LoreParser(_settings);
@@ -64,6 +71,17 @@ namespace LoreViewer.ViewModels
       {
         LoreLibraryFolderPath = folderPath[0].TryGetLocalPath();
         LoadLoreFromFolder();
+      }
+    }
+
+    private void GoToFileAtLine(LoreEntity e)
+    {
+      if(e is LoreElement elem)
+      {
+        string programFilesX86 = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
+        string pathToNppp = Path.Combine(programFilesX86, "Notepad++", "notepad++.exe");
+        if(Path.Exists(pathToNppp))
+          Process.Start(pathToNppp, $"{elem.SourcePath} -n{elem.LineNumber}");
       }
     }
 
@@ -103,7 +121,7 @@ namespace LoreViewer.ViewModels
 
         foreach (LoreEntity e in _collections) NodeCollections.Add(new LoreTreeItem(e));
       }
-      catch(Exception e)
+      catch (Exception e)
       {
         _parser._errors.Add(new Tuple<string, int, int, Exception>(e.Message, -1, -1, e));
       }
@@ -114,4 +132,56 @@ namespace LoreViewer.ViewModels
       }
     }
   }
+
+  public class ValidationErrorToImagePathConverter : IValueConverter
+  {
+
+    public static readonly ValidationErrorToImagePathConverter instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+      if (value is LoreEntity e)
+      {
+        string img;
+        EValidationState elementState = LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(e) ?
+          LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates[e] : EValidationState.Passed;
+        switch (elementState)
+        {
+          case EValidationState.Failed:
+            img = @"Resources/ValidationError.png";
+            break;
+          case EValidationState.ChildFailed:
+            img = @"Resources/ValidationChildError.png";
+            break;
+          case EValidationState.Passed:
+            img = @"Resources/ValidationPass.png";
+            break;
+          default:
+            return null;
+        }
+        return new Bitmap(img);
+      }
+      return null;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+  public class LoreEntityToErrorListConverter : IValueConverter
+  {
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+      if (value is LoreEntity e)
+        return LoreViewModel._parser.validator.ValidationResult.Errors.ContainsKey(e) ? new ObservableCollection<LoreValidationError>(LoreViewModel._parser.validator.ValidationResult.Errors[e]) : null;
+      return null;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+
 }

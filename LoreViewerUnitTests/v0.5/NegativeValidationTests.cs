@@ -25,8 +25,8 @@
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(2));
 
-      Assert.That(_parser.validator.ValidationResult.Errors[0].Message, Contains.Substring("required field"));
-      Assert.That(_parser.validator.ValidationResult.Errors[1].Message, Contains.Substring("double-nested required field"));
+      Assert.That(_parser.validator.ValidationResult.Errors.Values.ToArray()[0][0].Message, Contains.Substring("double-nested required field"));
+      Assert.That(_parser.validator.ValidationResult.Errors.Values.ToArray()[1][0].Message, Contains.Substring("required field"));
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node") as LoreNode));
 
@@ -42,7 +42,7 @@
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));
 
-      Assert.That(_parser.validator.ValidationResult.Errors[0].Message, Contains.Substring("Required Nested Node"));
+      Assert.That(_parser.validator.ValidationResult.Errors.Values.ToArray()[0][0].Message, Contains.Substring("Required Nested Node"));
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node") as LoreNode));
 
@@ -58,7 +58,7 @@
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));
 
-      Assert.That(_parser.validator.ValidationResult.Errors[0].Message, Contains.Substring("Required Grandchild"));
+      Assert.That(_parser.validator.ValidationResult.Errors.Values.ToArray()[0][0].Message, Contains.Substring("Required Grandchild"));
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node").GetNode("Parent Of Required Nested Node") as LoreNode));
 
@@ -74,7 +74,7 @@
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));
 
-      Assert.That(_parser.validator.ValidationResult.Errors[0].Message, Contains.Substring("Required Collection"));
+      Assert.That(_parser.validator.ValidationResult.Errors.Values.ToArray()[0][0].Message, Contains.Substring("Required Collection"));
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node") as LoreNode));
 

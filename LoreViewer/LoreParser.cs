@@ -3,6 +3,7 @@ using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings;
+using LoreViewer.Validation;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;

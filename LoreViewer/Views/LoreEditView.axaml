@@ -3,9 +3,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:LoreViewer.ViewModels"
+             xmlns:le="using:LoreViewer.LoreElements"
+             xmlns:val="using:LoreViewer.Validation"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Views.LoreEditView"
              x:DataType="vm:LoreViewModel">
+  <UserControl.Resources>
+    <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"></vm:ValidationErrorToImagePathConverter>
+    <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter"></vm:LoreEntityToErrorListConverter>
+  </UserControl.Resources>
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
@@ -32,7 +38,7 @@
         <ColumnDefinition Width="2"/>
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
-      
+
       <TabControl Grid.Column="0">
         <TabItem Header="Nodes and Collections">
           <Grid>
@@ -51,7 +57,10 @@
                 <TreeView Grid.Row="1" ItemsSource="{Binding Nodes}" SelectedItem="{Binding CurrentlySelectedTreeNode, Mode=OneWayToSource}" Grid.Column="0" Name="NodesTreeView" >
                   <TreeView.ItemTemplate>
                     <TreeDataTemplate ItemsSource="{Binding Children}">
-                      <TextBlock Text="{Binding DisplayName}" />
+                      <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Margin="0,0,5,0" Source="{Binding element, Converter={StaticResource ValidationImageConverter}}"></Image>
+                        <TextBlock Text="{Binding DisplayName}" />
+                      </StackPanel>
                     </TreeDataTemplate>
                   </TreeView.ItemTemplate>
                 </TreeView>
@@ -94,7 +103,7 @@
                 </Grid.RowDefinitions>
 
                 <Label Content="Errors" Grid.Row="0" />
-                
+
                 <DataGrid Grid.Row="1" HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding Errors}" Name="ErrorsListView" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" CanUserResizeColumns="True">
                   <DataGrid.Columns>
                     <DataGridTextColumn Header="File" Width="Auto" Binding="{Binding Item1}" CanUserResize="True"/>
@@ -127,9 +136,9 @@
           </Grid>
         </TabItem>
       </TabControl>
-      
+
       <GridSplitter Grid.Column="1"/>
-      
+
       <DockPanel Grid.Column="2" Margin="5">
         <Grid>
           <Grid.RowDefinitions>
@@ -138,16 +147,43 @@
           </Grid.RowDefinitions>
           <Label BorderBrush="Black" BorderThickness="1" Content="Node Info" />
           <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" >
-            <ScrollViewer>
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="4"/>
+                <RowDefinition/>
+              </Grid.RowDefinitions>
+              <ScrollViewer Grid.Row="0">
+                <TextBlock Margin="5" Name="CurrentNodeInfoTextBlock" Text="{Binding CurrentlySelectedTreeNode.CurrentNodeInfoText, Mode=OneWay}" TextWrapping="Wrap"/>
+              </ScrollViewer>
 
-              <TextBlock Margin="5" Name="CurrentNodeInfoTextBlock" Text="{Binding CurrentlySelectedTreeNode.CurrentNodeInfoText, Mode=OneWay}" TextWrapping="Wrap"/>
-            </ScrollViewer>
+              <GridSplitter Grid.Row="1" />
+
+              <Border Grid.Row="2">
+                <StackPanel Orientation="Vertical">
+                  <Label>Validation Errors</Label>
+                  <Button Classes="rounded" Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}" Command="{Binding OpenFileToLine}" CommandParameter="{Binding CurrentlySelectedTreeNode.element}"/>
+                  <DataGrid ItemsSource="{Binding CurrentlySelectedTreeNode.element, Converter={StaticResource ValidationErrorListConverter}}">
+                    <DataGrid.Columns>
+                      <DataGridTemplateColumn Header="Error" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                          <DataTemplate DataType="val:LoreValidationError">
+                            <TextBlock Text="{Binding Message}" />
+                          </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                      </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                  </DataGrid>
+                </StackPanel>
+              </Border>
+            </Grid>
+
           </Border>
         </Grid>
       </DockPanel>
-      
+
     </Grid>
-    
-    
+
+
   </Grid>
 </UserControl>
