@@ -34,7 +34,7 @@ namespace LoreViewer.LoreElements
       BlockIndex = blockIndex;
       LineNumber = lineNUmber;
     }
-    public string SourcePath = string.Empty;
+    public string SourcePath { get; } = string.Empty;
     public int BlockIndex;
     public int LineNumber;
 

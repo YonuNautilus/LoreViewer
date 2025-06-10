@@ -1,26 +1,31 @@
 ﻿using LoreViewer.LoreElements;
-using LoreViewer.LoreElements.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using YamlDotNet.Serialization.NamingConventions;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels
 {
-  public class LoreNodeViewModel : ViewModelBase
+  internal class LoreNodeViewModel
   {
-    private ILoreNode m_oNode { get; }
+    private LoreNode Node;
 
-    public string[] files
-    {
+    private string m_sModifiedContent;
+
+    public string FileContent {
       get
       {
-        if (m_oNode is LoreCompositeNode lcn)
-          return lcn.InternalNodes.Select(ln => ln.SourcePath).ToArray();
-        else
-          return new string[] { (m_oNode as LoreNode).SourcePath };
+        return string.IsNullOrWhiteSpace(m_sModifiedContent) ? Node.FileContent : m_sModifiedContent;
+      }
+      set
+      {
+        m_sModifiedContent = value;
       }
     }
 
-    public LoreNodeViewModel(ILoreNode node) { m_oNode = node; }
+    public void ClearModifications() => m_sModifiedContent = string.Empty;
 
+    public LoreNodeViewModel(LoreNode node) { Node = node; }
   }
 }

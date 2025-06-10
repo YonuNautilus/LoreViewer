@@ -7,6 +7,7 @@ using LoreViewer.LoreElements;
 using LoreViewer.Parser;
 using LoreViewer.Settings;
 using LoreViewer.Validation;
+using LoreViewer.ViewModels.LoreEntities;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -62,7 +63,7 @@ namespace LoreViewer.ViewModels
       OpenLibraryFolderCommand = ReactiveCommand.CreateFromTask(HandleOpenLibraryCommandAsync);
       OpenLoreSettingsEditor = ReactiveCommand.Create(OpenLoreSettingEditorDialog);
       ReloadLibraryCommand = ReactiveCommand.Create(ReloadLoreFolder);
-      OpenFileToLine = ReactiveCommand.Create<LoreEntity>(GoToFileAtLine);
+      OpenFileToLine = ReactiveCommand.CreateFromTask<LoreEntity>(GoToFileAtLine);
       OpenErrorFileToLine = ReactiveCommand.Create<Tuple<string, int, int, Exception>>(GoToFileAtLine);
 
       _settings = new LoreSettings();
@@ -85,7 +86,7 @@ namespace LoreViewer.ViewModels
       }
     }
 
-    private void GoToFileAtLine(LoreEntity e)
+    private async Task GoToFileAtLine(LoreEntity e)
     {
       if (e is LoreElement elem)
       {
@@ -93,6 +94,16 @@ namespace LoreViewer.ViewModels
         string pathToNppp = Path.Combine(programFilesX86, "Notepad++", "notepad++.exe");
         if (Path.Exists(pathToNppp))
           Process.Start(pathToNppp, $"{elem.SourcePath} -n{elem.LineNumber}");
+      }
+      else
+      {
+        var dialog = new EntityEditDialog(LoreEntityViewModel.CreateViewModel(e));
+        bool? result = await dialog.ShowDialog<bool?>(TopLevel.GetTopLevel(m_oView) as Window);
+
+
+        if (result == true)
+          ReloadLoreFolder();
+
       }
     }
 

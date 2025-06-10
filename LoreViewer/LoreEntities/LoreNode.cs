@@ -113,6 +113,12 @@ namespace LoreViewer.LoreElements
     public LoreNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
     public LoreNode(string name, LoreTypeDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
 
+    private string m_sFileContent;
+
+    public string FileContent
+    {
+      get => string.IsNullOrWhiteSpace(m_sFileContent) ? System.IO.File.ReadAllText(SourcePath) : m_sFileContent;
+    }
 
 
     public void MergeIn(LoreNode toMergeIn)
