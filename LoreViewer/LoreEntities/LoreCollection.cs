@@ -1,11 +1,6 @@
-﻿using DynamicData;
-using LoreViewer.Exceptions;
-using LoreViewer.LoreElements.Interfaces;
+﻿using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings;
-using LoreViewer.Settings.Interfaces;
-using Microsoft.VisualBasic;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;

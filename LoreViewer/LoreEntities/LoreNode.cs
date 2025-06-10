@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.AccessControl;
 
 namespace LoreViewer.LoreElements
 {
@@ -27,7 +25,7 @@ namespace LoreViewer.LoreElements
   /// </summary>
   public class LoreNode : LoreNarrativeElement, ILoreNode
   {
-    public override LoreDefinitionBase Definition { get => _definition ; set { _definition = value as LoreTypeDefinition; } }
+    public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreTypeDefinition; } }
     private LoreTypeDefinition _definition;
 
     #region IFieldContainer Implementation
@@ -115,7 +113,7 @@ namespace LoreViewer.LoreElements
     public LoreNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
     public LoreNode(string name, LoreTypeDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
 
-    
+
 
     public void MergeIn(LoreNode toMergeIn)
     {
@@ -124,7 +122,7 @@ namespace LoreViewer.LoreElements
 
       foreach (LoreSection ls in toMergeIn.Sections)
         Sections.Add(ls);
-      
+
       foreach (LoreNode ln in toMergeIn.Nodes)
         Nodes.Add(ln);
 

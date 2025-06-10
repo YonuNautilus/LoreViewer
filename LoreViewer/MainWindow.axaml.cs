@@ -1,7 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
-using System.Net.NetworkInformation;
 
 namespace LoreViewer
 {
@@ -11,7 +8,7 @@ namespace LoreViewer
     {
       InitializeComponent();
     }
-    
+
     public void AddControl(Control control)
     {
       MainGrid.Children.Add(control);

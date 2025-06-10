@@ -1,5 +1,4 @@
 ﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
-using LoreViewer.LoreElements.Interfaces;
 using NUnit.Framework.Internal;
 
 namespace v0_4.NegativeTests

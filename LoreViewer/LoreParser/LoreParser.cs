@@ -457,7 +457,7 @@ namespace LoreViewer.LoreParsing
                     throw new EmbeddedNodeTypeNotAllowedException(ctx.FilePath, currentIndex, currentBlock.Line + 1, typeDef.name, newTag);
                   }
                 }
-                
+
                 // Parse as a section, if it has the {section} tag
                 else if (newTag.Equals("section"))
                 {
@@ -477,7 +477,7 @@ namespace LoreViewer.LoreParsing
                   if (!_settings.HasTypeDefinition(lcd.entryTypeName) && lcd == null)
                     throw new UnexpectedTypeNameException(ctx.FilePath, currentIndex, hb.Line + 1, newTitle);
 
-                  if(lcd.IsCollectionOfCollections)
+                  if (lcd.IsCollectionOfCollections)
                     newNode.Collections.Add(ParseCollection(doc, ref currentIndex, hb, lcd, ctx));
                   else
                   {
@@ -573,7 +573,7 @@ namespace LoreViewer.LoreParsing
 
       currentIndex++;
 
-      while(currentIndex < doc.Count)
+      while (currentIndex < doc.Count)
       {
         Block currentBlock = doc[currentIndex];
 
@@ -936,7 +936,7 @@ namespace LoreViewer.LoreParsing
     private static string GetStringFromListItemBlock(ListItemBlock lib)
     {
       string ret = string.Empty;
-      foreach(Block block in lib)
+      foreach (Block block in lib)
       {
         switch (block)
         {

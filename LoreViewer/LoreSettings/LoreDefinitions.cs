@@ -1,13 +1,9 @@
 ﻿using DynamicData;
-using LoreViewer.Exceptions;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Dynamic;
 using System.Linq;
-using System.Reflection.Metadata;
-using YamlDotNet.Serialization;
 
 namespace LoreViewer.Settings
 {
@@ -88,7 +84,7 @@ namespace LoreViewer.Settings
     public bool AllowsEmbeddedType(LoreTypeDefinition typeDef) => HasTypeDefinition(typeDef) || this.IsParentOf(typeDef);
 
 
-    public string extends {  get; set; }
+    public string extends { get; set; }
     public LoreTypeDefinition ParentType { get; set; }
     public bool isExtendedType => ParentType != null;
 
@@ -126,7 +122,7 @@ namespace LoreViewer.Settings
 
       // Now check for rule 2 violations.
       // Iterate through each embedded node def. Assuming it is the least abstract, get all embedded node defs whose type is a parent
-      foreach(LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
+      foreach (LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
       {
         IEnumerable<LoreEmbeddedNodeDefinition> matchingTypeOrParentType = embeddedNodeDefs.Except(new LoreEmbeddedNodeDefinition[] { lend }).Where(d => lend.nodeType.IsATypeOf(d.nodeType));
         LoreEmbeddedNodeDefinition firstWithoutNameReq = matchingTypeOrParentType.FirstOrDefault(d => !d.hasTitleRequirement);
@@ -136,7 +132,7 @@ namespace LoreViewer.Settings
 
       processed = true;
 
-      foreach(LoreCollectionDefinition colDef in collections)
+      foreach (LoreCollectionDefinition colDef in collections)
         if (!colDef.processed)
           colDef.PostProcess(settings);
     }

@@ -58,9 +58,9 @@ namespace LoreViewer.LoreElements
 
     public void Append(IEnumerable<string> values)
     {
-      if(values.Count() > 1 || HasValues)
+      if (values.Count() > 1 || HasValues)
         foreach (string newValue in values) Append(newValue);
-      else if(values.Count() == 1)
+      else if (values.Count() == 1)
       {
         Values = null;
         Value = values.ToArray()[0];

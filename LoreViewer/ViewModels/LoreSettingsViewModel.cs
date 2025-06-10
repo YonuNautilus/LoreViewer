@@ -14,6 +14,6 @@ namespace LoreViewer.ViewModels
 
     public LoreSettingsViewModel() { }
 
-    
+
   }
 }

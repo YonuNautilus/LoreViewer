@@ -1,13 +1,7 @@
 ﻿using LoreViewer.LoreElements;
 using LoreViewer.Settings;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.Exceptions.LoreParsingExceptions
 {
@@ -131,35 +125,35 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
       : base(filePath, blockIndex, lineNumber, msg) { }
   }
 
-  public class InvalidContainedTypeDefinitionException: LoreCollectionParsingException
+  public class InvalidContainedTypeDefinitionException : LoreCollectionParsingException
   {
     static string msgBase = "Tried to parse a collection with an invalid type {0}. Type can only be Type (node) or Collection";
     public InvalidContainedTypeDefinitionException(string filePath, int blockIndex, int lineNumber, LoreDefinitionBase containedType)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, containedType)) { }
   }
 
-  public class UnknownTypeInCollectionException: LoreCollectionParsingException
+  public class UnknownTypeInCollectionException : LoreCollectionParsingException
   {
     static string msgBase = "Tried to parse a node of UNKNOWN type {0} int a collection of type {1}!";
     public UnknownTypeInCollectionException(string filePath, int blockIndex, int lineNumber, string unknownTypeTag, LoreDefinitionBase containedType)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, unknownTypeTag, containedType)) { }
   }
 
-  public class InvalidTypeInCollectionException: LoreCollectionParsingException
+  public class InvalidTypeInCollectionException : LoreCollectionParsingException
   {
     static string msgBase = "Tried to parse a node of type {0} int a collection of type {1}. Should only add nodes of the defined type {1} or derived types!";
     public InvalidTypeInCollectionException(string filePath, int blockIndex, int lineNumber, string invalidTypeTag, LoreDefinitionBase containedType)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, invalidTypeTag, containedType)) { }
   }
 
-  public class CollectionWithUnknownTypeException: LoreCollectionParsingException
+  public class CollectionWithUnknownTypeException : LoreCollectionParsingException
   {
     static string msgBase = "Tried to parse a collection with an undefined type {0}.";
     public CollectionWithUnknownTypeException(string filePath, int blockIndex, int lineNumber, string type)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, type)) { }
   }
 
-  
+
   public abstract class EmbeddedNodeParsingException : LoreParsingException
   {
     public EmbeddedNodeParsingException(string filePath, int blockIndex, int lineNumber, string msg)

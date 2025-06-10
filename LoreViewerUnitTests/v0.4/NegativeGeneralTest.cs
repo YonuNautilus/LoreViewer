@@ -12,7 +12,7 @@ namespace v0_4.NegativeTests
       LoreParser _parser = new LoreParser();
 
       Assert.Throws<DuplicateDefinitionNamesException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Duplicate_Name.yaml")));
-      
+
     }
   }
 }

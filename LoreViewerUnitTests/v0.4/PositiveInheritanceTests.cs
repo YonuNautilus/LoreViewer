@@ -1,6 +1,4 @@
 ﻿using LoreViewer.LoreElements.Interfaces;
-using Newtonsoft.Json.Bson;
-using ReactiveUI;
 
 namespace v0_4.PositiveTests
 {

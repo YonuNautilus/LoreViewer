@@ -46,10 +46,10 @@ namespace LoreViewer.ViewModels
       else
         DisplayName = e.Name;
 
-      if(e is IAttributeContainer ife && ife.HasAttributes)
+      if (e is IAttributeContainer ife && ife.HasAttributes)
         Children.Add(CreateParentItem(ife.Attributes, "Attributes"));
 
-      if(e is ISectionContainer isc && isc.HasSections)
+      if (e is ISectionContainer isc && isc.HasSections)
         Children.Add(CreateParentItem(isc.Sections, "Sections"));
 
       if (e is ILoreNode)
@@ -59,21 +59,21 @@ namespace LoreViewer.ViewModels
           foreach (LoreCollection childCollection in ln.Collections)
             Children.Add(new LoreTreeItem(childCollection));
 
-        if(ln is LoreNode)
+        if (ln is LoreNode)
           if (ln.Nodes != null && ln.Nodes.Count() > 0)
             //Children.AddNode(CreateParentItem(ln.Nodes, "Nodes"));
-            foreach(LoreNode node in ln.Nodes)
+            foreach (LoreNode node in ln.Nodes)
               Children.Add(new LoreTreeItem(node));
       }
 
-      if(e is LoreCollection lnc && lnc != null && lnc.Count > 0)
-        foreach(LoreElement elem in lnc)
+      if (e is LoreCollection lnc && lnc != null && lnc.Count > 0)
+        foreach (LoreElement elem in lnc)
           Children.Add(new LoreTreeItem(elem));
 
       if (e is LoreNarrativeElement lne)
         Summary = lne.Summary;
 
-      if(e is LoreAttribute)
+      if (e is LoreAttribute)
       {
         LoreAttribute la = e as LoreAttribute;
 
@@ -97,7 +97,7 @@ namespace LoreViewer.ViewModels
       LoreTreeItem lti = new LoreTreeItem(parentName);
       lti.Children = new ObservableCollection<LoreTreeItem>();
 
-      foreach(LoreElement elem in elems)
+      foreach (LoreElement elem in elems)
       {
         lti.Children.Add(new LoreTreeItem(elem));
       }

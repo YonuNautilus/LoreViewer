@@ -1,10 +1,5 @@
 ﻿using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace v0_4.NegativeTests
 {
@@ -71,7 +66,7 @@ namespace v0_4.NegativeTests
 
       Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title1.yaml")));
     }
-    
+
 
     [Test]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle2()

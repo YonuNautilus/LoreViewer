@@ -1,11 +1,4 @@
-﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace v0_4.PositiveTests
+﻿namespace v0_4.PositiveTests
 {
   public class PositiveEmbeddedTests
   {

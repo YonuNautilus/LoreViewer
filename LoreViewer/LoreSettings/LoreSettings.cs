@@ -1,6 +1,4 @@
-﻿using Avalonia.Media;
-using LoreViewer.Exceptions;
-using LoreViewer.Exceptions.SettingsParsingExceptions;
+﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -90,7 +88,7 @@ namespace LoreViewer.Settings
     private void ResolveReferencedTypes()
     {
       foreach (LoreTypeDefinition ltd in types)
-        if(!ltd.processed)
+        if (!ltd.processed)
           ltd.PostProcess(this);
 
       foreach (LoreCollectionDefinition lcd in collections)
@@ -133,7 +131,7 @@ namespace LoreViewer.Settings
         res.Add(type);
       }
 
-      foreach(LoreTypeDefinition type in allTypes)
+      foreach (LoreTypeDefinition type in allTypes)
         visit(type.name);
 
       return res;

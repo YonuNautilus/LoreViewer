@@ -1,5 +1,4 @@
-﻿using LoreViewer.LoreElements;
-using LoreViewer.Settings;
+﻿using LoreViewer.Settings;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -67,7 +66,7 @@ namespace LoreViewer.LoreElements.Interfaces
   /// <summary>
   /// For any LoreEntity that needs to behave and display like a node (ie LoreNode and LoreCompositeNode)
   /// </summary>
-  public interface ILoreNode: ILoreEntity, ISectionContainer, IAttributeContainer, IEmbeddedNodeContainer, ICollectionContainer
+  public interface ILoreNode : ILoreEntity, ISectionContainer, IAttributeContainer, IEmbeddedNodeContainer, ICollectionContainer
   {
     ILoreNode MergeWith(LoreNode node);
   }

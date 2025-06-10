@@ -4,13 +4,11 @@ using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using LoreViewer.LoreElements;
-using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.LoreParsing;
 using LoreViewer.Settings;
 using LoreViewer.Validation;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -26,7 +24,6 @@ namespace LoreViewer.ViewModels
     // Models for this ViewModel:
     public static LoreSettings _settings;
     public static LoreParser _parser;
-
 
 
     private string m_sLoreLibraryFolderPath = string.Empty;

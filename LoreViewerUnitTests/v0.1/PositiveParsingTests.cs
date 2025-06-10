@@ -1,4 +1,3 @@
-using LoreViewer.Exceptions;
 using Markdig.Syntax;
 using NUnit.Framework.Internal;
 
@@ -93,7 +92,7 @@ namespace v0_1.PositiveTests
 
       LoreNode nodeToCheck = null;
 
-      Assert.DoesNotThrow(() => { nodeToCheck = _parser.Nodes.FirstOrDefault(node => node.Name.Equals("This is a valid markdown with bullet point fields/attributes")) as LoreNode; } );
+      Assert.DoesNotThrow(() => { nodeToCheck = _parser.Nodes.FirstOrDefault(node => node.Name.Equals("This is a valid markdown with bullet point fields/attributes")) as LoreNode; });
       Assert.NotNull(nodeToCheck);
 
       Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(9));

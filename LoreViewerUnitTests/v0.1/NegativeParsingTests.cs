@@ -52,7 +52,7 @@ namespace v0_1.NegativeTests
   {
     LoreSettings _settings;
     LoreParser _parser;
-    
+
     string ErrorFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "v0.1", "TestData", "NegativeTestData", "Section");
 
     [SetUp]
