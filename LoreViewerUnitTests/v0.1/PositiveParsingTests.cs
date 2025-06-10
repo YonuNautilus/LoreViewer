@@ -25,17 +25,17 @@ namespace v0_1.PositiveTests
       _settings = _parser.Settings;
 
       foreach (string fileToTest in testFiles)
-        _parser.ParseFile(fileToTest);
+        _parser.ParseSingleFile(fileToTest);
     }
 
     [Test]
-    public void NodesCountTest() { Assert.That(_parser._nodes.Count, Is.EqualTo(3)); }
+    public void NodesCountTest() { Assert.That(_parser.Nodes, Has.Count.EqualTo(3)); }
 
     [Test]
     public void CharacterFieldsTest()
     {
-      LoreEntity tempEntity = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion")) as LoreEntity;
-      LoreNode nodeToCheck = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion")) as LoreNode;
+      LoreEntity tempEntity = _parser.Nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion")) as LoreEntity;
+      LoreNode nodeToCheck = _parser.Nodes.FirstOrDefault(node => node.Name.Equals("Vela Orion")) as LoreNode;
 
       Assert.NotNull(nodeToCheck);
       Assert.That(nodeToCheck.Name, Is.EqualTo("Vela Orion"));
@@ -93,7 +93,7 @@ namespace v0_1.PositiveTests
 
       LoreNode nodeToCheck = null;
 
-      Assert.DoesNotThrow(() => { nodeToCheck = _parser._nodes.FirstOrDefault(node => node.Name.Equals("This is a valid markdown with bullet point fields/attributes")) as LoreNode; } );
+      Assert.DoesNotThrow(() => { nodeToCheck = _parser.Nodes.FirstOrDefault(node => node.Name.Equals("This is a valid markdown with bullet point fields/attributes")) as LoreNode; } );
       Assert.NotNull(nodeToCheck);
 
       Assert.That(nodeToCheck.Attributes.Count, Is.EqualTo(9));
@@ -105,7 +105,7 @@ namespace v0_1.PositiveTests
     [Test]
     public void ParseFieldEdgeCases_CorrectFormats_ParsesExpectedAttributes()
     {
-      LoreNode node = _parser._nodes.FirstOrDefault(node => node.Name.Equals("Field Format Edge Case Test")) as LoreNode;
+      LoreNode node = _parser.Nodes.FirstOrDefault(node => node.Name.Equals("Field Format Edge Case Test")) as LoreNode;
 
       var attrs = node.Attributes;
 
@@ -162,12 +162,12 @@ namespace v0_1.PositiveTests
       _settings = _parser.Settings;
 
       foreach (string fileToTest in testFiles)
-        _parser.ParseFile(fileToTest);
+        _parser.ParseSingleFile(fileToTest);
     }
 
 
     [Test]
-    public void NodesCountTest() { Assert.That(_parser._nodes.Count, Is.EqualTo(2)); }
+    public void NodesCountTest() { Assert.That(_parser.Nodes.Count, Is.EqualTo(2)); }
 
     [Test]
     public void ParseSectionTest_CorrectBlocksAndContent()

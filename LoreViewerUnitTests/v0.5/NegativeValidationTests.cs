@@ -20,7 +20,7 @@
     [Test]
     public void MissingFieldsOnFirstNodeTest()
     {
-      _parser.ParseFile(Path.Combine(ValidFilesFolder, "MissingFieldsOnFirst.md"));
+      _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "MissingFieldsOnFirst.md"));
       _parser.Validate();
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(2));
@@ -30,14 +30,13 @@
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node") as LoreNode));
 
-      _parser._nodes.Clear();
-      _parser._collections.Clear();
+      _parser.Clear();
     }
 
     [Test]
     public void MissingNestedNodeTest()
     {
-      _parser.ParseFile(Path.Combine(ValidFilesFolder, "MissingNestedNode.md"));
+      _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "MissingNestedNode.md"));
       _parser.Validate();
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));
@@ -46,14 +45,13 @@
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node") as LoreNode));
 
-      _parser._nodes.Clear();
-      _parser._collections.Clear();
+      _parser.Clear();
     }
 
     [Test]
     public void MissingNestedChildNodeTest()
     {
-      _parser.ParseFile(Path.Combine(ValidFilesFolder, "MissingNestedChildNode.md"));
+      _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "MissingNestedChildNode.md"));
       _parser.Validate();
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));
@@ -62,14 +60,13 @@
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node").GetNode("Parent Of Required Nested Node") as LoreNode));
 
-      _parser._nodes.Clear();
-      _parser._collections.Clear();
+      _parser.Clear();
     }
 
     [Test]
     public void MissingCollectionTest()
     {
-      _parser.ParseFile(Path.Combine(ValidFilesFolder, "MissingCollection.md"));
+      _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "MissingCollection.md"));
       _parser.Validate();
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));
@@ -78,8 +75,7 @@
 
       Assert.True(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(_parser.GetNode("First Simple Node") as LoreNode));
 
-      _parser._nodes.Clear();
-      _parser._collections.Clear();
+      _parser.Clear();
     }
   }
 }

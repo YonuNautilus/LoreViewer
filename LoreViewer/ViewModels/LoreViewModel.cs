@@ -4,6 +4,8 @@ using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using LoreViewer.LoreElements;
+using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.LoreParsing;
 using LoreViewer.Settings;
 using LoreViewer.Validation;
 using ReactiveUI;
@@ -21,21 +23,31 @@ namespace LoreViewer.ViewModels
 {
   internal class LoreViewModel : ViewModelBase
   {
+    // Models for this ViewModel:
     public static LoreSettings _settings;
     public static LoreParser _parser;
 
+
+
     private string m_sLoreLibraryFolderPath = string.Empty;
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
-    private List<LoreEntity> _nodes => _parser._nodes.Cast<LoreEntity>().ToList();
-    private List<LoreCollection> _collections => _parser._collections.ToList();
+    public ObservableCollection<LoreTreeItem> Nodes { get; } = new();
 
-    private ObservableCollection<LoreTreeItem> _nodeTreeItems = new ObservableCollection<LoreTreeItem>();
-    public ObservableCollection<LoreTreeItem> Nodes { get => _nodeTreeItems; set => this.RaiseAndSetIfChanged(ref _nodeTreeItems, value); }
+    private ObservableCollection<LoreTreeItem> Collections { get; } = new();
+    public ObservableCollection<Tuple<string, int, int, Exception>> Errors { get; } = new();
+    public ObservableCollection<string> Warnings { get; } = new();
 
-    private ObservableCollection<LoreTreeItem> _nodeCollectionTreeItems = new ObservableCollection<LoreTreeItem>();
-    public ObservableCollection<LoreTreeItem> NodeCollections { get => _nodeCollectionTreeItems; set => this.RaiseAndSetIfChanged(ref _nodeCollectionTreeItems, value); }
-    public ObservableCollection<Tuple<string, int, int, Exception>> Errors { get => _parser._errors; set => this.RaiseAndSetIfChanged(ref _parser._errors, value); }
-    public ObservableCollection<string> Warnings { get => _parser._warnings; set => this.RaiseAndSetIfChanged(ref _parser._warnings, value); }
+
+    private int m_iFilesParsed;
+    public int ParsingProgress { get => m_iFilesParsed; set => this.RaiseAndSetIfChanged(ref m_iFilesParsed, value); }
+
+    private int m_iFileCount;
+    public int FileCount { get => m_iFileCount; set => this.RaiseAndSetIfChanged(ref m_iFileCount, value); }
+
+
+    private bool m_bIsParsing;
+    public bool IsParsing { get => m_bIsParsing; set => this.RaiseAndSetIfChanged(ref m_bIsParsing, value); }
+
 
     private LoreTreeItem _currentlySelectedTreeNode;
     public LoreTreeItem CurrentlySelectedTreeNode { get => _currentlySelectedTreeNode; set => this.RaiseAndSetIfChanged(ref _currentlySelectedTreeNode, value); }
@@ -70,24 +82,24 @@ namespace LoreViewer.ViewModels
       if (folderPath != null && folderPath.Count > 0)
       {
         LoreLibraryFolderPath = folderPath[0].TryGetLocalPath();
-        LoadLoreFromFolder();
+        await LoadLoreFromFolder();
       }
     }
 
     private void GoToFileAtLine(LoreEntity e)
     {
-      if(e is LoreElement elem)
+      if (e is LoreElement elem)
       {
         string programFilesX86 = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
         string pathToNppp = Path.Combine(programFilesX86, "Notepad++", "notepad++.exe");
-        if(Path.Exists(pathToNppp))
+        if (Path.Exists(pathToNppp))
           Process.Start(pathToNppp, $"{elem.SourcePath} -n{elem.LineNumber}");
       }
     }
 
-    private void ReloadLoreFolder()
+    private async void ReloadLoreFolder()
     {
-      LoadLoreFromFolder();
+      await LoadLoreFromFolder();
     }
 
     private void OpenLoreSettingEditorDialog()
@@ -95,42 +107,59 @@ namespace LoreViewer.ViewModels
 
     }
 
-    private void LoadLoreFromFolder()
+    private async Task LoadLoreFromFolder()
     {
+      IsParsing = true;
+
+      ParsingProgress = 0;
+
+      Nodes.Clear();
+      Collections.Clear();
+      Warnings.Clear();
+      Errors.Clear();
+
       try
       {
-        _parser._nodes.Clear();
-        _parser._collections.Clear();
-        _parser._errors.Clear();
-        _parser._warnings.Clear();
-
-        _nodeTreeItems.Clear();
-        _nodeCollectionTreeItems.Clear();
-
-        _parser.BeginParsingFromFolder(LoreLibraryFolderPath);
-
-        if (_parser.HadFatalError)
-        {
-
-        }
-
-        //List<LoreValidationError> valErrs = LoreValidator.Validate(_settings, _parser);
-
-
-        foreach (LoreEntity e in _nodes) Nodes.Add(new LoreTreeItem(e));
-
-        foreach (LoreEntity e in _collections) NodeCollections.Add(new LoreTreeItem(e));
+        _settings = LoreSettings.ParseSettingsFromFolder(LoreLibraryFolderPath);
       }
       catch (Exception e)
       {
-        _parser._errors.Add(new Tuple<string, int, int, Exception>(e.Message, -1, -1, e));
+        Errors.Add(new Tuple<string, int, int, Exception>(e.Message, -1, -1, e));
+        IsParsing = false;
+        return;
       }
-      finally
-      {
-        this.RaisePropertyChanged("Errors");
-        this.RaisePropertyChanged("Warnings");
-      }
+
+      _parser = new LoreParser(_settings);
+
+      FileCount = _parser.ParsableFiles(LoreLibraryFolderPath, _settings).Count();
+
+      var _progress = new Progress<int>(i => ParsingProgress = i);
+
+      await _parser.ParseFolderAsync(LoreLibraryFolderPath, _progress);
+
+      RefreshAllFromParser();
+
+      FileCount = 0;
+      IsParsing = false;
     }
+
+    #region Refreshing
+    private void RefreshAllFromParser()
+    {
+      RefreshNodesFromParser();
+      RefreshCollectionsFromParser();
+      RefreshErrorsFromParser();
+      RefreshWarningsFromParser();
+    }
+
+    private void RefreshNodesFromParser() { foreach (LoreEntity e in _parser.Nodes) Nodes.Add(new LoreTreeItem(e)); }
+
+    private void RefreshCollectionsFromParser() { foreach (LoreEntity e in _parser.Collections) Collections.Add(new LoreTreeItem(e)); }
+
+    private void RefreshErrorsFromParser() { foreach (Tuple<string, int, int, Exception> e in _parser.Errors) Errors.Add(e); }
+
+    private void RefreshWarningsFromParser() { foreach (string e in _parser.Warnings) Warnings.Add(e); }
+    #endregion 
   }
 
   public class ValidationErrorToImagePathConverter : IValueConverter

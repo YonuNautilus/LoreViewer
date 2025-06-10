@@ -26,7 +26,7 @@ namespace v0_4.NegativeTests
 
       _settings = _parser.Settings;
 
-      Assert.Throws<EmbeddedNodeTypeNotAllowedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Invalid_Embedded_Type.md")));
+      Assert.Throws<EmbeddedNodeTypeNotAllowedException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "Invalid_Embedded_Type.md")));
     }
 
     [Test]
@@ -38,7 +38,7 @@ namespace v0_4.NegativeTests
 
       _settings = _parser.Settings;
 
-      Assert.Throws<EmbeddedNodeInvalidNameException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Node_Wrong_Title.md")));
+      Assert.Throws<EmbeddedNodeInvalidNameException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "Embedded_Node_Wrong_Title.md")));
     }
 
     [Test]
@@ -48,9 +48,9 @@ namespace v0_4.NegativeTests
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Embedded_Already_Added.yaml"));
 
-      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Same.md")));
-      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Parent.md")));
-      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Child.md")));
+      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Same.md")));
+      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Parent.md")));
+      Assert.Throws<EmbeddedNodeAlreadyAddedException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "Embedded_Already_Added_Child.md")));
     }
     #endregion Lore Parsing Tests
 

@@ -29,7 +29,7 @@ namespace v0_1.NegativeTests
 
       Assert.Throws<NoTagParsingException>(() =>
       {
-        _parser.ParseFile(fileToTest);
+        _parser.ParseSingleFile(fileToTest);
       });
     }
 
@@ -41,7 +41,7 @@ namespace v0_1.NegativeTests
 
       Assert.Throws<FirstHeadingTagException>(() =>
       {
-        _parser.ParseFile(fileToTest);
+        _parser.ParseSingleFile(fileToTest);
       });
     }
   }
@@ -69,7 +69,7 @@ namespace v0_1.NegativeTests
     [Test]
     public void ParseFile_ThrowsOn_UnknownSectionName()
     {
-      Assert.Throws<DefinitionNotFoundException>(() => _parser.ParseFile(Path.Combine(ErrorFilesFolder, "UnknownSectionName.md")));
+      Assert.Throws<DefinitionNotFoundException>(() => _parser.ParseSingleFile(Path.Combine(ErrorFilesFolder, "UnknownSectionName.md")));
     }
 
   }

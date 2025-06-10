@@ -1,8 +1,12 @@
 ﻿using Avalonia.Media;
 using LoreViewer.Exceptions;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace LoreViewer.Settings
 {
@@ -11,9 +15,14 @@ namespace LoreViewer.Settings
   /// </summary>
   public class LoreSettings
   {
+    const string LoreSettingsFileName = "Lore_Settings.yaml";
+
     public List<LoreTypeDefinition> types = new List<LoreTypeDefinition>();
     public List<LoreCollectionDefinition> collections = new List<LoreCollectionDefinition>();
     public AppSettings Settings { get; set; }
+
+    private bool m_bHadFatalError;
+    public bool HadFatalError { get => m_bHadFatalError; }
 
     public LoreSettings()
     {
@@ -24,6 +33,26 @@ namespace LoreViewer.Settings
     public LoreTypeDefinition GetTypeDefinition(string typeName) => types.FirstOrDefault(type => type.name.Equals(typeName));
     public bool HasCollectionDefinition(string collectionName) => collections.Any(col => col.name.Equals(collectionName));
     public LoreCollectionDefinition GetCollectionDefinition(string typeName) => collections.FirstOrDefault(type => type.name.Equals(typeName));
+
+
+
+    public static LoreSettings ParseSettingsFromFolder(string folderPath)
+    {
+      string fullSettingsPath = Path.Combine(folderPath, LoreSettingsFileName);
+      if (!File.Exists(fullSettingsPath))
+        throw new Exception($"Did not find file {fullSettingsPath}");
+
+
+      var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+
+      string settingsText = File.ReadAllText(fullSettingsPath);
+
+      LoreSettings newSettings = deserializer.Deserialize<LoreSettings>(settingsText);
+
+      newSettings.PostProcess();
+
+      return newSettings;
+    }
 
 
     public void PostProcess()

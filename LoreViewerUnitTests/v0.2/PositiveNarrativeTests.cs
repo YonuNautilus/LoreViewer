@@ -21,22 +21,22 @@
       _settings = _parser.Settings;
 
       foreach (string fileToTest in testFiles)
-        _parser.ParseFile(fileToTest);
+        _parser.ParseSingleFile(fileToTest);
     }
 
     [Test]
     public void SectionsCountTest()
     {
-      Assert.That(_parser._nodes, Has.Count.EqualTo(1));
-      Assert.That(_parser._nodes[0], Is.TypeOf(typeof(LoreNode)));
-      Assert.That((_parser._nodes[0] as LoreNode).Sections, Has.Count.EqualTo(4));
-      Assert.IsTrue((_parser._nodes[0] as LoreNode).HasNarrativeText);
+      Assert.That(_parser.Nodes, Has.Count.EqualTo(1));
+      Assert.That(_parser.Nodes[0], Is.TypeOf(typeof(LoreNode)));
+      Assert.That((_parser.Nodes[0] as LoreNode).Sections, Has.Count.EqualTo(4));
+      Assert.IsTrue((_parser.Nodes[0] as LoreNode).HasNarrativeText);
     }
 
     [Test]
     public void FreeformWithFreeformChild()
     {
-      LoreNode nodeToTest = _parser._nodes[0] as LoreNode;
+      LoreNode nodeToTest = _parser.Nodes[0] as LoreNode;
       LoreSection sectionToTest = nodeToTest.GetSection("Freeform With Freeform Child");
       Assert.NotNull(sectionToTest);
       Assert.That(sectionToTest, Is.SameAs(nodeToTest.Sections[0]));
@@ -53,7 +53,7 @@
     [Test]
     public void FieldsSectionWithFreeformChild()
     {
-      LoreNode nodeToTest = _parser._nodes[0] as LoreNode;
+      LoreNode nodeToTest = _parser.Nodes[0] as LoreNode;
       LoreSection sectionToTest = nodeToTest.GetSection("Fields-Section With Freeform Child");
       Assert.NotNull(sectionToTest);
       Assert.That(nodeToTest.Sections[1], Is.SameAs(sectionToTest));
@@ -79,7 +79,7 @@
     [Test]
     public void FieldsSectionWithFieldsChild()
     {
-      LoreNode nodeToTest = _parser._nodes[0] as LoreNode;
+      LoreNode nodeToTest = _parser.Nodes[0] as LoreNode;
       LoreSection sectionToTest = nodeToTest.GetSection("Fields-Section With Fields-Child");
       Assert.NotNull(sectionToTest);
       Assert.That(nodeToTest.Sections[2], Is.SameAs(sectionToTest));
@@ -107,7 +107,7 @@
     [Test]
     public void FreeformSectionWithFieldsChild()
     {
-      LoreNode nodeToTest = _parser._nodes[0] as LoreNode;
+      LoreNode nodeToTest = _parser.Nodes[0] as LoreNode;
       LoreSection sectionToTest = nodeToTest.GetSection("Freeform With Fields-Child");
       Assert.NotNull(sectionToTest);
       Assert.That(nodeToTest.Sections[3], Is.SameAs(sectionToTest));

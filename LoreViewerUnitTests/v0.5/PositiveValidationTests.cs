@@ -14,6 +14,8 @@ namespace v0_5.PositiveTests
     {
       _parser = new LoreParser();
 
+      _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
+
       _parser.BeginParsingFromFolder(ValidFilesFolder);
 
       _settings = _parser.Settings;
@@ -22,21 +24,14 @@ namespace v0_5.PositiveTests
     [Test]
     public void PositiveTest()
     {
-      _parser.ParseFile(Path.Combine(ValidFilesFolder, "SimpleTestFile.md"));
+      _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "SimpleTestFile.md"));
       _parser.Validate();
 
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(0));
 
-      Assert.That(_parser._nodes, Has.Count.EqualTo(1));
-      Assert.That(_parser._nodes[0].Collections, Has.Count.EqualTo(1));
-      Assert.That(_parser._nodes[0].Collections[0], Has.Count.EqualTo(2));
-    }
-
-
-    [Test]
-    public void ExtraCollectionExceptionTest()
-    {
-
+      Assert.That(_parser.Nodes, Has.Count.EqualTo(1));
+      Assert.That(_parser.Nodes[0].Collections, Has.Count.EqualTo(1));
+      Assert.That(_parser.Nodes[0].Collections[0], Has.Count.EqualTo(2));
     }
   }
 }

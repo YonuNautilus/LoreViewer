@@ -25,7 +25,7 @@ namespace v0_4.PositiveTests
       _settings = _parser.Settings;
 
       foreach (string fileToTest in testFiles)
-        _parser.ParseFile(fileToTest);
+        _parser.ParseSingleFile(fileToTest);
     }
 
     [Test]
@@ -251,8 +251,8 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_BaseCounts()
     {
-      Assert.That(_parser._nodes, Has.Count.EqualTo(5));
-      Assert.That(_parser._collections, Has.Count.EqualTo(0));
+      Assert.That(_parser.Nodes, Has.Count.EqualTo(5));
+      Assert.That(_parser.Collections, Has.Count.EqualTo(0));
     }
 
     [Test]
