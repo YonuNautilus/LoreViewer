@@ -55,6 +55,7 @@ namespace LoreViewer.ViewModels
     public ReactiveCommand<Unit, Unit> ReloadLibraryCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor { get; }
     public ReactiveCommand<LoreEntity, Unit> OpenFileToLine { get; }
+    public ReactiveCommand<Tuple<string, int, int, Exception>, Unit> OpenErrorFileToLine { get; }
 
     private Visual m_oView;
 
@@ -65,6 +66,7 @@ namespace LoreViewer.ViewModels
       OpenLoreSettingsEditor = ReactiveCommand.Create(OpenLoreSettingEditorDialog);
       ReloadLibraryCommand = ReactiveCommand.Create(ReloadLoreFolder);
       OpenFileToLine = ReactiveCommand.Create<LoreEntity>(GoToFileAtLine);
+      OpenErrorFileToLine = ReactiveCommand.Create<Tuple<string, int, int, Exception>>(GoToFileAtLine);
 
       _settings = new LoreSettings();
       _parser = new LoreParser(_settings);
@@ -97,6 +99,17 @@ namespace LoreViewer.ViewModels
       }
     }
 
+    private void GoToFileAtLine(Tuple<string, int, int, Exception> dat)
+    {
+      string fullPathToFile = Path.Combine(LoreLibraryFolderPath, dat.Item1);
+      if (Path.Exists(fullPathToFile))
+      {
+        string programFilesX86 = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
+        string pathToNppp = Path.Combine(programFilesX86, "Notepad++", "notepad++.exe");
+        if (Path.Exists(pathToNppp))
+          Process.Start(pathToNppp, $"{fullPathToFile} -n{dat.Item3}");
+      }
+    }
     private async void ReloadLoreFolder()
     {
       await LoadLoreFromFolder();
