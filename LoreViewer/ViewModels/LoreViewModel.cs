@@ -4,7 +4,7 @@ using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using LoreViewer.LoreElements;
-using LoreViewer.LoreParsing;
+using LoreViewer.Parser;
 using LoreViewer.Settings;
 using LoreViewer.Validation;
 using ReactiveUI;
@@ -30,7 +30,7 @@ namespace LoreViewer.ViewModels
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
     public ObservableCollection<LoreTreeItem> Nodes { get; } = new();
 
-    private ObservableCollection<LoreTreeItem> Collections { get; } = new();
+    public ObservableCollection<LoreTreeItem> Collections { get; } = new();
     public ObservableCollection<Tuple<string, int, int, Exception>> Errors { get; } = new();
     public ObservableCollection<string> Warnings { get; } = new();
 

@@ -5,13 +5,11 @@
              xmlns:vm="using:LoreViewer.ViewModels"
              xmlns:le="using:LoreViewer.LoreElements"
              xmlns:val="using:LoreViewer.Validation"
+             xmlns:local="using:LoreViewer.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Views.LoreEditView"
              x:DataType="vm:LoreViewModel">
-  <UserControl.Resources>
-    <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"></vm:ValidationErrorToImagePathConverter>
-    <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter"></vm:LoreEntityToErrorListConverter>
-  </UserControl.Resources>
+  
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
@@ -46,43 +44,13 @@
           </Grid.ColumnDefinitions>
 
           <Border BorderBrush="Black" BorderThickness="1">
-            <Grid >
-              <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
-                <RowDefinition/>
-              </Grid.RowDefinitions>
+            <local:EntityListView LabelText="Nodes" TreeItems="{Binding Nodes}">
 
-              <Label Content="Nodes" />
-              <TreeView Grid.Row="1" ItemsSource="{Binding Nodes}" SelectedItem="{Binding CurrentlySelectedTreeNode, Mode=OneWayToSource}" Grid.Column="0" Name="NodesTreeView" >
-                <TreeView.ItemTemplate>
-                  <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <StackPanel Orientation="Horizontal">
-                      <Image Width="16" Margin="0,0,5,0" Source="{Binding element, Converter={StaticResource ValidationImageConverter}}"></Image>
-                      <TextBlock Text="{Binding DisplayName}" />
-                    </StackPanel>
-                  </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-              </TreeView>
-            </Grid>
+            </local:EntityListView>
           </Border>
 
           <Border Grid.Row="2" BorderBrush="Black" BorderThickness="1">
-            <Grid >
-              <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
-                <RowDefinition/>
-              </Grid.RowDefinitions>
-
-              <Label Content="Collections" />
-
-              <TreeView Grid.Row="2" ItemsSource="{Binding Collections}" Grid.Column="0" Name="CollectionsTreeView">
-                <TreeView.ItemTemplate>
-                  <TreeDataTemplate ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding DisplayName}" />
-                  </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-              </TreeView>
-            </Grid>
+            <local:EntityListView LabelText="Collections" TreeItems="{Binding Collections}"/>
           </Border>
 
           <DockPanel Grid.Column="1" Margin="5" Grid.Row="0" Grid.RowSpan="2">

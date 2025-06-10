@@ -1,4 +1,4 @@
-﻿namespace LoreViewer.LoreParsing
+﻿namespace LoreViewer.Parser
 {
   public class LoreParsingContext
   {

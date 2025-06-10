@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace LoreViewer.LoreParsing
+namespace LoreViewer.Parser
 {
   public class LoreParser
   {
