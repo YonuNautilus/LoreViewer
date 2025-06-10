@@ -1,9 +1,5 @@
 ﻿using LoreViewer.LoreElements;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection.Metadata.Ecma335;
 
 namespace LoreViewer.ViewModels
 {
@@ -13,7 +9,8 @@ namespace LoreViewer.ViewModels
 
     private string m_sModifiedContent;
 
-    public string FileContent {
+    public string FileContent
+    {
       get
       {
         return string.IsNullOrWhiteSpace(m_sModifiedContent) ? Node.FileContent : m_sModifiedContent;
@@ -22,6 +19,13 @@ namespace LoreViewer.ViewModels
       {
         m_sModifiedContent = value;
       }
+    }
+
+    private int m_iCursorIndex;
+
+    public int CursorIndex
+    {
+      get => Node.LineNumber;
     }
 
     public void ClearModifications() => m_sModifiedContent = string.Empty;

@@ -10,12 +10,15 @@ using LoreViewer.Validation;
 using LoreViewer.ViewModels.LoreEntities;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels
@@ -46,9 +49,40 @@ namespace LoreViewer.ViewModels
     private bool m_bIsParsing;
     public bool IsParsing { get => m_bIsParsing; set => this.RaiseAndSetIfChanged(ref m_bIsParsing, value); }
 
+    private bool m_bActualEntityIsSelected = false;
+    public bool ActualNodeIsSelected
+    {
+      get => m_bActualEntityIsSelected;
+      set => this.RaiseAndSetIfChanged(ref m_bActualEntityIsSelected, value);
+    }
+
+    private bool m_bNPppExists;
+
+    public bool NotepadPPIsInstalled { get => m_bNPppExists; }
+
+    private bool m_bUseNPpp;
+    public bool UseNPpp
+    {
+      get => m_bNPppExists ? m_bUseNPpp : false;
+      set
+      {
+        if (m_bNPppExists)
+          this.RaiseAndSetIfChanged(ref m_bUseNPpp, value);
+      }
+    }
+
 
     private LoreTreeItem _currentlySelectedTreeNode;
-    public LoreTreeItem CurrentlySelectedTreeNode { get => _currentlySelectedTreeNode; set => this.RaiseAndSetIfChanged(ref _currentlySelectedTreeNode, value); }
+    public LoreTreeItem CurrentlySelectedTreeNode
+    {
+      get => _currentlySelectedTreeNode;
+      set
+      {
+        this.RaiseAndSetIfChanged(ref _currentlySelectedTreeNode, value);
+        ActualNodeIsSelected = CurrentlySelectedTreeNode?.element is LoreEntity;
+      }
+    }
+
     public ReactiveCommand<Unit, Unit> OpenLibraryFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> ReloadLibraryCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor { get; }
@@ -57,8 +91,11 @@ namespace LoreViewer.ViewModels
 
     private Visual m_oView;
 
+    private string m_sPathToNPpp = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Notepad++", "notepad++.exe");
+
     public LoreViewModel(Visual view)
     {
+      m_bNPppExists = Path.Exists(m_sPathToNPpp);
       m_oView = view;
       OpenLibraryFolderCommand = ReactiveCommand.CreateFromTask(HandleOpenLibraryCommandAsync);
       OpenLoreSettingsEditor = ReactiveCommand.Create(OpenLoreSettingEditorDialog);
@@ -90,21 +127,40 @@ namespace LoreViewer.ViewModels
     {
       if (e is LoreElement elem)
       {
-        string programFilesX86 = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
-        string pathToNppp = Path.Combine(programFilesX86, "Notepad++", "notepad++.exe");
-        if (Path.Exists(pathToNppp))
-          Process.Start(pathToNppp, $"{elem.SourcePath} -n{elem.LineNumber}");
+        if (UseNPpp)
+          Process.Start(m_sPathToNPpp, $"{elem.SourcePath} -n{elem.LineNumber}");
+        else
+        {
+          var dialog = new EntityEditDialog(LoreEntityViewModel.CreateViewModel(e));
+          Dictionary<string, string>? result = await dialog.ShowDialog<Dictionary<string, string>?>(TopLevel.GetTopLevel(m_oView) as Window);
+
+
+          if (result != null && result.Count > 0)
+          {
+            DoFileSaves(result);
+            ReloadLoreFolder();
+
+          }
+        }
       }
-      else
+    }
+
+    private void DoFileSaves(Dictionary<string, string> saveContents)
+    {
+      foreach (string path in saveContents.Keys)
       {
-        var dialog = new EntityEditDialog(LoreEntityViewModel.CreateViewModel(e));
-        bool? result = await dialog.ShowDialog<bool?>(TopLevel.GetTopLevel(m_oView) as Window);
-
-
-        if (result == true)
-          ReloadLoreFolder();
-
+        string markdown = saveContents[path];
+        try
+        {
+          File.WriteAllBytes(path, Encoding.UTF8.GetBytes(markdown));
+          Trace.WriteLine($"Successfully wrote markdown to file: {path}");
+        }
+        catch (Exception ex)
+        {
+          Trace.WriteLine($"Error while writing to file: {path}\r\n\t{ex.Message}");
+        }
       }
+      ReloadLoreFolder();
     }
 
     private void GoToFileAtLine(Tuple<string, int, int, Exception> dat)
@@ -112,10 +168,10 @@ namespace LoreViewer.ViewModels
       string fullPathToFile = Path.Combine(LoreLibraryFolderPath, dat.Item1);
       if (Path.Exists(fullPathToFile))
       {
-        string programFilesX86 = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
-        string pathToNppp = Path.Combine(programFilesX86, "Notepad++", "notepad++.exe");
-        if (Path.Exists(pathToNppp))
-          Process.Start(pathToNppp, $"{fullPathToFile} -n{dat.Item3}");
+        if (m_bNPppExists)
+          Process.Start(m_sPathToNPpp, $"{fullPathToFile} -n{dat.Item3}");
+        else
+          Trace.WriteLine("NOT EDITING FAILED FILE, NPP NOT INSTALLED");
       }
     }
     private async void ReloadLoreFolder()
@@ -125,7 +181,7 @@ namespace LoreViewer.ViewModels
 
     private void OpenLoreSettingEditorDialog()
     {
-
+      Trace.WriteLine("LORE SETTINGS EDITOR DIALOG NOT AVAILABLE");
     }
 
     private async Task LoadLoreFromFolder()

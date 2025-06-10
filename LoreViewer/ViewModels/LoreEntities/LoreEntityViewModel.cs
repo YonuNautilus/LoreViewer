@@ -1,9 +1,6 @@
 ﻿using LoreViewer.LoreElements;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace LoreViewer.ViewModels.LoreEntities
 {
@@ -13,6 +10,7 @@ namespace LoreViewer.ViewModels.LoreEntities
     public bool IsDirty { get; set; } = false;
 
     internal LoreEntity entity;
+
     public static LoreEntityViewModel CreateViewModel(LoreEntity e)
     {
       switch (e)
@@ -24,6 +22,37 @@ namespace LoreViewer.ViewModels.LoreEntities
         default:
           return null;
       }
+    }
+
+    public string Name { get => $"Editing: {entity.Name}"; }
+
+    public Dictionary<string, string> GetSaveContent()
+    {
+      Dictionary<string, string> saveContent = new();
+      switch (this)
+      {
+        case LoreNodeViewModel node:
+          if (node.IsDirty)
+          {
+            Trace.WriteLine($"STAGING FILE FOR SAVE: {node.SourcePath}");
+            saveContent[node.SourcePath] = node.FileContent;
+          }
+
+          break;
+        case LoreCompositeNodeViewModel compNode:
+          foreach (LoreNodeViewModel node in compNode.InternalNodes)
+          {
+            if (node.IsDirty)
+            {
+              saveContent[node.SourcePath] = node.FileContent;
+              Trace.WriteLine($"FROM COMPOSITE NODE, STAGING FILE FOR SAVE: {node.SourcePath}");
+            }
+          }
+          break;
+        default:
+          break;
+      }
+      return saveContent;
     }
   }
 }

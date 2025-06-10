@@ -75,8 +75,11 @@
 
                   <Border Grid.Row="2">
                     <StackPanel Orientation="Vertical">
-                      <Label>Validation Errors</Label>
-                      <Button Classes="rounded" Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}" Command="{Binding OpenFileToLine}" CommandParameter="{Binding CurrentlySelectedTreeNode.element}"/>
+                      <DockPanel>
+                        <ToggleSwitch DockPanel.Dock="Right" Margin="10,0,0,0" OnContent="NotePad++" OffContent="In-App Editor" IsChecked="{Binding UseNPpp}" IsEnabled="{Binding NotepadPPIsInstalled, Mode=OneWay}"/>
+                        <Label DockPanel.Dock="Left">Validation Errors</Label>
+                      </DockPanel>
+                      <Button Classes="rounded" IsVisible="{Binding ActualNodeIsSelected}" Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}" Command="{Binding OpenFileToLine}" CommandParameter="{Binding CurrentlySelectedTreeNode.element}"/>
                       <DataGrid ItemsSource="{Binding CurrentlySelectedTreeNode.element, Converter={StaticResource ValidationErrorListConverter}}">
                         <DataGrid.Columns>
                           <DataGridTemplateColumn Header="Error" Width="*">

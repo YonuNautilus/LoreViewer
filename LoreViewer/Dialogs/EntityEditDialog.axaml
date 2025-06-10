@@ -7,7 +7,7 @@
         xmlns:v="using:LoreViewer.Views"
         xmlns:vmle="using:LoreViewer.ViewModels.LoreEntities"
         x:DataType="vmle:LoreEntityViewModel"
-        Title="Edit Lore Entity">
+        Title="{Binding Name}">
 
   <Grid>
     <Grid.RowDefinitions>
@@ -39,8 +39,8 @@
     </ContentControl>
 
     <StackPanel Grid.Row="1" Orientation="Horizontal">
-      <Button Content="Cancel"/>
-      <Button Content="Save" />
+      <Button Content="Cancel" Click="CancelButtonClick" Margin="2"/>
+      <Button Content="Save" Click="SaveButtonClick" Margin="2"/>
     </StackPanel>
   </Grid>
 </Window>

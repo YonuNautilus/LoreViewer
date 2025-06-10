@@ -7,6 +7,6 @@
              x:Class="LoreViewer.Views.LoreNodeView"
              x:DataType="vmle:LoreNodeViewModel">
   <ScrollViewer>
-    <TextBox Text="{Binding FileContent}"></TextBox>
+    <TextBox AcceptsReturn="True" Text="{Binding FileContent}" ></TextBox>
   </ScrollViewer>
 </UserControl>
