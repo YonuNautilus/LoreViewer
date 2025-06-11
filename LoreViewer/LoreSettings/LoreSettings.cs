@@ -19,6 +19,8 @@ namespace LoreViewer.Settings
     public List<LoreCollectionDefinition> collections = new List<LoreCollectionDefinition>();
     public AppSettings Settings { get; set; }
 
+    public string FolderPath { get; set; }
+
     private bool m_bHadFatalError;
     public bool HadFatalError { get => m_bHadFatalError; }
 
@@ -46,6 +48,7 @@ namespace LoreViewer.Settings
       string settingsText = File.ReadAllText(fullSettingsPath);
 
       LoreSettings newSettings = deserializer.Deserialize<LoreSettings>(settingsText);
+      newSettings.FolderPath = folderPath;
 
       newSettings.PostProcess();
 
@@ -139,7 +142,7 @@ namespace LoreViewer.Settings
   }
   public class AppSettings
   {
-    public bool ignoreCase = false;
+    public bool ignoreCase { get; set; }
     public bool softLinking { get; set; } = false;
     public string defaultSort { get; set; } = string.Empty;
     public List<string> markdownExtensions { get; set; } = new List<string>();

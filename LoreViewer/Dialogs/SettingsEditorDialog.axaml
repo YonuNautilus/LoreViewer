@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:svms="using:LoreViewer.ViewModels.SettingsVMs"
+        xmlns:sView="using:LoreViewer.Views"
+        x:Class="LoreViewer.Dialogs.SettingsEditorDialog"
+        x:DataType="svms:LoreSettingsViewModel"
+        Title="Settings Editor">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition Height="35"/>
+    </Grid.RowDefinitions>
+    
+    <sView:LoreSettingsView x:Name="stngsvw" Grid.Row="0" Grid.Column="0" DataContext="{Binding}"/>
+
+    <Border Grid.Row="1" Grid.ColumnSpan="2" Background="LightSlateGray" BorderBrush="Black" BorderThickness="1">
+      <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" HorizontalAlignment="Stretch">
+        <Button Name="BtnSave" Content="Save" Margin="2"/>
+        <Button Name="BtnClose" Content="Close" Margin="2"/>
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

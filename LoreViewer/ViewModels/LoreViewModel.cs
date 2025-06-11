@@ -3,11 +3,13 @@ using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using LoreViewer.Dialogs;
 using LoreViewer.LoreElements;
 using LoreViewer.Parser;
 using LoreViewer.Settings;
 using LoreViewer.Validation;
 using LoreViewer.ViewModels.LoreEntities;
+using LoreViewer.ViewModels.SettingsVMs;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -98,7 +100,7 @@ namespace LoreViewer.ViewModels
       m_bNPppExists = Path.Exists(m_sPathToNPpp);
       m_oView = view;
       OpenLibraryFolderCommand = ReactiveCommand.CreateFromTask(HandleOpenLibraryCommandAsync);
-      OpenLoreSettingsEditor = ReactiveCommand.Create(OpenLoreSettingEditorDialog);
+      OpenLoreSettingsEditor = ReactiveCommand.CreateFromTask(OpenLoreSettingEditorDialog);
       ReloadLibraryCommand = ReactiveCommand.Create(ReloadLoreFolder);
       OpenFileToLine = ReactiveCommand.CreateFromTask<LoreEntity>(GoToFileAtLine);
       OpenErrorFileToLine = ReactiveCommand.Create<Tuple<string, int, int, Exception>>(GoToFileAtLine);
@@ -179,9 +181,13 @@ namespace LoreViewer.ViewModels
       await LoadLoreFromFolder();
     }
 
-    private void OpenLoreSettingEditorDialog()
+    private async Task OpenLoreSettingEditorDialog()
     {
-      Trace.WriteLine("LORE SETTINGS EDITOR DIALOG NOT AVAILABLE");
+      if (_settings != null)
+      {
+        var dialog = new SettingsEditorDialog(new LoreSettingsViewModel(_settings));
+        Dictionary<string, string>? result = await dialog.ShowDialog<Dictionary<string, string>?>(TopLevel.GetTopLevel(m_oView) as Window);
+      }
     }
 
     private async Task LoadLoreFromFolder()
