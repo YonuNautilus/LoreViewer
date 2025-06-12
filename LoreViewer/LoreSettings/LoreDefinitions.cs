@@ -4,6 +4,7 @@ using LoreViewer.Settings.Interfaces;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.Json;
 
 namespace LoreViewer.Settings
 {
@@ -23,6 +24,8 @@ namespace LoreViewer.Settings
 
   public abstract class LoreDefinitionBase
   {
+    public LoreDefinitionBase Parent { get; protected set; }
+
     public string name { get; set; } = string.Empty;
 
     public LoreDefinitionBase() { }
@@ -85,7 +88,7 @@ namespace LoreViewer.Settings
 
 
     public string extends { get; set; }
-    public LoreTypeDefinition ParentType { get; set; }
+    public LoreTypeDefinition ParentType { get => Parent as LoreTypeDefinition; set => Parent = value; }
     public bool isExtendedType => ParentType != null;
 
     public bool HasRequiredEmbeddedNodes => HasNestedNodes ? embeddedNodeDefs.Aggregate(false, (sum, next) => sum || next.required || next.nodeType.HasRequiredEmbeddedNodes, r => r) : false;
@@ -173,10 +176,12 @@ namespace LoreViewer.Settings
     /// <summary>
     /// Takes base definition, adds info like nested fields from the parent and merges them into this child field definition
     /// </summary>
-    /// <param name="parentField"></param>
-    public void MergeFrom(LoreSectionDefinition parentField)
+    /// <param name="parentSection"></param>
+    public void MergeFrom(LoreSectionDefinition parentSection)
     {
-      this.freeform |= parentField.freeform;
+      Parent = parentSection;
+
+      this.freeform |= parentSection.freeform;
     }
 
     public override void PostProcess(LoreSettings settings) { }
@@ -208,6 +213,8 @@ namespace LoreViewer.Settings
     /// <param name="parentField"></param>
     public void MergeFrom(LoreFieldDefinition parentField)
     {
+      Parent = parentField;
+
       this.required |= parentField.required;
       multivalue |= parentField.multivalue;
     }

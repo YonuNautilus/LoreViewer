@@ -2,6 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
              xmlns:vm="using:LoreViewer.ViewModels"
              xmlns:svm="using:LoreViewer.ViewModels.SettingsVMs"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -25,10 +27,14 @@
             <Button Content="New Type" DockPanel.Dock="Right"/>
             <Label Content="Types" DockPanel.Dock="Left"/>
           </DockPanel>
-          <DataGrid Name="TypesGrid" ItemsSource="{Binding TypeDefs}" SelectedItem="{Binding CurrentlySelectedDefinition}">
+          <DataGrid
+            Name="TypesGrid"
+            ItemsSource="{Binding TypeDefs}"
+            SelectedItem="{Binding CurrentlySelectedDefinition}"
+            DoubleTapped="TypeListDoubleClicked">
             <DataGrid.Columns>
               <DataGridTextColumn Header="Type Name" Width="*" Binding="{Binding Name}"/>
-              <DataGridTextColumn Header="Extends" Width="*" Binding="{Binding Extends}"/>
+              <DataGridTextColumn Header="Extends" Width="*" Binding="{Binding ExtendsTypeName}"/>
               <DataGridTemplateColumn Header="Actions">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
@@ -44,18 +50,7 @@
       </Border>
 
       <Border BorderBrush="Black" BorderThickness="1">
-        <StackPanel>
-          <DockPanel>
-            <Button Content="New Collection" DockPanel.Dock="Right"/>
-            <Label Content="Collections" DockPanel.Dock="Left"></Label>
-          </DockPanel>
-          <DataGrid Name="TypeCollectionsGrid" ItemsSource="{Binding ColDefs}" SelectedItem="{Binding CurrentlySelectedDefinition}">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Collection Name" Width="*" Binding="{Binding Name}"/>
-              <DataGridTextColumn Header="Contained Type" Width="*" Binding="{Binding ContainedTypeName}"/>
-            </DataGrid.Columns>
-          </DataGrid>
-        </StackPanel>
+        
       </Border>
 
     </UniformGrid>

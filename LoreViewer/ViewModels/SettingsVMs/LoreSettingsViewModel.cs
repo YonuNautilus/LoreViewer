@@ -16,24 +16,24 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public string LoreLibraryFolderPath { get => m_oLoreSettings.FolderPath; }
 
-    private ObservableCollection<LoreTypeDefinitionViewModel> m_cTypes = new ObservableCollection<LoreTypeDefinitionViewModel>();
+    private ObservableCollection<TypeDefinitionViewModel> m_cTypes = new ObservableCollection<TypeDefinitionViewModel>();
 
-    public ObservableCollection<LoreTypeDefinitionViewModel> TypeDefs { get => m_cTypes; }
+    public ObservableCollection<TypeDefinitionViewModel> TypeDefs { get => m_cTypes; }
     
     private void RefreshTypeDefs()
     {
       m_cTypes.Clear();
       foreach (LoreTypeDefinition def in m_oLoreSettings.types)
-        m_cTypes.Add(new LoreTypeDefinitionViewModel(def));
+        m_cTypes.Add(new TypeDefinitionViewModel(def));
     }
 
-    public ObservableCollection<LoreCollectionDefinitionViewModel> ColDefs { get; } = new ObservableCollection<LoreCollectionDefinitionViewModel>();
+    public ObservableCollection<CollectionDefinitionViewModel> ColDefs { get; } = new ObservableCollection<CollectionDefinitionViewModel>();
 
     private void RefreshColDefs()
     {
       ColDefs.Clear();
       foreach (LoreCollectionDefinition def in m_oLoreSettings.collections)
-        ColDefs.Add(new LoreCollectionDefinitionViewModel(def));
+        ColDefs.Add(new CollectionDefinitionViewModel(def));
     }
 
     public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.Settings); }
@@ -51,14 +51,25 @@ namespace LoreViewer.ViewModels.SettingsVMs
       switch (def)
       {
         case LoreTypeDefinition typeDef:
-          return new LoreTypeDefinitionViewModel(typeDef);
+          return new TypeDefinitionViewModel(typeDef);
         case LoreFieldDefinition fieldDef:
-          return new LoreFieldDefinitionViewModel(fieldDef);
+          return new FieldDefinitionViewModel(fieldDef);
         case LoreSectionDefinition secDef:
-          return new LoreSectionDefinitionViewModel(secDef);
+          return new SectionDefinitionViewModel(secDef);
         case LoreCollectionDefinition colDef:
-          return new LoreCollectionDefinitionViewModel(colDef);
+          return new CollectionDefinitionViewModel(colDef);
         default: return null;
+      }
+    }
+
+    public void DoubleClicked(LoreDefinitionViewModel vm)
+    {
+      switch (vm)
+      {
+        case TypeDefinitionViewModel typeDef:
+          break;
+        case CollectionDefinitionViewModel colDef:
+          break;
       }
     }
   }

@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LoreViewer.DefinitionViews.TypeDefinitionView"
+             xmlns:vs="using:LoreViewer.Views"
+             xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
+             x:DataType="vm:TypeDefinitionViewModel">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+
+    <ScrollViewer Grid.Column="0">
+      <StackPanel>
+        <StackPanel>
+          <DockPanel>
+            <Button Content="Add New Field" DockPanel.Dock="Right"/>
+            <Label Content="Fields" DockPanel.Dock="Left"></Label>
+          </DockPanel>
+          <DataGrid
+            ItemsSource="{Binding Fields}"
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+            DoubleTapped="FieldList_DoubleClicked">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+              <DataGridCheckBoxColumn Header="Required" Binding="{Binding Required}" />
+              <DataGridTemplateColumn>
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <ComboBox></ComboBox>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+            </DataGrid.Columns>
+          </DataGrid>
+        </StackPanel>
+        <StackPanel>
+          <DockPanel>
+            <Button Content="Add New Section" DockPanel.Dock="Right"/>
+            <Label Content="Sections" DockPanel.Dock="Left"></Label>
+          </DockPanel>
+          <DataGrid
+            ItemsSource="{Binding Sections}"
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+            <DataGrid.Columns>
+              <!-- Columns will be injected from paret view -->
+
+              <!--DataGridTextColumn Header="Collection Name" Width="*" Binding="{Binding Name}"/>
+        <DataGridTextColumn Header="Contained Type" Width="*" Binding="{Binding ContainedTypeName}"/-->
+            </DataGrid.Columns>
+          </DataGrid>
+        </StackPanel>
+        <!--vs:LoreDefinitionListView 
+        Items="{Binding EmbeddedNodes}"
+        SelectedItem="{Binding SelectedItem}"
+        ButtonTitle="Add New Embedded Node"
+        Title="Embedded Nodes"/>
+      <vs:LoreDefinitionListView 
+        Items="{Binding Collections}"
+        SelectedItem="{Binding SelectedItem}"
+        ButtonTitle="Add New Collection"
+        Title="Embedded Collection"/-->
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+</UserControl>

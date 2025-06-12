@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LoreViewer.Views.LoreDefinitionListView"
+             xmlns:svms="using:LoreViewer.ViewModels.SettingsVMs"
+             x:CompileBindings="False">
+  <StackPanel>
+    <DockPanel>
+      <Button Content="{Binding ButtonTitle, RelativeSource={RelativeSource AncestorType=UserControl}}" DockPanel.Dock="Right"/>
+      <Label Content="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" DockPanel.Dock="Left"></Label>
+    </DockPanel>
+    <DataGrid
+      x:Name="PART_DataGrid"
+      ItemsSource="{Binding Items, RelativeSource={RelativeSource AncestorType=UserControl}}"
+      SelectedItem="{Binding SelectedItem, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+      <DataGrid.Columns>
+        <!-- Columns will be injected from paret view -->
+        
+        <!--DataGridTextColumn Header="Collection Name" Width="*" Binding="{Binding Name}"/>
+        <DataGridTextColumn Header="Contained Type" Width="*" Binding="{Binding ContainedTypeName}"/-->
+      </DataGrid.Columns>
+    </DataGrid>
+  </StackPanel>
+</UserControl>
