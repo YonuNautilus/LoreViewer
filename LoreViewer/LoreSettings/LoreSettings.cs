@@ -1,10 +1,9 @@
 ﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+using SharpYaml.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace LoreViewer.Settings
 {
@@ -20,7 +19,7 @@ namespace LoreViewer.Settings
     {
       get
       {
-        var serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+        var serializer = new Serializer(new SerializerSettings { EmitDefaultValues = false });
         return serializer.Serialize(this);
       }
     }
@@ -59,7 +58,7 @@ namespace LoreViewer.Settings
         throw new Exception($"Did not find file {fullSettingsPath}");
 
 
-      var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+      var deserializer = new Serializer();
 
       string settingsText = File.ReadAllText(fullSettingsPath);
 

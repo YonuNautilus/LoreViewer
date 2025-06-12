@@ -7,6 +7,7 @@ using LoreViewer.Validation;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
+using SharpYaml.Serialization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,8 +17,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace LoreViewer.Parser
 {
@@ -167,7 +166,7 @@ namespace LoreViewer.Parser
 
     public void ParseSettingsFromFile(string settingsFilePath)
     {
-      var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+      var deserializer = new Serializer();
 
       string settingsText = File.ReadAllText(settingsFilePath);
 

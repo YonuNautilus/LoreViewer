@@ -1,7 +1,6 @@
 ﻿using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
 using System.Linq;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace LoreViewer.ViewModels.LoreEntities
 {

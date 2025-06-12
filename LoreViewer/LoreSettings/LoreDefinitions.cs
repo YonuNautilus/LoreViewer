@@ -2,13 +2,13 @@
 using DynamicData;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
+using SharpYaml.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.Json;
-using YamlDotNet.Serialization;
 
 namespace LoreViewer.Settings
 {
@@ -35,7 +35,7 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     public LoreDefinitionBase Parent { get; protected set; }
 
-    [YamlMember(Order = -100)]
+    [YamlMember(-100)]
     public string name { get; set; } = string.Empty;
 
     public LoreDefinitionBase() { }

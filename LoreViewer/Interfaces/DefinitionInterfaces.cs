@@ -2,13 +2,12 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using YamlDotNet.Serialization;
+using SharpYaml.Serialization;
 
 namespace LoreViewer.Settings.Interfaces
 {
   public interface IFieldDefinitionContainer
   {
-    [YamlMember()]
     List<LoreFieldDefinition> fields { get; }
 
     [YamlIgnore]
@@ -59,7 +58,7 @@ namespace LoreViewer.Settings.Interfaces
 
   public interface IRequirable
   {
-    [YamlMember(Order = -90)]
+    [YamlMember(-90)]
     [DefaultValue(false)]
     bool required { get; set; }
   }
