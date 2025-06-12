@@ -11,6 +11,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
 {
   public class TypeDefinitionViewModel : LoreDefinitionViewModel
   {
+    public override ObservableCollection<TypeDefinitionViewModel> Types => throw new NotImplementedException();
+
     private LoreTypeDefinition typeDef { get => Definition as LoreTypeDefinition; }
 
     public string ExtendsTypeName { get => typeDef.extends; }
@@ -27,12 +29,21 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
 
     private ObservableCollection<FieldDefinitionViewModel> m_cFields = new();
+    private ObservableCollection<SectionDefinitionViewModel> m_cSections = new();
+    private ObservableCollection<CollectionDefinitionViewModel> m_cCollections = new();
+    private ObservableCollection<EmbeddedNodeDefinitionViewModel> m_cEmbeddeds = new();
 
-    public ObservableCollection<FieldDefinitionViewModel> Fields { get => m_cFields; }
-    public ObservableCollection<SectionDefinitionViewModel> Sections { get; }
-    public ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes { get; }
+    public override ObservableCollection<FieldDefinitionViewModel> Fields { get => m_cFields; }
+    public override ObservableCollection<SectionDefinitionViewModel> Sections { get => m_cSections; }
+    public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
+    public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes { get => m_cEmbeddeds; }
 
     public TypeDefinitionViewModel(LoreTypeDefinition definition) : base(definition)
+    {
+    }
+
+
+    public override void RefreshLists()
     {
       RefreshFieldDefs();
     }

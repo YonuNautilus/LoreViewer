@@ -15,13 +15,29 @@ namespace LoreViewer.Settings
   {
     const string LoreSettingsFileName = "Lore_Settings.yaml";
 
+    [YamlIgnore]
+    public string CurrentYAML
+    {
+      get
+      {
+        var serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+        return serializer.Serialize(this);
+      }
+    }
+
+    [YamlIgnore]
+    public string OriginalYAML { get; private set; }
+
     public List<LoreTypeDefinition> types = new List<LoreTypeDefinition>();
     public List<LoreCollectionDefinition> collections = new List<LoreCollectionDefinition>();
     public AppSettings Settings { get; set; }
 
+    [YamlIgnore]
     public string FolderPath { get; set; }
 
     private bool m_bHadFatalError;
+
+    [YamlIgnore]
     public bool HadFatalError { get => m_bHadFatalError; }
 
     public LoreSettings()
@@ -47,8 +63,10 @@ namespace LoreViewer.Settings
 
       string settingsText = File.ReadAllText(fullSettingsPath);
 
+
       LoreSettings newSettings = deserializer.Deserialize<LoreSettings>(settingsText);
       newSettings.FolderPath = folderPath;
+      newSettings.OriginalYAML = settingsText;
 
       newSettings.PostProcess();
 

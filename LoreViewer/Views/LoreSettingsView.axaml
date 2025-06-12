@@ -109,11 +109,10 @@
           <TextBox AcceptsReturn="True" Text="{Binding MarkdownExtensions}" />
         </StackPanel>
         <StackPanel>
-            <Label>Blocked Paths:</Label>
+          <Label>Blocked Paths:</Label>
           <TextBox AcceptsReturn="True" Text="{Binding BlockedPaths}" />
         </StackPanel>
       </StackPanel>
     </ScrollViewer>
-    
   </Grid>
 </UserControl>

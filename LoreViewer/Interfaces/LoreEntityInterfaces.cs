@@ -1,6 +1,7 @@
 ﻿using LoreViewer.Settings;
 using System.Collections.ObjectModel;
 using System.Linq;
+using YamlDotNet.Serialization;
 
 namespace LoreViewer.LoreElements.Interfaces
 {

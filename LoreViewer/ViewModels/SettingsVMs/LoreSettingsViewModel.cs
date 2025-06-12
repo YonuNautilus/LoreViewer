@@ -16,6 +16,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
   public class LoreSettingsViewModel : ViewModelBase
   {
     private Visual m_oView;
+
+    public string OriginalYAML { get; }
+    public string NewYAML { get => m_oLoreSettings.CurrentYAML; }
     public void SetView(Visual visual) => m_oView = visual;
     public ReactiveCommand<LoreDefinitionViewModel, Unit> DeleteDefinitionCommand { get; }
     public ReactiveCommand<LoreDefinitionViewModel, Unit> EditDefinitionCommand { get; }
@@ -56,6 +59,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
       m_oLoreSettings = _settings;
       RefreshColDefs();
       RefreshTypeDefs();
+
+      OriginalYAML = _settings.OriginalYAML;
     }
 
     public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)

@@ -8,6 +8,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.Json;
+using YamlDotNet.Serialization;
 
 namespace LoreViewer.Settings
 {
@@ -31,8 +32,10 @@ namespace LoreViewer.Settings
 
   public abstract class LoreDefinitionBase
   {
+    [YamlIgnore]
     public LoreDefinitionBase Parent { get; protected set; }
 
+    [YamlMember(Order = -100)]
     public string name { get; set; } = string.Empty;
 
     public LoreDefinitionBase() { }
@@ -43,6 +46,7 @@ namespace LoreViewer.Settings
 
     public override string ToString() => name;
 
+    [YamlIgnore]
     public bool processed = false;
   }
 
@@ -54,10 +58,14 @@ namespace LoreViewer.Settings
     #region IFieldDefinitionContainer implementation
 
     // for fields like Date with Start/End
-    public List<LoreFieldDefinition> fields { get; set; }
+    public List<LoreFieldDefinition> fields { get; set; } = new List<LoreFieldDefinition>();
+
+    [YamlIgnore]
     public bool HasFields => fields != null && fields.Count > 0;
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
+    
+    public bool ShouldSerializefields() { return fields != null && fields.Any(); }
     #endregion IFieldDefinitionContainer implementation
 
     #region ISectionDefinitionContainer implementation
@@ -65,6 +73,7 @@ namespace LoreViewer.Settings
     public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
     public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections.FirstOrDefault(s => s.name == sectionName);
+    public bool ShouldSerializesections() { return sections != null && sections.Count > 0; }
     #endregion ISectionDefinitionContainer implementation
 
     #region ICollectionDefinitionContainer
@@ -88,6 +97,8 @@ namespace LoreViewer.Settings
           (t.nodeType == typeDef || t.nodeType.IsParentOf(typeDef)) &&
           (!string.IsNullOrWhiteSpace(t.name) ? t.name == nodeTitle : true));
 
+
+    [YamlIgnore]
     public bool HasNestedNodes => embeddedNodeDefs != null && embeddedNodeDefs.Count() > 0;
 
     #endregion IEmbeddedNodeDefinitionContainer
@@ -95,9 +106,14 @@ namespace LoreViewer.Settings
 
 
     public string extends { get; set; }
+
+    [YamlIgnore]
     public LoreTypeDefinition ParentType { get => Parent as LoreTypeDefinition; set => Parent = value; }
+
+    [YamlIgnore]
     public bool isExtendedType => ParentType != null;
 
+    [YamlIgnore]
     public bool HasRequiredEmbeddedNodes => HasNestedNodes ? embeddedNodeDefs.Aggregate(false, (sum, next) => sum || next.required || next.nodeType.HasRequiredEmbeddedNodes, r => r) : false;
 
     public void SetParent(LoreTypeDefinition type)
@@ -156,6 +172,7 @@ namespace LoreViewer.Settings
 
     #region ISectionDefinitionContainer implementation
     public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
+    [YamlIgnore]
     public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
     public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections.FirstOrDefault(s => s.name == sectionName);
@@ -163,13 +180,18 @@ namespace LoreViewer.Settings
 
     #region IFieldDefinitionContainer implementation
     public List<LoreFieldDefinition> fields { get; set; }
+
+    [YamlIgnore]
     public bool HasFields => fields != null && fields.Count > 0;
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
 
     #endregion IFieldDefinitionContainer implementation
 
+    [DefaultValue(false)]
     public bool required { get; set; }
+
+    [YamlIgnore]
     public bool HasRequiredNestedSections => HasSections ? sections.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedSections, r => r) : false;
 
 
@@ -198,8 +220,10 @@ namespace LoreViewer.Settings
   {
 
     #region IFieldDefinitionContainer implementation
-    // for fields like Date with Start/End
     public List<LoreFieldDefinition> fields { get; set; } = new List<LoreFieldDefinition>();
+
+    [YamlIgnore]
+    // for fields like Date with Start/End
     public bool HasFields => fields != null && fields.Count > 0;
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
@@ -208,10 +232,13 @@ namespace LoreViewer.Settings
     public EFieldStyle style { get; set; } = EFieldStyle.SingleValue;
 
 
+    [DefaultValue(false)]
     public bool required { get; set; }
 
+    [YamlIgnore]
     public bool multivalue => style == EFieldStyle.MultiValue;
 
+    [YamlIgnore]
     public bool HasRequiredNestedFields => HasFields ? fields.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedFields, r => r) : false;
 
     public override void PostProcess(LoreSettings settings) { }
@@ -231,9 +258,14 @@ namespace LoreViewer.Settings
   public class LoreCollectionDefinition : LoreDefinitionBase, IRequirable
   {
     public string entryTypeName { get; set; } = string.Empty;
+
     public LoreCollectionDefinition entryCollection { get; set; }
+
+    [YamlIgnore]
     public LoreDefinitionBase ContainedType { get; set; }
     public bool SortEntries { get; set; }
+
+    [DefaultValue(false)]
     public bool required { get; set; }
 
     public bool IsCollectionOfCollections => ContainedType is LoreCollectionDefinition;
@@ -262,9 +294,14 @@ namespace LoreViewer.Settings
   public class LoreEmbeddedNodeDefinition : LoreDefinitionBase, IRequirable
   {
     public string entryTypeName { get; set; }
-    public LoreTypeDefinition nodeType { get; set; }
+
+    [DefaultValue(false)]
     public bool required { get; set; }
 
+    [YamlIgnore]
+    public LoreTypeDefinition nodeType { get; set; }
+
+    [YamlIgnore]
     public bool hasTitleRequirement => !string.IsNullOrWhiteSpace(name);
 
     public override void PostProcess(LoreSettings settings)

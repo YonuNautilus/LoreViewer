@@ -16,8 +16,42 @@
       <RowDefinition/>
       <RowDefinition Height="35"/>
     </Grid.RowDefinitions>
-    
-    <sView:LoreSettingsView x:Name="stngsvw" Grid.Row="0" Grid.Column="0" DataContext="{Binding}"/>
+
+    <SplitView IsPaneOpen="True" DisplayMode="CompactInline" OpenPaneLength="500" CompactPaneLength="20">
+
+      <sView:LoreSettingsView x:Name="stngsvw" Grid.Row="0" Grid.Column="0" DataContext="{Binding}"/>
+
+      <SplitView.Pane>
+        <StackPanel Orientation="Vertical">
+          <Button>></Button>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition/>
+              <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="20"/>
+              <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Label Grid.Column="0" Grid.Row="0">Original YAML</Label>
+            <Label Grid.Column="1" Grid.Row="0">New YAML</Label>
+
+            <ScrollViewer HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition/>
+                  <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" IsReadOnly="True" Text="{Binding OriginalYAML}"/>
+                <TextBox Grid.Column="1" IsReadOnly="True" Text="{Binding NewYAML}"/>
+              </Grid>
+            </ScrollViewer>
+          </Grid>
+        </StackPanel>
+      </SplitView.Pane>
+
+
+    </SplitView>
 
     <Border Grid.Row="1" Grid.ColumnSpan="2" Background="LightSlateGray" BorderBrush="Black" BorderThickness="1">
       <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" HorizontalAlignment="Stretch">
