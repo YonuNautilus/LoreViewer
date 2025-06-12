@@ -177,7 +177,7 @@ namespace LoreViewer.ViewModels
           Trace.WriteLine("NOT EDITING FAILED FILE, NPP NOT INSTALLED");
       }
     }
-    private async void ReloadLoreFolder()
+    public async void ReloadLoreFolder()
     {
       await LoadLoreFromFolder();
     }

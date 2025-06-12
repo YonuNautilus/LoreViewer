@@ -35,7 +35,7 @@
                   </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 
-                <DataGridTemplateColumn Header="Type">
+                <DataGridTemplateColumn Header="Style">
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                       <ComboBox ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}">
@@ -48,6 +48,26 @@
                     </DataTemplate>
                   </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Actions">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding EditDefinitionCommand}"
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Edit This Field Definition">
+                          <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                        </Button>
+                        <Button Command="{Binding DeleteDefinitionCommand}"
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Delete Field Definition">
+                          <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                        </Button>
+                      </StackPanel>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
               </DataGrid.Columns>
             </DataGrid>
           </StackPanel>

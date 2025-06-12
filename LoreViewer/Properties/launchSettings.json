@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LoreViewer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\jacob\\OneDrive\\Slime_Lore\""
+    }
+  }
+}

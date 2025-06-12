@@ -6,6 +6,7 @@ using LoreViewer.Views.DefinitionViews;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -94,25 +95,15 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public bool IgnoreCase { get => m_oAppSettings.ignoreCase; }
     public bool SoftLinking { get => m_oAppSettings.softLinking; }
-    public ObservableCollection<string> MarkdownExtensions
+    public string MarkdownExtensions
     {
-      get
-      {
-        ObservableCollection<string> ret = new();
-        foreach(string s in m_oAppSettings.markdownExtensions)
-          ret.Add(s);
-        return ret;
-      }
+      get => string.Join("\r\n", m_oAppSettings.markdownExtensions);
+      set => m_oAppSettings.markdownExtensions = value.Split("\r\n").ToList();
     }
-    public ObservableCollection<string> BlockedPaths
+    public string BlockedPaths
     {
-      get
-      {
-        ObservableCollection<string> ret = new();
-        foreach(string s in m_oAppSettings.blockedPaths)
-          ret.Add(s);
-        return ret;
-      }
+      get => string.Join("\r\n", m_oAppSettings.blockedPaths);
+      set => m_oAppSettings.blockedPaths = value.Split("\r\n").ToList();
     }
 
     public AppSettingsViewModel(AppSettings oAppSettings)

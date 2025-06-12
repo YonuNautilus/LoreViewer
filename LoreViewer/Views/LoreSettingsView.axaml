@@ -38,15 +38,15 @@
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="Delete Type Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
-                      </Button>
                       <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).EditDefinitionCommand}"
                               CommandParameter="{Binding}"
                               ToolTip.Tip="Edit This Type Definition">
                         <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                      </Button>
+                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}"
+                              CommandParameter="{Binding}"
+                              ToolTip.Tip="Delete Type Definition">
+                        <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
                       </Button>
                     </StackPanel>
                   </DataTemplate>
@@ -73,8 +73,15 @@
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}" CommandParameter="{Binding}" ToolTip.Tip="Delete Collection Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/ValidationError.png"/>
+                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).EditDefinitionCommand}"
+                              CommandParameter="{Binding}"
+                              ToolTip.Tip="Edit This Collection Definition">
+                        <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                      </Button>
+                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}"
+                              CommandParameter="{Binding}"
+                              ToolTip.Tip="Delete Collection Definition">
+                        <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
                       </Button>
                     </StackPanel>
                   </DataTemplate>
@@ -87,7 +94,26 @@
 
     </UniformGrid>
 
-    <!--TextBlock Grid.Row="1" Grid.Column="0" Name="YAMLViewer">YAML</TextBlock-->
-
+    <ScrollViewer Grid.Column="1" Grid.Row="1" DataContext="{Binding ParserSettings}" Margin="50,0,50,0">
+      <StackPanel Spacing="20"  Orientation="Vertical">
+        <StackPanel Orientation="Horizontal" Height="30">
+          <Label VerticalAlignment="Center">Ignore Case:</Label>
+          <CheckBox IsChecked="True" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Height="30">
+          <Label VerticalAlignment="Center">Soft Linking:</Label>
+          <CheckBox IsChecked="{Binding SoftLinking}" />
+        </StackPanel>
+        <StackPanel>
+          <Label>Markdown Extensions:</Label>
+          <TextBox AcceptsReturn="True" Text="{Binding MarkdownExtensions}" />
+        </StackPanel>
+        <StackPanel>
+            <Label>Blocked Paths:</Label>
+          <TextBox AcceptsReturn="True" Text="{Binding BlockedPaths}" />
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
+    
   </Grid>
 </UserControl>
