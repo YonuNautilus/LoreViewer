@@ -4,20 +4,13 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using LoreViewer.ViewModels.SettingsVMs;
 
-namespace LoreViewer.DefinitionViews;
+namespace LoreViewer.Views.DefinitionViews;
 
-public partial class TypeDefinitionView : UserControl
+public partial class TypeDefinitionView : DefinitionView
 {
-  public TypeDefinitionView()
+  public TypeDefinitionView() : base() { }
+  public TypeDefinitionView(TypeDefinitionViewModel viewModel) : base(viewModel)
   {
     InitializeComponent();
-  }
-
-  public void FieldList_DoubleClicked(object sender, RoutedEventArgs e)
-  {
-    if (DataContext != null && DataContext is LoreDefinitionViewModel ldvm)
-    {
-      //ldvm.ListDoubleClicked()
-    }
   }
 }

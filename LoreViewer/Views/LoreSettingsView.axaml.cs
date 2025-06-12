@@ -10,12 +10,4 @@ public partial class LoreSettingsView : UserControl
   {
     InitializeComponent();
   }
-
-  public void TypeListDoubleClicked(object sender, RoutedEventArgs e)
-  {
-    if(DataContext != null && DataContext is LoreSettingsViewModel vm)
-    {
-      vm.DoubleClicked((sender as DataGrid).SelectedItem as LoreDefinitionViewModel);
-    }
-  }
 }

@@ -1,19 +1,26 @@
-﻿using DynamicData;
+﻿using DocumentFormat.OpenXml.Office2010.PowerPoint;
+using DynamicData;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.Json;
 
 namespace LoreViewer.Settings
 {
-  public enum EStyle
+  public enum EFieldStyle
   {
-    SingleValue,
-    MultiValue,
-    Textual,
-    PickList
+    [Description("Single Value")]
+    SingleValue = 0,
+    [Description("Multiple Values")]
+    MultiValue = 1,
+    [Description("Purely Textual")]
+    Textual = 2,
+    [Description("List")]
+    PickList = 3
   }
 
   public enum ECollectionMode
@@ -189,6 +196,7 @@ namespace LoreViewer.Settings
 
   public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable
   {
+
     #region IFieldDefinitionContainer implementation
     // for fields like Date with Start/End
     public List<LoreFieldDefinition> fields { get; set; } = new List<LoreFieldDefinition>();
@@ -197,11 +205,12 @@ namespace LoreViewer.Settings
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
     #endregion IFieldDefinitionContainer implementation
 
-    public EStyle style { get; set; } = EStyle.SingleValue;
+    public EFieldStyle style { get; set; } = EFieldStyle.SingleValue;
+
 
     public bool required { get; set; }
 
-    public bool multivalue = false;
+    public bool multivalue => style == EFieldStyle.MultiValue;
 
     public bool HasRequiredNestedFields => HasFields ? fields.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedFields, r => r) : false;
 
@@ -216,7 +225,6 @@ namespace LoreViewer.Settings
       Parent = parentField;
 
       this.required |= parentField.required;
-      multivalue |= parentField.multivalue;
     }
   }
 

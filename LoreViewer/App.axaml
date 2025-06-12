@@ -3,6 +3,7 @@
              x:Class="LoreViewer.App"
              xmlns:vm="using:LoreViewer.ViewModels"
              xmlns:svm="using:LoreViewer.ViewModels.SettingsVMs"
+             xmlns:conv="using:LoreViewer.Converters"
              RequestedThemeVariant="Default">
   <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -18,6 +19,10 @@
   <Application.Resources>
     <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"></vm:ValidationErrorToImagePathConverter>
     <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter"></vm:LoreEntityToErrorListConverter>
+    
+    <conv:EnumDescriptionConverter x:Key="EnumConverter"></conv:EnumDescriptionConverter>
+
+    
     
   </Application.Resources>
  

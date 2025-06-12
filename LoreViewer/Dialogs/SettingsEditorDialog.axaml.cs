@@ -12,6 +12,7 @@ public partial class SettingsEditorDialog : Window
   {
     InitializeComponent();
     viewModel = _settingsVM;
+    viewModel.SetView(this);
     // Need to defer this until AFTER, because DataGrid does not want to show it's data at the right time! Data virtualization or something...
     Dispatcher.UIThread.Post(() => DataContext = _settingsVM);
   }

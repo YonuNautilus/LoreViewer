@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using LoreViewer.Dialogs;
 using LoreViewer.LoreElements;
@@ -254,24 +255,24 @@ namespace LoreViewer.ViewModels
     {
       if (value is LoreEntity e)
       {
-        string img;
+        string image = string.Empty;
         EValidationState elementState = LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(e) ?
           LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates[e] : EValidationState.Passed;
         switch (elementState)
         {
           case EValidationState.Failed:
-            img = @"Resources/ValidationError.png";
+            image = "avares://LoreViewer/Resources/ValidationError.png";
             break;
           case EValidationState.ChildFailed:
-            img = @"Resources/ValidationChildError.png";
+            image = "avared://LoreViewer/Reources/ValidationChildError.png";
             break;
           case EValidationState.Passed:
-            img = @"Resources/ValidationPass.png";
+            image = "avares://LoreViewer/Resources/ValidationPass.png";
             break;
           default:
             return null;
         }
-        return new Bitmap(img);
+        return new Bitmap(AssetLoader.Open(new Uri(image)));
       }
       return null;
     }

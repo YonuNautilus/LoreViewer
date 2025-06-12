@@ -1,14 +1,23 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
+using LoreViewer.Dialogs;
 using LoreViewer.Settings;
+using LoreViewer.Views.DefinitionViews;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
   public class LoreSettingsViewModel : ViewModelBase
   {
+    private Visual m_oView;
+    public void SetView(Visual visual) => m_oView = visual;
+    public ReactiveCommand<LoreDefinitionViewModel, Unit> DeleteDefinitionCommand { get; }
+    public ReactiveCommand<LoreDefinitionViewModel, Unit> EditDefinitionCommand { get; }
 
     private LoreSettings m_oLoreSettings;
 
@@ -41,6 +50,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public LoreSettingsViewModel(LoreSettings _settings)
     {
+      DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
+      EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
       m_oLoreSettings = _settings;
       RefreshColDefs();
       RefreshTypeDefs();
@@ -62,15 +73,18 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public void DoubleClicked(LoreDefinitionViewModel vm)
+    public async Task EditDefinition(LoreDefinitionViewModel vm)
     {
-      switch (vm)
+      if(vm != null)
       {
-        case TypeDefinitionViewModel typeDef:
-          break;
-        case CollectionDefinitionViewModel colDef:
-          break;
+          var dialog = DefinitionEditorDialog.CreateDefinitionEditorDialog(vm);
+          await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
       }
+    }
+
+    public void DeleteDefinition(LoreDefinitionViewModel vm)
+    {
+      Trace.WriteLine($"DELETING DEFINITION {vm.Definition.name} OF TYPE {vm.Definition.GetType().Name}");
     }
   }
 

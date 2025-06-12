@@ -17,6 +17,9 @@
     <None Remove="Resources\ValudationChildError.ico" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Include="Resources\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Resources\IMCCPHR_111.ico" />
   </ItemGroup>
 
@@ -33,8 +36,21 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.2.8" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageReference Include="Markdig" Version="0.41.1" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Update="Resources\ValidationChildError.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Update="Resources\ValidationError.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Update="Resources\ValidationPass.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -44,17 +60,5 @@
     <Compile Update="Views\LoreReadonlyView.axaml.cs">
       <DependentUpon>LoreReadonlyView.axaml</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\ValidationError.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\ValidationPass.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\ValidationChildError.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@
              xmlns:svm="using:LoreViewer.ViewModels.SettingsVMs"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Views.LoreSettingsView"
+             x:Name="SettingsView"
              x:DataType="svm:LoreSettingsViewModel">
   <Grid>
     <Grid.RowDefinitions>
@@ -28,10 +29,8 @@
             <Label Content="Types" DockPanel.Dock="Left"/>
           </DockPanel>
           <DataGrid
-            Name="TypesGrid"
             ItemsSource="{Binding TypeDefs}"
-            SelectedItem="{Binding CurrentlySelectedDefinition}"
-            DoubleTapped="TypeListDoubleClicked">
+            SelectedItem="{Binding CurrentlySelectedDefinition}">
             <DataGrid.Columns>
               <DataGridTextColumn Header="Type Name" Width="*" Binding="{Binding Name}"/>
               <DataGridTextColumn Header="Extends" Width="*" Binding="{Binding ExtendsTypeName}"/>
@@ -39,7 +38,16 @@
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                      <Button x:Name="BtnDeleteDef" Command=""/>
+                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}"
+                              CommandParameter="{Binding}"
+                              ToolTip.Tip="Delete Type Definition">
+                        <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                      </Button>
+                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).EditDefinitionCommand}"
+                              CommandParameter="{Binding}"
+                              ToolTip.Tip="Edit This Type Definition">
+                        <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                      </Button>
                     </StackPanel>
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
@@ -50,7 +58,31 @@
       </Border>
 
       <Border BorderBrush="Black" BorderThickness="1">
-        
+        <StackPanel>
+          <DockPanel>
+            <Button Content="New Collection" DockPanel.Dock="Right"/>
+            <Label Content="Collections" DockPanel.Dock="Left"/>
+          </DockPanel>
+          <DataGrid
+            ItemsSource="{Binding ColDefs}"
+            SelectedItem="{Binding CurrentlySelectedDefinition}">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Collection Name" Width="*" Binding="{Binding Name}"/>
+              <DataGridTextColumn Header="Contained Type" Width="*" Binding="{Binding ContainedTypeName}"/>
+              <DataGridTemplateColumn Header="Actions">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}" CommandParameter="{Binding}" ToolTip.Tip="Delete Collection Definition">
+                        <Image Width="16" Source="avares://LoreViewer/Resources/ValidationError.png"/>
+                      </Button>
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+            </DataGrid.Columns>
+          </DataGrid>
+        </StackPanel>
       </Border>
 
     </UniformGrid>

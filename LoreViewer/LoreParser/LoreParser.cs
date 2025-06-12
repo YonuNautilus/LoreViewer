@@ -822,7 +822,7 @@ namespace LoreViewer.Parser
           }
 
           // if it allows multiple values
-          else if (newDef.style == EStyle.MultiValue)
+          else if (newDef.style == EFieldStyle.MultiValue)
           {
             newAttribute.Values = new List<string>();
             foreach (ListItemBlock block in lb)
@@ -830,7 +830,7 @@ namespace LoreViewer.Parser
               parsedFieldValues.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock).Trim());
             }
           }
-          else if (newDef.style == EStyle.Textual)
+          else if (newDef.style == EFieldStyle.Textual)
           {
             parsedFieldValues.Add(GetStringFromListBlock(lb));
           }
