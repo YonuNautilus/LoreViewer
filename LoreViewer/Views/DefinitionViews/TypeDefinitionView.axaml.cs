@@ -11,7 +11,6 @@ public partial class TypeDefinitionView : DefinitionView
   public TypeDefinitionView() : base() { }
   public TypeDefinitionView(TypeDefinitionViewModel viewModel) : base(viewModel)
   {
-    Name = viewModel.Name;
     InitializeComponent();
   }
 }

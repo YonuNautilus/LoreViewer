@@ -5,5 +5,6 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Views.DefinitionViews.EmbeddedNodeDefinitionView"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
+             x:Name="DefinitionView"
              x:DataType="vm:EmbeddedNodeDefinitionViewModel">
 </UserControl>

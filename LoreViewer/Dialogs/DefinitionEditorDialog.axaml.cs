@@ -14,8 +14,10 @@ public partial class DefinitionEditorDialog : Window
     InitializeComponent();
   }
 
-  public DefinitionEditorDialog(DefinitionView v)
+  public DefinitionEditorDialog(DefinitionView v, LoreDefinitionViewModel vm)
   {
+    Name = vm.Name;
+    vm.SetView(this);
     this.Content = v;
   }
 
@@ -24,21 +26,19 @@ public partial class DefinitionEditorDialog : Window
     switch (vm)
     {
       case TypeDefinitionViewModel typeVM:
-        var ret = new DefinitionEditorDialog(new TypeDefinitionView(typeVM));
-        typeVM.SetView(ret);
-        return ret;
+        return new DefinitionEditorDialog(new TypeDefinitionView(typeVM), typeVM);
         break;
       case FieldDefinitionViewModel fieldVM:
-        return new(new FieldDefinitionView(fieldVM));
+        return new(new FieldDefinitionView(fieldVM), fieldVM);
         break;
       case SectionDefinitionViewModel sectionVM:
-        return new(new SectionDefinitionView(sectionVM));
+        return new(new SectionDefinitionView(sectionVM), sectionVM);
         break;
       case EmbeddedNodeDefinitionViewModel embeddedNodeVM:
-        return new(new EmbeddedNodeDefinitionView(embeddedNodeVM));
+        return new(new EmbeddedNodeDefinitionView(embeddedNodeVM), embeddedNodeVM);
         break;
       case CollectionDefinitionViewModel collectionVM:
-        return new(new CollectionDefinitionView(collectionVM));
+        return new(new CollectionDefinitionView(collectionVM), collectionVM);
         break;
       default: return null;
     }

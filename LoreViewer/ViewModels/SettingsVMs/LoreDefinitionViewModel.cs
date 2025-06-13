@@ -1,6 +1,8 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using DocumentFormat.OpenXml.Wordprocessing;
+using LoreViewer.Dialogs;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
@@ -8,6 +10,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reflection.Metadata;
+using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -32,6 +35,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     protected LoreDefinitionViewModel(LoreDefinitionBase definitionBase)
     {
+      DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
+      EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
+
       Definition = definitionBase;
       RefreshLists();
     }
@@ -79,9 +85,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public void EditDefinition(LoreDefinitionViewModel viewModel)
+    public async Task EditDefinition(LoreDefinitionViewModel vm)
     {
-
+      var dialog = DefinitionEditorDialog.CreateDefinitionEditorDialog(vm);
+      await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
     }
   }
 }

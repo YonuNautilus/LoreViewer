@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using LoreViewer.Dialogs;
 using LoreViewer.Settings;
-using LoreViewer.Views.DefinitionViews;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -81,10 +80,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public async Task EditDefinition(LoreDefinitionViewModel vm)
     {
-      if(vm != null)
+      if (vm != null)
       {
-          var dialog = DefinitionEditorDialog.CreateDefinitionEditorDialog(vm);
-          await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
+        var dialog = DefinitionEditorDialog.CreateDefinitionEditorDialog(vm);
+        await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
       }
     }
 

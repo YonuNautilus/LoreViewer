@@ -14,6 +14,8 @@ namespace LoreViewer.Settings
 {
   public enum EFieldStyle
   {
+    [Description("Nested Fields")]
+    NestedValues = -1,
     [Description("Single Value")]
     SingleValue = 0,
     [Description("Multiple Values")]
@@ -238,6 +240,7 @@ namespace LoreViewer.Settings
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
     #endregion IFieldDefinitionContainer implementation
+
 
     [DefaultValue(EFieldStyle.SingleValue)]
     public EFieldStyle style { get; set; } = EFieldStyle.SingleValue;

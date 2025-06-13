@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Views.DefinitionViews.TypeDefinitionView"
-             xmlns:vs="using:LoreViewer.Views"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
+             x:Name="DefinitionView"
              x:DataType="vm:TypeDefinitionViewModel">
   <Grid>
     <Grid.ColumnDefinitions>
@@ -32,7 +32,7 @@
                   <DataGridTemplateColumn Header="Required">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
-                        <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsRequired}"></CheckBox>
+                        <CheckBox HorizontalAlignment="Center" IsThreeState="{Binding IsThreeState, Mode=OneWay}" IsChecked="{Binding RequiredState}"></CheckBox>
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
@@ -40,7 +40,7 @@
                   <DataGridTemplateColumn Header="Style" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
-                        <ComboBox ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}">
+                        <ComboBox IsEnabled="{Binding NoSubFields}" ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}">
                           <ComboBox.ItemTemplate>
                             <DataTemplate>
                               <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
@@ -51,16 +51,24 @@
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
 
+                  <DataGridTemplateColumn Header="Has Subfields">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <CheckBox HorizontalAlignment="Center" IsChecked="{Binding HasSubFields}" IsEnabled="False" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+
                   <DataGridTemplateColumn Header="Actions" >
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                          <Button Command="{Binding EditDefinitionCommand}"
+                          <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).EditDefinitionCommand}"
                                   CommandParameter="{Binding}"
-                                  ToolTip.Tip="Edit This Field Definition">
+                                  ToolTip.Tip="Edit Field Definition">
                             <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
                           </Button>
-                          <Button Command="{Binding DeleteDefinitionCommand}"
+                          <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}}"
                                   CommandParameter="{Binding}"
                                   ToolTip.Tip="Delete Field Definition">
                             <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
@@ -95,8 +103,16 @@
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                       <StackPanel Orientation="Horizontal">
-                        <Button>
-                          <Image Source=""/>
+                        <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).EditDefinitionCommand}"
+                                  IsEnabled="True"
+                                  CommandParameter="{Binding}"
+                                  ToolTip.Tip="Edit Section Definition">
+                          <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                        </Button>
+                        <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}}"
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Delete Section Definition">
+                          <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
                         </Button>
                       </StackPanel>
                     </DataTemplate>
@@ -127,8 +143,16 @@
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                       <StackPanel Orientation="Horizontal">
-                        <Button>
-                          <Image Source=""/>
+                        <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).EditDefinitionCommand}"
+                                  IsEnabled="True"
+                                  CommandParameter="{Binding}"
+                                  ToolTip.Tip="Edit Embedded Node Definition">
+                          <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                        </Button>
+                        <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}}"
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Delete Embedded Node Definition">
+                          <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
                         </Button>
                       </StackPanel>
                     </DataTemplate>
@@ -159,8 +183,16 @@
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                       <StackPanel Orientation="Horizontal">
-                        <Button>
-                          <Image Source=""/>
+                        <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).EditDefinitionCommand}"
+                                  IsEnabled="True"
+                                  CommandParameter="{Binding}"
+                                  ToolTip.Tip="Edit Collection Definition">
+                          <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                        </Button>
+                        <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}"
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="Delete Collection Definition">
+                          <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
                         </Button>
                       </StackPanel>
                     </DataTemplate>

@@ -6,5 +6,5 @@ public partial class FieldDefinitionView : DefinitionView
 {
   public FieldDefinitionView() : base() { }
 
-  public FieldDefinitionView(FieldDefinitionViewModel definitionViewModel) : base(definitionViewModel) { }
+  public FieldDefinitionView(FieldDefinitionViewModel definitionViewModel) : base(definitionViewModel) { InitializeComponent(); }
 }

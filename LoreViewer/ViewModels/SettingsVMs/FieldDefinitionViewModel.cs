@@ -22,6 +22,28 @@ namespace LoreViewer.ViewModels.SettingsVMs
     private LoreFieldDefinition fieldDef { get => Definition as LoreFieldDefinition; }
     public bool IsRequired { get => fieldDef.required; }
 
+    public bool HasSubFields { get => fieldDef.HasFields; }
+    public bool NoSubFields { get => !fieldDef.HasFields; }
+
+
+    public bool IsThreeState { get => fieldDef.HasRequiredNestedFields; }
+
+    public bool? RequiredState
+    {
+      get
+      {
+        if (fieldDef.required) return true;
+        else if (fieldDef.HasRequiredNestedFields && !fieldDef.required) return null;
+        else return false;
+      }
+      set
+      {
+        // It seems that clicking on a check while it is in the third state will try to set the bool to null.
+        fieldDef.required = (value != null);
+      }
+    }
+
+
     private ObservableCollection<FieldDefinitionViewModel> m_cFields = new ObservableCollection<FieldDefinitionViewModel>();
 
     public override ObservableCollection<FieldDefinitionViewModel> Fields { get =>  m_cFields; }
@@ -30,10 +52,17 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public FieldDefinitionViewModel(LoreFieldDefinition defintion) : base(defintion) { }
 
+    private void RefreshFieldDefs()
+    {
+      m_cFields.Clear();
+      if (fieldDef.fields != null)
+        foreach (LoreFieldDefinition def in fieldDef.fields)
+          m_cFields.Add(new FieldDefinitionViewModel(def));
+    }
 
     public override void RefreshLists()
     {
-      
+      RefreshFieldDefs();
     }
   }
 }
