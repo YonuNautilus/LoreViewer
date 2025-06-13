@@ -10,7 +10,6 @@ namespace LoreViewer.Settings.Interfaces
   {
     List<LoreFieldDefinition> fields { get; }
 
-    [YamlIgnore]
     public bool HasFields => fields != null && fields.Count > 0;
 
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
@@ -23,7 +22,6 @@ namespace LoreViewer.Settings.Interfaces
   {
     List<LoreSectionDefinition> sections { get; }
 
-    [YamlIgnore]
     public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
     public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections.FirstOrDefault(s => s.name == sectionName);

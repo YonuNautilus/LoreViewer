@@ -49,7 +49,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
         ColDefs.Add(new CollectionDefinitionViewModel(def));
     }
 
-    public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.Settings); }
+    public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.settings); }
 
 
     public LoreSettingsViewModel(LoreSettings _settings)

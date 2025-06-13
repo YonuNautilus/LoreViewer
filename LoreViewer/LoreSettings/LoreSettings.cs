@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+using ReactiveUI;
 using SharpYaml.Serialization;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,10 @@ namespace LoreViewer.Settings
     {
       get
       {
-        var serializer = new Serializer(new SerializerSettings { EmitDefaultValues = false });
+        var serializer = new Serializer(
+            new SerializerSettings{ EmitDefaultValues = false, IgnoreNulls = true, EmitAlias = false
+            }
+          );
         return serializer.Serialize(this);
       }
     }
@@ -27,9 +31,10 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     public string OriginalYAML { get; private set; }
 
+    [YamlMember(0)]
     public List<LoreTypeDefinition> types = new List<LoreTypeDefinition>();
+    [YamlMember(1)]
     public List<LoreCollectionDefinition> collections = new List<LoreCollectionDefinition>();
-    public AppSettings Settings { get; set; }
 
     [YamlIgnore]
     public string FolderPath { get; set; }
@@ -38,6 +43,9 @@ namespace LoreViewer.Settings
 
     [YamlIgnore]
     public bool HadFatalError { get => m_bHadFatalError; }
+
+    [YamlMember(1000)]
+    public AppSettings settings { get; set; }
 
     public LoreSettings()
     {

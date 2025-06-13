@@ -58,32 +58,32 @@ namespace LoreViewer.Settings
     #region IFieldDefinitionContainer implementation
 
     // for fields like Date with Start/End
-    public List<LoreFieldDefinition> fields { get; set; } = new List<LoreFieldDefinition>();
+    public List<LoreFieldDefinition> fields { get; set; }
 
     [YamlIgnore]
     public bool HasFields => fields != null && fields.Count > 0;
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
-    public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
+    public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields?.FirstOrDefault(f => f.name == fieldName) ?? null;
     
     public bool ShouldSerializefields() { return fields != null && fields.Any(); }
     #endregion IFieldDefinitionContainer implementation
 
     #region ISectionDefinitionContainer implementation
-    public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
+    public List<LoreSectionDefinition> sections { get; set; }
     public bool HasSections => sections != null && sections.Count > 0;
-    public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
-    public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections.FirstOrDefault(s => s.name == sectionName);
+    public bool HasSectionDefinition(string sectionName) => sections?.Any(sec => sectionName.Contains(sec.name)) ?? false;
+    public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections?.FirstOrDefault(s => s.name == sectionName) ?? null;
     public bool ShouldSerializesections() { return sections != null && sections.Count > 0; }
     #endregion ISectionDefinitionContainer implementation
 
     #region ICollectionDefinitionContainer
-    public List<LoreCollectionDefinition> collections { get; set; } = new List<LoreCollectionDefinition>();
-    public bool HasCollectionDefinition(string collectionName) => collections.Any(col => col.name == collectionName);
-    public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
+    public List<LoreCollectionDefinition> collections { get; set; }
+    public bool HasCollectionDefinition(string collectionName) => collections?.Any(col => col.name == collectionName) ?? false;
+    public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections?.FirstOrDefault(c => c.name == collectionName) ?? null;
     #endregion ICollectionDefinitionContainer
 
     #region IEmbeddedNodeDefinitionContainer Implementation
-    public List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; set; } = new List<LoreEmbeddedNodeDefinition>();
+    public List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; set; }
     public bool HasTypeDefinition(string typeName) => embeddedNodeDefs.Any(t => typeName == t.name);
     public bool HasTypeDefinition(LoreTypeDefinition typeDef) => embeddedNodeDefs.Any(t => t.nodeType.IsParentOf(typeDef));
 
@@ -119,7 +119,12 @@ namespace LoreViewer.Settings
     public void SetParent(LoreTypeDefinition type)
     {
       ParentType = type;
-      collections = ParentType.collections.Concat(collections).ToList();
+
+      if (ParentType.collections != null && collections != null)
+        collections = ParentType.collections.Concat(collections).ToList();
+      else if (ParentType.collections != null)
+        collections = ParentType.collections;
+
       fields = DefinitionMergeManager.MergeFields(ParentType.fields, fields);
       sections = DefinitionMergeManager.MergeSections(ParentType.sections, sections);
     }
@@ -138,29 +143,34 @@ namespace LoreViewer.Settings
        */
 
       // Check rule 1 before any postprocessing
-      IEnumerable<LoreEmbeddedNodeDefinition> dupedTitles = embeddedNodeDefs.Where(d => d.hasTitleRequirement).GroupBy(d => d.name).Where(c => c.Count() > 1).Select(name => name.First());
-      if (dupedTitles.Any())
-        throw new EmbeddedNodesWithSameTitleException(dupedTitles.First(), dupedTitles.First().name);
-
-      foreach (LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
-        lend.PostProcess(settings);
-
-
-      // Now check for rule 2 violations.
-      // Iterate through each embedded node def. Assuming it is the least abstract, get all embedded node defs whose type is a parent
-      foreach (LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
+      if(embeddedNodeDefs != null)
       {
-        IEnumerable<LoreEmbeddedNodeDefinition> matchingTypeOrParentType = embeddedNodeDefs.Except(new LoreEmbeddedNodeDefinition[] { lend }).Where(d => lend.nodeType.IsATypeOf(d.nodeType));
-        LoreEmbeddedNodeDefinition firstWithoutNameReq = matchingTypeOrParentType.FirstOrDefault(d => !d.hasTitleRequirement);
-        if (firstWithoutNameReq != null)
-          throw new EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException(firstWithoutNameReq);
+
+        IEnumerable<LoreEmbeddedNodeDefinition> dupedTitles = embeddedNodeDefs?.Where(d => d.hasTitleRequirement).GroupBy(d => d.name).Where(c => c.Count() > 1).Select(name => name.First());
+        if (dupedTitles.Any())
+          throw new EmbeddedNodesWithSameTitleException(dupedTitles.First(), dupedTitles.First().name);
+
+        foreach (LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
+          lend.PostProcess(settings);
+
+
+        // Now check for rule 2 violations.
+        // Iterate through each embedded node def. Assuming it is the least abstract, get all embedded node defs whose type is a parent
+        foreach (LoreEmbeddedNodeDefinition lend in embeddedNodeDefs)
+        {
+          IEnumerable<LoreEmbeddedNodeDefinition> matchingTypeOrParentType = embeddedNodeDefs.Except(new LoreEmbeddedNodeDefinition[] { lend }).Where(d => lend.nodeType.IsATypeOf(d.nodeType));
+          LoreEmbeddedNodeDefinition firstWithoutNameReq = matchingTypeOrParentType.FirstOrDefault(d => !d.hasTitleRequirement);
+          if (firstWithoutNameReq != null)
+            throw new EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException(firstWithoutNameReq);
+        }
       }
 
       processed = true;
 
-      foreach (LoreCollectionDefinition colDef in collections)
-        if (!colDef.processed)
-          colDef.PostProcess(settings);
+      if (collections != null)
+        foreach (LoreCollectionDefinition colDef in collections)
+          if (!colDef.processed)
+            colDef.PostProcess(settings);
     }
   }
 
@@ -171,7 +181,7 @@ namespace LoreViewer.Settings
   {
 
     #region ISectionDefinitionContainer implementation
-    public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
+    public List<LoreSectionDefinition> sections { get; set; }
     [YamlIgnore]
     public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
@@ -194,7 +204,7 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     public bool HasRequiredNestedSections => HasSections ? sections.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedSections, r => r) : false;
 
-
+    [DefaultValue(false)]
     public bool freeform { get; set; } = false;
 
     public LoreSectionDefinition() { }
@@ -220,7 +230,7 @@ namespace LoreViewer.Settings
   {
 
     #region IFieldDefinitionContainer implementation
-    public List<LoreFieldDefinition> fields { get; set; } = new List<LoreFieldDefinition>();
+    public List<LoreFieldDefinition> fields { get; set; }
 
     [YamlIgnore]
     // for fields like Date with Start/End
@@ -229,6 +239,7 @@ namespace LoreViewer.Settings
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
     #endregion IFieldDefinitionContainer implementation
 
+    [DefaultValue(EFieldStyle.SingleValue)]
     public EFieldStyle style { get; set; } = EFieldStyle.SingleValue;
 
 

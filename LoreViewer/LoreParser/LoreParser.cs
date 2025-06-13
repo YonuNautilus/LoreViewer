@@ -79,9 +79,9 @@ namespace LoreViewer.Parser
     {
       IEnumerable<string> temp = Directory.EnumerateFiles(folderPath, "*.md", SearchOption.AllDirectories);
 
-      string[] files = (settingsWithBlocked.Settings == null) ?
+      string[] files = (settingsWithBlocked.settings == null) ?
         temp.ToArray() :
-        temp.Where(fp => !settingsWithBlocked.Settings.blockedPaths.Any(bp => fp.Contains(bp))).ToArray();
+        temp.Where(fp => !settingsWithBlocked.settings.blockedPaths.Any(bp => fp.Contains(bp))).ToArray();
 
       return files;
     }

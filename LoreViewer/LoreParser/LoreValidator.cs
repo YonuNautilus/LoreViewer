@@ -99,7 +99,7 @@ namespace LoreViewer.Validation
       }
 
       // If this is a node with embedding nodes
-      if (entity.Definition is IEmbeddedNodeDefinitionContainer defWithEmbedded)
+      if (entity.Definition is IEmbeddedNodeDefinitionContainer defWithEmbedded && defWithEmbedded.HasNestedNodes)
       {
         var defs = ((IEmbeddedNodeDefinitionContainer)entity.Definition).embeddedNodeDefs;
 
