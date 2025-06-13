@@ -25,7 +25,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool IsRequired { get => emdDef.required; set => emdDef.required = value; }
 
     public TypeDefinitionViewModel Type { get; set; }
-    protected EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase) { Type = new TypeDefinitionViewModel(emdDef.nodeType); }
+    public EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase) { Type = new TypeDefinitionViewModel(emdDef.nodeType); }
 
     public override void RefreshLists()
     {

@@ -9,124 +9,170 @@
              x:DataType="vm:TypeDefinitionViewModel">
   <Grid>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition />
-      <ColumnDefinition />
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="2*"/>
     </Grid.ColumnDefinitions>
 
-    <ScrollViewer Grid.Column="0">
-      <StackPanel>
-        <Border BorderBrush="Black" BorderThickness="2">
+    <TabControl>
+      <TabItem Header="Fields">
+
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0">
           <StackPanel>
             <DockPanel>
               <Button Content="Add New Field" DockPanel.Dock="Right"/>
               <Label Content="Fields" DockPanel.Dock="Left"></Label>
             </DockPanel>
+            <ScrollViewer>
+              <DataGrid
+                ItemsSource="{Binding Fields}"
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+
+                  <DataGridTemplateColumn Header="Required">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsRequired}"></CheckBox>
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+
+                  <DataGridTemplateColumn Header="Style" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <ComboBox ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}">
+                          <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                              <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
+                            </DataTemplate>
+                          </ComboBox.ItemTemplate>
+                        </ComboBox>
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+
+                  <DataGridTemplateColumn Header="Actions" >
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                          <Button Command="{Binding EditDefinitionCommand}"
+                                  CommandParameter="{Binding}"
+                                  ToolTip.Tip="Edit This Field Definition">
+                            <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                          </Button>
+                          <Button Command="{Binding DeleteDefinitionCommand}"
+                                  CommandParameter="{Binding}"
+                                  ToolTip.Tip="Delete Field Definition">
+                            <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                          </Button>
+                        </StackPanel>
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+              </DataGrid>
+
+            </ScrollViewer>
+          </StackPanel>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Sections">
+        <StackPanel Grid.Row="1">
+          <DockPanel>
+            <Button Content="Add New Section" DockPanel.Dock="Right"/>
+            <Label Content="Sections" DockPanel.Dock="Left"></Label>
+          </DockPanel>
+          <ScrollViewer>
             <DataGrid
-              ItemsSource="{Binding Fields}"
+              ItemsSource="{Binding Sections}"
               SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
               <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                
-                <DataGridTemplateColumn Header="Required">
-                  <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                      <CheckBox IsChecked="{Binding IsRequired}"></CheckBox>
-                    </DataTemplate>
-                  </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                
-                <DataGridTemplateColumn Header="Style">
-                  <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                      <ComboBox ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}">
-                        <ComboBox.ItemTemplate>
-                          <DataTemplate>
-                            <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
-                          </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                      </ComboBox>
-                    </DataTemplate>
-                  </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
+                <DataGridTextColumn Header="Section Name" Width="*" Binding="{Binding Name}"/>
+                <DataGridCheckBoxColumn Header="Required" Width="*" Binding="{Binding IsRequired}"/>
                 <DataGridTemplateColumn Header="Actions">
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                       <StackPanel Orientation="Horizontal">
-                        <Button Command="{Binding EditDefinitionCommand}"
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="Edit This Field Definition">
-                          <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
-                        </Button>
-                        <Button Command="{Binding DeleteDefinitionCommand}"
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="Delete Field Definition">
-                          <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                        <Button>
+                          <Image Source=""/>
                         </Button>
                       </StackPanel>
                     </DataTemplate>
                   </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                
               </DataGrid.Columns>
             </DataGrid>
-          </StackPanel>
-        </Border>
-        
-        <StackPanel>
-          <DockPanel>
-            <Button Content="Add New Section" DockPanel.Dock="Right"/>
-            <Label Content="Sections" DockPanel.Dock="Left"></Label>
-          </DockPanel>
-          <DataGrid
-            ItemsSource="{Binding Sections}"
-            SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Collection Name" Width="*" Binding="{Binding Name}"/>
-              <DataGridCheckBoxColumn Header="Required" Width="*" Binding="{Binding IsRequired}"/>
-              <DataGridTemplateColumn Header="Actions">
-                <DataGridTemplateColumn.CellTemplate>
-                  <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                      <Button>
-                        <Image Source=""/>
-                      </Button>
-                    </StackPanel>
-                  </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-              </DataGridTemplateColumn>
-            </DataGrid.Columns>
-          </DataGrid>
+          </ScrollViewer>
         </StackPanel>
-        
-        <StackPanel>
+      </TabItem>
+
+      <TabItem Header="Embedded Nodes">
+        <StackPanel Grid.Row="2">
           <DockPanel>
             <Button Content="Add New Embedded Node" DockPanel.Dock="Right"/>
             <Label Content="Embedded Nodes" DockPanel.Dock="Left"></Label>
           </DockPanel>
-          <DataGrid
-            ItemsSource="{Binding EmbeddedNodes}"
-            SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Node Name" Width="*" Binding="{Binding Name}"/>
-              <DataGridTextColumn Header="Node Type" Width="*" Binding="{Binding TypeName}"/>
-              <DataGridCheckBoxColumn Header="Required" Width="*" Binding="{Binding IsRequired}"/>
-              <DataGridTemplateColumn Header="Actions">
-                <DataGridTemplateColumn.CellTemplate>
-                  <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                      <Button>
-                        <Image Source=""/>
-                      </Button>
-                    </StackPanel>
-                  </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-              </DataGridTemplateColumn>
-            </DataGrid.Columns>
-          </DataGrid>
+          <ScrollViewer>
+            <DataGrid
+              IsVisible="{Binding HasEmbeddedNodes}"
+              ItemsSource="{Binding EmbeddedNodes}"
+              SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Node Name" Width="*" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Node Type" Width="*" Binding="{Binding TypeName}"/>
+                <DataGridCheckBoxColumn Header="Required" Width="*" Binding="{Binding IsRequired}"/>
+                <DataGridTemplateColumn Header="Actions">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal">
+                        <Button>
+                          <Image Source=""/>
+                        </Button>
+                      </StackPanel>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
+          </ScrollViewer>
         </StackPanel>
-      </StackPanel>
-    </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="Collections">
+        <StackPanel Grid.Row="3">
+          <DockPanel>
+            <Button Content="Add New Collection" DockPanel.Dock="Right"/>
+            <Label Content="Collections" DockPanel.Dock="Left"></Label>
+          </DockPanel>
+          <ScrollViewer>
+            <DataGrid
+              IsVisible="{Binding HasCollections}"
+              ItemsSource="{Binding Collections}"
+              SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Node Name" Width="*" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Node Type" Width="*" Binding="{Binding ContainedTypeName}"/>
+                <DataGridCheckBoxColumn Header="Required" Width="*" Binding="{Binding IsRequired}"/>
+                <DataGridTemplateColumn Header="Actions">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal">
+                        <Button>
+                          <Image Source=""/>
+                        </Button>
+                      </StackPanel>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
+          </ScrollViewer>
+        </StackPanel>
+      </TabItem>
+    </TabControl>
+
 
   </Grid>
 </UserControl>

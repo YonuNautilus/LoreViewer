@@ -18,7 +18,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<TypeDefinitionViewModel> Types => null;
     #endregion
+
     private LoreCollectionDefinition colDef { get => Definition as LoreCollectionDefinition; }
+
+    public bool IsRequired { get => colDef.required; }
 
     public string ContainedTypeName { get => colDef.entryTypeName; }
 
