@@ -30,6 +30,60 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public string Name { get => Definition.name; set => Definition.name = value; }
 
+    public string TypesTabTitle
+    {
+      get
+      {
+        if (Types == null || Types.Count == 0)
+          return $"Types";
+        else
+          return $"Types ({Types.Count})";
+      }
+    }
+    
+    public string FieldsTabTitle
+    {
+      get
+      {
+        if (Fields == null || Fields.Count == 0)
+          return $"Fields";
+        else
+          return $"Fields ({Fields.Count})";
+      }
+    }
+    
+    public string SectionsTabTitle
+    {
+      get
+      {
+        if (Sections == null || Sections.Count == 0)
+          return $"Sections";
+        else
+          return $"Sections ({Sections.Count})";
+      }
+    }
+    
+    public string EmbeddedNodesTabTitle
+    {
+      get
+      {
+        if (EmbeddedNodes == null || EmbeddedNodes.Count == 0)
+          return $"Embedded Nodes";
+        else
+          return $"Embedded Nodes ({EmbeddedNodes.Count})";
+      }
+    }
+    
+    public string CollectionsTabTitle
+    {
+      get
+      {
+        if (Collections == null || Collections.Count == 0)
+          return $"Collections";
+        else
+          return $"Collections ({Collections.Count})";
+      }
+    }
 
     public LoreDefinitionViewModel SelectedItem { get; set; }
 

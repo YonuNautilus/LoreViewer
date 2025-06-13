@@ -41,12 +41,12 @@
                       <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).EditDefinitionCommand}"
                               CommandParameter="{Binding}"
                               ToolTip.Tip="Edit This Type Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                        <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                       </Button>
                       <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}"
                               CommandParameter="{Binding}"
                               ToolTip.Tip="Delete Type Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                        <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                       </Button>
                     </StackPanel>
                   </DataTemplate>
@@ -76,12 +76,12 @@
                       <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).EditDefinitionCommand}"
                               CommandParameter="{Binding}"
                               ToolTip.Tip="Edit This Collection Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                        <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                       </Button>
                       <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}"
                               CommandParameter="{Binding}"
                               ToolTip.Tip="Delete Collection Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                        <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                       </Button>
                     </StackPanel>
                   </DataTemplate>

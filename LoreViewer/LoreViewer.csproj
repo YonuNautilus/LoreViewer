@@ -9,18 +9,10 @@
     <NeutralLanguage>en</NeutralLanguage>
     <Version>0.4.0-alpha</Version>
     <AssemblyVersion>0.4.0</AssemblyVersion>
-    <ApplicationIcon>Resources\IMCCPHR_111.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\LoreViewer.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Resources\ValidationError.ico" />
-    <None Remove="Resources\ValidationPass.ico" />
-    <None Remove="Resources\ValudationChildError.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <AvaloniaResource Include="Resources\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\IMCCPHR_111.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,18 +31,6 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageReference Include="Markdig" Version="0.41.1" />
     <PackageReference Include="SharpYaml" Version="2.1.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AvaloniaResource Update="Resources\ValidationChildError.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AvaloniaResource>
-    <AvaloniaResource Update="Resources\ValidationError.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AvaloniaResource>
-    <AvaloniaResource Update="Resources\ValidationPass.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AvaloniaResource>
   </ItemGroup>
 
   <ItemGroup>

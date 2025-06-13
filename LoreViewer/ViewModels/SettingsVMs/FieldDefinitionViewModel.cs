@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Settings;
+using SharpYaml.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,6 +26,23 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool HasSubFields { get => fieldDef.HasFields; }
     public bool NoSubFields { get => !fieldDef.HasFields; }
 
+    public bool IsDeletable => !fieldDef.IsInherited;
+
+    public bool IsInherited => fieldDef.IsInherited;
+
+    public bool CanEditStyle
+    {
+      get
+      {
+        // Done allow style changing if there are subfields
+        // If there are subfields, style should be locked at NestedFields
+        if (fieldDef.HasFields)
+          return false;
+
+        // Whether inherited or not, as long as no subfields, user can edit the style.
+        return true;
+      }
+    }
 
     public bool IsThreeState { get => fieldDef.HasRequiredNestedFields; }
 

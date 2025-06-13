@@ -67,12 +67,12 @@ namespace v0_4.PositiveTests
       Assert.That(_settings.GetTypeDefinition("CollectionItem1").sections[0].fields, Has.Count.EqualTo(1));
       Assert.That(_settings.GetTypeDefinition("CollectionItem1").sections[0].fields[0].name, Is.EqualTo("CI1 Field"));
       Assert.That(_settings.GetTypeDefinition("CollectionItem1").sections[0].fields[0].multivalue, Is.EqualTo(false));
-      Assert.That(_settings.GetTypeDefinition("CollectionItem1").fields, Is.Empty);
+      Assert.That(_settings.GetTypeDefinition("CollectionItem1").fields, Is.Null);
 
       Assert.That(_settings.GetTypeDefinition("CollectionItem2").sections[0].fields, Has.Count.EqualTo(1));
       Assert.That(_settings.GetTypeDefinition("CollectionItem2").sections[0].fields[0].name, Is.EqualTo("CI1 Field"));
       Assert.That(_settings.GetTypeDefinition("CollectionItem2").sections[0].fields[0].multivalue, Is.EqualTo(true));
-      Assert.That(_settings.GetTypeDefinition("CollectionItem2").fields, Is.Empty);
+      Assert.That(_settings.GetTypeDefinition("CollectionItem2").fields, Is.Null);
 
       Assert.That(_settings.GetTypeDefinition("CollectionItem3").sections[0].fields, Has.Count.EqualTo(1));
       Assert.That(_settings.GetTypeDefinition("CollectionItem3").sections[0].fields[0].name, Is.EqualTo("CI1 Field"));
@@ -80,7 +80,7 @@ namespace v0_4.PositiveTests
       Assert.That(_settings.GetTypeDefinition("CollectionItem3").fields, Has.Count.EqualTo(1));
       Assert.That(_settings.GetTypeDefinition("CollectionItem3").fields[0].name, Is.EqualTo("CI3 Field"));
 
-      Assert.That(_settings.GetTypeDefinition("CollectionItem4").fields, Is.Empty);
+      Assert.That(_settings.GetTypeDefinition("CollectionItem4").fields, Is.Null);
     }
 
     [Test]

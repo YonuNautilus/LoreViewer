@@ -261,13 +261,13 @@ namespace LoreViewer.ViewModels
         switch (elementState)
         {
           case EValidationState.Failed:
-            image = "avares://LoreViewer/Resources/ValidationError.png";
+            image = "avares://LoreViewer/Resources/close.png";
             break;
           case EValidationState.ChildFailed:
-            image = "avared://LoreViewer/Reources/ValidationChildError.png";
+            image = "avared://LoreViewer/Reources/warning.png";
             break;
           case EValidationState.Passed:
-            image = "avares://LoreViewer/Resources/ValidationPass.png";
+            image = "avares://LoreViewer/Resources/valid.png";
             break;
           default:
             return null;

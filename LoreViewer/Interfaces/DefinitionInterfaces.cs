@@ -60,4 +60,9 @@ namespace LoreViewer.Settings.Interfaces
     [DefaultValue(false)]
     bool required { get; set; }
   }
+
+  public interface IDeepCopyable<T>
+  {
+    T Clone();
+  }
 }

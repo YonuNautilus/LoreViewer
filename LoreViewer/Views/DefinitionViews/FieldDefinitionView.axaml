@@ -60,12 +60,12 @@
                                   IsEnabled="True"
                                   CommandParameter="{Binding}"
                                   ToolTip.Tip="Edit Field Definition">
-                            <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                            <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                           </Button>
                           <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}}"
                                   CommandParameter="{Binding}"
                                   ToolTip.Tip="Delete Field Definition">
-                            <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                            <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                           </Button>
                         </StackPanel>
                       </DataTemplate>

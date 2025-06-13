@@ -14,7 +14,7 @@
     </Grid.ColumnDefinitions>
 
     <TabControl>
-      <TabItem Header="Fields">
+      <TabItem Header="{Binding FieldsTabTitle}">
 
         <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0">
           <StackPanel>
@@ -27,7 +27,21 @@
                 ItemsSource="{Binding Fields}"
                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                 <DataGrid.Columns>
-                  <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                  <DataGridTemplateColumn Header="Name">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBox IsEnabled="{Binding IsDeletable}" Text="{Binding Name}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+
+                  <DataGridTemplateColumn Header="Inherited">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <Image Width="24" HorizontalAlignment="Center" IsVisible="{Binding IsInherited}" Source="avares://LoreViewer/Resources/link.png"/>
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
 
                   <DataGridTemplateColumn Header="Required">
                     <DataGridTemplateColumn.CellTemplate>
@@ -40,7 +54,7 @@
                   <DataGridTemplateColumn Header="Style" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
-                        <ComboBox IsEnabled="{Binding NoSubFields}" ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}">
+                        <ComboBox IsEnabled="{Binding CanEditStyle}" ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}">
                           <ComboBox.ItemTemplate>
                             <DataTemplate>
                               <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
@@ -66,12 +80,13 @@
                           <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).EditDefinitionCommand}"
                                   CommandParameter="{Binding}"
                                   ToolTip.Tip="Edit Field Definition">
-                            <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                            <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                           </Button>
-                          <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}}"
+                          <Button IsEnabled="{Binding IsDeletable}"
+                                  Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}}"
                                   CommandParameter="{Binding}"
                                   ToolTip.Tip="Delete Field Definition">
-                            <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                            <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                           </Button>
                         </StackPanel>
                       </DataTemplate>
@@ -86,7 +101,7 @@
         </Border>
       </TabItem>
 
-      <TabItem Header="Sections">
+      <TabItem Header="{Binding SectionsTabTitle}">
         <StackPanel Grid.Row="1">
           <DockPanel>
             <Button Content="Add New Section" DockPanel.Dock="Right"/>
@@ -107,12 +122,12 @@
                                   IsEnabled="True"
                                   CommandParameter="{Binding}"
                                   ToolTip.Tip="Edit Section Definition">
-                          <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                          <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                         </Button>
                         <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}}"
                                 CommandParameter="{Binding}"
                                 ToolTip.Tip="Delete Section Definition">
-                          <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                          <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                         </Button>
                       </StackPanel>
                     </DataTemplate>
@@ -124,7 +139,7 @@
         </StackPanel>
       </TabItem>
 
-      <TabItem Header="Embedded Nodes">
+      <TabItem Header="{Binding EmbeddedNodesTabTitle}">
         <StackPanel Grid.Row="2">
           <DockPanel>
             <Button Content="Add New Embedded Node" DockPanel.Dock="Right"/>
@@ -147,12 +162,12 @@
                                   IsEnabled="True"
                                   CommandParameter="{Binding}"
                                   ToolTip.Tip="Edit Embedded Node Definition">
-                          <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                          <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                         </Button>
                         <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}}"
                                 CommandParameter="{Binding}"
                                 ToolTip.Tip="Delete Embedded Node Definition">
-                          <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                          <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                         </Button>
                       </StackPanel>
                     </DataTemplate>
@@ -164,7 +179,7 @@
         </StackPanel>
       </TabItem>
 
-      <TabItem Header="Collections">
+      <TabItem Header="{Binding CollectionsTabTitle}">
         <StackPanel Grid.Row="3">
           <DockPanel>
             <Button Content="Add New Collection" DockPanel.Dock="Right"/>
@@ -187,12 +202,12 @@
                                   IsEnabled="True"
                                   CommandParameter="{Binding}"
                                   ToolTip.Tip="Edit Collection Definition">
-                          <Image Width="16" Source="avares://LoreViewer/Resources/Pencil.png" />
+                          <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                         </Button>
                         <Button Command="{Binding #DefinitionView.((vm:LoreDefinitionViewModel)DataContext).DeleteDefinitionCommand}"
                                 CommandParameter="{Binding}"
                                 ToolTip.Tip="Delete Collection Definition">
-                          <Image Width="16" Source="avares://LoreViewer/Resources/Trash.png"/>
+                          <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                         </Button>
                       </StackPanel>
                     </DataTemplate>

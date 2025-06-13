@@ -35,7 +35,8 @@ namespace LoreViewer.Settings
   public abstract class LoreDefinitionBase
   {
     [YamlIgnore]
-    public LoreDefinitionBase Parent { get; protected set; }
+    /// The definition this definition inherits from
+    public LoreDefinitionBase Base { get; protected set; }
 
     [YamlMember(-100)]
     public string name { get; set; } = string.Empty;
@@ -50,12 +51,16 @@ namespace LoreViewer.Settings
 
     [YamlIgnore]
     public bool processed = false;
+
+
+    public abstract bool IsModifiedFromBase { get; }
+
   }
 
   /// <summary>
   /// The top-level of a lore definition. Can be used to define types like character, organization, race, etc.
   /// </summary>
-  public class LoreTypeDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, ICollectionDefinitionContainer, IEmbeddedNodeDefinitionContainer
+  public class LoreTypeDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, ICollectionDefinitionContainer, IEmbeddedNodeDefinitionContainer, IDeepCopyable<LoreTypeDefinition>
   {
     #region IFieldDefinitionContainer implementation
 
@@ -106,11 +111,30 @@ namespace LoreViewer.Settings
     #endregion IEmbeddedNodeDefinitionContainer
     public bool AllowsEmbeddedType(LoreTypeDefinition typeDef) => HasTypeDefinition(typeDef) || this.IsParentOf(typeDef);
 
+    [YamlIgnore]
+    public override bool IsModifiedFromBase
+    {
+      get
+      {
+        if (Base == null)
+          return true;  // Always serialize fully-defined root fields
+
+        if (fields.Any(f => f.IsModifiedFromBase)) return true;
+
+        if (sections.Any(s => s.IsModifiedFromBase)) return true;
+
+        if (collections.Any(c => c.IsModifiedFromBase)) return true;
+
+        if (embeddedNodeDefs.Any(e => e.IsModifiedFromBase)) return true;
+
+        return false;
+      }
+    }
 
     public string extends { get; set; }
 
     [YamlIgnore]
-    public LoreTypeDefinition ParentType { get => Parent as LoreTypeDefinition; set => Parent = value; }
+    public LoreTypeDefinition ParentType { get => Base as LoreTypeDefinition; set => Base = value; }
 
     [YamlIgnore]
     public bool isExtendedType => ParentType != null;
@@ -118,7 +142,7 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     public bool HasRequiredEmbeddedNodes => HasNestedNodes ? embeddedNodeDefs.Aggregate(false, (sum, next) => sum || next.required || next.nodeType.HasRequiredEmbeddedNodes, r => r) : false;
 
-    public void SetParent(LoreTypeDefinition type)
+    public void SetBase(LoreTypeDefinition type)
     {
       ParentType = type;
 
@@ -174,12 +198,23 @@ namespace LoreViewer.Settings
           if (!colDef.processed)
             colDef.PostProcess(settings);
     }
+
+    public LoreTypeDefinition Clone()
+    {
+      LoreTypeDefinition typeDef = this.MemberwiseClone() as LoreTypeDefinition;
+      typeDef.fields = this.fields?.Select(f => f.Clone()).ToList();
+      typeDef.sections = this.sections?.Select(s => s.Clone()).ToList();
+      typeDef.collections = this.collections?.Select(c => c.Clone()).ToList();
+      typeDef.embeddedNodeDefs = this.embeddedNodeDefs?.Select(e => e.Clone()).ToList();
+
+      return typeDef;
+    }
   }
 
   /// <summary>
   /// A section of information owned by a lore object. A section can contain subsections or additional fields
   /// </summary>
-  public class LoreSectionDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, IRequirable
+  public class LoreSectionDefinition : LoreDefinitionBase, ISectionDefinitionContainer, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreSectionDefinition>
   {
 
     #region ISectionDefinitionContainer implementation
@@ -220,15 +255,46 @@ namespace LoreViewer.Settings
     /// <param name="parentSection"></param>
     public void MergeFrom(LoreSectionDefinition parentSection)
     {
-      Parent = parentSection;
+      Base = parentSection;
 
       this.freeform |= parentSection.freeform;
     }
 
+    public override bool IsModifiedFromBase
+    {
+      get
+      {
+        if (Base == null)
+          return true;  // Always serialize fully-defined root fields
+
+        if (this.freeform != (Base as LoreSectionDefinition).freeform)
+          return true;
+
+        if (this.required != (Base as LoreSectionDefinition).required)
+          return true;
+
+        if (this.HasFields)
+          if (this.fields.Any(f => f.IsModifiedFromBase)) return true;
+
+        return false;
+      }
+    }
+
+
     public override void PostProcess(LoreSettings settings) { }
+
+    public LoreSectionDefinition Clone()
+    {
+      LoreSectionDefinition typeDef = this.MemberwiseClone() as LoreSectionDefinition;
+      typeDef.fields = this.fields?.Select(f => f.Clone()).ToList();
+      typeDef.sections = this.sections?.Select(s => s.Clone()).ToList();
+      typeDef.Base = this;
+
+      return typeDef;
+    }
   }
 
-  public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable
+  public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreFieldDefinition>
   {
 
     #region IFieldDefinitionContainer implementation
@@ -255,7 +321,30 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     public bool HasRequiredNestedFields => HasFields ? fields.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedFields, r => r) : false;
 
+    [YamlIgnore]
+    public bool HasOwnFields => HasFields ? fields.All(f => !f.IsInherited) : false;
+
+    [YamlIgnore]
+    public bool IsInherited => Base != null;
+
     public override void PostProcess(LoreSettings settings) { }
+
+    public override bool IsModifiedFromBase
+    {
+      get
+      {
+        if (Base == null) return true;
+
+        if (this.required != (Base as LoreFieldDefinition).required) return true;
+
+        if (this.style != (Base as LoreFieldDefinition).style) return true;
+
+        if(this.HasFields)
+          if(this.fields.Any(f => f.IsModifiedFromBase)) return true;
+
+        return false;
+      }
+    }
 
     /// <summary>
     /// Takes base definition, adds info like nested fields from the parent and merges them into this child field definition
@@ -263,13 +352,22 @@ namespace LoreViewer.Settings
     /// <param name="parentField"></param>
     public void MergeFrom(LoreFieldDefinition parentField)
     {
-      Parent = parentField;
+      Base = parentField;
 
       this.required |= parentField.required;
     }
+
+    public LoreFieldDefinition Clone()
+    {
+      LoreFieldDefinition fieldDef = this.MemberwiseClone() as LoreFieldDefinition;
+      fieldDef.fields = this.fields?.Select(f => f.Clone()).ToList();
+      fieldDef.Base = this;
+
+      return fieldDef;
+    }
   }
 
-  public class LoreCollectionDefinition : LoreDefinitionBase, IRequirable
+  public class LoreCollectionDefinition : LoreDefinitionBase, IRequirable, IDeepCopyable<LoreCollectionDefinition>
   {
     public string entryTypeName { get; set; } = string.Empty;
 
@@ -301,13 +399,43 @@ namespace LoreViewer.Settings
       }
       else if (entryCollection != null)
         ContainedType = entryCollection;
+    }
 
+    public override bool IsModifiedFromBase
+    {
+      get
+      {
+        if(Base == null) return true;
+
+        if (this.required != (Base as LoreCollectionDefinition).required) return true;
+
+        return false;
+      }
+    }
+
+    public LoreCollectionDefinition Clone()
+    {
+      // Keep ContainedType as a reference
+      LoreCollectionDefinition colDef = this.MemberwiseClone() as LoreCollectionDefinition;
+      colDef.entryCollection = this.entryCollection?.Clone();
+      colDef.Base = this;
+
+      return colDef;
     }
   }
 
-  public class LoreEmbeddedNodeDefinition : LoreDefinitionBase, IRequirable
+  public class LoreEmbeddedNodeDefinition : LoreDefinitionBase, IRequirable, IDeepCopyable<LoreEmbeddedNodeDefinition>
   {
-    public string entryTypeName { get; set; }
+    private string m_sEntryTypeName = string.Empty;
+    public string entryTypeName
+    {
+      get
+      {
+        if (nodeType == null) return m_sEntryTypeName;
+        else return nodeType.name;
+      }
+      set => m_sEntryTypeName = value;
+    }
 
     [DefaultValue(false)]
     public bool required { get; set; }
@@ -330,6 +458,26 @@ namespace LoreViewer.Settings
       else
         nodeType = foundNodeType;
     }
+
+    public override bool IsModifiedFromBase
+    {
+      get
+      {
+        if (Base == null) return true;
+
+        if (this.required != (Base as LoreEmbeddedNodeDefinition).required) return true;
+
+        return false;
+      }
+    }
+
+    public LoreEmbeddedNodeDefinition Clone()
+    {
+      LoreEmbeddedNodeDefinition emNodeDef = this.MemberwiseClone() as LoreEmbeddedNodeDefinition;
+      emNodeDef.Base = this;
+
+      return emNodeDef;
+    }
   }
 
   public static class DefinitionMergeManager
@@ -342,7 +490,7 @@ namespace LoreViewer.Settings
 
       if (baseFields != null && childFields == null) return baseFields;
 
-      List<LoreFieldDefinition> ret = new List<LoreFieldDefinition>(baseFields);
+      List<LoreFieldDefinition> ret = baseFields.Select(fd => fd.Clone()).ToList();
 
       foreach (LoreFieldDefinition childField in childFields)
       {
