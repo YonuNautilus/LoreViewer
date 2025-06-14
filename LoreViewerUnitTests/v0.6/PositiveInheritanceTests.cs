@@ -122,13 +122,31 @@ namespace v0_6.PositiveTests
       Assert.That(colb2.IsCollectionOfCollections, Is.False);
       Assert.That(colb2.ContainedType, Is.Not.Null.And.SameAs(typea));
 
-      /*
-      Assert.That(cola.fields[0].Base, Is.Null);
-      Assert.That(colb.fields[0], Is.Not.Null.And.Not.SameAs(cola.fields[0]));
-      Assert.That(colb.fields[0].Base, Is.Not.Null.And.SameAs(cola.fields[0]));
+    }
 
-      Assert.That(colb.fields[1].Base, Is.Null);
-      */
+    [Test]
+    public void PositiveEmbeddedNodeTest()
+    {
+      LoreSettings settings = _parser.Settings;
+
+      LoreTypeDefinition typea = settings.types[0];
+      LoreTypeDefinition typeb = settings.types[1];
+
+      Assert.That(typea.embeddedNodeDefs, Is.Not.Null);
+      Assert.That(typea.embeddedNodeDefs, Has.Count.EqualTo(1));
+      Assert.That(typeb.embeddedNodeDefs, Is.Not.Null);
+      Assert.That(typeb.embeddedNodeDefs, Has.Count.EqualTo(2));
+
+      LoreEmbeddedNodeDefinition embda = typea.embeddedNodeDefs[0];
+      LoreEmbeddedNodeDefinition embdb = typeb.embeddedNodeDefs[0];
+      LoreEmbeddedNodeDefinition embdb2 = typeb.embeddedNodeDefs[1];
+
+      Assert.That(embdb.Base, Is.SameAs(embda).And.Not.Null);
+      Assert.That(embda.Base, Is.Null);
+
+      Assert.That(embda.nodeType, Is.Not.Null.And.SameAs(typeb).And.SameAs(embdb.nodeType));
+      Assert.That(embdb2.nodeType, Is.Not.Null.And.SameAs(typea));
+
     }
   }
 }
