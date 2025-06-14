@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Office2010.PowerPoint;
+﻿using Avalonia.Dialogs;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using DynamicData;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
@@ -71,7 +73,7 @@ namespace LoreViewer.Settings
     public bool HasFields => fields != null && fields.Count > 0;
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields?.FirstOrDefault(f => f.name == fieldName) ?? null;
-    
+
     public bool ShouldSerializefields() { return fields != null && fields.Any(); }
     #endregion IFieldDefinitionContainer implementation
 
@@ -131,7 +133,25 @@ namespace LoreViewer.Settings
       }
     }
 
-    public string extends { get; set; }
+    [YamlIgnore]
+    private string m_sExtends = string.Empty;
+
+    public string extends
+    {
+      get
+      {
+        if (ParentType == null)
+        {
+          if (string.IsNullOrEmpty(m_sExtends)) return null;
+          else return m_sExtends;
+        }
+        else return ParentType.name;
+      }
+      set
+      {
+        m_sExtends = value;
+      }
+    }
 
     [YamlIgnore]
     public LoreTypeDefinition ParentType { get => Base as LoreTypeDefinition; set => Base = value; }
@@ -169,7 +189,7 @@ namespace LoreViewer.Settings
        */
 
       // Check rule 1 before any postprocessing
-      if(embeddedNodeDefs != null)
+      if (embeddedNodeDefs != null)
       {
 
         IEnumerable<LoreEmbeddedNodeDefinition> dupedTitles = embeddedNodeDefs?.Where(d => d.hasTitleRequirement).GroupBy(d => d.name).Where(c => c.Count() > 1).Select(name => name.First());
@@ -307,9 +327,18 @@ namespace LoreViewer.Settings
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
     #endregion IFieldDefinitionContainer implementation
 
+    private EFieldStyle m_eStyle = EFieldStyle.SingleValue;
 
     [DefaultValue(EFieldStyle.SingleValue)]
-    public EFieldStyle style { get; set; } = EFieldStyle.SingleValue;
+    public EFieldStyle style
+    {
+      get
+      {
+        if (HasFields) m_eStyle = EFieldStyle.NestedValues;
+        return m_eStyle;
+      }
+      set => m_eStyle = value; 
+    }
 
 
     [DefaultValue(false)]
@@ -339,8 +368,8 @@ namespace LoreViewer.Settings
 
         if (this.style != (Base as LoreFieldDefinition).style) return true;
 
-        if(this.HasFields)
-          if(this.fields.Any(f => f.IsModifiedFromBase)) return true;
+        if (this.HasFields)
+          if (this.fields.Any(f => f.IsModifiedFromBase)) return true;
 
         return false;
       }
@@ -375,6 +404,8 @@ namespace LoreViewer.Settings
 
     [YamlIgnore]
     public LoreDefinitionBase ContainedType { get; set; }
+
+    [DefaultValue(false)]
     public bool SortEntries { get; set; }
 
     [DefaultValue(false)]
@@ -405,7 +436,7 @@ namespace LoreViewer.Settings
     {
       get
       {
-        if(Base == null) return true;
+        if (Base == null) return true;
 
         if (this.required != (Base as LoreCollectionDefinition).required) return true;
 
@@ -490,22 +521,35 @@ namespace LoreViewer.Settings
 
       if (baseFields != null && childFields == null) return baseFields;
 
-      List<LoreFieldDefinition> ret = baseFields.Select(fd => fd.Clone()).ToList();
+      List<LoreFieldDefinition> ret = new();
 
-      foreach (LoreFieldDefinition childField in childFields)
+      string[] _allFieldNames = baseFields.Select(f => f.name).Concat(childFields.Select(f => f.name)).Distinct().ToArray();
+
+
+      foreach (string fieldName in _allFieldNames)
       {
-        // Look for a match, if this child field has a field of the same name described in the parent list.
-        LoreFieldDefinition parentFieldIfDefined = ret.Find(f => f.name == childField.name);
 
-        if (parentFieldIfDefined != null)
+        LoreFieldDefinition resultingField = null;
+        LoreFieldDefinition childField = childFields.FirstOrDefault(f => f.name == fieldName);
+        LoreFieldDefinition baseField = baseFields.FirstOrDefault(f => f.name == fieldName);
+
+        if (childField != null && baseField != null)
         {
-          childField.fields = MergeFields(parentFieldIfDefined.fields, childField.fields);
-          childField.MergeFrom(parentFieldIfDefined);
-          ret.Replace(parentFieldIfDefined, childField);
+          resultingField = childField;
+          resultingField.MergeFrom(baseField);
+          resultingField.fields = MergeFields(baseField.fields, resultingField.fields);
         }
-        else
-          ret.Add(childField);
+        else if (childField == null && baseField != null)
+        {
+          resultingField = baseField.Clone() as LoreFieldDefinition;
+          resultingField.MergeFrom(baseField);
+        }
+        else if (childField != null && baseField == null)
+        {
+          resultingField = childField;
+        }
 
+        ret.Add(resultingField);
       }
 
       return ret;

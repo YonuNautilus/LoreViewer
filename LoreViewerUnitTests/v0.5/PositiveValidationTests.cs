@@ -2,7 +2,7 @@
 
 namespace v0_5.PositiveTests
 {
-  public class PositiveValidationTests
+  public class PositiveInheritanceTests
   {
     public static LoreSettings _settings;
     public static LoreParser _parser;

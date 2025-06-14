@@ -167,6 +167,12 @@
     <None Update="v0.5\TestData\PositiveTestData\SimpleTestFile2.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.6\TestData\PositiveTestData\NewInheritance.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.6\TestData\PositiveTestData\SettingsWithNewInheritance.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

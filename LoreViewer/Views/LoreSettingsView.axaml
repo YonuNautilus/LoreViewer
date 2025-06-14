@@ -95,24 +95,27 @@
     </UniformGrid>
 
     <ScrollViewer Grid.Column="1" Grid.Row="1" DataContext="{Binding ParserSettings}" Margin="50,0,50,0">
-      <StackPanel Spacing="20"  Orientation="Vertical">
-        <StackPanel Orientation="Horizontal" Height="30">
-          <Label VerticalAlignment="Center">Ignore Case:</Label>
-          <CheckBox IsChecked="True" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Height="30">
-          <Label VerticalAlignment="Center">Soft Linking:</Label>
-          <CheckBox IsChecked="{Binding SoftLinking}" />
-        </StackPanel>
-        <StackPanel>
+      <Grid ColumnDefinitions="*,*" RowDefinitions="30,30,30,Auto,Auto">
+        <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Ignore Case:</Label>
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IgnoreCase}" />
+
+        <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Soft Linking:</Label>
+        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding SoftLinking}" />
+
+        <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Pruning for serialization</Label>
+        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding EnablePruningForSerialization}" />
+
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
           <Label>Markdown Extensions:</Label>
           <TextBox AcceptsReturn="True" Text="{Binding MarkdownExtensions}" />
         </StackPanel>
-        <StackPanel>
+
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
           <Label>Blocked Paths:</Label>
           <TextBox AcceptsReturn="True" Text="{Binding BlockedPaths}" />
         </StackPanel>
-      </StackPanel>
+
+      </Grid>
     </ScrollViewer>
   </Grid>
 </UserControl>

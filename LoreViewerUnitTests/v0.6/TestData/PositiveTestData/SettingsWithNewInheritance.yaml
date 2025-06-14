@@ -1,0 +1,22 @@
+﻿types:
+  - name: TypeA
+    fields:
+      - name: FieldA
+      - name: RequiredOnSubType
+        required: false
+      - name: UnmodifiedField
+    sections:
+      - name: Unrequired Section
+        required: false
+  
+  - name: TypeB
+    extends: TypeA
+    fields:
+      - name: FieldA
+        fields:
+          - name: FieldB
+      - name: RequiredOnSubType
+        required: true
+    sections:
+      - name: Unrequired Section
+        required: true

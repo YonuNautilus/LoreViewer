@@ -170,6 +170,7 @@ namespace LoreViewer.Settings
     public bool ignoreCase { get; set; }
     public bool softLinking { get; set; } = false;
     public string defaultSort { get; set; } = string.Empty;
+    public bool EnableSerializationPruning { get; set; } = true;
     public List<string> markdownExtensions { get; set; } = new List<string>();
     public List<string> blockedPaths { get; set; } = new List<string>();
   }
