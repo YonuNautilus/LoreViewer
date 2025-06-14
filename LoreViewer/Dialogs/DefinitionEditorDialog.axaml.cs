@@ -19,6 +19,7 @@ public partial class DefinitionEditorDialog : Window
     Name = vm.Name;
     vm.SetView(this);
     this.Content = v;
+    this.Title = $"Definition Editor - {vm.Name}";
   }
 
   public static DefinitionEditorDialog CreateDefinitionEditorDialog(LoreDefinitionViewModel vm)
