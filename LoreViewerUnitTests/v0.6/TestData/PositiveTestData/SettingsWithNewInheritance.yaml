@@ -4,10 +4,19 @@
       - name: FieldA
       - name: RequiredOnSubType
         required: false
+        style: MultiValue
       - name: UnmodifiedField
     sections:
       - name: Unrequired Section
         required: false
+        fields:
+          - name: FieldSecA
+    embeddedNodeDefs:
+      - name: Embedded Node
+        entryTypeName: TypeB
+    collections:
+      - name: Col1
+        entryTypeName: TypeB
   
   - name: TypeB
     extends: TypeA
@@ -17,6 +26,15 @@
           - name: FieldB
       - name: RequiredOnSubType
         required: true
+        style: Textual
     sections:
       - name: Unrequired Section
         required: true
+        fields:
+          - name: FieldSecB
+    embeddedNodeDefs:
+      - name: Other Embedded Node
+        entryTypeName: TypeA
+    collections:
+      - name: Col2
+        entryTypeName: TypeA

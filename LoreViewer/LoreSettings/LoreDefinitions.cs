@@ -1,6 +1,8 @@
 ﻿using Avalonia.Dialogs;
+using Avalonia.Styling;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2010.PowerPoint;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DynamicData;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
@@ -162,17 +164,14 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     public bool HasRequiredEmbeddedNodes => HasNestedNodes ? embeddedNodeDefs.Aggregate(false, (sum, next) => sum || next.required || next.nodeType.HasRequiredEmbeddedNodes, r => r) : false;
 
-    public void SetBase(LoreTypeDefinition type)
+    public void MergeFrom(LoreTypeDefinition type)
     {
       ParentType = type;
 
-      if (ParentType.collections != null && collections != null)
-        collections = ParentType.collections.Concat(collections).ToList();
-      else if (ParentType.collections != null)
-        collections = ParentType.collections;
-
       fields = DefinitionMergeManager.MergeFields(ParentType.fields, fields);
       sections = DefinitionMergeManager.MergeSections(ParentType.sections, sections);
+      collections = DefinitionMergeManager.MergeCollections(ParentType.collections, collections);
+      embeddedNodeDefs = DefinitionMergeManager.MergeEmbeddedNodeDefs(ParentType.embeddedNodeDefs, embeddedNodeDefs);
     }
 
     public bool IsParentOf(LoreTypeDefinition subTypeDef) => subTypeDef.isExtendedType && (subTypeDef.ParentType == this || this.IsParentOf(subTypeDef.ParentType));
@@ -444,6 +443,12 @@ namespace LoreViewer.Settings
       }
     }
 
+    public void MergeFrom(LoreCollectionDefinition parentCollection)
+    {
+      Base = parentCollection;
+
+    }
+
     public LoreCollectionDefinition Clone()
     {
       // Keep ContainedType as a reference
@@ -502,6 +507,12 @@ namespace LoreViewer.Settings
       }
     }
 
+    public void MergeFrom(LoreEmbeddedNodeDefinition parentEmdedded)
+    {
+      Base = parentEmdedded;
+
+    }
+
     public LoreEmbeddedNodeDefinition Clone()
     {
       LoreEmbeddedNodeDefinition emNodeDef = this.MemberwiseClone() as LoreEmbeddedNodeDefinition;
@@ -519,7 +530,7 @@ namespace LoreViewer.Settings
 
       if (baseFields == null && childFields != null) return childFields;
 
-      if (baseFields != null && childFields == null) return baseFields;
+      if (baseFields != null && childFields == null) return baseFields = baseFields.Select(f => f.Clone()).ToList();
 
       List<LoreFieldDefinition> ret = new();
 
@@ -560,25 +571,117 @@ namespace LoreViewer.Settings
 
       if (baseSections == null && childSections != null) return childSections;
 
-      if (baseSections != null && childSections == null) return baseSections;
+      if (baseSections != null && childSections == null) return baseSections.Select(s => s.Clone() as LoreSectionDefinition).ToList();
 
-      List<LoreSectionDefinition> ret = new List<LoreSectionDefinition>(baseSections);
+      List<LoreSectionDefinition> ret = new List<LoreSectionDefinition>();
 
-      foreach (LoreSectionDefinition childSection in childSections)
+      string[] _allSectionNames = baseSections.Select(f => f.name).Concat(childSections.Select(f => f.name)).Distinct().ToArray();
+
+      foreach (string sectionName in _allSectionNames)
       {
-        // Look for a match, if this child field has a field of the same name described in the parent list.
-        LoreSectionDefinition parentSectionIfDefined = ret.Find(f => f.name == childSection.name);
 
-        if (parentSectionIfDefined != null)
+        LoreSectionDefinition resultingSection = null;
+        LoreSectionDefinition childSection = childSections.FirstOrDefault(s => s.name == sectionName);
+        LoreSectionDefinition baseSection = baseSections.FirstOrDefault(s => s.name == sectionName);
+
+        if (childSection != null && baseSection != null)
         {
-          childSection.fields = MergeFields(parentSectionIfDefined.fields, childSection.fields);
-          childSection.sections = MergeSections(parentSectionIfDefined.sections, childSection.sections);
-          childSection.MergeFrom(parentSectionIfDefined);
-          ret.Replace(parentSectionIfDefined, childSection);
+          resultingSection = childSection;
+          resultingSection.MergeFrom(baseSection);
+          resultingSection.fields = MergeFields(baseSection.fields, resultingSection.fields);
+          resultingSection.sections = MergeSections(baseSection.sections, resultingSection.sections);
         }
-        else
-          ret.Add(childSection);
+        else if (childSection == null && baseSection != null)
+        {
+          resultingSection = baseSection.Clone() as LoreSectionDefinition;
+          resultingSection.MergeFrom(baseSection);
+        }
+        else if (childSection != null && baseSection == null)
+        {
+          resultingSection = childSection;
+        }
 
+        ret.Add(resultingSection);
+      }
+
+      return ret;
+    }
+
+    internal static List<LoreCollectionDefinition>? MergeCollections(List<LoreCollectionDefinition>? baseCols, List<LoreCollectionDefinition>? childCols)
+    {
+      if (baseCols == null && childCols == null) return null;
+
+      if (baseCols == null && childCols != null) return childCols;
+
+      if (baseCols != null && childCols == null) return baseCols.Select(c => c.Clone() as LoreCollectionDefinition).ToList();
+
+      List<LoreCollectionDefinition> ret = new List<LoreCollectionDefinition>();
+
+      string[] _allCollectionNames = baseCols.Select(f => f.name).Concat(childCols.Select(f => f.name)).Distinct().ToArray();
+
+      foreach (string collectionName in _allCollectionNames)
+      {
+
+        LoreCollectionDefinition resultingCollection = null;
+        LoreCollectionDefinition childCollection = childCols.FirstOrDefault(c => c.name == collectionName);
+        LoreCollectionDefinition baseCollection = baseCols.FirstOrDefault(c => c.name == collectionName);
+
+        if (childCollection != null && baseCollection != null)
+        {
+          resultingCollection = childCollection;
+          resultingCollection.MergeFrom(baseCollection);
+        }
+        else if (childCollection == null && baseCollection != null)
+        {
+          resultingCollection = baseCollection.Clone() as LoreCollectionDefinition;
+          resultingCollection.MergeFrom(baseCollection);
+        }
+        else if (childCollection != null && baseCollection == null)
+        {
+          resultingCollection = childCollection;
+        }
+
+        ret.Add(resultingCollection);
+      }
+
+      return ret;
+    }
+
+    internal static List<LoreEmbeddedNodeDefinition> MergeEmbeddedNodeDefs(List<LoreEmbeddedNodeDefinition> baseEmbds, List<LoreEmbeddedNodeDefinition> childEmbds)
+    {
+      if (baseEmbds == null && childEmbds == null) return null;
+
+      if (baseEmbds == null && childEmbds != null) return childEmbds;
+
+      if (baseEmbds != null && childEmbds == null) return baseEmbds.Select(e => e.Clone() as LoreEmbeddedNodeDefinition).ToList();
+
+      List<LoreEmbeddedNodeDefinition> ret = new List<LoreEmbeddedNodeDefinition>();
+
+      string[] _allCollectionNames = baseEmbds.Select(f => f.name).Concat(childEmbds.Select(f => f.name)).Distinct().ToArray();
+
+      foreach (string collectionName in _allCollectionNames)
+      {
+
+        LoreEmbeddedNodeDefinition resultingCollection = null;
+        LoreEmbeddedNodeDefinition childCollection = childEmbds.FirstOrDefault(e => e.name == collectionName);
+        LoreEmbeddedNodeDefinition baseCollection = baseEmbds.FirstOrDefault(e => e.name == collectionName);
+
+        if (childCollection != null && baseCollection != null)
+        {
+          resultingCollection = childCollection;
+          resultingCollection.MergeFrom(baseCollection);
+        }
+        else if (childCollection == null && baseCollection != null)
+        {
+          resultingCollection = baseCollection.Clone() as LoreEmbeddedNodeDefinition;
+          resultingCollection.MergeFrom(baseCollection);
+        }
+        else if (childCollection != null && baseCollection == null)
+        {
+          resultingCollection = childCollection;
+        }
+
+        ret.Add(resultingCollection);
       }
 
       return ret;

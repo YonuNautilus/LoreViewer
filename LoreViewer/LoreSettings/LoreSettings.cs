@@ -108,7 +108,7 @@ namespace LoreViewer.Settings
         if (!string.IsNullOrWhiteSpace(ltd.extends))
         {
           LoreTypeDefinition parentType = GetTypeDefinition(ltd.extends);
-          ltd.SetBase(parentType);
+          ltd.MergeFrom(parentType);
         }
       }
     }
