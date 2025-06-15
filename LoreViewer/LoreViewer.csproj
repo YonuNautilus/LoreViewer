@@ -34,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\DefinitionViews\Controls\FIeldDefinitionListPanel.axaml.cs">
+      <DependentUpon>FIeldDefinitionListPanel.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\LoreEditView.axaml.cs">
       <DependentUpon>LoreEditView.axaml</DependentUpon>
     </Compile>

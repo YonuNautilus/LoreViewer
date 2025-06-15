@@ -34,7 +34,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
-        // Done allow style changing if there are subfields
+        // Don't allow style changing if there are subfields
         // If there are subfields, style should be locked at NestedFields
         if (fieldDef.HasFields)
           return false;

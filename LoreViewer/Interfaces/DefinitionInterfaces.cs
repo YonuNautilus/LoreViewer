@@ -8,7 +8,7 @@ namespace LoreViewer.Settings.Interfaces
 {
   public interface IFieldDefinitionContainer
   {
-    List<LoreFieldDefinition> fields { get; }
+    List<LoreFieldDefinition> fields { get; set; }
 
     public bool HasFields => fields != null && fields.Count > 0;
 
@@ -20,7 +20,7 @@ namespace LoreViewer.Settings.Interfaces
 
   public interface ISectionDefinitionContainer
   {
-    List<LoreSectionDefinition> sections { get; }
+    List<LoreSectionDefinition> sections { get; set; }
 
     public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
@@ -30,14 +30,14 @@ namespace LoreViewer.Settings.Interfaces
 
   public interface ICollectionDefinitionContainer
   {
-    List<LoreCollectionDefinition> collections { get; }
+    List<LoreCollectionDefinition> collections { get; set; }
     public bool HasCollectionDefinition(string collectionName) => collections.Any(col => collectionName == col.name);
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
   }
 
   public interface IEmbeddedNodeDefinitionContainer
   {
-    List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; }
+    List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; set; }
     public bool HasTypeDefinition(string typeName) => embeddedNodeDefs.Any(t => typeName == t.name);
     public bool HasTypeDefinition(LoreTypeDefinition typeDef) => embeddedNodeDefs.Any(t => t.nodeType.IsParentOf(typeDef));
 

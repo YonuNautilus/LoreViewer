@@ -7,6 +7,7 @@ using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reflection.Metadata;
@@ -20,6 +21,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public void SetView(Visual visual) => m_oView = visual;
     public ReactiveCommand<LoreDefinitionViewModel, Unit> DeleteDefinitionCommand { get; }
     public ReactiveCommand<LoreDefinitionViewModel, Unit> EditDefinitionCommand { get; }
+    public ReactiveCommand<Unit, Unit> AddFieldCommand { get; }
+    public ReactiveCommand<Unit, Unit> AddSectionCommand { get; }
+    public ReactiveCommand<Unit, Unit> AddCollectionCommand { get; }
+    public ReactiveCommand<Unit, Unit> AddEmbeddedCommand { get; }
     public LoreDefinitionBase Definition { get; }
 
     public abstract ObservableCollection<TypeDefinitionViewModel> Types { get; }
@@ -90,7 +95,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
     protected LoreDefinitionViewModel(LoreDefinitionBase definitionBase)
     {
       DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
-      EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
+      DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
+      AddFieldCommand = ReactiveCommand.Create(AddField);
+      AddSectionCommand = ReactiveCommand.Create(AddSection);
+      AddCollectionCommand = ReactiveCommand.Create(AddCollection);
+      AddEmbeddedCommand = ReactiveCommand.Create(AddEmbedded);
 
       Definition = definitionBase;
       RefreshLists();
@@ -143,6 +152,42 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       var dialog = DefinitionEditorDialog.CreateDefinitionEditorDialog(vm);
       await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
+    }
+
+    public void AddField()
+    {
+      if(Definition is IFieldDefinitionContainer fieldContainer)
+      {
+        if (fieldContainer.fields == null) fieldContainer.fields = new List<LoreFieldDefinition>();
+        fieldContainer.fields.Add(new LoreFieldDefinition());
+      }
+    }
+
+    public void AddSection()
+    {
+      if(Definition is ISectionDefinitionContainer sectionContainer)
+      {
+        if (sectionContainer.sections == null) sectionContainer.sections = new List<LoreSectionDefinition>();
+        sectionContainer.sections.Add(new LoreSectionDefinition());
+      }
+    }
+
+    public void AddCollection()
+    {
+      if(Definition is ICollectionDefinitionContainer collectionContainer)
+      {
+        if (collectionContainer.collections == null) collectionContainer.collections = new List<LoreCollectionDefinition>();
+        collectionContainer.collections.Add(new LoreCollectionDefinition());
+      }
+    }
+
+    public void AddEmbedded()
+    {
+      if(Definition is IEmbeddedNodeDefinitionContainer embeddedContainer)
+      {
+        if (embeddedContainer.embeddedNodeDefs == null) embeddedContainer.embeddedNodeDefs = new List<LoreEmbeddedNodeDefinition>();
+        embeddedContainer.embeddedNodeDefs.Add(new LoreEmbeddedNodeDefinition());
+      }
     }
   }
 }
