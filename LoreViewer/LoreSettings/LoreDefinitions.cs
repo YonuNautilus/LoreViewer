@@ -42,6 +42,7 @@ namespace LoreViewer.Settings
     /// The definition this definition inherits from
     public LoreDefinitionBase Base { get; protected set; }
 
+    [DefaultValue("")]
     [YamlMember(-100)]
     public string name { get; set; } = string.Empty;
 
@@ -68,6 +69,7 @@ namespace LoreViewer.Settings
   {
     #region IFieldDefinitionContainer implementation
 
+    [YamlMember(1)]
     // for fields like Date with Start/End
     public List<LoreFieldDefinition> fields { get; set; }
 
@@ -80,6 +82,7 @@ namespace LoreViewer.Settings
     #endregion IFieldDefinitionContainer implementation
 
     #region ISectionDefinitionContainer implementation
+    [YamlMember(2)]
     public List<LoreSectionDefinition> sections { get; set; }
     public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections?.Any(sec => sectionName.Contains(sec.name)) ?? false;
@@ -88,12 +91,14 @@ namespace LoreViewer.Settings
     #endregion ISectionDefinitionContainer implementation
 
     #region ICollectionDefinitionContainer
+    [YamlMember(3)]
     public List<LoreCollectionDefinition> collections { get; set; }
     public bool HasCollectionDefinition(string collectionName) => collections?.Any(col => col.name == collectionName) ?? false;
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections?.FirstOrDefault(c => c.name == collectionName) ?? null;
     #endregion ICollectionDefinitionContainer
 
     #region IEmbeddedNodeDefinitionContainer Implementation
+    [YamlMember(4)]
     public List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; set; }
     public bool HasTypeDefinition(string typeName) => embeddedNodeDefs.Any(t => typeName == t.name);
     public bool HasTypeDefinition(LoreTypeDefinition typeDef) => embeddedNodeDefs.Any(t => t.nodeType.IsParentOf(typeDef));
@@ -138,6 +143,7 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     private string m_sExtends = string.Empty;
 
+    [YamlMember(0)]
     public string extends
     {
       get
@@ -307,7 +313,7 @@ namespace LoreViewer.Settings
       LoreSectionDefinition typeDef = this.MemberwiseClone() as LoreSectionDefinition;
       typeDef.fields = this.fields?.Select(f => f.Clone()).ToList();
       typeDef.sections = this.sections?.Select(s => s.Clone()).ToList();
-      typeDef.Base = this;
+      //typeDef.Base = this;
 
       return typeDef;
     }
@@ -328,6 +334,7 @@ namespace LoreViewer.Settings
 
     private EFieldStyle m_eStyle = EFieldStyle.SingleValue;
 
+    [YamlMember(1)]
     [DefaultValue(EFieldStyle.SingleValue)]
     public EFieldStyle style
     {
@@ -339,7 +346,7 @@ namespace LoreViewer.Settings
       set => m_eStyle = value; 
     }
 
-
+    [YamlMember(0)]
     [DefaultValue(false)]
     public bool required { get; set; }
 
@@ -389,7 +396,7 @@ namespace LoreViewer.Settings
     {
       LoreFieldDefinition fieldDef = this.MemberwiseClone() as LoreFieldDefinition;
       fieldDef.fields = this.fields?.Select(f => f.Clone()).ToList();
-      fieldDef.Base = this;
+      //fieldDef.Base = this;
 
       return fieldDef;
     }
@@ -397,6 +404,7 @@ namespace LoreViewer.Settings
 
   public class LoreCollectionDefinition : LoreDefinitionBase, IRequirable, IDeepCopyable<LoreCollectionDefinition>
   {
+    [DefaultValue("")]
     public string entryTypeName { get; set; } = string.Empty;
 
     public LoreCollectionDefinition entryCollection { get; set; }
@@ -454,7 +462,6 @@ namespace LoreViewer.Settings
       // Keep ContainedType as a reference
       LoreCollectionDefinition colDef = this.MemberwiseClone() as LoreCollectionDefinition;
       colDef.entryCollection = this.entryCollection?.Clone();
-      colDef.Base = this;
 
       return colDef;
     }

@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using SharpYaml.Serialization;
 using System;
@@ -11,7 +12,7 @@ namespace LoreViewer.Settings
   /// <summary>
   /// Represents the Lore's schema with all references hooked up (the post-processed raw settings deserialized directly from YAML)
   /// </summary>
-  public class LoreSettings
+  public class LoreSettings : IDeepCopyable<LoreSettings>
   {
     const string LoreSettingsFileName = "Lore_Settings.yaml";
 
@@ -20,12 +21,27 @@ namespace LoreViewer.Settings
     {
       get
       {
+        LoreSettings settingsToSerialize = this;
+
         var serializer = new Serializer(
             new SerializerSettings{ EmitDefaultValues = false, IgnoreNulls = true, EmitAlias = false
             }
           );
-        return serializer.Serialize(this);
+
+        if (settings.EnableSerializationPruning)
+        {
+          settingsToSerialize = this.Clone();
+          settingsToSerialize.PostProcess();
+          settingsToSerialize.PruneForSerialization();
+        }
+
+        return serializer.Serialize(settingsToSerialize);
       }
+    }
+
+    private void PruneForSerialization()
+    {
+      LorePruner.Prune(this);
     }
 
     [YamlIgnore]
@@ -164,14 +180,42 @@ namespace LoreViewer.Settings
 
       return res;
     }
+
+    public LoreSettings Clone()
+    {
+      LoreSettings newSettings = new();
+
+      newSettings.types = this.types.Select(t => t.Clone()).ToList();  
+      newSettings.collections = this.collections.Select(c => c.Clone()).ToList();
+
+      newSettings.settings = this.settings.Clone();
+
+      return newSettings;
+    }
   }
-  public class AppSettings
+  public class AppSettings : IDeepCopyable<AppSettings>
   {
+    [YamlMember(0)]
     public bool ignoreCase { get; set; }
+    [YamlMember(1)]
     public bool softLinking { get; set; } = false;
+    [YamlMember(2)]
     public string defaultSort { get; set; } = string.Empty;
+    [YamlMember(3)]
     public bool EnableSerializationPruning { get; set; } = true;
+    [YamlMember(4)]
     public List<string> markdownExtensions { get; set; } = new List<string>();
+    [YamlMember(5)]
     public List<string> blockedPaths { get; set; } = new List<string>();
+
+    public AppSettings Clone()
+    {
+      AppSettings newSettings = MemberwiseClone() as AppSettings;
+
+      newSettings.markdownExtensions = markdownExtensions.Select(t => t).ToList();
+      newSettings.blockedPaths = blockedPaths.Select(t => t).ToList();
+
+      return newSettings;
+    }
   }
 }

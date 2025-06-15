@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using DocumentFormat.OpenXml.InkML;
 using LoreViewer.Dialogs;
 using LoreViewer.Settings;
+using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -29,8 +31,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public string LoreLibraryFolderPath { get => m_oLoreSettings.FolderPath; }
 
     private ObservableCollection<TypeDefinitionViewModel> m_cTypes = new ObservableCollection<TypeDefinitionViewModel>();
+    private ObservableCollection<CollectionDefinitionViewModel> m_cCollections = new ObservableCollection<CollectionDefinitionViewModel>();
 
     public ObservableCollection<TypeDefinitionViewModel> TypeDefs { get => m_cTypes; }
+    public ObservableCollection<CollectionDefinitionViewModel> ColDefs { get => m_cCollections; }
     
     private void RefreshTypeDefs()
     {
@@ -39,7 +43,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
         m_cTypes.Add(new TypeDefinitionViewModel(def));
     }
 
-    public ObservableCollection<CollectionDefinitionViewModel> ColDefs { get; } = new ObservableCollection<CollectionDefinitionViewModel>();
 
     private void RefreshColDefs()
     {
@@ -89,7 +92,18 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public void DeleteDefinition(LoreDefinitionViewModel vm)
     {
-      Trace.WriteLine($"DELETING DEFINITION {vm.Definition.name} OF TYPE {vm.Definition.GetType().Name}");
+      switch (vm)
+      {
+        case TypeDefinitionViewModel typeDefVM:
+          m_oLoreSettings.types.Remove(typeDefVM.Definition as LoreTypeDefinition);
+          TypeDefs.Remove(typeDefVM);
+          break;
+        case CollectionDefinitionViewModel collectionDefVM:
+          m_oLoreSettings.collections.Remove(collectionDefVM.Definition as LoreCollectionDefinition);
+          ColDefs.Remove(collectionDefVM);
+          break;
+        default: return;
+      }
     }
   }
 
