@@ -57,6 +57,8 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     public bool processed = false;
 
+    [YamlIgnore]
+    public bool IsInherited => Base != null;
 
     public abstract bool IsModifiedFromBase { get; }
 
@@ -359,8 +361,6 @@ namespace LoreViewer.Settings
     [YamlIgnore]
     public bool HasOwnFields => HasFields ? fields.All(f => !f.IsInherited) : false;
 
-    [YamlIgnore]
-    public bool IsInherited => Base != null;
 
     public override void PostProcess(LoreSettings settings) { }
 

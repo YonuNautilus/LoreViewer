@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:local="using:LoreViewer.Views.DefinitionViews"
+             xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
+             x:DataType="vm:LoreDefinitionViewModel"
+             x:Class="LoreViewer.DefinitionEditView">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="{Binding UsesAny, Converter={StaticResource BoolToGridLengthConverter}}"/>
+      <ColumnDefinition Width="2*"/>
+    </Grid.ColumnDefinitions>
+
+    <TabControl>
+      <TabItem Header="{Binding FieldsTabTitle}"
+               IsVisible="{Binding UsesFields}">
+
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0">
+          <local:FieldDefinitionListPanel ItemsSource="{Binding Fields}"
+                                          AddFieldCommand="{Binding AddFieldCommand}"
+                                          DeleteFieldCommand="{Binding DeleteDefinitionCommand}"
+                                          EditFieldCommand="{Binding EditDefinitionCommand}" />
+        </Border>
+      </TabItem>
+
+      <TabItem Header="{Binding SectionsTabTitle}"
+               IsVisible="{Binding UsesSections}">
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0">
+          <local:SectionDefinitionListPanel ItemsSource="{Binding Sections}"
+                                            AddSectionCommand="{Binding AddSectionCommand}"
+                                            DeleteSectionCommand="{Binding DeleteDefinitionCommand}"
+                                            EditSectionCommand="{Binding EditDefinitionCommand}" />
+        </Border>
+      </TabItem>
+
+      <TabItem Header="{Binding EmbeddedNodesTabTitle}"
+               IsVisible="{Binding UsesEmbeddedNodes}">
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0">
+          <local:CollectionDefinitionListPanel ItemsSource="{Binding EmbeddedNodes}"
+                                               AddCollectionCommand="{Binding AddEmbeddedCommand}"
+                                               DeleteCollectionCommand="{Binding DeleteDefinitionCommand}"
+                                               EditCollectionCommand="{Binding EditDefinitionCommand}" />
+        </Border>
+      </TabItem>
+
+      <TabItem Header="{Binding CollectionsTabTitle}"
+               IsVisible="{Binding UsesCollections}">
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0">
+          <local:CollectionDefinitionListPanel ItemsSource="{Binding Collections}"
+                                                      AddCollectionCommand="{Binding AddCollectionCommand}"
+                                                      DeleteCollectionCommand="{Binding DeleteDefinitionCommand}"
+                                                      EditCollectionCommand="{Binding EditDefinitionCommand}" />
+        </Border>
+      </TabItem>
+    </TabControl>
+  </Grid>
+
+</UserControl>

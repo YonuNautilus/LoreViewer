@@ -1,16 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
-using DocumentFormat.OpenXml.Wordprocessing;
 using LoreViewer.Dialogs;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
@@ -27,6 +24,45 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public ReactiveCommand<Unit, Unit> AddEmbeddedCommand { get; }
     public LoreDefinitionBase Definition { get; }
 
+    public bool IsDeletable
+    {
+      get
+      {
+        if(Definition != null) return !Definition.IsInherited;
+        else return true;
+      }
+    }
+
+    public bool IsInherited
+    {
+      get
+      {
+        if (Definition != null) return Definition.IsInherited;
+        else return false;
+      }
+    }
+
+    public bool IsModifiedFromBase
+    {
+      get
+      {
+        if (Definition != null) return Definition.IsModifiedFromBase;
+        else return false;
+      }
+    }
+
+    public string InheritanceModifiedTooltip
+    {
+      get
+      {
+        if (IsInherited && IsModifiedFromBase)
+          return $"Modified from parent definition";
+        else if (IsInherited && !IsModifiedFromBase)
+          return $"NOT modified from parent definition";
+        else return "";
+      }
+    }
+
     public abstract ObservableCollection<TypeDefinitionViewModel> Types { get; }
     public abstract ObservableCollection<FieldDefinitionViewModel> Fields { get; }
     public abstract ObservableCollection<SectionDefinitionViewModel> Sections { get; }
@@ -35,6 +71,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public string Name { get => Definition.name; set => Definition.name = value; }
 
+    public virtual bool UsesAny { get { return true; } }
+
+    public abstract bool UsesTypes { get; }
     public string TypesTabTitle
     {
       get
@@ -45,7 +84,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
           return $"Types ({Types.Count})";
       }
     }
-    
+
+    public abstract bool UsesFields { get; }
+
     public string FieldsTabTitle
     {
       get
@@ -56,8 +97,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
           return $"Fields ({Fields.Count})";
       }
     }
-    
-    public string SectionsTabTitle
+
+    public abstract bool UsesSections { get; }
+
+    public  string SectionsTabTitle
     {
       get
       {
@@ -67,7 +110,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
           return $"Sections ({Sections.Count})";
       }
     }
-    
+
+    public abstract bool UsesEmbeddedNodes { get; }
     public string EmbeddedNodesTabTitle
     {
       get
@@ -79,6 +123,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
     
+    public abstract bool UsesCollections { get; }
+
     public string CollectionsTabTitle
     {
       get
@@ -95,7 +141,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     protected LoreDefinitionViewModel(LoreDefinitionBase definitionBase)
     {
       DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
-      DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
+      EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
       AddFieldCommand = ReactiveCommand.Create(AddField);
       AddSectionCommand = ReactiveCommand.Create(AddSection);
       AddCollectionCommand = ReactiveCommand.Create(AddCollection);
@@ -104,6 +150,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       Definition = definitionBase;
       RefreshLists();
     }
+
     public abstract void RefreshLists();
 
     public void DeleteDefinition(LoreDefinitionViewModel viewModel)

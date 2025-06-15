@@ -1,9 +1,6 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using LoreViewer.Views.DefinitionViews;
 using LoreViewer.ViewModels.SettingsVMs;
-using System.Runtime.CompilerServices;
+using System;
 
 namespace LoreViewer.Dialogs;
 
@@ -14,7 +11,7 @@ public partial class DefinitionEditorDialog : Window
     InitializeComponent();
   }
 
-  public DefinitionEditorDialog(DefinitionView v, LoreDefinitionViewModel vm)
+  public DefinitionEditorDialog(DefinitionEditView v, LoreDefinitionViewModel vm)
   {
     Name = vm.Name;
     vm.SetView(this);
@@ -27,21 +24,17 @@ public partial class DefinitionEditorDialog : Window
     switch (vm)
     {
       case TypeDefinitionViewModel typeVM:
-        return new DefinitionEditorDialog(new TypeDefinitionView(typeVM), typeVM);
-        break;
+        return new DefinitionEditorDialog(new DefinitionEditView(typeVM), typeVM);
       case FieldDefinitionViewModel fieldVM:
-        return new(new FieldDefinitionView(fieldVM), fieldVM);
-        break;
+        return new(new DefinitionEditView(fieldVM), fieldVM);
       case SectionDefinitionViewModel sectionVM:
-        return new(new SectionDefinitionView(sectionVM), sectionVM);
-        break;
+        return new(new DefinitionEditView(sectionVM), sectionVM);
       case EmbeddedNodeDefinitionViewModel embeddedNodeVM:
-        return new(new EmbeddedNodeDefinitionView(embeddedNodeVM), embeddedNodeVM);
-        break;
+        return new(new DefinitionEditView(embeddedNodeVM), embeddedNodeVM);
       case CollectionDefinitionViewModel collectionVM:
-        return new(new CollectionDefinitionView(collectionVM), collectionVM);
-        break;
-      default: return null;
+        return new(new DefinitionEditView(collectionVM), collectionVM);
+      default:
+        throw new Exception($"Unkown Type {vm.GetType().Name} when attempting to create defintition edtior panel");
     }
   }
 }

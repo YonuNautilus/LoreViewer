@@ -16,6 +16,12 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<CollectionDefinitionViewModel> Collections => null;
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
+
+    public override bool UsesTypes { get { return false; } }
+    public override bool UsesFields { get { return true; } }
+    public override bool UsesSections { get { return false; } }
+    public override bool UsesCollections { get { return false; } }
+    public override bool UsesEmbeddedNodes { get { return false; } }
     #endregion
 
     public static List<EFieldStyle> FieldStyles { get => Enum.GetValues(typeof(EFieldStyle)).Cast<EFieldStyle>().ToList(); }
@@ -25,10 +31,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public bool HasSubFields { get => fieldDef.HasFields; }
     public bool NoSubFields { get => !fieldDef.HasFields; }
-
-    public bool IsDeletable => !fieldDef.IsInherited;
-
-    public bool IsInherited => fieldDef.IsInherited;
 
     public bool CanEditStyle
     {
@@ -41,23 +43,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
         // Whether inherited or not, as long as no subfields, user can edit the style.
         return true;
-      }
-    }
-
-    public bool IsThreeState { get => fieldDef.HasRequiredNestedFields; }
-
-    public bool? RequiredState
-    {
-      get
-      {
-        if (fieldDef.required) return true;
-        else if (fieldDef.HasRequiredNestedFields && !fieldDef.required) return null;
-        else return false;
-      }
-      set
-      {
-        // It seems that clicking on a check while it is in the third state will try to set the bool to null.
-        fieldDef.required = (value != null);
       }
     }
 

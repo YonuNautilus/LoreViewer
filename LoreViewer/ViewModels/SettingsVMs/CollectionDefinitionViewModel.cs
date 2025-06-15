@@ -1,11 +1,5 @@
-﻿using DynamicData.Alias;
-using LoreViewer.Settings;
-using System;
-using System.Collections.Generic;
+﻿using LoreViewer.Settings;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -17,6 +11,13 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<TypeDefinitionViewModel> Types => null;
+
+    public override bool UsesAny { get { return false; } }
+    public override bool UsesTypes { get { return false; } }
+    public override bool UsesFields { get { return false; } }
+    public override bool UsesSections { get { return false; } }
+    public override bool UsesCollections { get { return false; } }
+    public override bool UsesEmbeddedNodes { get { return false; } }
     #endregion
 
     private LoreCollectionDefinition colDef { get => Definition as LoreCollectionDefinition; }

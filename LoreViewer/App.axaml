@@ -17,10 +17,11 @@
   </Application.Styles>
 
   <Application.Resources>
-    <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"></vm:ValidationErrorToImagePathConverter>
-    <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter"></vm:LoreEntityToErrorListConverter>
+    <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"/>
+    <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter" />
     
-    <conv:EnumDescriptionConverter x:Key="EnumConverter"></conv:EnumDescriptionConverter>
+    <conv:EnumDescriptionConverter x:Key="EnumConverter" />
+    <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
 
     
     
