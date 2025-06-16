@@ -1,28 +1,19 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using DocumentFormat.OpenXml.InkML;
+﻿using Avalonia.Controls;
 using LoreViewer.Dialogs;
 using LoreViewer.Settings;
-using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
-  public class LoreSettingsViewModel : ViewModelBase
+  public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   {
-    private Visual m_oView;
 
     public string OriginalYAML { get; }
     public string NewYAML { get => m_oLoreSettings.CurrentYAML; }
-    public void SetView(Visual visual) => m_oView = visual;
-    public ReactiveCommand<LoreDefinitionViewModel, Unit> DeleteDefinitionCommand { get; }
-    public ReactiveCommand<LoreDefinitionViewModel, Unit> EditDefinitionCommand { get; }
 
     private LoreSettings m_oLoreSettings;
 
@@ -52,7 +43,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
     }
 
     public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.settings); }
-
+    public override ObservableCollection<TypeDefinitionViewModel> Types { get => m_cTypes; }
+    public override ObservableCollection<FieldDefinitionViewModel> Fields => null;
+    public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
+    public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
+    public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
 
     public LoreSettingsViewModel(LoreSettings _settings)
     {
@@ -61,6 +56,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
       m_oLoreSettings = _settings;
       RefreshColDefs();
       RefreshTypeDefs();
+
+      CurrentSettings = _settings;
 
       OriginalYAML = _settings.OriginalYAML;
     }
@@ -90,20 +87,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public void DeleteDefinition(LoreDefinitionViewModel vm)
+    public override void RefreshLists()
     {
-      switch (vm)
-      {
-        case TypeDefinitionViewModel typeDefVM:
-          m_oLoreSettings.types.Remove(typeDefVM.Definition as LoreTypeDefinition);
-          TypeDefs.Remove(typeDefVM);
-          break;
-        case CollectionDefinitionViewModel collectionDefVM:
-          m_oLoreSettings.collections.Remove(collectionDefVM.Definition as LoreCollectionDefinition);
-          ColDefs.Remove(collectionDefVM);
-          break;
-        default: return;
-      }
+      RefreshTypeDefs();
+      RefreshColDefs();
     }
   }
 

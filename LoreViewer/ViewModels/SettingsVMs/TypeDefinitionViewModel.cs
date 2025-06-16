@@ -1,7 +1,6 @@
 ﻿using LoreViewer.Settings;
 using System;
 using System.Collections.ObjectModel;
-using System.Reflection.Metadata.Ecma335;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {

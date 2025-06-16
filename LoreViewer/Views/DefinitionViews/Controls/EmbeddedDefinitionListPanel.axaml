@@ -9,15 +9,15 @@
              x:Class="LoreViewer.Views.DefinitionViews.EmbeddedDefinitionListPanel">
   <StackPanel>
     <DockPanel>
-      <Button Content="Add New Collect" DockPanel.Dock="Right"/>
-      <Label Content="Collections" DockPanel.Dock="Left"></Label>
+      <Button Content="Add New Embedded Node" DockPanel.Dock="Right" Command="{Binding AddEmbeddedCommand}"/>
+      <Label Content="Embedded Nodes" DockPanel.Dock="Left"></Label>
     </DockPanel>
     <ScrollViewer>
       <DataGrid
-        ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=local:CollectionDefinitionListPanel}}"
+        ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=local:EmbeddedDefinitionListPanel}}"
         SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
         <DataGrid.Columns>
-          <DataGridTextColumn Header="Section Name" Width="*" Binding="{Binding Name}"/>
+          <DataGridTextColumn Header="Embedded Node Name" Width="*" Binding="{Binding Name}"/>
 
           <DataGridTemplateColumn Header="Inherited">
             <DataGridTemplateColumn.CellTemplate>
@@ -26,6 +26,20 @@
                   <Image HorizontalAlignment="Center" Source="avares://LoreViewer/Resources/link.png"/>
                   <Image IsVisible="{Binding IsModifiedFromBase}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="12" Source="avares://LoreViewer/Resources/pencil.png" />
                 </Panel>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTemplateColumn Header="Node Type">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <ComboBox ItemsSource="{Binding TypeNamesList}" SelectedItem="{Binding TypeName}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>

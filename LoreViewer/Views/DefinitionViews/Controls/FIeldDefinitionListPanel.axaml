@@ -9,7 +9,7 @@
              x:Class="LoreViewer.Views.DefinitionViews.FieldDefinitionListPanel">
   <StackPanel>
     <DockPanel>
-      <Button Content="Add New Field" DockPanel.Dock="Right"/>
+      <Button Content="Add New Field" DockPanel.Dock="Right" Command="{Binding AddFieldCommand}"/>
       <Label Content="Fields" DockPanel.Dock="Left"></Label>
     </DockPanel>
     <ScrollViewer>

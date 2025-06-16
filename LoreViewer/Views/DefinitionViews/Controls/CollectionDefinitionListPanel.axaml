@@ -9,7 +9,7 @@
              x:Class="LoreViewer.Views.DefinitionViews.CollectionDefinitionListPanel">
   <StackPanel>
     <DockPanel>
-      <Button Content="Add New Collect" DockPanel.Dock="Right"/>
+      <Button Content="Add New Collect" DockPanel.Dock="Right" Command="{Binding AddCollectionCommand}"/>
       <Label Content="Collections" DockPanel.Dock="Left"></Label>
     </DockPanel>
     <ScrollViewer>
@@ -29,6 +29,17 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
+
+          <DataGridTemplateColumn Header="Collection of Collections">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <CheckBox IsChecked="{Binding IsCollectionOfCollections}" IsEnabled="False" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTextColumn Header="Contained Type" Binding="{Binding ContainedTypeName}">
+          </DataGridTextColumn>
 
           <DataGridTemplateColumn Header="Required">
             <DataGridTemplateColumn.CellTemplate>

@@ -22,6 +22,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     private LoreCollectionDefinition colDef { get => Definition as LoreCollectionDefinition; }
 
+    public bool IsCollectionOfCollections { get => colDef.IsCollectionOfCollections; }
+    public bool IsCollectionOfNodes { get => !colDef.IsCollectionOfCollections; }
+
     public bool IsRequired { get => colDef.required; }
 
     public string ContainedTypeName { get => colDef.entryTypeName; }

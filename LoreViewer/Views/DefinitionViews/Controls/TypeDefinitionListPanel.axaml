@@ -6,11 +6,11 @@
              xmlns:local="using:LoreViewer.Views.DefinitionViews"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
              x:DataType="vm:LoreDefinitionViewModel"
-             x:Class="LoreViewer.Views.DefinitionViews.SectionDefinitionListPanel">
+             x:Class="LoreViewer.Views.DefinitionViews.TypeDefinitionListPanel">
   <StackPanel>
     <DockPanel>
-      <Button Content="Add New Section" DockPanel.Dock="Right" Command="{Binding AddSectionCommand}"/>
-      <Label Content="Sections" DockPanel.Dock="Left"></Label>
+      <Button Content="Add New Type" DockPanel.Dock="Right" Command="{Binding AddTypeCommand}"/>
+      <Label Content="Types" DockPanel.Dock="Left"></Label>
     </DockPanel>
     <ScrollViewer>
       <DataGrid
@@ -53,7 +53,7 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          
+
           <DataGridTemplateColumn Header="Actions">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>

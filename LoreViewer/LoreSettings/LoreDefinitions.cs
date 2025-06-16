@@ -1,6 +1,7 @@
 ﻿using Avalonia.Dialogs;
 using Avalonia.Styling;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office.PowerPoint.Y2021.M06.Main;
 using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DynamicData;
@@ -465,6 +466,14 @@ namespace LoreViewer.Settings
 
       return colDef;
     }
+
+    public LoreCollectionDefinition CloneFromParent()
+    {
+      LoreCollectionDefinition colDef = this.MemberwiseClone() as LoreCollectionDefinition;
+      colDef.entryCollection = this.entryCollection?.Clone();
+      colDef.Base = this;
+      return colDef;
+    }
   }
 
   public class LoreEmbeddedNodeDefinition : LoreDefinitionBase, IRequirable, IDeepCopyable<LoreEmbeddedNodeDefinition>
@@ -620,7 +629,7 @@ namespace LoreViewer.Settings
 
       if (baseCols == null && childCols != null) return childCols;
 
-      if (baseCols != null && childCols == null) return baseCols.Select(c => c.Clone() as LoreCollectionDefinition).ToList();
+      if (baseCols != null && childCols == null) return baseCols.Select(c => c.CloneFromParent() as LoreCollectionDefinition).ToList();
 
       List<LoreCollectionDefinition> ret = new List<LoreCollectionDefinition>();
 

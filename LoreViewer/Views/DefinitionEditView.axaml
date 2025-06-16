@@ -13,7 +13,7 @@
       <ColumnDefinition Width="2*"/>
     </Grid.ColumnDefinitions>
 
-    <TabControl>
+    <TabControl Grid.Column="0">
       <TabItem Header="{Binding FieldsTabTitle}"
                IsVisible="{Binding UsesFields}">
 
@@ -38,10 +38,10 @@
       <TabItem Header="{Binding EmbeddedNodesTabTitle}"
                IsVisible="{Binding UsesEmbeddedNodes}">
         <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0">
-          <local:CollectionDefinitionListPanel ItemsSource="{Binding EmbeddedNodes}"
-                                               AddCollectionCommand="{Binding AddEmbeddedCommand}"
-                                               DeleteCollectionCommand="{Binding DeleteDefinitionCommand}"
-                                               EditCollectionCommand="{Binding EditDefinitionCommand}" />
+          <local:EmbeddedDefinitionListPanel ItemsSource="{Binding EmbeddedNodes}"
+                                             AddEmbeddedCommand="{Binding AddEmbeddedCommand}"
+                                             DeleteEmbeddedCommand="{Binding DeleteDefinitionCommand}"
+                                             EditEmbeddedCommand="{Binding EditDefinitionCommand}" />
         </Border>
       </TabItem>
 
@@ -49,12 +49,35 @@
                IsVisible="{Binding UsesCollections}">
         <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0">
           <local:CollectionDefinitionListPanel ItemsSource="{Binding Collections}"
-                                                      AddCollectionCommand="{Binding AddCollectionCommand}"
-                                                      DeleteCollectionCommand="{Binding DeleteDefinitionCommand}"
-                                                      EditCollectionCommand="{Binding EditDefinitionCommand}" />
+                                               AddCollectionCommand="{Binding AddCollectionCommand}"
+                                               DeleteCollectionCommand="{Binding DeleteDefinitionCommand}"
+                                               EditCollectionCommand="{Binding EditDefinitionCommand}" />
         </Border>
       </TabItem>
     </TabControl>
+
+
+
+    <ContentControl Grid.Column="1">
+      <ContentControl.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:TypeDefinitionViewModel}">
+          <local:TypeDefinitionViewPanel />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FieldDefinitionViewModel}">
+          <local:FieldDefinitionViewPanel />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SectionDefinitionViewModel}">
+          <local:SectionDefinitionViewPanel />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CollectionDefinitionViewModel}">
+          <local:CollectionDefinitionViewPanel />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EmbeddedNodeDefinitionViewModel}">
+          <local:EmbeddedDefinitionViewPanel />
+        </DataTemplate>
+      </ContentControl.DataTemplates>
+    </ContentControl>
+    
   </Grid>
 
 </UserControl>

@@ -1,11 +1,8 @@
-﻿using DocumentFormat.OpenXml.Presentation;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using LoreViewer.Settings;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -27,9 +24,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
     #endregion
 
     private LoreEmbeddedNodeDefinition emdDef => Definition as LoreEmbeddedNodeDefinition;
-    public string TypeName { get => emdDef.entryTypeName; }
+    public string TypeName { get => emdDef?.entryTypeName; set => ApplyNewType(value); }
 
     public bool IsRequired { get => emdDef.required; set => emdDef.required = value; }
+
+    public List<string> TypeNamesList { get => CurrentSettings.types.Select(n => n.name).ToList(); }
 
     public TypeDefinitionViewModel Type { get; set; }
     public EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase) { Type = new TypeDefinitionViewModel(emdDef.nodeType); }
@@ -37,6 +36,16 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override void RefreshLists()
     {
 
+    }
+
+    public void ApplyNewType(string typeName)
+    {
+      LoreTypeDefinition newType = CurrentSettings.GetTypeDefinition(typeName);
+      if (newType != null)
+      {
+        emdDef.nodeType = newType;
+        Type = new TypeDefinitionViewModel(newType);
+      }
     }
   }
 }
