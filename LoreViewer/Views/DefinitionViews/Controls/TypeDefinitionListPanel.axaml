@@ -36,7 +36,7 @@
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
 
-          <DataGridTemplateColumn Header="Inherited">
+          <DataGridTemplateColumn Header="Parent Type" Width="150">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <ComboBox ItemsSource="{Binding AllTypesExceptMine}" SelectedItem="{Binding Definition}">

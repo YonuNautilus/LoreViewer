@@ -1,11 +1,8 @@
-﻿using Avalonia.Controls;
-using LoreViewer.Dialogs;
-using LoreViewer.Settings;
+﻿using LoreViewer.Settings;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -54,6 +51,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
       EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
       AddTypeCommand = ReactiveCommand.Create(AddType);
+      AddCollectionCommand = ReactiveCommand.Create(AddCollection);
       m_oLoreSettings = _settings;
       RefreshColDefs();
       RefreshTypeDefs();
@@ -79,6 +77,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
+    public void RefreshYaml()
+    {
+      this.RaisePropertyChanged("NewYAML");
+    }
+
     public override void RefreshLists()
     {
       RefreshTypeDefs();
@@ -89,12 +92,14 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       CurrentSettings.types.Add(new LoreTypeDefinition() { name = "New Type" });
       RefreshTypeDefs();
+      RefreshYaml();
     }
 
     public new void AddCollection()
     {
       CurrentSettings.collections.Add(new LoreCollectionDefinition() { name = "New Collection" });
       RefreshColDefs();
+      RefreshYaml();
     }
   }
 

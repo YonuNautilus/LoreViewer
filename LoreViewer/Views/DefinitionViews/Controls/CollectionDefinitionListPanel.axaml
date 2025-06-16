@@ -9,7 +9,7 @@
              x:Class="LoreViewer.Views.DefinitionViews.CollectionDefinitionListPanel">
   <StackPanel>
     <DockPanel>
-      <Button Content="Add New Collect" DockPanel.Dock="Right" Command="{Binding AddCollectionCommand}"/>
+      <Button Content="Add New Collection" DockPanel.Dock="Right" Command="{Binding AddCollectionCommand}"/>
       <Label Content="Collections" DockPanel.Dock="Left"></Label>
     </DockPanel>
     <ScrollViewer>

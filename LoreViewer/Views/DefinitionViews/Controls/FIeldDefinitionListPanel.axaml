@@ -17,7 +17,7 @@
         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=local:FieldDefinitionListPanel}}"
         SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
         <DataGrid.Columns>
-          <DataGridTemplateColumn Header="Name">
+          <DataGridTemplateColumn Header="Field Name" Width="*">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <TextBox IsEnabled="{Binding IsDeletable}" Text="{Binding Name}" />
