@@ -2,7 +2,67 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="370" d:DesignHeight="450"
+             xmlns:local="using:LoreViewer.Views.DefinitionViews"
+             xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
+             x:DataType="vm:CollectionDefinitionViewModel"
              x:Class="LoreViewer.Views.DefinitionViews.CollectionDefinitionViewPanel">
-  Welcome to Avalonia!
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+    </Grid.RowDefinitions>
+
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="130"/>
+      <ColumnDefinition Width="240"/>
+    </Grid.ColumnDefinitions>
+
+    <Label Grid.Row="0" Grid.Column="0" Content="Collection Title"/>
+    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
+
+    <Label Grid.Row="1" Grid.Column="0" Content="Content Type"/>
+    
+    <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
+      <ToggleSwitch OnContent="Contains Nodes"  OffContent="Contains Collections" IsChecked="{Binding UsesTypesOrNull}"></ToggleSwitch>
+    </Panel>
+
+    <Label Grid.Row="2" Grid.Column="0" Content="Contained Type" />
+    <ComboBox IsEnabled="{Binding IsCollectionOfNodes}" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AllTypes}" SelectedItem="{Binding ContainedType}" >
+      <ComboBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding}" />
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
+    
+    <Label Grid.Row="3" Grid.Column="0" Content="Contained Collection" />
+    <DockPanel IsEnabled="{Binding IsCollectionOfCollections}" Grid.Row="3" Grid.Column="1">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+        <Button ToolTip.Tip="Use New Collection Definition"
+                Command="{Binding AddCollectionCommand}">
+          +
+        </Button>
+        <Button ToolTip.Tip="Edit Collection Definition"
+                Command="{Binding EditDefinitionCommand}"
+                CommandParameter="{Binding EntryCollectionVM}">
+          <Image Source="avares://LoreViewer/Resources/pencil.png" />
+        </Button>
+      </StackPanel>
+      <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllCollections}" SelectedItem="{Binding ContainedType}" >
+        <ComboBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding}" />
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
+    </DockPanel>
+
+    <Label Grid.Row="4" Grid.Column="0" Content="Required" />
+    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsRequired}" />
+
+  </Grid>
 </UserControl>

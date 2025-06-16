@@ -15,7 +15,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public string ExtendsTypeName { get => typeDef.extends; }
 
-    public List<LoreTypeDefinition> AllTypes { get => CurrentSettings.types; }
     // Returns all types from settings EXCEPT for the current viewmodel's definition and any subtypes
     public List<LoreTypeDefinition> AllTypesExceptMine { get => CurrentSettings.types.Except(CurrentSettings.types.Where(def => (Definition as LoreTypeDefinition).IsParentOf(def))).ToList(); }
 

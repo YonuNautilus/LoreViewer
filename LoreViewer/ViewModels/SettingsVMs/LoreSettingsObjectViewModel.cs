@@ -21,6 +21,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public ReactiveCommand<Unit, Unit> AddEmbeddedCommand { get; set; }
     public LoreDefinitionBase Definition { get; set; }
 
+
+    public List<LoreTypeDefinition> AllTypes { get => CurrentSettings.types; }
+
     public LoreDefinitionViewModel SelectedItem { get; set; }
 
     public static LoreSettings CurrentSettings { get; set; }
@@ -142,6 +145,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
         collectionContainer.collections.Add(new LoreCollectionDefinition());
         CurrentSettings.PostProcess();
         RefreshLists();
+      }
+      else if(this is CollectionDefinitionViewModel colVM)
+      {
+        colVM.UseNewCollectionDefinition(new LoreCollectionDefinition() { name = "Unknown Collection" });
       }
     }
 

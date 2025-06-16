@@ -3,6 +3,30 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:local="using:LoreViewer.Views.DefinitionViews"
+             xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
+             x:DataType="vm:SectionDefinitionViewModel"
              x:Class="LoreViewer.Views.DefinitionViews.SectionDefinitionViewPanel">
-  Welcome to Avalonia!
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
+    </Grid.RowDefinitions>
+
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="120"/>
+      <ColumnDefinition Width="250"/>
+    </Grid.ColumnDefinitions>
+
+    <Label Grid.Row="0" Grid.Column="0" Content="Section Name"/>
+    <TextBox IsEnabled="{Binding IsNotInherited}" Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
+
+    <Label Grid.Row="1" Grid.Column="0" Content="Freeform" />
+    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsFreeform}" />
+
+    <Label Grid.Row="2" Grid.Column="0" Content="Required" />
+    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" />
+    
+  </Grid>
 </UserControl>

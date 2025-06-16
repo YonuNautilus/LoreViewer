@@ -58,10 +58,10 @@
 
 
 
-    <ContentControl Grid.Column="1">
+    <ContentControl Grid.Column="1" Content="{Binding}">
       <ContentControl.DataTemplates>
         <DataTemplate DataType="{x:Type vm:TypeDefinitionViewModel}">
-          <local:TypeDefinitionViewPanel />
+          <local:TypeDefinitionViewPanel DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:FieldDefinitionViewModel}">
           <local:FieldDefinitionViewPanel />
@@ -70,7 +70,7 @@
           <local:SectionDefinitionViewPanel />
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:CollectionDefinitionViewModel}">
-          <local:CollectionDefinitionViewPanel />
+          <local:CollectionDefinitionViewPanel DataContext="{Binding}" />
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:EmbeddedNodeDefinitionViewModel}">
           <local:EmbeddedDefinitionViewPanel />

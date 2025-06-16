@@ -2,18 +2,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="370" d:DesignHeight="450"
              xmlns:local="using:LoreViewer.Views.DefinitionViews"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
-             x:DataType="vm:LoreDefinitionViewModel"
+             x:DataType="vm:TypeDefinitionViewModel"
              x:Class="LoreViewer.Views.DefinitionViews.TypeDefinitionViewPanel">
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition />
-      <RowDefinition />
+      <RowDefinition Height="30"/>
+      <RowDefinition Height="30"/>
     </Grid.RowDefinitions>
 
-    <Label Content="{Binding Name}"/>
-    
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="120"/>
+      <ColumnDefinition Width="250"/>
+    </Grid.ColumnDefinitions>
+
+    <Label Grid.Row="0" Grid.Column="0" Content="Type Name"/>
+    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
+
+    <Label Grid.Row="1" Grid.Column="0" Content="Extends" />
+    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+      <ComboBox ItemsSource="{Binding AllTypesExceptMine}" SelectedItem="{Binding ExtendsType}">
+        <ComboBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding}" />
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
+      <Button ToolTip.Tip="Decouple this type definition from its parent - Make it independent"></Button>
+    </StackPanel>
+
   </Grid>
 </UserControl>

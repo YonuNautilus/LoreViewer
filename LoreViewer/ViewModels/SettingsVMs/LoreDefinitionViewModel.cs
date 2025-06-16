@@ -1,10 +1,23 @@
 ﻿using LoreViewer.Settings;
 using ReactiveUI;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
   public abstract class LoreDefinitionViewModel : LoreSettingsObjectViewModel
-  { 
+  {
+
+    public ObservableCollection<LoreCollectionDefinition> locallyDefinedCollectionDefs = new ObservableCollection<LoreCollectionDefinition>();
+
+    public ObservableCollection<LoreCollectionDefinition> AllCollections
+    {
+      get
+      {
+        return new ObservableCollection<LoreCollectionDefinition>(CurrentSettings.collections.Concat(locallyDefinedCollectionDefs).ToList());
+      }
+    }
 
     public bool IsDeletable
     {
