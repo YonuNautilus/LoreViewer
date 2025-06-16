@@ -192,6 +192,11 @@ namespace LoreViewer.Settings
 
       return newSettings;
     }
+
+    public LoreSettings CloneFromParent()
+    {
+      return Clone();
+    }
   }
   public class AppSettings : IDeepCopyable<AppSettings>
   {
@@ -216,6 +221,11 @@ namespace LoreViewer.Settings
       newSettings.blockedPaths = blockedPaths.Select(t => t).ToList();
 
       return newSettings;
+    }
+
+    public AppSettings CloneFromParent()
+    {
+      return Clone();
     }
   }
 }

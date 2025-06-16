@@ -64,5 +64,7 @@ namespace LoreViewer.Settings.Interfaces
   public interface IDeepCopyable<T>
   {
     T Clone();
+
+    T CloneFromParent();
   }
 }

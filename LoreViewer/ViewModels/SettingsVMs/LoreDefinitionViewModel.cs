@@ -1,13 +1,5 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using LoreViewer.Dialogs;
-using LoreViewer.Settings;
-using LoreViewer.Settings.Interfaces;
+﻿using LoreViewer.Settings;
 using ReactiveUI;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -30,6 +22,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
         if (Definition != null) return Definition.IsInherited;
         else return false;
       }
+    }
+
+    public bool IsNotInherited
+    {
+      get => !IsInherited;
     }
 
     public bool IsModifiedFromBase
@@ -119,8 +116,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
           return $"Collections ({Collections.Count})";
       }
     }
-
-    public LoreDefinitionViewModel SelectedItem { get; set; }
 
     protected LoreDefinitionViewModel(LoreDefinitionBase definitionBase)
     {

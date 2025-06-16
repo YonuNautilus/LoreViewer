@@ -17,7 +17,13 @@
         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=local:SectionDefinitionListPanel}}"
         SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
         <DataGrid.Columns>
-          <DataGridTextColumn Header="Section Name" Width="*" Binding="{Binding Name}"/>
+          <DataGridTemplateColumn Header="Section Title" Width="*">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBox IsEnabled="{Binding IsDeletable}" Text="{Binding Name}" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
 
           <DataGridTemplateColumn Header="Inherited">
             <DataGridTemplateColumn.CellTemplate>

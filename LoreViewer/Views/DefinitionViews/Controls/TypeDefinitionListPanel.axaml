@@ -14,10 +14,16 @@
     </DockPanel>
     <ScrollViewer>
       <DataGrid
-        ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=local:SectionDefinitionListPanel}}"
+        ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=local:TypeDefinitionListPanel}}"
         SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
         <DataGrid.Columns>
-          <DataGridTextColumn Header="Section Name" Width="*" Binding="{Binding Name}"/>
+          <DataGridTemplateColumn Header="Type Name" Width="*">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBox Text="{Binding Name}" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
 
           <DataGridTemplateColumn Header="Inherited">
             <DataGridTemplateColumn.CellTemplate>
@@ -30,26 +36,16 @@
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
 
-          <DataGridTemplateColumn Header="Required">
+          <DataGridTemplateColumn Header="Inherited">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
-                <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsRequired}"></CheckBox>
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Freeform">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <CheckBox HorizontalAlignment="Center" IsChecked="{Binding IsFreeform}"></CheckBox>
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Has Fields">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <CheckBox HorizontalAlignment="Center" IsChecked="{Binding HasFields}" IsEnabled="False" />
+                <ComboBox ItemsSource="{Binding AllTypesExceptMine}" SelectedItem="{Binding Definition}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
@@ -58,15 +54,15 @@
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel Orientation="Horizontal">
-                  <Button Command="{Binding EditSectionCommand, RelativeSource={RelativeSource AncestorType=local:SectionDefinitionListPanel}}"
+                  <Button Command="{Binding EditTypeCommand, RelativeSource={RelativeSource AncestorType=local:TypeDefinitionListPanel}}"
                           CommandParameter="{Binding}"
-                          ToolTip.Tip="Edit Section Definition">
+                          ToolTip.Tip="Edit Type Definition">
                     <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                   </Button>
                   <Button IsEnabled="{Binding IsDeletable}"
-                          Command="{Binding DeleteSectionCommand, RelativeSource={RelativeSource AncestorType=local:SectionDefinitionListPanel}}"
+                          Command="{Binding DeleteTypeCommand, RelativeSource={RelativeSource AncestorType=local:TypeDefinitionListPanel}}"
                           CommandParameter="{Binding}"
-                          ToolTip.Tip="Delete Section Definition">
+                          ToolTip.Tip="Delete Type Definition">
                     <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                   </Button>
                 </StackPanel>

@@ -6,6 +6,7 @@
              xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
              xmlns:vm="using:LoreViewer.ViewModels"
              xmlns:svm="using:LoreViewer.ViewModels.SettingsVMs"
+             xmlns:defvs="using:LoreViewer.Views.DefinitionViews"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Views.LoreSettingsView"
              x:Name="SettingsView"
@@ -23,73 +24,17 @@
 
     <UniformGrid Grid.Row="1" Grid.Column="0" Rows="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       <Border BorderBrush="Black" BorderThickness="1">
-        <StackPanel>
-          <DockPanel>
-            <Button Content="New Type" DockPanel.Dock="Right"/>
-            <Label Content="Types" DockPanel.Dock="Left"/>
-          </DockPanel>
-          <DataGrid
-            ItemsSource="{Binding TypeDefs}"
-            SelectedItem="{Binding CurrentlySelectedDefinition}">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Type Name" Width="*" Binding="{Binding Name}"/>
-              <DataGridTextColumn Header="Extends" Width="*" Binding="{Binding ExtendsTypeName}"/>
-              <DataGridTemplateColumn Header="Actions">
-                <DataGridTemplateColumn.CellTemplate>
-                  <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).EditDefinitionCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="Edit This Type Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
-                      </Button>
-                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="Delete Type Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
-                      </Button>
-                    </StackPanel>
-                  </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-              </DataGridTemplateColumn>
-            </DataGrid.Columns>
-          </DataGrid>
-        </StackPanel>
+        <defvs:TypeDefinitionListPanel ItemsSource="{Binding TypeDefs}"
+                                       AddTypeCommand="{Binding AddTypeCommand}"
+                                       EditTypeCommand="{Binding EditDefinitionCommand}"
+                                       DeleteTypeCommand="{Binding DeleteDefinitionCommand}"/>
       </Border>
 
       <Border BorderBrush="Black" BorderThickness="1">
-        <StackPanel>
-          <DockPanel>
-            <Button Content="New Collection" DockPanel.Dock="Right"/>
-            <Label Content="Collections" DockPanel.Dock="Left"/>
-          </DockPanel>
-          <DataGrid
-            ItemsSource="{Binding ColDefs}"
-            SelectedItem="{Binding CurrentlySelectedDefinition}">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Collection Name" Width="*" Binding="{Binding Name}"/>
-              <DataGridTextColumn Header="Contained Type" Width="*" Binding="{Binding ContainedTypeName}"/>
-              <DataGridTemplateColumn Header="Actions">
-                <DataGridTemplateColumn.CellTemplate>
-                  <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).EditDefinitionCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="Edit This Collection Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
-                      </Button>
-                      <Button Command="{Binding #SettingsView.((svm:LoreSettingsViewModel)DataContext).DeleteDefinitionCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="Delete Collection Definition">
-                        <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
-                      </Button>
-                    </StackPanel>
-                  </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-              </DataGridTemplateColumn>
-            </DataGrid.Columns>
-          </DataGrid>
-        </StackPanel>
+        <defvs:CollectionDefinitionListPanel ItemsSource="{Binding ColDefs}"
+                                             AddCollectionCommand="{Binding AddCollectionCommand}"
+                                             EditCollectionCommand="{Binding EditDefinitionCommand}"
+                                             DeleteCollectionCommand="{Binding DeleteDefinitionCommand}"/>
       </Border>
 
     </UniformGrid>

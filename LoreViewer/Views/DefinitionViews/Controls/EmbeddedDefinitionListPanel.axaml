@@ -17,7 +17,14 @@
         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=local:EmbeddedDefinitionListPanel}}"
         SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
         <DataGrid.Columns>
-          <DataGridTextColumn Header="Embedded Node Name" Width="*" Binding="{Binding Name}"/>
+
+          <DataGridTemplateColumn Header="Embedded Node Title" Width="*">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBox IsEnabled="{Binding IsInherited}" Text="{Binding Name}" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
 
           <DataGridTemplateColumn Header="Inherited">
             <DataGridTemplateColumn.CellTemplate>
@@ -56,15 +63,16 @@
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel Orientation="Horizontal">
-                  <Button Command="{Binding EditCollectionCommand, RelativeSource={RelativeSource AncestorType=local:CollectionDefinitionListPanel}}"
+                  <Button Command="{Binding EditEmbeddedCommand, RelativeSource={RelativeSource AncestorType=local:EmbeddedDefinitionListPanel}}"
                           CommandParameter="{Binding}"
-                          ToolTip.Tip="Edit Collection Definition">
+                          IsEnabled="{Binding IsNotInherited}"
+                          ToolTip.Tip="Edit Embedded Node Definition">
                     <Image Width="16" Source="avares://LoreViewer/Resources/pencil.png" />
                   </Button>
                   <Button IsEnabled="{Binding IsDeletable}"
-                          Command="{Binding DeleteCollectionCommand, RelativeSource={RelativeSource AncestorType=local:CollectionDefinitionListPanel}}"
+                          Command="{Binding DeleteEmbeddedCommand, RelativeSource={RelativeSource AncestorType=local:EmbeddedDefinitionListPanel}}"
                           CommandParameter="{Binding}"
-                          ToolTip.Tip="Delete Collection Definition">
+                          ToolTip.Tip="Delete Embedded Node Definition">
                     <Image Width="16" Source="avares://LoreViewer/Resources/trash_can.png"/>
                   </Button>
                 </StackPanel>

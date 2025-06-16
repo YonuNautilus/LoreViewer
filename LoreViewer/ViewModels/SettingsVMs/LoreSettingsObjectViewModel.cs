@@ -6,6 +6,7 @@ using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 
@@ -19,6 +20,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public ReactiveCommand<Unit, Unit> AddCollectionCommand { get; set; }
     public ReactiveCommand<Unit, Unit> AddEmbeddedCommand { get; set; }
     public LoreDefinitionBase Definition { get; set; }
+
+    public LoreDefinitionViewModel SelectedItem { get; set; }
 
     public static LoreSettings CurrentSettings { get; set; }
 
@@ -37,6 +40,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public abstract ObservableCollection<CollectionDefinitionViewModel> Collections { get; }
     public abstract ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes { get; }
 
+
+
+
+    public List<string> TypeNamesList { get => CurrentSettings.types.Select(n => n.name).ToList(); }
 
 
 
@@ -80,6 +87,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
           break;
         default: return;
       }
+
+      CurrentSettings.PostProcess();
+      RefreshLists();
     }
 
 
@@ -93,7 +103,13 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       var dialog = DefinitionEditorDialog.CreateDefinitionEditorDialog(vm);
       await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
+      CurrentSettings.PostProcess();
       RefreshLists();
+    }
+
+    public void AddType()
+    {
+
     }
 
     public void AddField()
@@ -102,6 +118,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       {
         if (fieldContainer.fields == null) fieldContainer.fields = new List<LoreFieldDefinition>();
         fieldContainer.fields.Add(new LoreFieldDefinition());
+        CurrentSettings.PostProcess();
         RefreshLists();
       }
     }
@@ -112,6 +129,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       {
         if (sectionContainer.sections == null) sectionContainer.sections = new List<LoreSectionDefinition>();
         sectionContainer.sections.Add(new LoreSectionDefinition());
+        CurrentSettings.PostProcess();
         RefreshLists();
       }
     }
@@ -122,6 +140,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       {
         if (collectionContainer.collections == null) collectionContainer.collections = new List<LoreCollectionDefinition>();
         collectionContainer.collections.Add(new LoreCollectionDefinition());
+        CurrentSettings.PostProcess();
         RefreshLists();
       }
     }
@@ -132,6 +151,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       {
         if (embeddedContainer.embeddedNodeDefs == null) embeddedContainer.embeddedNodeDefs = new List<LoreEmbeddedNodeDefinition>();
         embeddedContainer.embeddedNodeDefs.Add(new LoreEmbeddedNodeDefinition());
+        CurrentSettings.PostProcess();
         RefreshLists();
       }
     }

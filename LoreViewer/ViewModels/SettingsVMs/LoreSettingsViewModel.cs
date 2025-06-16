@@ -53,6 +53,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
       EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
+      AddTypeCommand = ReactiveCommand.Create(AddType);
       m_oLoreSettings = _settings;
       RefreshColDefs();
       RefreshTypeDefs();
@@ -78,18 +79,21 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public async Task EditDefinition(LoreDefinitionViewModel vm)
-    {
-      if (vm != null)
-      {
-        var dialog = DefinitionEditorDialog.CreateDefinitionEditorDialog(vm);
-        await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
-      }
-    }
-
     public override void RefreshLists()
     {
       RefreshTypeDefs();
+      RefreshColDefs();
+    }
+
+    public new void AddType()
+    {
+      CurrentSettings.types.Add(new LoreTypeDefinition() { name = "New Type" });
+      RefreshTypeDefs();
+    }
+
+    public new void AddCollection()
+    {
+      CurrentSettings.collections.Add(new LoreCollectionDefinition() { name = "New Collection" });
       RefreshColDefs();
     }
   }

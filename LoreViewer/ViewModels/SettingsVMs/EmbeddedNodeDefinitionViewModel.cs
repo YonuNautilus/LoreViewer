@@ -28,8 +28,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public bool IsRequired { get => emdDef.required; set => emdDef.required = value; }
 
-    public List<string> TypeNamesList { get => CurrentSettings.types.Select(n => n.name).ToList(); }
-
     public TypeDefinitionViewModel Type { get; set; }
     public EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase) { Type = new TypeDefinitionViewModel(emdDef.nodeType); }
 
