@@ -1,32 +1,9 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="LoreViewer.App"
-             xmlns:vm="using:LoreViewer.ViewModels"
-             xmlns:svm="using:LoreViewer.ViewModels.SettingsVMs"
-             xmlns:conv="using:LoreViewer.Converters"
-             RequestedThemeVariant="Default">
-  <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
-  <Application.Styles>
-    <SimpleTheme/>
-    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Simple.xaml" />
-    <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Generic.axaml" />
-    <StyleInclude Source="avares://LoreViewer/Resources/Themes/TreeDataGridTheme.axaml" />
-
-    <Style Selector="Button.rounded">
-      <Setter Property="CornerRadius" Value="20"/>
-    </Style>
-  </Application.Styles>
-
-  <Application.Resources>
-    <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"/>
-    <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter" />
-
-    <conv:EnumDescriptionConverter x:Key="EnumConverter" />
-    <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Styles.Resources>
+    <ResourceDictionary>
 
 
-    <!--ResourceDictionary>
       <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
           <SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="Black" Opacity="0.1" />
@@ -49,9 +26,7 @@
           <SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="White" Opacity="0.4" />
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
-    </esourceDictionary-->
-    
-    
-  </Application.Resources>
+    </ResourceDictionary>
+  </Styles.Resources>
 
-</Application>
+</Styles>
