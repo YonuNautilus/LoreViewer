@@ -64,7 +64,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
       OriginalYAML = _settings.OriginalYAML;
 
-      TreeSource = DefinitionTreeDataGridFactory.Build([new DefinitionExplorerViewModel(_settings)]);
+      TreeSource = DefinitionTreeDataGridFactory.Build([new GroupNodeViewModel(_settings.types, "Types", typeof(TypeDefinitionNodeViewModel)), new GroupNodeViewModel(_settings.collections, "Collections", typeof(CollectionDefinitionNodeViewModel))]);
     }
 
     public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)

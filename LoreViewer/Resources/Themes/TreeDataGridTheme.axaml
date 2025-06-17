@@ -6,7 +6,7 @@
 
       <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
-          <SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="Black" Opacity="0.1" />
+          <SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="Black" Opacity="1" />
           <SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPointerOverBrush" Color="Black" Opacity="0.1" />
           <SolidColorBrush x:Key="TreeDataGridHeaderBackgroundPressedBrush" Color="Black" Opacity="0.6" />
           <SolidColorBrush x:Key="TreeDataGridHeaderBorderBrushPointerOverBrush" Color="Transparent" />
