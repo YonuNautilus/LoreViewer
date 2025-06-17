@@ -38,6 +38,9 @@
     <Compile Update="Views\DefinitionViews\Controls\FIeldDefinitionListPanel.axaml.cs">
       <DependentUpon>FIeldDefinitionListPanel.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\DefinitionViews\SettingsEditView.axaml.cs">
+      <DependentUpon>SettingsEditView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\LoreEditView.axaml.cs">
       <DependentUpon>LoreEditView.axaml</DependentUpon>
     </Compile>
