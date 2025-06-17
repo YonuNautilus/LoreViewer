@@ -31,6 +31,7 @@ namespace LoreViewer.Settings.Interfaces
   public interface ICollectionDefinitionContainer
   {
     List<LoreCollectionDefinition> collections { get; set; }
+    public bool HasCollections => collections != null && collections.Count > 0;
     public bool HasCollectionDefinition(string collectionName) => collections.Any(col => collectionName == col.name);
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
   }

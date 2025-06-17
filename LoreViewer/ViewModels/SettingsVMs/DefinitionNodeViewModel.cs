@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
+using DynamicData.Binding;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool IsModified { get; set; }
     public bool HasErrors { get; set; }
 
-    public IEnumerable<DefinitionNodeViewModel> Children { get; set; } = new List<DefinitionNodeViewModel>();
+    public ObservableCollection<DefinitionNodeViewModel> Children { get; set; }// = new ObservableCollection<DefinitionNodeViewModel>();
   }
 
   public abstract class ActualDefinitionNodeViewModel<TDefinitionVM> : DefinitionNodeViewModel where TDefinitionVM : LoreDefinitionViewModel
@@ -26,21 +27,18 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
   public class DefinitionExplorerViewModel : DefinitionNodeViewModel
   {
-    public IEnumerable<DefinitionNodeViewModel> RootNodes { get; }
 
     public DefinitionExplorerViewModel(LoreSettings settings)
     {
       var typesGroup = new GroupNodeViewModel("Types");
-      typesGroup.Children = settings.types
-          .Select(t => new TypeDefinitionNodeViewModel(t))
-          .ToList();
+      typesGroup.Children = new ObservableCollection<DefinitionNodeViewModel>(
+        settings.types.Select(t => new TypeDefinitionNodeViewModel(t)));
 
       var collectionsGroup = new GroupNodeViewModel("Collections");
-      collectionsGroup.Children = settings.collections
-          .Select(c => new CollectionDefinitionNodeViewModel(c))
-          .ToList();
+      collectionsGroup.Children = new ObservableCollection<DefinitionNodeViewModel>(
+        settings.collections.Select(c => new CollectionDefinitionNodeViewModel(c)));
 
-      RootNodes = new List<DefinitionNodeViewModel> { typesGroup, collectionsGroup };
+      Children = new ObservableCollection<DefinitionNodeViewModel>([typesGroup, collectionsGroup]);
     }
   }
 
@@ -54,26 +52,30 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public GroupNodeViewModel(IFieldDefinitionContainer container) : this("Fields")
     {
-      foreach(LoreFieldDefinition fieldDef in container.fields)
-      Children = new ObservableCollection<FieldDefinitionNodeViewModel>(container.fields.Select(f => new FieldDefinitionNodeViewModel(f)));
+      if (container.HasFields)
+        foreach (LoreFieldDefinition fieldDef in container.fields)
+          Children = new ObservableCollection<DefinitionNodeViewModel>(container.fields.Select(f => new FieldDefinitionNodeViewModel(f)));
     }
 
     public GroupNodeViewModel(ISectionDefinitionContainer container) : this("Sections")
     {
-      foreach(LoreSectionDefinition fieldDef in container.sections)
-      Children = new ObservableCollection<SectionDefinitionNodeViewModel>(container.sections.Select(s => new SectionDefinitionNodeViewModel(s)));
+      if (container.HasSections)
+        foreach (LoreSectionDefinition fieldDef in container.sections)
+          Children = new ObservableCollection<DefinitionNodeViewModel>(container.sections.Select(s => new SectionDefinitionNodeViewModel(s)));
     }
 
     public GroupNodeViewModel(ICollectionDefinitionContainer container) : this("Collections")
     {
-      foreach (LoreCollectionDefinition fieldDef in container.collections)
-        Children = new ObservableCollection<CollectionDefinitionNodeViewModel>(container.collections.Select(s => new CollectionDefinitionNodeViewModel(s)));
+      if(container.HasCollections)
+        foreach (LoreCollectionDefinition fieldDef in container.collections)
+          Children = new ObservableCollection<DefinitionNodeViewModel>(container.collections.Select(s => new CollectionDefinitionNodeViewModel(s)));
     }
 
     public GroupNodeViewModel(IEmbeddedNodeDefinitionContainer container) : this("Embedded Nodes")
     {
-      foreach (LoreEmbeddedNodeDefinition fieldDef in container.embeddedNodeDefs)
-        Children = new ObservableCollection<EmbeddedDefinitionNodeViewModel>(container.embeddedNodeDefs.Select(e => new EmbeddedDefinitionNodeViewModel(e)));
+      if(container.HasNestedNodes)
+        foreach (LoreEmbeddedNodeDefinition fieldDef in container.embeddedNodeDefs)
+          Children = new ObservableCollection<DefinitionNodeViewModel>(container.embeddedNodeDefs.Select(e => new EmbeddedDefinitionNodeViewModel(e)));
     }
   }
 

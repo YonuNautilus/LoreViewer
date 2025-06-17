@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using Avalonia.Controls;
+using LoreViewer.Settings;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -46,6 +47,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
 
+
+    public ITreeDataGridSource<DefinitionNodeViewModel> TreeSource { get; set; }
+
     public LoreSettingsViewModel(LoreSettings _settings)
     {
       DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
@@ -59,6 +63,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
       CurrentSettings = _settings;
 
       OriginalYAML = _settings.OriginalYAML;
+
+      TreeSource = DefinitionTreeDataGridFactory.Build([new DefinitionExplorerViewModel(_settings)]);
     }
 
     public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)

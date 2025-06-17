@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:views="using:LoreViewer.Views"
+        xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
+        x:Class="LoreViewer.Dialogs.SettingsEditDialog"
+        x:DataType="vm:LoreSettingsViewModel"
+        Title="SettingsEditDialog">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+      <ColumnDefinition/>
+      <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+
+    <Border Grid.Column="0" BorderBrush="Black" BorderThickness="2">
+      <TreeDataGrid x:Name="DefinitionTreeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+      </TreeDataGrid>
+    </Border>
+
+    <Label Grid.Column="1">TEST</Label>
+  </Grid>
+</Window>

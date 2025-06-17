@@ -4,11 +4,11 @@ using LoreViewer.ViewModels.SettingsVMs;
 
 namespace LoreViewer.Dialogs;
 
-public partial class SettingsEditorDialog : Window
+public partial class SettingsEditorDialogOld : Window
 {
   public LoreSettingsViewModel viewModel { get; }
 
-  public SettingsEditorDialog(LoreSettingsViewModel _settingsVM)
+  public SettingsEditorDialogOld(LoreSettingsViewModel _settingsVM)
   {
     InitializeComponent();
     viewModel = _settingsVM;
@@ -17,7 +17,7 @@ public partial class SettingsEditorDialog : Window
     Dispatcher.UIThread.Post(() => DataContext = _settingsVM);
   }
 
-  public SettingsEditorDialog()
+  public SettingsEditorDialogOld()
   {
     InitializeComponent();
   }

@@ -31,6 +31,7 @@ namespace LoreViewer.ViewModels
     public static LoreSettings _settings;
     public static LoreParser _parser;
 
+    private bool m_bUseOldEditor = false;
 
     private string m_sLoreLibraryFolderPath = string.Empty;
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
@@ -185,8 +186,16 @@ namespace LoreViewer.ViewModels
     {
       if (_settings != null)
       {
-        var dialog = new SettingsEditorDialog(new LoreSettingsViewModel(_settings));
-        Dictionary<string, string>? result = await dialog.ShowDialog<Dictionary<string, string>?>(TopLevel.GetTopLevel(m_oView) as Window);
+        if (m_bUseOldEditor)
+        {
+          var dialog = new SettingsEditorDialogOld(new LoreSettingsViewModel(_settings));
+          Dictionary<string, string>? result = await dialog.ShowDialog<Dictionary<string, string>?>(TopLevel.GetTopLevel(m_oView) as Window);
+        }
+        else
+        {
+          var dialog = new SettingsEditDialog(_settings.Clone());
+          await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
+        }
       }
     }
 
