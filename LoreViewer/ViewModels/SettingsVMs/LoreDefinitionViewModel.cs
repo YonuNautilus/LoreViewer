@@ -63,6 +63,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
+    public bool CanEditName { get => false; }
+
     public string Name { get => Definition.name; set => Definition.name = value; }
 
     public virtual bool UsesAny { get { return true; } }

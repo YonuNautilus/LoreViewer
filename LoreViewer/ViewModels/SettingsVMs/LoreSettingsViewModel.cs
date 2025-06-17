@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using DocumentFormat.OpenXml.Wordprocessing;
 using LoreViewer.Settings;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -15,7 +16,30 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     private LoreSettings m_oLoreSettings;
 
-    public LoreDefinitionViewModel CurrentlySelectedDefinition { get; set; }
+
+
+    private DefinitionTreeNodeViewModel? _selectedNode;
+    public DefinitionTreeNodeViewModel? SelectedNode
+    {
+      get => _selectedNode;
+      set
+      {
+        SelectedDefinition = value?.DefinitionVM;
+        this.RaiseAndSetIfChanged(ref _selectedNode, value);
+      }
+    }
+
+    public LoreDefinitionViewModel? _selectedDef;
+
+    public LoreDefinitionViewModel? SelectedDefinition
+    {
+      get => _selectedDef;
+      set
+      {
+        this.RaiseAndSetIfChanged(ref _selectedDef, value);
+      }
+    }
+
 
     public string LoreLibraryFolderPath { get => m_oLoreSettings.FolderPath; }
 
@@ -48,7 +72,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
 
 
-    public ITreeDataGridSource<DefinitionNodeViewModel> TreeSource { get; set; }
+    public ObservableCollection<DefinitionTreeNodeViewModel> TreeRootNodes { get; set; } = new ObservableCollection<DefinitionTreeNodeViewModel>();
 
     public LoreSettingsViewModel(LoreSettings _settings)
     {
@@ -64,7 +88,26 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
       OriginalYAML = _settings.OriginalYAML;
 
-      TreeSource = DefinitionTreeDataGridFactory.Build([new GroupNodeViewModel(_settings.types, "Types", typeof(TypeDefinitionNodeViewModel)), new GroupNodeViewModel(_settings.collections, "Collections", typeof(CollectionDefinitionNodeViewModel))]);
+
+      var typesGroup = new DefinitionTreeNodeViewModel("Types");
+      foreach (var type in m_oLoreSettings.types)
+      {
+        var typeVM = new TypeDefinitionViewModel(type);
+        var node = new DefinitionTreeNodeViewModel(typeVM);
+        node.BuildChildren();
+        typesGroup.AddChild(node);
+      }
+
+      var collectionsGroup = new DefinitionTreeNodeViewModel("Collections");
+      foreach (var collection in m_oLoreSettings.collections)
+      {
+        var colVM = new CollectionDefinitionViewModel(collection);
+        var node = new DefinitionTreeNodeViewModel(colVM);
+        collectionsGroup.AddChild(node);
+      }
+
+      TreeRootNodes.Add(typesGroup);
+      TreeRootNodes.Add(collectionsGroup);
     }
 
     public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)

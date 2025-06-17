@@ -5,6 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         xmlns:views="using:LoreViewer.Views"
         xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
+        xmlns:defViews="using:LoreViewer.Views.DefinitionViews"
         x:Class="LoreViewer.Dialogs.SettingsEditDialog"
         x:DataType="vm:LoreSettingsViewModel"
         Title="SettingsEditDialog">
@@ -21,6 +22,25 @@
       </TreeDataGrid>
     </Border>
 
-    <Label Grid.Column="1">TEST</Label>
+    <ContentControl Grid.Column="1" Content="{Binding SelectedDefinition}">
+      <ContentControl.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:TypeDefinitionViewModel}">
+          <defViews:TypeDefinitionViewPanel DataContext="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FieldDefinitionViewModel}">
+          <defViews:FieldDefinitionViewPanel />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SectionDefinitionViewModel}">
+          <defViews:SectionDefinitionViewPanel />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CollectionDefinitionViewModel}">
+          <defViews:CollectionDefinitionViewPanel DataContext="{Binding}" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EmbeddedNodeDefinitionViewModel}">
+          <defViews:EmbeddedDefinitionViewPanel />
+        </DataTemplate>
+      </ContentControl.DataTemplates>
+    </ContentControl>
+
   </Grid>
 </Window>
