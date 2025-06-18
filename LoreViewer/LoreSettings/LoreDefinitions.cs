@@ -66,6 +66,22 @@ namespace LoreViewer.Settings
       }
     }
 
+    private bool m_bIsDeleted;
+    [YamlIgnore]
+    public bool IsDeleted = false;
+    [YamlIgnore]
+    public bool WasDeleted
+    {
+      get
+      {
+        if (IsDeleted) return true;
+
+        if (Base != null) return Base.WasDeleted;
+
+        return false;
+      }
+    }
+
     public LoreDefinitionBase() { }
 
     public LoreDefinitionBase(string name) { this.name = name; }
@@ -105,7 +121,7 @@ namespace LoreViewer.Settings
 
     #region ISectionDefinitionContainer implementation
     [YamlMember(2)]
-    public List<LoreSectionDefinition> sections { get; set; }
+    public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
     public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections?.Any(sec => sectionName.Contains(sec.name)) ?? false;
     public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections?.FirstOrDefault(s => s.name == sectionName) ?? null;
@@ -114,14 +130,14 @@ namespace LoreViewer.Settings
 
     #region ICollectionDefinitionContainer
     [YamlMember(3)]
-    public List<LoreCollectionDefinition> collections { get; set; }
+    public List<LoreCollectionDefinition> collections { get; set; } = new List<LoreCollectionDefinition>();
     public bool HasCollectionDefinition(string collectionName) => collections?.Any(col => col.name == collectionName) ?? false;
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections?.FirstOrDefault(c => c.name == collectionName) ?? null;
     #endregion ICollectionDefinitionContainer
 
     #region IEmbeddedNodeDefinitionContainer Implementation
     [YamlMember(4)]
-    public List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; set; }
+    public List<LoreEmbeddedNodeDefinition> embeddedNodeDefs { get; set; } = new List<LoreEmbeddedNodeDefinition>();
     public bool HasTypeDefinition(string typeName) => embeddedNodeDefs.Any(t => typeName == t.name);
     public bool HasTypeDefinition(LoreTypeDefinition typeDef) => embeddedNodeDefs.Any(t => t.nodeType.IsParentOf(typeDef));
 
@@ -272,7 +288,7 @@ namespace LoreViewer.Settings
   {
 
     #region ISectionDefinitionContainer implementation
-    public List<LoreSectionDefinition> sections { get; set; }
+    public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
     [YamlIgnore]
     public bool HasSections => sections != null && sections.Count > 0;
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
@@ -621,6 +637,7 @@ namespace LoreViewer.Settings
         LoreFieldDefinition childField = childFields.FirstOrDefault(f => f.name == fieldName);
         LoreFieldDefinition baseField = baseFields.FirstOrDefault(f => f.name == fieldName);
 
+
         if (childField != null && baseField != null)
         {
           resultingField = childField;
@@ -634,7 +651,12 @@ namespace LoreViewer.Settings
         }
         else if (childField != null && baseField == null)
         {
-          resultingField = childField;
+          // For re-processing -- if the child field has a Base set (ie IsInherited is true), but there is no corresponding baseField, we can assume that the base has been deleted.
+          // Therefore, we can skip adding the child field
+          if (childField.IsInherited)
+            continue;
+          else
+            resultingField = childField;
         }
 
         ret.Add(resultingField);
@@ -675,6 +697,10 @@ namespace LoreViewer.Settings
         }
         else if (childSection != null && baseSection == null)
         {
+          // For re-processing -- if the child section has a Base set (ie IsInherited is true), but there is no corresponding baseSection, we can assume that the base has been deleted.
+          // Therefore, we can skip adding the child section
+          if (childSection.IsInherited)
+            continue;
           resultingSection = childSection;
         }
 
@@ -715,6 +741,10 @@ namespace LoreViewer.Settings
         }
         else if (childCollection != null && baseCollection == null)
         {
+          // For re-processing -- if the child collection has a Base set (ie IsInherited is true), but there is no corresponding baseEmbedded, we can assume that the base has been deleted.
+          // Therefore, we can skip adding the child collection
+          if (childCollection.IsInherited)
+            continue;
           resultingCollection = childCollection;
         }
 
@@ -734,31 +764,35 @@ namespace LoreViewer.Settings
 
       List<LoreEmbeddedNodeDefinition> ret = new List<LoreEmbeddedNodeDefinition>();
 
-      string[] _allCollectionNames = baseEmbds.Select(f => f.name).Concat(childEmbds.Select(f => f.name)).Distinct().ToArray();
+      string[] _allEmbeddedNames = baseEmbds.Select(f => f.name).Concat(childEmbds.Select(f => f.name)).Distinct().ToArray();
 
-      foreach (string collectionName in _allCollectionNames)
+      foreach (string embeddedName in _allEmbeddedNames)
       {
 
-        LoreEmbeddedNodeDefinition resultingCollection = null;
-        LoreEmbeddedNodeDefinition childCollection = childEmbds.FirstOrDefault(e => e.name == collectionName);
-        LoreEmbeddedNodeDefinition baseCollection = baseEmbds.FirstOrDefault(e => e.name == collectionName);
+        LoreEmbeddedNodeDefinition resultingEmbedded = null;
+        LoreEmbeddedNodeDefinition childEmbedded = childEmbds.FirstOrDefault(e => e.name == embeddedName);
+        LoreEmbeddedNodeDefinition baseEmbedded = baseEmbds.FirstOrDefault(e => e.name == embeddedName);
 
-        if (childCollection != null && baseCollection != null)
+        if (childEmbedded != null && baseEmbedded != null)
         {
-          resultingCollection = childCollection;
-          resultingCollection.MergeFrom(baseCollection);
+          resultingEmbedded = childEmbedded;
+          resultingEmbedded.MergeFrom(baseEmbedded);
         }
-        else if (childCollection == null && baseCollection != null)
+        else if (childEmbedded == null && baseEmbedded != null)
         {
-          resultingCollection = baseCollection.CloneFromParent();
-          resultingCollection.MergeFrom(baseCollection);
+          resultingEmbedded = baseEmbedded.CloneFromParent();
+          resultingEmbedded.MergeFrom(baseEmbedded);
         }
-        else if (childCollection != null && baseCollection == null)
+        else if (childEmbedded != null && baseEmbedded == null)
         {
-          resultingCollection = childCollection;
+          // For re-processing -- if the child embedded has a Base set (ie IsInherited is true), but there is no corresponding base, we can assume that the base has been deleted.
+          // Therefore, we can skip adding the child embedded
+          if (childEmbedded.IsInherited)
+            continue;
+          resultingEmbedded = childEmbedded;
         }
 
-        ret.Add(resultingCollection);
+        ret.Add(resultingEmbedded);
       }
 
       return ret;

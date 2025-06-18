@@ -17,6 +17,53 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public LoreSettings m_oLoreSettings;
 
 
+  public bool IgnoreCase
+  { 
+    get => m_oLoreSettings.settings.ignoreCase;
+    set
+    {
+      m_oLoreSettings.settings.ignoreCase = value;
+      SettingsRefresher.Apply(this);
+    }
+  }
+  public bool SoftLinking
+  { 
+    get => m_oLoreSettings.settings.softLinking;
+    set
+    {
+      m_oLoreSettings.settings.softLinking = value;
+      SettingsRefresher.Apply(this);
+    }
+  }
+  public bool EnablePruningForSerialization
+  { 
+    get => m_oLoreSettings.settings.EnableSerializationPruning;
+    set
+    {
+      m_oLoreSettings.settings.EnableSerializationPruning = value;
+      SettingsRefresher.Apply(this);
+    }
+  }
+  public string MarkdownExtensions
+  {
+    get => string.Join("\r\n", m_oLoreSettings.settings.markdownExtensions);
+    set
+    {
+      m_oLoreSettings.settings.markdownExtensions = value.Split("\r\n").ToList();
+      SettingsRefresher.Apply(this);
+    }
+  }
+  public string BlockedPaths
+  {
+    get => string.Join("\r\n", m_oLoreSettings.settings.blockedPaths);
+    set
+    {
+      m_oLoreSettings.settings.blockedPaths = value.Split("\r\n").ToList();
+      SettingsRefresher.Apply(this);
+    }
+  }
+
+
 
   private DefinitionTreeNodeViewModel? _selectedNode;
   public DefinitionTreeNodeViewModel? SelectedNode
@@ -76,8 +123,6 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
   public LoreSettingsViewModel(LoreSettings _settings)
   {
-    DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
-    EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
     AddTypeCommand = ReactiveCommand.Create(AddType);
     AddCollectionCommand = ReactiveCommand.Create(AddCollection);
     m_oLoreSettings = _settings;
@@ -154,6 +199,13 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     this.RaisePropertyChanged(nameof(NewYAML));
   }
 
+  public void RefreshTreeNodes()
+  {
+    foreach (DefinitionTreeNodeViewModel nodeVM in TreeRootNodes)
+    {
+      nodeVM.RefreshTreeNode();
+    }
+  }
 }
 
 public class AppSettingsViewModel : ViewModelBase
@@ -189,5 +241,7 @@ public static class SettingsRefresher
     vm?.m_oLoreSettings.PostProcess();
 
     vm.NotifyYAMLChanged();
+
+    vm.RefreshTreeNodes();
   }
 }

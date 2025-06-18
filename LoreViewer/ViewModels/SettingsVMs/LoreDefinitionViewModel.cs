@@ -135,13 +135,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     protected LoreDefinitionViewModel(LoreDefinitionBase definitionBase)
     {
-      DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
-      EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
-      AddFieldCommand = ReactiveCommand.Create(AddField);
-      AddSectionCommand = ReactiveCommand.Create(AddSection);
-      AddCollectionCommand = ReactiveCommand.Create(AddCollection);
-      AddEmbeddedCommand = ReactiveCommand.Create(AddEmbedded);
-
       Definition = definitionBase;
 
       if(definitionBase != null)

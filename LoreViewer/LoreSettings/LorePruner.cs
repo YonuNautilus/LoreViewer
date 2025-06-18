@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using ReactiveUI;
+using System.Linq;
+using System.Reflection.Metadata;
 
 namespace LoreViewer.Settings
 {
@@ -12,6 +14,9 @@ namespace LoreViewer.Settings
       }
       
       settings.collections = settings.collections.Where(c => c.IsModifiedFromBase).ToList();
+
+      if (settings.types.Count < 1) settings.types = null;
+      if (settings.collections.Count < 1) settings.collections = null;
     }
 
 
@@ -47,6 +52,12 @@ namespace LoreViewer.Settings
         if (typeDef.collections.Count == 0) typeDef.collections = null;
       }
 
+      if(typeDef.embeddedNodeDefs != null)
+      {
+        // potential pruning for the future
+        if (typeDef.embeddedNodeDefs.Count == 0) typeDef.embeddedNodeDefs = null;
+      }
+
     }
 
 
@@ -58,6 +69,8 @@ namespace LoreViewer.Settings
 
         foreach (var subfield in field.fields)
           PruneField(subfield);
+
+        if (field.fields.Count == 0) field.fields = null;
       }
     }
 
@@ -71,6 +84,8 @@ namespace LoreViewer.Settings
 
         foreach (var subsection in section.sections)
           PruneSection(subsection);
+
+        if (section.sections.Count == 0) section.sections = null;
       }
     }
 

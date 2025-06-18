@@ -38,9 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Dialogs\SettingsEditorDialogOld.axaml.cs">
-      <DependentUpon>SettingsEditorDialogOld.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\DefinitionViews\Controls\FIeldDefinitionListPanel.axaml.cs">
       <DependentUpon>FIeldDefinitionListPanel.axaml</DependentUpon>
     </Compile>

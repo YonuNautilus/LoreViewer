@@ -48,7 +48,7 @@
         </ContentControl.DataTemplates>
       </ContentControl>
 
-      <ScrollViewer Grid.Column="1" Grid.Row="1" DataContext="{Binding ParserSettings}" Margin="50,0,50,0">
+      <ScrollViewer Grid.Column="1" Grid.Row="1" Margin="50,0,50,0">
         <Grid ColumnDefinitions="*,*" RowDefinitions="30,30,30,Auto,Auto">
           <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Ignore Case:</Label>
           <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IgnoreCase}" />

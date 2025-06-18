@@ -1,12 +1,14 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using DynamicData.Binding;
 using LoreViewer.Settings;
+using LoreViewer.Settings.Interfaces;
 using LoreViewer.ViewModels.SettingsVMs;
 using System.Collections.ObjectModel;
 
@@ -14,6 +16,11 @@ namespace LoreViewer.Dialogs;
 
 public partial class SettingsEditDialog : Window
 {
+  public SettingsEditDialog()
+  {
+    InitializeComponent();
+  }
+
   public SettingsEditDialog(LoreSettings settings)
   {
     InitializeComponent();
@@ -55,20 +62,43 @@ public static class DefinitionTreeDataGridBuilder
                 }),
             x => x.Children),
 
-        new CheckBoxColumn<DefinitionTreeNodeViewModel>(
+        new TemplateColumn<DefinitionTreeNodeViewModel>(
             header: "Inherited",
-            getter: x => x.IsInherited),
-
-        new CheckBoxColumn<DefinitionTreeNodeViewModel>(
-            header: "Required",
-            getter: x => x.IsRequired ?? false,
-            setter: (x, v) =>
+            cellTemplate: new FuncDataTemplate<DefinitionTreeNodeViewModel>((node, _) =>
             {
-                if (x.CanEditRequired && x.DefinitionVM is FieldDefinitionViewModel f)
-                    f.IsRequired = v;
-                else if (x.CanEditRequired && x.DefinitionVM is SectionDefinitionViewModel s)
-                    s.IsRequired = v;
-            }),
+              if(node == null) return new StackPanel();
+
+              var img = new Image
+              {
+                Source = new Bitmap(AssetLoader.Open(new System.Uri("avares://LoreViewer/Resources/link.png"))),
+                Width = 24,
+                Margin = new Thickness(-10),
+                IsVisible = node.IsInherited
+              };
+
+              return img;
+            })),
+
+        new TemplateColumn<DefinitionTreeNodeViewModel>(
+            header: "Required",
+            cellTemplate: new FuncDataTemplate<DefinitionTreeNodeViewModel>((node, _) =>
+            {
+              if(node == null) return new Panel();
+
+              return new CheckBox
+              {
+                // Note for me: in this, the "!" is an Avalonia thing:
+                // !  : one-way binding (viewmodel to view)
+                // !! : two-way binding
+                // ~  : one-way-to-source binding (view to viewmodel)
+                // ?  : set local value only not already set
+
+                [!!ToggleButton.IsCheckedProperty] = new Binding("IsRequired"),
+                [!ToggleButton.IsEnabledProperty] = new Binding("CanEditRequired"),
+                IsVisible = (node.DefinitionVM?.Definition is IRequirable)
+
+              };
+            })),
 
         new TemplateColumn<DefinitionTreeNodeViewModel>(
             header: "Actions",
@@ -86,15 +116,15 @@ public static class DefinitionTreeDataGridBuilder
 
               if (!node.IsGroupNode)
               {
-                  var deleteButton = new Button
-                  {
-                      Content = new Image(){ Source = new Bitmap(AssetLoader.Open(new System.Uri("avares://LoreViewer/Resources/trash_can.png"))), Margin = new Thickness(-10)},
-                      Width = 24,
-                      Height = 20,
-                      Padding = new Thickness(-5)
-                  };
-                  deleteButton.Bind(Button.CommandProperty, new Binding(nameof(node.DeleteCommand)));
-                  panel.Children.Add(deleteButton);
+                var deleteButton = new Button
+                {
+                    Content = new Image(){ Source = new Bitmap(AssetLoader.Open(new System.Uri("avares://LoreViewer/Resources/trash_can.png"))), Margin = new Thickness(-10)},
+                    Width = 24,
+                    Padding = new Thickness(-5),
+                    [!Button.IsEnabledProperty] = new Binding("CanDelete")
+                };
+                deleteButton.Bind(Button.CommandProperty, new Binding(nameof(node.DeleteCommand)));
+                panel.Children.Add(deleteButton);
               }
               else
               {
@@ -103,7 +133,6 @@ public static class DefinitionTreeDataGridBuilder
                 {
                     Content = new Image(){ Source = new Bitmap(AssetLoader.Open(new System.Uri("avares://LoreViewer/Resources/add.png"))), Margin = new Thickness(-10) },
                     Width = 24,
-                    Height = 20
                 };
                 if(node.Parent != null)
                   addButton.Bind(Button.CommandProperty, new Binding(nameof(node.AddDefinitionCommand)));

@@ -23,7 +23,7 @@ namespace LoreViewer.Settings
         LoreSettings settingsToSerialize = this;
 
         var serializer = new Serializer(
-            new SerializerSettings{ EmitDefaultValues = false, IgnoreNulls = true, EmitAlias = false
+            new SerializerSettings{ EmitDefaultValues = false, IgnoreNulls = true, EmitAlias = false, 
             }
           );
 
