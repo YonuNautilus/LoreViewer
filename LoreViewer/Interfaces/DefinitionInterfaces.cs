@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using SharpYaml.Serialization;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using SharpYaml.Serialization;
 
 namespace LoreViewer.Settings.Interfaces
 {

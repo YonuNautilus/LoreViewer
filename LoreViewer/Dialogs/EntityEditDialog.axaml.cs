@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using LoreViewer.ViewModels.LoreEntities;
-using System;
 
 namespace LoreViewer;
 

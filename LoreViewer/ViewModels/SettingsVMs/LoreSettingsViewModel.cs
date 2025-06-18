@@ -1,6 +1,4 @@
-﻿using Avalonia.Controls;
-using DocumentFormat.OpenXml.Wordprocessing;
-using LoreViewer.Settings;
+﻿using LoreViewer.Settings;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;

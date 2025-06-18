@@ -1,11 +1,5 @@
-﻿using Avalonia.Interactivity;
-using LoreViewer.Settings;
-using System;
-using System.Collections.Generic;
+﻿using LoreViewer.Settings;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {

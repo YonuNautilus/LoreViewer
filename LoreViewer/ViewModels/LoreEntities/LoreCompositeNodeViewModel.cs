@@ -1,5 +1,4 @@
-﻿using DynamicData;
-using LoreViewer.LoreElements;
+﻿using LoreViewer.LoreElements;
 using System.Collections.ObjectModel;
 
 namespace LoreViewer.ViewModels.LoreEntities

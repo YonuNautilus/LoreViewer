@@ -1,20 +1,12 @@
-﻿using Avalonia.Dialogs;
-using Avalonia.Styling;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office.PowerPoint.Y2021.M06.Main;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DynamicData;
+﻿using DynamicData;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
 using SharpYaml.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.Json;
 
 namespace LoreViewer.Settings
 {

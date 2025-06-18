@@ -1,8 +1,5 @@
-﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using LoreViewer.Settings;
-using System.Collections.Generic;
+﻿using LoreViewer.Settings;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {

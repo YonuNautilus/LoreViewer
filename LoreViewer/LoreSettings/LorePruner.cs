@@ -1,6 +1,4 @@
-﻿using ReactiveUI;
-using System.Linq;
-using System.Reflection.Metadata;
+﻿using System.Linq;
 
 namespace LoreViewer.Settings
 {

@@ -1,8 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using LoreViewer.ViewModels;
-using System.Collections;
 using System.Collections.ObjectModel;
 
 namespace LoreViewer.Views;

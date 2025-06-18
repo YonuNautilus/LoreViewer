@@ -6,7 +6,6 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using DynamicData.Binding;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using LoreViewer.ViewModels.SettingsVMs;

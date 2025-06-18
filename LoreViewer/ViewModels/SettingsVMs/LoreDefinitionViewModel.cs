@@ -1,6 +1,4 @@
 ﻿using LoreViewer.Settings;
-using ReactiveUI;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 

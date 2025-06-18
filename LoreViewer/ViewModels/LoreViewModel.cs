@@ -10,7 +10,6 @@ using LoreViewer.Parser;
 using LoreViewer.Settings;
 using LoreViewer.Validation;
 using LoreViewer.ViewModels.LoreEntities;
-using LoreViewer.ViewModels.SettingsVMs;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
