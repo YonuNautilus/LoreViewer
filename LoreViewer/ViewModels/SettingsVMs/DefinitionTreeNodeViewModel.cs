@@ -14,7 +14,24 @@ namespace LoreViewer.ViewModels.SettingsVMs;
 
 public class DefinitionTreeNodeViewModel : ReactiveObject
 {
+  private class NewNameTracker
+  {
+    private int number = 1;
+    private string prefix = string.Empty;
+    public NewNameTracker(string namePrefix) { prefix = namePrefix; }
 
+    public string GetName() => $"{prefix}_{number++}";
+  }
+
+
+
+
+
+  private static NewNameTracker tpyeNamer = new NewNameTracker("NewType");
+  private static NewNameTracker fieldNamer = new NewNameTracker("NewField");
+  private static NewNameTracker sectionNamer = new NewNameTracker("NewSection");
+  private static NewNameTracker collectionNamer = new NewNameTracker("NewCollection");
+  private static NewNameTracker embeddedNamer = new NewNameTracker("NewEmbedded");
   private LoreSettingsViewModel _settings;
   private Type _addType;
 
@@ -70,14 +87,14 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
       {
         if (_addType == typeof(LoreTypeDefinition))
         {
-          var newDef = new LoreTypeDefinition { name = "NewType" };
+          var newDef = new LoreTypeDefinition { name = DefinitionTreeNodeViewModel.tpyeNamer.GetName() };
           _settings.m_oLoreSettings.types.Add(newDef);
           var newVM = new TypeDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (_addType == typeof(LoreCollectionDefinition))
         {
-          var newDef = new LoreCollectionDefinition { name = "NewCollection" };
+          var newDef = new LoreCollectionDefinition { name = DefinitionTreeNodeViewModel.collectionNamer.GetName() };
           _settings.m_oLoreSettings.collections.Add(newDef);
           var newVM = new CollectionDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
@@ -92,28 +109,28 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
       {
         if (Parent?.DefinitionVM?.Definition is IFieldDefinitionContainer fCont && groupName == "Fields")
         {
-          var newDef = new LoreFieldDefinition { name = "NewField" };
+          var newDef = new LoreFieldDefinition { name = DefinitionTreeNodeViewModel.fieldNamer.GetName() };
           fCont.fields.Add(newDef);
           var newVM = new FieldDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (Parent?.DefinitionVM?.Definition is ISectionDefinitionContainer sCont && groupName == "Sections")
         {
-          var newDef = new LoreSectionDefinition { name = "NewSection" };
+          var newDef = new LoreSectionDefinition { name = DefinitionTreeNodeViewModel.sectionNamer.GetName() };
           sCont.sections.Add(newDef);
           var newVM = new SectionDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (Parent?.DefinitionVM?.Definition is ICollectionDefinitionContainer cCont && groupName == "Collections")
         {
-          var newDef = new LoreCollectionDefinition { name = "NewCollection" };
+          var newDef = new LoreCollectionDefinition { name = DefinitionTreeNodeViewModel.collectionNamer.GetName() };
           cCont.collections.Add(newDef);
           var newVM = new CollectionDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (Parent?.DefinitionVM?.Definition is IEmbeddedNodeDefinitionContainer eCont && groupName == "Embedded Nodes")
         {
-          var newDef = new LoreEmbeddedNodeDefinition { name = "NewEmbedded" };
+          var newDef = new LoreEmbeddedNodeDefinition { name = DefinitionTreeNodeViewModel.embeddedNamer.GetName() };
           eCont.embeddedNodeDefs.Add(newDef);
           var newVM = new EmbeddedNodeDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));

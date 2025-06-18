@@ -152,7 +152,6 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public void NotifyYAMLChanged()
   {
     this.RaisePropertyChanged(nameof(NewYAML));
-    this.RaisePropertyChanged(nameof(NewYAML));
   }
 
 }
@@ -186,6 +185,8 @@ public static class SettingsRefresher
   public static void Apply(LoreSettingsViewModel vm)
   {
     if (vm?.m_oLoreSettings == null) return;
+
+    vm?.m_oLoreSettings.PostProcess();
 
     vm.NotifyYAMLChanged();
   }

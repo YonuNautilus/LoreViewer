@@ -1,6 +1,5 @@
 ﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
-using ReactiveUI;
 using SharpYaml.Serialization;
 using System;
 using System.Collections.Generic;
