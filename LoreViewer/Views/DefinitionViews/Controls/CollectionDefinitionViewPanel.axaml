@@ -31,10 +31,10 @@
     </Panel>
 
     <Label Grid.Row="2" Grid.Column="0" Content="Contained Type" />
-    <ComboBox IsEnabled="{Binding IsCollectionOfNodes}" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AllTypes}" SelectedItem="{Binding ContainedType}" >
+    <ComboBox IsEnabled="{Binding IsCollectionOfNodes}" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AllTypeVMs}" SelectedItem="{Binding ContainedTypeVM}" >
       <ComboBox.ItemTemplate>
         <DataTemplate>
-          <TextBlock Text="{Binding}" />
+          <TextBlock Text="{Binding Name}" />
         </DataTemplate>
       </ComboBox.ItemTemplate>
     </ComboBox>
@@ -44,7 +44,7 @@
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
         <Button ToolTip.Tip="Use New Collection Definition"
                 Command="{Binding AddCollectionCommand}">
-          +
+          <Image Source="avares://LoreViewer/Resources/add.png" Margin="-5" />
         </Button>
         <Button ToolTip.Tip="Edit Collection Definition"
                 Command="{Binding EditDefinitionCommand}"
@@ -52,10 +52,10 @@
           <Image Source="avares://LoreViewer/Resources/pencil.png" />
         </Button>
       </StackPanel>
-      <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllCollections}" SelectedItem="{Binding ContainedType}" >
+      <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllCollectionVMs}" SelectedItem="{Binding ContainedTypeVM}" >
         <ComboBox.ItemTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding}" />
+            <TextBlock Text="{Binding Name}" />
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>

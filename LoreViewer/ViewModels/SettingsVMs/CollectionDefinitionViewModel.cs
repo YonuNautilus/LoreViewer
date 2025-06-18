@@ -43,7 +43,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
         }
         else
         {
-          if (AllCollections.Count > 0) colDef.ContainedType = AllCollections.FirstOrDefault();
+          if (AllCollectionVMs.Count > 0) colDef.ContainedType = AllCollectionVMs.FirstOrDefault().Definition;
           else
             UseNewCollectionDefinition(new LoreCollectionDefinition() { name = "New Collection" });
 
@@ -53,6 +53,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
         this.RaisePropertyChanged("IsCollectionOfCollections");
         this.RaisePropertyChanged("IsCollectionOfNodes");
         this.RaisePropertyChanged("AllTypes");
+        this.RaisePropertyChanged("AllTypeVMs");
 
       }
     }
@@ -61,7 +62,26 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public string ContainedTypeName { get => colDef.entryTypeName; }
 
-    public LoreDefinitionBase ContainedType { get => colDef.ContainedType; }
+    public LoreDefinitionBase ContainedType { get => colDef.ContainedType; set => colDef.ContainedType = value; }
+    public LoreDefinitionViewModel ContainedTypeVM
+    {
+      get
+      {
+        switch (ContainedType)
+        {
+          case LoreTypeDefinition typeDef:
+            return AllTypeVMs.FirstOrDefault(tvm => tvm.Definition == typeDef);
+          case LoreCollectionDefinition colDef:
+            return AllCollectionVMs.FirstOrDefault(cvm => cvm.Definition == colDef);
+          default:
+            return null;
+        }
+      }
+      set
+      {
+        ContainedType = value.Definition;
+      }
+    }
 
     public LoreCollectionDefinition EntryCollection { get => colDef.entryCollection; }
 
@@ -69,11 +89,20 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public LoreTypeDefinition EntryType { get => colDef.ContainedType as LoreTypeDefinition; }
 
-    public CollectionDefinitionViewModel(LoreCollectionDefinition definition) : base(definition) { }
+    public CollectionDefinitionViewModel(LoreCollectionDefinition definition) : base(definition)
+    {
+      AddCollectionCommand = ReactiveCommand.Create(CreateNewLocalCollection);
+    }
+
+
+    private void CreateNewLocalCollection()
+    {
+      UseNewCollectionDefinition(new LoreCollectionDefinition() { name = "New Collection" });
+    }
 
     public void UseNewCollectionDefinition(LoreCollectionDefinition newColDef)
     {
-      locallyDefinedCollectionDefs.Add(newColDef);
+      locallyDefinedCollectionDefs.Add(new CollectionDefinitionViewModel(newColDef));
       colDef.ContainedType = newColDef;
       this.RaisePropertyChanged("AllTypes");
       this.RaisePropertyChanged("AllCollections");

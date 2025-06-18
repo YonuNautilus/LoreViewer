@@ -177,6 +177,8 @@ namespace LoreViewer.Settings
       foreach (LoreTypeDefinition type in allTypes)
         visit(type.name);
 
+      var remainingTypes = allTypes.Except(res);
+
       return res;
     }
 

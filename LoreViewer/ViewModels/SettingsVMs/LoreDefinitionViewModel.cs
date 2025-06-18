@@ -8,13 +8,17 @@ namespace LoreViewer.ViewModels.SettingsVMs
   {
     public static LoreSettingsViewModel CurrentSettingsViewModel { get; set; }
 
-    public ObservableCollection<LoreCollectionDefinition> locallyDefinedCollectionDefs = new ObservableCollection<LoreCollectionDefinition>();
+    public ObservableCollection<CollectionDefinitionViewModel> locallyDefinedCollectionDefs = new ObservableCollection<CollectionDefinitionViewModel>();
 
-    public ObservableCollection<LoreCollectionDefinition> AllCollections
+    public ObservableCollection<CollectionDefinitionViewModel> AllCollectionVMs
     {
       get
       {
-        return new ObservableCollection<LoreCollectionDefinition>(CurrentSettings.collections.Concat(locallyDefinedCollectionDefs).ToList());
+        return new ObservableCollection<CollectionDefinitionViewModel>(
+          CurrentSettings.collections.Select(c => new CollectionDefinitionViewModel(c)).Concat(
+            locallyDefinedCollectionDefs
+          )
+        );
       }
     }
 
