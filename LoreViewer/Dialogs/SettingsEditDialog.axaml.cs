@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
@@ -18,6 +19,7 @@ public partial class SettingsEditDialog : Window
     InitializeComponent();
 
     var vm = new LoreSettingsViewModel(settings);
+    LoreDefinitionViewModel.CurrentSettingsViewModel = vm;
     this.DataContext = vm;
 
     var source = DefinitionTreeDataGridBuilder.BuildTreeSource(vm.TreeRootNodes);
@@ -86,24 +88,29 @@ public static class DefinitionTreeDataGridBuilder
               {
                   var deleteButton = new Button
                   {
-                      Content = new Image(){ Source = new Bitmap(AssetLoader.Open(new System.Uri("avares://LoreViewer/Resources/pencil.png"))) },
+                      Content = new Image(){ Source = new Bitmap(AssetLoader.Open(new System.Uri("avares://LoreViewer/Resources/trash_can.png"))), Margin = new Thickness(-10)},
                       Width = 24,
-                      Height = 20
+                      Height = 20,
+                      Padding = new Thickness(-5)
                   };
                   deleteButton.Bind(Button.CommandProperty, new Binding(nameof(node.DeleteCommand)));
                   panel.Children.Add(deleteButton);
               }
               else
               {
-                  // Optional: add "+" add button for group nodes
-                  var addButton = new Button
-                  {
-                      Content = "+",
-                      Width = 24,
-                      Height = 20
-                  };
-                  // addButton.Bind(...) for future AddDefinitionCommand
-                  panel.Children.Add(addButton);
+                // Optional: add "+" add button for group nodes
+                var addButton = new Button
+                {
+                    Content = new Image(){ Source = new Bitmap(AssetLoader.Open(new System.Uri("avares://LoreViewer/Resources/add.png"))), Margin = new Thickness(-10) },
+                    Width = 24,
+                    Height = 20
+                };
+                if(node.Parent != null)
+                  addButton.Bind(Button.CommandProperty, new Binding(nameof(node.AddDefinitionCommand)));
+                else
+                  addButton.Bind(Button.CommandProperty, new Binding(nameof(node.AddDefinitionCommand)));
+
+                panel.Children.Add(addButton);
               }
 
                 return panel;

@@ -8,6 +8,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 {
   public abstract class LoreDefinitionViewModel : LoreSettingsObjectViewModel
   {
+    public static LoreSettingsViewModel CurrentSettingsViewModel { get; set; }
 
     public ObservableCollection<LoreCollectionDefinition> locallyDefinedCollectionDefs = new ObservableCollection<LoreCollectionDefinition>();
 

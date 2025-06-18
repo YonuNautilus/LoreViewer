@@ -6,173 +6,187 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace LoreViewer.ViewModels.SettingsVMs
+namespace LoreViewer.ViewModels.SettingsVMs;
+
+public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 {
-  public class LoreSettingsViewModel : LoreSettingsObjectViewModel
+
+  public string OriginalYAML { get => m_oLoreSettings.OriginalYAML; }
+  public string NewYAML { get => m_oLoreSettings.CurrentYAML; }
+
+  public LoreSettings m_oLoreSettings;
+
+
+
+  private DefinitionTreeNodeViewModel? _selectedNode;
+  public DefinitionTreeNodeViewModel? SelectedNode
   {
-
-    public string OriginalYAML { get; }
-    public string NewYAML { get => m_oLoreSettings.CurrentYAML; }
-
-    private LoreSettings m_oLoreSettings;
-
-
-
-    private DefinitionTreeNodeViewModel? _selectedNode;
-    public DefinitionTreeNodeViewModel? SelectedNode
+    get => _selectedNode;
+    set
     {
-      get => _selectedNode;
-      set
-      {
-        SelectedDefinition = value?.DefinitionVM;
-        this.RaiseAndSetIfChanged(ref _selectedNode, value);
-      }
-    }
-
-    public LoreDefinitionViewModel? _selectedDef;
-
-    public LoreDefinitionViewModel? SelectedDefinition
-    {
-      get => _selectedDef;
-      set
-      {
-        this.RaiseAndSetIfChanged(ref _selectedDef, value);
-      }
-    }
-
-
-    public string LoreLibraryFolderPath { get => m_oLoreSettings.FolderPath; }
-
-    private ObservableCollection<TypeDefinitionViewModel> m_cTypes = new ObservableCollection<TypeDefinitionViewModel>();
-    private ObservableCollection<CollectionDefinitionViewModel> m_cCollections = new ObservableCollection<CollectionDefinitionViewModel>();
-
-    public ObservableCollection<TypeDefinitionViewModel> TypeDefs { get => m_cTypes; }
-    public ObservableCollection<CollectionDefinitionViewModel> ColDefs { get => m_cCollections; }
-    
-    private void RefreshTypeDefs()
-    {
-      m_cTypes.Clear();
-      foreach (LoreTypeDefinition def in m_oLoreSettings.types)
-        m_cTypes.Add(new TypeDefinitionViewModel(def));
-    }
-
-
-    private void RefreshColDefs()
-    {
-      ColDefs.Clear();
-      foreach (LoreCollectionDefinition def in m_oLoreSettings.collections)
-        ColDefs.Add(new CollectionDefinitionViewModel(def));
-    }
-
-    public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.settings); }
-    public override ObservableCollection<TypeDefinitionViewModel> Types { get => m_cTypes; }
-    public override ObservableCollection<FieldDefinitionViewModel> Fields => null;
-    public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
-    public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
-    public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
-
-
-    public ObservableCollection<DefinitionTreeNodeViewModel> TreeRootNodes { get; set; } = new ObservableCollection<DefinitionTreeNodeViewModel>();
-
-    public LoreSettingsViewModel(LoreSettings _settings)
-    {
-      DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
-      EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
-      AddTypeCommand = ReactiveCommand.Create(AddType);
-      AddCollectionCommand = ReactiveCommand.Create(AddCollection);
-      m_oLoreSettings = _settings;
-      RefreshColDefs();
-      RefreshTypeDefs();
-
-      CurrentSettings = _settings;
-
-      OriginalYAML = _settings.OriginalYAML;
-
-
-      var typesGroup = new DefinitionTreeNodeViewModel("Types");
-      foreach (var type in m_oLoreSettings.types)
-      {
-        var typeVM = new TypeDefinitionViewModel(type);
-        var node = new DefinitionTreeNodeViewModel(typeVM);
-        node.BuildChildren();
-        typesGroup.AddChild(node);
-      }
-
-      var collectionsGroup = new DefinitionTreeNodeViewModel("Collections");
-      foreach (var collection in m_oLoreSettings.collections)
-      {
-        var colVM = new CollectionDefinitionViewModel(collection);
-        var node = new DefinitionTreeNodeViewModel(colVM);
-        collectionsGroup.AddChild(node);
-      }
-
-      TreeRootNodes.Add(typesGroup);
-      TreeRootNodes.Add(collectionsGroup);
-    }
-
-    public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)
-    {
-      switch (def)
-      {
-        case LoreTypeDefinition typeDef:
-          return new TypeDefinitionViewModel(typeDef);
-        case LoreFieldDefinition fieldDef:
-          return new FieldDefinitionViewModel(fieldDef);
-        case LoreSectionDefinition secDef:
-          return new SectionDefinitionViewModel(secDef);
-        case LoreCollectionDefinition colDef:
-          return new CollectionDefinitionViewModel(colDef);
-        default: return null;
-      }
-    }
-
-    public void RefreshYaml()
-    {
-      this.RaisePropertyChanged("NewYAML");
-    }
-
-    public override void RefreshLists()
-    {
-      RefreshTypeDefs();
-      RefreshColDefs();
-    }
-
-    public new void AddType()
-    {
-      CurrentSettings.types.Add(new LoreTypeDefinition() { name = "New Type" });
-      RefreshTypeDefs();
-      RefreshYaml();
-    }
-
-    public new void AddCollection()
-    {
-      CurrentSettings.collections.Add(new LoreCollectionDefinition() { name = "New Collection" });
-      RefreshColDefs();
-      RefreshYaml();
+      SelectedDefinition = value?.DefinitionVM;
+      this.RaiseAndSetIfChanged(ref _selectedNode, value);
     }
   }
 
-  public class AppSettingsViewModel : ViewModelBase
+  public LoreDefinitionViewModel? _selectedDef;
+
+  public LoreDefinitionViewModel? SelectedDefinition
   {
-    private AppSettings m_oAppSettings;
+    get => _selectedDef;
+    set
+    {
+      this.RaiseAndSetIfChanged(ref _selectedDef, value);
+    }
+  }
 
-    public bool IgnoreCase { get => m_oAppSettings.ignoreCase; set => m_oAppSettings.ignoreCase = value; }
-    public bool SoftLinking { get => m_oAppSettings.softLinking; set => m_oAppSettings.softLinking = value; }
-    public bool EnablePruningForSerialization { get => m_oAppSettings.EnableSerializationPruning; set => m_oAppSettings.EnableSerializationPruning = value; }
-    public string MarkdownExtensions
+
+  public string LoreLibraryFolderPath { get => m_oLoreSettings.FolderPath; }
+
+  private ObservableCollection<TypeDefinitionViewModel> m_cTypes = new ObservableCollection<TypeDefinitionViewModel>();
+  private ObservableCollection<CollectionDefinitionViewModel> m_cCollections = new ObservableCollection<CollectionDefinitionViewModel>();
+
+  public ObservableCollection<TypeDefinitionViewModel> TypeDefs { get => m_cTypes; }
+  public ObservableCollection<CollectionDefinitionViewModel> ColDefs { get => m_cCollections; }
+
+  private void RefreshTypeDefs()
+  {
+    m_cTypes.Clear();
+    foreach (LoreTypeDefinition def in m_oLoreSettings.types)
+      m_cTypes.Add(new TypeDefinitionViewModel(def));
+  }
+
+
+  private void RefreshColDefs()
+  {
+    ColDefs.Clear();
+    foreach (LoreCollectionDefinition def in m_oLoreSettings.collections)
+      ColDefs.Add(new CollectionDefinitionViewModel(def));
+  }
+
+  public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.settings); }
+  public override ObservableCollection<TypeDefinitionViewModel> Types { get => m_cTypes; }
+  public override ObservableCollection<FieldDefinitionViewModel> Fields => null;
+  public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
+  public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
+  public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
+
+
+  public ObservableCollection<DefinitionTreeNodeViewModel> TreeRootNodes { get; set; } = new ObservableCollection<DefinitionTreeNodeViewModel>();
+
+  public LoreSettingsViewModel(LoreSettings _settings)
+  {
+    DeleteDefinitionCommand = ReactiveCommand.Create<LoreDefinitionViewModel>(DeleteDefinition);
+    EditDefinitionCommand = ReactiveCommand.CreateFromTask<LoreDefinitionViewModel>(EditDefinition);
+    AddTypeCommand = ReactiveCommand.Create(AddType);
+    AddCollectionCommand = ReactiveCommand.Create(AddCollection);
+    m_oLoreSettings = _settings;
+    RefreshColDefs();
+    RefreshTypeDefs();
+
+    CurrentSettings = _settings;
+
+
+    var typesGroup = new DefinitionTreeNodeViewModel("Types", this, typeof(LoreTypeDefinition));
+    foreach (var type in m_oLoreSettings.types)
     {
-      get => string.Join("\r\n", m_oAppSettings.markdownExtensions);
-      set => m_oAppSettings.markdownExtensions = value.Split("\r\n").ToList();
-    }
-    public string BlockedPaths
-    {
-      get => string.Join("\r\n", m_oAppSettings.blockedPaths);
-      set => m_oAppSettings.blockedPaths = value.Split("\r\n").ToList();
+      var typeVM = new TypeDefinitionViewModel(type);
+      var node = new DefinitionTreeNodeViewModel(typeVM);
+      node.BuildChildren();
+      typesGroup.AddChild(node);
     }
 
-    public AppSettingsViewModel(AppSettings oAppSettings)
+    var collectionsGroup = new DefinitionTreeNodeViewModel("Collections", this, typeof(LoreCollectionDefinition));
+    foreach (var collection in m_oLoreSettings.collections)
     {
-      m_oAppSettings = oAppSettings;
+      var colVM = new CollectionDefinitionViewModel(collection);
+      var node = new DefinitionTreeNodeViewModel(colVM);
+      collectionsGroup.AddChild(node);
     }
+
+    TreeRootNodes.Add(typesGroup);
+    TreeRootNodes.Add(collectionsGroup);
+  }
+
+  public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)
+  {
+    switch (def)
+    {
+      case LoreTypeDefinition typeDef:
+        return new TypeDefinitionViewModel(typeDef);
+      case LoreFieldDefinition fieldDef:
+        return new FieldDefinitionViewModel(fieldDef);
+      case LoreSectionDefinition secDef:
+        return new SectionDefinitionViewModel(secDef);
+      case LoreCollectionDefinition colDef:
+        return new CollectionDefinitionViewModel(colDef);
+      default: return null;
+    }
+  }
+
+  public void RefreshYaml()
+  {
+    this.RaisePropertyChanged("NewYAML");
+  }
+
+  public override void RefreshLists()
+  {
+    RefreshTypeDefs();
+    RefreshColDefs();
+  }
+
+  public new void AddType()
+  {
+    CurrentSettings.types.Add(new LoreTypeDefinition() { name = "New Type" });
+    RefreshTypeDefs();
+    RefreshYaml();
+  }
+
+  public new void AddCollection()
+  {
+    CurrentSettings.collections.Add(new LoreCollectionDefinition() { name = "New Collection" });
+    RefreshColDefs();
+    RefreshYaml();
+  }
+
+  public void NotifyYAMLChanged()
+  {
+    this.RaisePropertyChanged(nameof(NewYAML));
+    this.RaisePropertyChanged(nameof(NewYAML));
+  }
+
+}
+
+public class AppSettingsViewModel : ViewModelBase
+{
+  private AppSettings m_oAppSettings;
+
+  public bool IgnoreCase { get => m_oAppSettings.ignoreCase; set => m_oAppSettings.ignoreCase = value; }
+  public bool SoftLinking { get => m_oAppSettings.softLinking; set => m_oAppSettings.softLinking = value; }
+  public bool EnablePruningForSerialization { get => m_oAppSettings.EnableSerializationPruning; set => m_oAppSettings.EnableSerializationPruning = value; }
+  public string MarkdownExtensions
+  {
+    get => string.Join("\r\n", m_oAppSettings.markdownExtensions);
+    set => m_oAppSettings.markdownExtensions = value.Split("\r\n").ToList();
+  }
+  public string BlockedPaths
+  {
+    get => string.Join("\r\n", m_oAppSettings.blockedPaths);
+    set => m_oAppSettings.blockedPaths = value.Split("\r\n").ToList();
+  }
+
+  public AppSettingsViewModel(AppSettings oAppSettings)
+  {
+    m_oAppSettings = oAppSettings;
+  }
+}
+
+public static class SettingsRefresher
+{
+  public static void Apply(LoreSettingsViewModel vm)
+  {
+    if (vm?.m_oLoreSettings == null) return;
+
+    vm.NotifyYAMLChanged();
   }
 }

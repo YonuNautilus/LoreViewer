@@ -14,6 +14,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 {
   public abstract class LoreSettingsObjectViewModel : ViewModelBase
   {
+
     public ReactiveCommand<Unit, Unit> AddTypeCommand { get; set; }
     public ReactiveCommand<Unit, Unit> AddFieldCommand { get; set; }
     public ReactiveCommand<Unit, Unit> AddSectionCommand { get; set; }
