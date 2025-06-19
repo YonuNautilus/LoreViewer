@@ -191,6 +191,8 @@ namespace LoreViewer.Settings
 
       newSettings.settings = this.settings.Clone();
 
+      PostProcess();
+
       newSettings.OriginalYAML = this.OriginalYAML;
 
       return newSettings;

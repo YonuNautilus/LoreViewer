@@ -552,7 +552,7 @@ namespace LoreViewer.Settings
       }
       set
       {
-        if(IsInherited) throw new Exception("Cannot change node type of inherited embedded node definition");
+        if(IsInherited && !value.IsATypeOf((Base as LoreEmbeddedNodeDefinition).nodeType)) throw new Exception("Cannot change node type of inherited embedded node definition");
         else m_oNodeType = value;
       }
     }
