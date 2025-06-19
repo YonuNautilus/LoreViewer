@@ -129,7 +129,7 @@ public static class DefinitionTreeDataGridBuilder
 
                 [!!ToggleButton.IsCheckedProperty] = new Binding("IsRequired"),
                 [!ToggleButton.IsEnabledProperty] = new Binding("CanEditRequired"),
-                IsVisible = (node.DefinitionVM?.Definition is IRequirable && node.Parent.Parent != null),
+                IsVisible = (node.DefinitionVM?.Definition is IRequirable && node.Parent?.Parent != null),
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
 
               };

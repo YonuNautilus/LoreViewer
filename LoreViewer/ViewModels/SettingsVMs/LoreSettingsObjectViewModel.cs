@@ -27,8 +27,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
-        if(!_allTypeVMs.Any() && CurrentSettings != null) _allTypeVMs = new ObservableCollection<TypeDefinitionViewModel>(CurrentSettings.types.Select(t => new TypeDefinitionViewModel(t)));
-        return _allTypeVMs;
+        return Types;
       }
     }
 

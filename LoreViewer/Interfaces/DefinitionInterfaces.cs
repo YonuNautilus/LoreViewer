@@ -16,6 +16,12 @@ namespace LoreViewer.Settings.Interfaces
 
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
 
+    public void AddField(LoreFieldDefinition newFieldDef)
+    {
+      if (fields == null) fields = new List<LoreFieldDefinition>();
+      fields.Add(newFieldDef);
+    }
+
   }
 
   public interface ISectionDefinitionContainer
@@ -26,6 +32,11 @@ namespace LoreViewer.Settings.Interfaces
     public bool HasSectionDefinition(string sectionName) => sections.Any(sec => sectionName.Contains(sec.name));
     public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections.FirstOrDefault(s => s.name == sectionName);
 
+    public void AddSection(LoreSectionDefinition newSectionDef)
+    {
+      if (sections == null) sections = new List<LoreSectionDefinition>();
+      sections.Add(newSectionDef);
+    }
   }
 
   public interface ICollectionDefinitionContainer
@@ -34,6 +45,12 @@ namespace LoreViewer.Settings.Interfaces
     public bool HasCollections => collections != null && collections.Count > 0;
     public bool HasCollectionDefinition(string collectionName) => collections.Any(col => collectionName == col.name);
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections.FirstOrDefault(c => c.name == collectionName);
+
+    public void AddCollection(LoreCollectionDefinition newCollectionDef)
+    {
+      if (collections == null) collections = new List<LoreCollectionDefinition>();
+      collections.Add(newCollectionDef);
+    }
   }
 
   public interface IEmbeddedNodeDefinitionContainer
@@ -53,6 +70,12 @@ namespace LoreViewer.Settings.Interfaces
           t =>
           (t.nodeType == typeDef || t.nodeType.IsParentOf(typeDef)) &&
           (!string.IsNullOrWhiteSpace(t.name) ? t.name == nodeTitle : true));
+
+    public void AddEmbedded(LoreEmbeddedNodeDefinition newEmbeddedDef)
+    {
+      if (embeddedNodeDefs == null) embeddedNodeDefs = new List<LoreEmbeddedNodeDefinition>();
+      embeddedNodeDefs.Add(newEmbeddedDef);
+    }
   }
 
   public interface IRequirable

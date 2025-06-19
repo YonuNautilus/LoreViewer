@@ -80,7 +80,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
       set
       {
         if(value != null)
+        {
           ContainedType = value.Definition;
+          SettingsRefresher.Apply(CurrentSettingsViewModel);
+        }
       }
     }
 
