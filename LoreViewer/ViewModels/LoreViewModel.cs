@@ -184,7 +184,9 @@ namespace LoreViewer.ViewModels
       if (_settings != null)
       {
         var dialog = new SettingsEditDialog(_settings.Clone());
-        await dialog.ShowDialog(TopLevel.GetTopLevel(m_oView) as Window);
+        LoreSettings newSettings = await dialog.ShowDialog<LoreSettings>(TopLevel.GetTopLevel(m_oView) as Window);
+        if (newSettings != null)
+          Trace.WriteLine("GOT NEW SETTINGS");
       }
     }
 

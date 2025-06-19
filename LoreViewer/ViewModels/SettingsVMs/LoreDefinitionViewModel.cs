@@ -66,7 +66,15 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public bool CanEditName { get => false; }
+    public bool CanEditName
+    {
+      get
+      {
+        if (IsInherited)
+          return Definition is LoreTypeDefinition;
+        else return true;
+      }
+    }
 
     public string Name { get => Definition.name; set => Definition.name = value; }
 

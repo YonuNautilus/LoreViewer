@@ -135,7 +135,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     {
       var typeVM = new TypeDefinitionViewModel(type);
       var node = new DefinitionTreeNodeViewModel(typeVM);
-      node.BuildChildren();
+      //node.BuildChildren();
       typesGroup.AddChild(node);
     }
 

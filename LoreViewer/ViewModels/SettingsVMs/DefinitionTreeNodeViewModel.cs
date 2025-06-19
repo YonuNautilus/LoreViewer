@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using DocumentFormat.OpenXml.Drawing;
+using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System;
@@ -43,9 +44,15 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
   public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
   public ReactiveCommand<Unit, Unit> AddDefinitionCommand { get; }
 
-  public string DisplayName => IsGroupNode
-      ? GroupName
-      : DefinitionVM?.Name ?? "(Unnamed)";
+  public string DisplayName
+  {
+    get
+    {
+      if (IsGroupNode) return Children.Any() ? $"{GroupName} ({Children.Count})" : GroupName;
+      else return DefinitionVM?.Name ?? "(Unnamed)";
+    }
+  }
+      
 
   public bool IsInherited => DefinitionVM?.IsInherited ?? false;
   public bool CanDelete
@@ -90,7 +97,16 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     }
   }
 
-  public bool CanEditName => DefinitionVM?.CanEditName ?? false;
+  public bool NameIsReadOnly { get => !CanEditName; }
+
+  public bool CanEditName
+  {
+    get
+    {
+      if (IsGroupNode) return false;
+      else return DefinitionVM?.CanEditName ?? false;
+    }
+  }
 
 
   public DefinitionTreeNodeViewModel()
@@ -174,6 +190,8 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     DefinitionVM = vm;
     IsGroupNode = false;
 
+    BuildChildren();
+
     DeleteCommand = ReactiveCommand.Create(() =>
     {
       if (Parent is DefinitionTreeNodeViewModel parentNode)
@@ -224,36 +242,50 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     if (DefinitionVM == null)
       return;
 
-    if (DefinitionVM is TypeDefinitionViewModel typeVM)
+    if(DefinitionVM.Definition is IFieldDefinitionContainer ifcont)
     {
+      // If this is a field definition, but it's NOT a nested values field, break out of this method
+      if (ifcont is LoreFieldDefinition fd && fd.style != EFieldStyle.NestedValues)
+        return;
+
       var fieldGroup = new DefinitionTreeNodeViewModel(FieldGroupName, addType: typeof(LoreFieldDefinition));
-      if (typeVM.Fields?.Any() == true)
+      if (DefinitionVM.Fields != null)
       {
-        foreach (var f in typeVM.Fields)
+        foreach (var f in DefinitionVM.Fields)
           fieldGroup.AddChild(new DefinitionTreeNodeViewModel(f));
       }
       AddChild(fieldGroup);
+    }
 
+    if(DefinitionVM.Definition is ISectionDefinitionContainer iscont)
+    {
       var sectionGroup = new DefinitionTreeNodeViewModel(SectionGroupName, addType: typeof(LoreSectionDefinition));
-      if (typeVM.Sections?.Any() == true)
+      if (DefinitionVM.Sections != null)
       {
-        foreach (var s in typeVM.Sections)
+        foreach (var s in DefinitionVM.Sections)
           sectionGroup.AddChild(new DefinitionTreeNodeViewModel(s));
       }
       AddChild(sectionGroup);
+    }
 
+    if(DefinitionVM.Definition is ICollectionDefinitionContainer iccont)
+    {
       var colGroup = new DefinitionTreeNodeViewModel(CollectionGroupName, addType: typeof(LoreCollectionDefinition));
-      if (typeVM.Collections?.Any() == true)
+      if (DefinitionVM.Sections != null)
       {
-        foreach (var c in typeVM.Collections)
+        foreach (var c in DefinitionVM.Collections)
           colGroup.AddChild(new DefinitionTreeNodeViewModel(c));
       }
       AddChild(colGroup);
+    }
 
+
+    if(DefinitionVM.Definition is IEmbeddedNodeDefinitionContainer iecont)
+    {
       var embedGroup = new DefinitionTreeNodeViewModel(EmbeddedNodsGroupName, addType: typeof(LoreEmbeddedNodeDefinition));
-      if (typeVM.EmbeddedNodes?.Any() == true)
+      if (DefinitionVM.EmbeddedNodes != null)
       {
-        foreach (var e in typeVM.EmbeddedNodes)
+        foreach (var e in DefinitionVM.EmbeddedNodes)
           embedGroup.AddChild(new DefinitionTreeNodeViewModel(e));
       }
       AddChild(embedGroup);
@@ -300,6 +332,13 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
               continue;
             }
 
+            // If the index int i is going to cause an out-of-range exception, I think we can assume we need to add a node for the current field definition
+            if(i >= Children.Count)
+            {
+              Children.Add(new DefinitionTreeNodeViewModel(new FieldDefinitionViewModel(curFieldModel)));
+              continue;
+            }
+
             DefinitionTreeNodeViewModel curChildUnderThisGroup = Children[i];
 
             if (curChildUnderThisGroup.DefinitionVM.Definition != curFieldModel)
@@ -327,6 +366,15 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
               continue;
             }
 
+
+            // If the index int i is going to cause an out-of-range exception, I think we can assume we need to add a node for the current section definition
+            if (i >= Children.Count)
+            {
+              Children.Add(new DefinitionTreeNodeViewModel(new SectionDefinitionViewModel(curSectionModel)));
+              continue;
+            }
+
+
             DefinitionTreeNodeViewModel curChildUnderThisGroup = Children[i];
 
             if (curChildUnderThisGroup.DefinitionVM.Definition != curSectionModel)
@@ -353,6 +401,14 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
               continue;
             }
 
+            // If the index int i is going to cause an out-of-range exception, I think we can assume we need to add a node for the current collectoin definition
+            if (i >= Children.Count)
+            {
+              Children.Add(new DefinitionTreeNodeViewModel(new CollectionDefinitionViewModel(curCollectionModel)));
+              continue;
+            }
+
+
             DefinitionTreeNodeViewModel curChildUnderThisGroup = Children[i];
 
             if (curChildUnderThisGroup.DefinitionVM.Definition != curCollectionModel)
@@ -378,6 +434,14 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
               this.Children.Add(new DefinitionTreeNodeViewModel(new EmbeddedNodeDefinitionViewModel(curEmbeddedModel)));
               continue;
             }
+
+            // If the index int i is going to cause an out-of-range exception, I think we can assume we need to add a node for the current embedded definition
+            if (i >= Children.Count)
+            {
+              Children.Add(new DefinitionTreeNodeViewModel(new EmbeddedNodeDefinitionViewModel(curEmbeddedModel)));
+              continue;
+            }
+
 
             DefinitionTreeNodeViewModel curChildUnderThisGroup = Children[i];
 
