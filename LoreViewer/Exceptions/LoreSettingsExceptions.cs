@@ -19,10 +19,10 @@ namespace LoreViewer.Exceptions.SettingsParsingExceptions
     public DuplicateDefinitionNamesException(LoreDefinitionBase def) : base(def, string.Format(msgBase, def.name)) { }
   }
 
-  public class CollectionWithTypeAndCollectionDefined : SettingsParsingException
+  public class CollectionWithMultipleEntriesDefined : SettingsParsingException
   {
-    private static string msgBase = "Collection {0} was found to have both entryTypeName and entryCollection defined - this is invalid. Collection can have EITHER type contents OR collection contents.";
-    public CollectionWithTypeAndCollectionDefined(LoreDefinitionBase definitionBase)
+    private static string msgBase = "Collection {0} was found to have more than one entry defined: entryTypeName (name of a defined type), entryCollectionName (name of a defined collection), entryCollection (a locally defined collection) - this is invalid. Collection can have only one entry .";
+    public CollectionWithMultipleEntriesDefined(LoreDefinitionBase definitionBase)
       : base(definitionBase, string.Format(msgBase, definitionBase.name)) { }
   }
 

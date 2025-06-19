@@ -1,4 +1,5 @@
-﻿using DynamicData;
+﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
+using DynamicData;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
 using SharpYaml.Serialization;
@@ -456,10 +457,18 @@ namespace LoreViewer.Settings
     [DefaultValue("")]
     public string entryTypeName { get; set; } = string.Empty;
 
+    // This is used if the contained type is a globally defined collection
+    [DefaultValue("")]
+    public string entryCollectionName { get; set; } = string.Empty;
+
     public LoreCollectionDefinition entryCollection { get; set; }
 
     [YamlIgnore]
-    public LoreDefinitionBase ContainedType { get; set; }
+    public LoreDefinitionBase ContainedType 
+    { 
+      get; 
+      set; 
+    }
 
     [DefaultValue(false)]
     public bool SortEntries { get; set; }
@@ -469,13 +478,15 @@ namespace LoreViewer.Settings
 
     public bool IsCollectionOfCollections => ContainedType is LoreCollectionDefinition;
 
+    private bool MoreThanOneTrue(params bool[] booleans) => booleans.Where(b => b == true).Count() > 1;
+
     public override void PostProcess(LoreSettings settings)
     {
       if (entryCollection != null)
         entryCollection.PostProcess(settings);
 
-      if (!string.IsNullOrWhiteSpace(entryTypeName) && entryCollection != null)
-        throw new CollectionWithTypeAndCollectionDefined(this);
+      if (MoreThanOneTrue(!string.IsNullOrWhiteSpace(entryTypeName), entryCollection != null, !string.IsNullOrWhiteSpace(entryCollectionName)))
+        throw new CollectionWithMultipleEntriesDefined(this);
 
       if (!string.IsNullOrWhiteSpace(entryTypeName))
       {
@@ -483,6 +494,13 @@ namespace LoreViewer.Settings
           ContainedType = settings.GetTypeDefinition(this.entryTypeName);
         else
           throw new System.Exception($"Could not find type ({entryTypeName}) definition for collection {this.name}");
+      }
+      else if (!string.IsNullOrWhiteSpace(entryCollectionName))
+      {
+        if (settings.HasCollectionDefinition(this.entryCollectionName))
+          ContainedType = settings.GetCollectionDefinition(this.entryCollectionName);
+        else
+          throw new System.Exception($"Could not find type ({entryCollectionName} definition for collection {this.name}");
       }
       else if (entryCollection != null)
         ContainedType = entryCollection;
@@ -503,22 +521,20 @@ namespace LoreViewer.Settings
     public void MergeFrom(LoreCollectionDefinition parentCollection)
     {
       Base = parentCollection;
-
+      this.required |= parentCollection.required;
     }
 
     public LoreCollectionDefinition Clone()
     {
       // Keep ContainedType as a reference
       LoreCollectionDefinition colDef = this.MemberwiseClone() as LoreCollectionDefinition;
-      colDef.entryCollection = this.entryCollection?.Clone();
-
+      colDef.ContainedType = this.ContainedType;
       return colDef;
     }
 
     public LoreCollectionDefinition CloneFromParent()
     {
       LoreCollectionDefinition colDef = this.MemberwiseClone() as LoreCollectionDefinition;
-      colDef.entryCollection = this.entryCollection?.Clone();
       colDef.Base = this;
       return colDef;
     }
@@ -728,7 +744,7 @@ namespace LoreViewer.Settings
         }
         else if (childCollection == null && baseCollection != null)
         {
-          resultingCollection = baseCollection.Clone() as LoreCollectionDefinition;
+          resultingCollection = baseCollection.CloneFromParent() as LoreCollectionDefinition;
           resultingCollection.MergeFrom(baseCollection);
         }
         else if (childCollection != null && baseCollection == null)

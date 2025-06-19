@@ -8,20 +8,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
   {
     public static LoreSettingsViewModel CurrentSettingsViewModel { get; set; }
 
-    public ObservableCollection<CollectionDefinitionViewModel> locallyDefinedCollectionDefs = new ObservableCollection<CollectionDefinitionViewModel>();
-
-    public ObservableCollection<CollectionDefinitionViewModel> AllCollectionVMs
-    {
-      get
-      {
-        return new ObservableCollection<CollectionDefinitionViewModel>(
-          CurrentSettings.collections.Select(c => new CollectionDefinitionViewModel(c)).Concat(
-            locallyDefinedCollectionDefs
-          )
-        );
-      }
-    }
-
     public bool IsDeletable
     {
       get

@@ -11,25 +11,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
 {
   public abstract class LoreSettingsObjectViewModel : ViewModelBase
   {
-
-    public ReactiveCommand<Unit, Unit> AddTypeCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> AddFieldCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> AddSectionCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> AddCollectionCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> AddEmbeddedCommand { get; set; }
     public LoreDefinitionBase Definition { get; set; }
 
 
-    public List<LoreTypeDefinition> AllTypes { get => CurrentSettings.types; }
-
-    protected ObservableCollection<TypeDefinitionViewModel> _allTypeVMs = new ObservableCollection<TypeDefinitionViewModel>();
-    public ObservableCollection<TypeDefinitionViewModel> AllTypeVMs 
-    {
-      get
-      {
-        return Types;
-      }
-    }
 
     public LoreDefinitionViewModel SelectedItem { get; set; }
 
@@ -105,6 +89,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
 
 
-    public abstract void RefreshLists();
+    public virtual void RefreshLists() { }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using LoreViewer.Settings;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -24,6 +25,23 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public string TypeName { get => emdDef?.entryTypeName; set => ApplyNewType(value); }
 
     public bool IsRequired { get => emdDef.required; set => emdDef.required = value; }
+
+    public TypeDefinitionViewModel NodeTypeVM
+    {
+      get
+      {
+        return CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.Definition == emdDef.nodeType);
+      }
+      set
+      {
+        if(value != null)
+        {
+          emdDef.nodeType = value.Definition as LoreTypeDefinition;
+          SettingsRefresher.Apply(CurrentSettingsViewModel);
+        }
+      }
+
+    }
 
     public TypeDefinitionViewModel Type { get; set; }
     public EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase) { Type = new TypeDefinitionViewModel(emdDef.nodeType); }

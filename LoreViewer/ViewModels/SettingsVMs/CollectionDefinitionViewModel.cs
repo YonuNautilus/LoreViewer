@@ -1,7 +1,11 @@
-﻿using LoreViewer.Settings;
+﻿using DocumentFormat.OpenXml.Presentation;
+using DynamicData;
+using LoreViewer.Settings;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -22,10 +26,35 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override bool UsesEmbeddedNodes { get { return false; } }
     #endregion
 
+    public ReactiveCommand<Unit, Unit> AddLocalCollectionCommand { get; set; }
+
     private LoreCollectionDefinition colDef { get => Definition as LoreCollectionDefinition; }
+
+    public ObservableCollection<CollectionDefinitionViewModel> AllCollectionVMs
+    {
+      get
+      {
+        var ret = new ObservableCollection<CollectionDefinitionViewModel>(CurrentSettingsViewModel.Collections);
+        if(locallyDefinedCollectionVM != null)
+          ret.Add(locallyDefinedCollectionVM);
+        return ret;
+      }
+    }
+
+    public ObservableCollection<TypeDefinitionViewModel> TypesFromSettings { get => CurrentSettingsViewModel.Types; }
+
+
+    private CollectionDefinitionViewModel locallyDefinedCollectionVM { get; set; }
 
     public bool IsCollectionOfCollections { get => colDef.IsCollectionOfCollections; }
     public bool IsCollectionOfNodes { get => !colDef.IsCollectionOfCollections; }
+    
+    public bool IsUsingLocalCollectionDef { get => !IsNotUsingLocalCollectionDef; }
+
+    public bool IsNotUsingLocalCollectionDef
+    {
+      get => !IsCollectionOfCollections || ContainedTypeVM != locallyDefinedCollectionVM;
+    }
 
     public bool UsesTypesOrNull
     {
@@ -39,7 +68,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
         if (value)
         {
           colDef.entryCollection = null;
-          colDef.ContainedType = AllTypes.FirstOrDefault();
+          ContainedTypeVM = CurrentSettingsViewModel.Types.FirstOrDefault();
         }
         else
         {
@@ -67,10 +96,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
+        Trace.Write("");
         switch (ContainedType)
         {
           case LoreTypeDefinition typeDef:
-            return AllTypeVMs.FirstOrDefault(tvm => tvm.Definition == typeDef);
+            return CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.Definition == typeDef);
           case LoreCollectionDefinition colDef:
             return AllCollectionVMs.FirstOrDefault(cvm => cvm.Definition == colDef);
           default:
@@ -87,15 +117,23 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public LoreCollectionDefinition EntryCollection { get => colDef.entryCollection; }
+    public LoreCollectionDefinition EntryCollection { get => colDef.entryCollection; set => colDef.entryCollection = value; }
 
-    public CollectionDefinitionViewModel EntryCollectionVM { get => new CollectionDefinitionViewModel(EntryCollection); }
+    public CollectionDefinitionViewModel EntryCollectionVM
+    {
+      get
+      {
+        if (IsCollectionOfCollections)
+          return AllCollectionVMs.FirstOrDefault(cdvm => cdvm.Definition == EntryCollection);
+        else return null;
+      }
+    }
 
     public LoreTypeDefinition EntryType { get => colDef.ContainedType as LoreTypeDefinition; }
 
     public CollectionDefinitionViewModel(LoreCollectionDefinition definition) : base(definition)
     {
-      AddCollectionCommand = ReactiveCommand.Create(CreateNewLocalCollection);
+      AddLocalCollectionCommand = ReactiveCommand.Create(CreateNewLocalCollection);
     }
 
 
@@ -107,7 +145,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public void UseNewCollectionDefinition(LoreCollectionDefinition newColDef)
     {
       var newVM = new CollectionDefinitionViewModel(newColDef);
-      locallyDefinedCollectionDefs.Add(newVM);
+      locallyDefinedCollectionVM = newVM;
       this.RaisePropertyChanged("AllTypeVMs");
       this.RaisePropertyChanged("AllCollectionVMs");
       this.RaisePropertyChanged("IsCollectionOfNodes");
@@ -115,11 +153,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged("EntryCollection");
       ContainedTypeVM = newVM;
       this.RaisePropertyChanged("ContainedTypeVM");
-    }
-
-    public override void RefreshLists()
-    {
-
     }
   }
 }

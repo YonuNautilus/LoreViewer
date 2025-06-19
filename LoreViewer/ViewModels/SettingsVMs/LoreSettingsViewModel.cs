@@ -1,5 +1,6 @@
 ﻿using LoreViewer.Settings;
 using ReactiveUI;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -91,22 +92,17 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   private ObservableCollection<TypeDefinitionViewModel> m_cTypes = new ObservableCollection<TypeDefinitionViewModel>();
   private ObservableCollection<CollectionDefinitionViewModel> m_cCollections = new ObservableCollection<CollectionDefinitionViewModel>();
 
-  public ObservableCollection<TypeDefinitionViewModel> TypeDefs { get => m_cTypes; }
-  public ObservableCollection<CollectionDefinitionViewModel> ColDefs { get => m_cCollections; }
-
-  private void RefreshTypeDefs()
+  private void ConstructTypeDefinitionViewModels()
   {
-    m_cTypes.Clear();
     foreach (LoreTypeDefinition def in m_oLoreSettings.types)
-      m_cTypes.Add(new TypeDefinitionViewModel(def));
+      Types.Add(new TypeDefinitionViewModel(def));
   }
 
 
-  private void RefreshColDefs()
+  private void ConstructCollectionDefinitionViewModels()
   {
-    ColDefs.Clear();
     foreach (LoreCollectionDefinition def in m_oLoreSettings.collections)
-      ColDefs.Add(new CollectionDefinitionViewModel(def));
+      Collections.Add(new CollectionDefinitionViewModel(def));
   }
 
   public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.settings); }
@@ -120,12 +116,10 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public ObservableCollection<DefinitionTreeNodeViewModel> TreeRootNodes { get; set; } = new ObservableCollection<DefinitionTreeNodeViewModel>();
 
   public LoreSettingsViewModel(LoreSettings _settings)
-  {
-    AddTypeCommand = ReactiveCommand.Create(AddType);
-    AddCollectionCommand = ReactiveCommand.Create(AddCollection);
+  { 
     m_oLoreSettings = _settings;
-    RefreshColDefs();
-    RefreshTypeDefs();
+    ConstructCollectionDefinitionViewModels();
+    ConstructTypeDefinitionViewModels();
 
     CurrentSettings = _settings;
 
@@ -172,25 +166,6 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     this.RaisePropertyChanged("NewYAML");
   }
 
-  public override void RefreshLists()
-  {
-    RefreshTypeDefs();
-    RefreshColDefs();
-  }
-
-  public new void AddType()
-  {
-    CurrentSettings.types.Add(new LoreTypeDefinition() { name = "New Type" });
-    RefreshTypeDefs();
-    RefreshYaml();
-  }
-
-  public new void AddCollection()
-  {
-    CurrentSettings.collections.Add(new LoreCollectionDefinition() { name = "New Collection" });
-    RefreshColDefs();
-    RefreshYaml();
-  }
 
   public void NotifyYAMLChanged()
   {

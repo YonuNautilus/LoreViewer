@@ -23,7 +23,7 @@
     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
 
     <Label Grid.Row="1" Grid.Column="0" Content="Node Type" />
-    <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AllTypes}" SelectedItem="{Binding Type}">
+    <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Types}" SelectedItem="{Binding Type}">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Text="{Binding}" />

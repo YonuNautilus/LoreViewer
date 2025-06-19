@@ -10,7 +10,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
   {
     public override ObservableCollection<TypeDefinitionViewModel> Types => throw new NotImplementedException();
 
-    private LoreTypeDefinition typeDef { get => Definition as LoreTypeDefinition; }
+    public LoreTypeDefinition typeDef { get => Definition as LoreTypeDefinition; }
 
     public string ExtendsTypeName { get => typeDef.extends; }
 
