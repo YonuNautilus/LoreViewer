@@ -43,9 +43,15 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
   public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
   public ReactiveCommand<Unit, Unit> AddDefinitionCommand { get; }
 
-  public string DisplayName => IsGroupNode
-      ? GroupName
-      : DefinitionVM?.Name ?? "(Unnamed)";
+  public string DisplayName
+  {
+    get
+    {
+      if (IsGroupNode) return Children.Any() ? $"{GroupName} ({Children.Count})" : GroupName;
+      else return DefinitionVM?.Name ?? "(Unnamed)";
+    }
+  }
+      
 
   public bool IsInherited => DefinitionVM?.IsInherited ?? false;
   public bool CanDelete
@@ -90,7 +96,16 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     }
   }
 
-  public bool CanEditName => DefinitionVM?.CanEditName ?? false;
+  public bool NameIsReadOnly { get => !CanEditName; }
+
+  public bool CanEditName
+  {
+    get
+    {
+      if (IsGroupNode) return false;
+      else return DefinitionVM?.CanEditName ?? false;
+    }
+  }
 
 
   public DefinitionTreeNodeViewModel()
@@ -300,6 +315,13 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
               continue;
             }
 
+            // If the index int i is going to cause an out-of-range exception, I think we can assume we need to add a node for the current field definition
+            if(i >= Children.Count)
+            {
+              Children.Add(new DefinitionTreeNodeViewModel(new FieldDefinitionViewModel(curFieldModel)));
+              continue;
+            }
+
             DefinitionTreeNodeViewModel curChildUnderThisGroup = Children[i];
 
             if (curChildUnderThisGroup.DefinitionVM.Definition != curFieldModel)
@@ -327,6 +349,15 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
               continue;
             }
 
+
+            // If the index int i is going to cause an out-of-range exception, I think we can assume we need to add a node for the current section definition
+            if (i >= Children.Count)
+            {
+              Children.Add(new DefinitionTreeNodeViewModel(new SectionDefinitionViewModel(curSectionModel)));
+              continue;
+            }
+
+
             DefinitionTreeNodeViewModel curChildUnderThisGroup = Children[i];
 
             if (curChildUnderThisGroup.DefinitionVM.Definition != curSectionModel)
@@ -353,6 +384,14 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
               continue;
             }
 
+            // If the index int i is going to cause an out-of-range exception, I think we can assume we need to add a node for the current collectoin definition
+            if (i >= Children.Count)
+            {
+              Children.Add(new DefinitionTreeNodeViewModel(new CollectionDefinitionViewModel(curCollectionModel)));
+              continue;
+            }
+
+
             DefinitionTreeNodeViewModel curChildUnderThisGroup = Children[i];
 
             if (curChildUnderThisGroup.DefinitionVM.Definition != curCollectionModel)
@@ -378,6 +417,14 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
               this.Children.Add(new DefinitionTreeNodeViewModel(new EmbeddedNodeDefinitionViewModel(curEmbeddedModel)));
               continue;
             }
+
+            // If the index int i is going to cause an out-of-range exception, I think we can assume we need to add a node for the current embedded definition
+            if (i >= Children.Count)
+            {
+              Children.Add(new DefinitionTreeNodeViewModel(new EmbeddedNodeDefinitionViewModel(curEmbeddedModel)));
+              continue;
+            }
+
 
             DefinitionTreeNodeViewModel curChildUnderThisGroup = Children[i];
 

@@ -79,7 +79,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
       set
       {
-        ContainedType = value.Definition;
+        if(value != null)
+          ContainedType = value.Definition;
       }
     }
 
@@ -102,14 +103,15 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public void UseNewCollectionDefinition(LoreCollectionDefinition newColDef)
     {
-      locallyDefinedCollectionDefs.Add(new CollectionDefinitionViewModel(newColDef));
-      colDef.ContainedType = newColDef;
-      this.RaisePropertyChanged("AllTypes");
-      this.RaisePropertyChanged("AllCollections");
-      this.RaisePropertyChanged("ContainedType");
+      var newVM = new CollectionDefinitionViewModel(newColDef);
+      locallyDefinedCollectionDefs.Add(newVM);
+      this.RaisePropertyChanged("AllTypeVMs");
+      this.RaisePropertyChanged("AllCollectionVMs");
       this.RaisePropertyChanged("IsCollectionOfNodes");
       this.RaisePropertyChanged("IsCollectionOfCollections");
       this.RaisePropertyChanged("EntryCollection");
+      ContainedTypeVM = newVM;
+      this.RaisePropertyChanged("ContainedTypeVM");
     }
 
     public override void RefreshLists()
