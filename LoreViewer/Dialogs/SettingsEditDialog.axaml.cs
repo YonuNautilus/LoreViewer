@@ -12,6 +12,7 @@ using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using LoreViewer.ViewModels.SettingsVMs;
 using System.Collections.ObjectModel;
+using Tmds.DBus.Protocol;
 
 namespace LoreViewer.Dialogs;
 
@@ -80,17 +81,36 @@ public static class DefinitionTreeDataGridBuilder
             header: "Inherited",
             cellTemplate: new FuncDataTemplate<DefinitionTreeNodeViewModel>((node, _) =>
             {
-              if (node == null) return new StackPanel();
+              if (node == null || node.DefinitionVM == null) return new StackPanel();
+
+              string imgURI = node.DefinitionVM?.Definition is LoreTypeDefinition ? "avares://LoreViewer/Resources/arrow_down.png" : "avares://LoreViewer/Resources/link.png";
+              string toolTipText = node.DefinitionVM?.Definition is LoreTypeDefinition ? $"Extends from {node.DefinitionVM?.Definition.Base}" : "Inherited from the type's parent";
+
+              StackPanel ret = new StackPanel
+              {
+                IsVisible = node.IsInherited,
+                Orientation = Avalonia.Layout.Orientation.Horizontal,
+                Margin = new Thickness(5, 0,0,0)
+              };
+
+              ToolTip.SetTip(ret, toolTipText);
 
               var img = new Image
               {
-                Source = new Bitmap(AssetLoader.Open(new System.Uri("avares://LoreViewer/Resources/link.png"))),
+                Source = new Bitmap(AssetLoader.Open(new System.Uri(imgURI))),
                 Width = 24,
-                Margin = new Thickness(-10),
-                IsVisible = node.IsInherited
               };
 
-              return img;
+
+              ret.Children.Add(img);
+
+              if(node.DefinitionVM?.Definition is LoreTypeDefinition && node.DefinitionVM.Definition.IsInherited)
+              {
+                var label = new Label { Content = $"({node.DefinitionVM.Definition.Base.name})", };
+                ret.Children.Add(label);
+              }
+
+              return ret;
             })),
 
       new TemplateColumn<DefinitionTreeNodeViewModel>(
@@ -109,7 +129,8 @@ public static class DefinitionTreeDataGridBuilder
 
                 [!!ToggleButton.IsCheckedProperty] = new Binding("IsRequired"),
                 [!ToggleButton.IsEnabledProperty] = new Binding("CanEditRequired"),
-                IsVisible = (node.DefinitionVM?.Definition is IRequirable)
+                IsVisible = (node.DefinitionVM?.Definition is IRequirable && node.Parent.Parent != null),
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
 
               };
             })),

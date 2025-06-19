@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using DocumentFormat.OpenXml.Drawing;
+using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System;
@@ -189,6 +190,8 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     DefinitionVM = vm;
     IsGroupNode = false;
 
+    BuildChildren();
+
     DeleteCommand = ReactiveCommand.Create(() =>
     {
       if (Parent is DefinitionTreeNodeViewModel parentNode)
@@ -239,36 +242,50 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     if (DefinitionVM == null)
       return;
 
-    if (DefinitionVM is TypeDefinitionViewModel typeVM)
+    if(DefinitionVM.Definition is IFieldDefinitionContainer ifcont)
     {
+      // If this is a field definition, but it's NOT a nested values field, break out of this method
+      if (ifcont is LoreFieldDefinition fd && fd.style != EFieldStyle.NestedValues)
+        return;
+
       var fieldGroup = new DefinitionTreeNodeViewModel(FieldGroupName, addType: typeof(LoreFieldDefinition));
-      if (typeVM.Fields?.Any() == true)
+      if (DefinitionVM.Fields != null)
       {
-        foreach (var f in typeVM.Fields)
+        foreach (var f in DefinitionVM.Fields)
           fieldGroup.AddChild(new DefinitionTreeNodeViewModel(f));
       }
       AddChild(fieldGroup);
+    }
 
+    if(DefinitionVM.Definition is ISectionDefinitionContainer iscont)
+    {
       var sectionGroup = new DefinitionTreeNodeViewModel(SectionGroupName, addType: typeof(LoreSectionDefinition));
-      if (typeVM.Sections?.Any() == true)
+      if (DefinitionVM.Sections != null)
       {
-        foreach (var s in typeVM.Sections)
+        foreach (var s in DefinitionVM.Sections)
           sectionGroup.AddChild(new DefinitionTreeNodeViewModel(s));
       }
       AddChild(sectionGroup);
+    }
 
+    if(DefinitionVM.Definition is ICollectionDefinitionContainer iccont)
+    {
       var colGroup = new DefinitionTreeNodeViewModel(CollectionGroupName, addType: typeof(LoreCollectionDefinition));
-      if (typeVM.Collections?.Any() == true)
+      if (DefinitionVM.Sections != null)
       {
-        foreach (var c in typeVM.Collections)
+        foreach (var c in DefinitionVM.Collections)
           colGroup.AddChild(new DefinitionTreeNodeViewModel(c));
       }
       AddChild(colGroup);
+    }
 
+
+    if(DefinitionVM.Definition is IEmbeddedNodeDefinitionContainer iecont)
+    {
       var embedGroup = new DefinitionTreeNodeViewModel(EmbeddedNodsGroupName, addType: typeof(LoreEmbeddedNodeDefinition));
-      if (typeVM.EmbeddedNodes?.Any() == true)
+      if (DefinitionVM.EmbeddedNodes != null)
       {
-        foreach (var e in typeVM.EmbeddedNodes)
+        foreach (var e in DefinitionVM.EmbeddedNodes)
           embedGroup.AddChild(new DefinitionTreeNodeViewModel(e));
       }
       AddChild(embedGroup);
