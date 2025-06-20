@@ -64,14 +64,13 @@ public static class DefinitionTreeDataGridBuilder
             cellTemplate: new FuncDataTemplate<DefinitionTreeNodeViewModel>((node, _) =>
             {
               if (node == null) return new Panel();
-              if (node.IsGroupNode)
+              if (node.IsGroupNode || (node.IsInherited && node.DefinitionVM is not TypeDefinitionViewModel))
                 return new Label { [!Label.ContentProperty] = new Binding("DisplayName") };
               else
                 return new TextBox
                 {
                   [!!TextBox.TextProperty] = new Binding("DisplayName"),
                   [!TextBox.IsReadOnlyProperty] = new Binding("NameIsReadOnly"),
-                  [!TextBox.IsEnabledProperty] = new Binding("CanEditName")
                 };
             })
           ),
