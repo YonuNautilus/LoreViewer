@@ -103,9 +103,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
       set
       {
-        if(value != null)
+        if(value != null && !IsInherited)
         {
-          colDef.ContainedType = value.Definition;
+          colDef.SetContainedType(value.Definition);
           SettingsRefresher.Apply(CurrentSettingsViewModel);
         }
       }

@@ -286,17 +286,18 @@ namespace LoreViewer.Parser
 
           if (!string.IsNullOrEmpty(tag))
           {
-            // Parse collection based on {collection:...} tag
+            // Parse collection based on {collection:...} tag, which is not even locally defined, it is MARKDOWN defined at the TOP LEVEL of a file.
+            // It should not be treated as a locally (YAML) defined collection (ie no ParentDefinition needed to be set)
             if (BlockIsACollection(block))
             {
               if (BlockIsANestedCollection(block))
               {
-                //_collections.AddNode(ParseCollection(document, ref currentIndex, block, tag));
                 _parsedCollections.Add(ParseCollection(document, ref currentIndex, block, MakeNestedDefinitions(tag, ctx), ctx));
               }
               else
               {
-                LoreCollectionDefinition lcd = new LoreCollectionDefinition() { ContainedType = _settings.GetTypeDefinition(GetCollectionType(tag)) };
+                LoreCollectionDefinition lcd = new LoreCollectionDefinition();
+                lcd.SetContainedType(_settings.GetTypeDefinition(GetCollectionType(tag)));
                 _parsedCollections.Add(ParseCollection(document, ref currentIndex, block, lcd, ctx));
               }
             }
@@ -415,8 +416,8 @@ namespace LoreViewer.Parser
                   // otherwise, tagged as {collection:type}
                   else
                   {
-
-                    LoreCollectionDefinition lcd = new LoreCollectionDefinition() { ContainedType = _settings.GetTypeDefinition(GetCollectionType(newTag)) };
+                    LoreCollectionDefinition lcd = new LoreCollectionDefinition() { ParentDefinition = typeDef, entryTypeName = GetCollectionType(newTag) };
+                    lcd.SetContainedType(_settings.GetTypeDefinition(GetCollectionType(newTag)));
                     newCollection = ParseCollection(doc, ref currentIndex, hb, lcd, ctx);
                   }
 
@@ -519,15 +520,19 @@ namespace LoreViewer.Parser
       return newNode;
     }
 
+    // This creates on-the-fly 'locally-defined' collection definitions. So having ParentDefinition might be useful
     private LoreCollectionDefinition MakeNestedDefinitions(string innerTag, LoreParsingContext ctx)
     {
       LoreCollectionDefinition lcd = new LoreCollectionDefinition();
 
       if (TagIsANestedCollection(innerTag))
-        lcd.ContainedType = MakeNestedDefinitions(GetCollectionType(innerTag), ctx);
+      {
+        lcd.SetContainedType(MakeNestedDefinitions(GetCollectionType(innerTag), ctx));
+        (lcd.ContainedType as LoreCollectionDefinition).ParentDefinition = lcd;
+      }
       else if (_settings.HasTypeDefinition(GetCollectionType(innerTag)))
       {
-        lcd.ContainedType = _settings.GetTypeDefinition(GetCollectionType(innerTag));
+        lcd.SetContainedType(_settings.GetTypeDefinition(GetCollectionType(innerTag)));
       }
       else
       {

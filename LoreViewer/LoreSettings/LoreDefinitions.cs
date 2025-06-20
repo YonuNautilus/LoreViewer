@@ -462,37 +462,68 @@ namespace LoreViewer.Settings
     [DefaultValue("")]
     public string entryCollectionName { get; set; } = string.Empty;
 
+    // This is THE locally defined collection, if used
     public LoreCollectionDefinition entryCollection { get; set; }
 
-    private LoreDefinitionBase m_oContainedType;
+    private LoreDefinitionBase m_oContainedGlobalDef;
 
     [YamlIgnore]
     public LoreDefinitionBase ContainedType 
     {
       get 
       {
-        return m_oContainedType;
+        if (entryCollection != null) return entryCollection;
+        else return m_oContainedGlobalDef;
       }
-      set
+    }
+
+    public void SetContainedType(LoreDefinitionBase def)
+    {
+      if (def is LoreCollectionDefinition c)
       {
-        m_oContainedType = value;
-        if(value is LoreTypeDefinition t) { entryTypeName = t.name; entryCollectionName = ""; }
-        if(value is LoreCollectionDefinition c) { entryTypeName = ""; entryCollectionName = c.name; }
+        if (c.ParentDefinition != null)
+        {
+          // It's inline
+          entryCollection = c;
+          entryTypeName = "";
+          entryCollectionName = "";
+        }
+        else
+        {
+          // It's global
+          entryCollection = null;
+          entryTypeName = "";
+          entryCollectionName = c.name;
+          m_oContainedGlobalDef = def;
+        }
+      }
+      else if (def is LoreTypeDefinition t)
+      {
+        entryTypeName = t.name;
+        entryCollectionName = "";
+        entryCollection = null;
+        m_oContainedGlobalDef = def;
       }
     }
 
 
-    private bool m_bUsingLocallyDefinedCollection = false;
 
+    /// <summary>
+    /// Locally defined collection definitions need to have a reference to their parent, ie the owning definition, be it a type definition or another collection definition.
+    /// Globally defined collection definition will not have ParentDefinition set.
+    /// </summary>
+    [YamlIgnore]
+    public bool IsLocallyDefined { get => ParentDefinition != null; }
+
+    [YamlIgnore]
+    public LoreDefinitionBase? ParentDefinition { get; set; }
+
+    [YamlIgnore]
     public bool IsUsingLocallyDefinedCollection
     {
       get
       {
-        return m_bUsingLocallyDefinedCollection;
-      }
-      set
-      {
-        m_bUsingLocallyDefinedCollection = value;
+        return entryCollection != null ? entryCollection.IsLocallyDefined : false;
       }
     }
 
@@ -508,32 +539,32 @@ namespace LoreViewer.Settings
 
     public override void PostProcess(LoreSettings settings)
     {
+      // If using a locally defined collection definition
       if (entryCollection != null)
+      {
+        entryCollection.ParentDefinition = this;
         entryCollection.PostProcess(settings);
+        if (IsInherited)
+          this.entryCollection.MergeFrom((Base as LoreCollectionDefinition).entryCollection);
+      }
 
       if (MoreThanOneTrue(!string.IsNullOrWhiteSpace(entryTypeName), entryCollection != null, !string.IsNullOrWhiteSpace(entryCollectionName)))
         throw new CollectionWithMultipleEntriesDefined(this);
 
+      // Globally defined collection
       if (!string.IsNullOrWhiteSpace(entryTypeName))
       {
         if (settings.HasTypeDefinition(this.entryTypeName))
-          ContainedType = settings.GetTypeDefinition(this.entryTypeName);
+          SetContainedType(settings.GetTypeDefinition(this.entryTypeName));
         else
           throw new System.Exception($"Could not find type ({entryTypeName}) definition for collection {this.name}");
       }
       else if (!string.IsNullOrWhiteSpace(entryCollectionName))
       {
         if (settings.HasCollectionDefinition(this.entryCollectionName))
-          ContainedType = settings.GetCollectionDefinition(this.entryCollectionName);
+          SetContainedType(settings.GetCollectionDefinition(this.entryCollectionName));
         else
           throw new System.Exception($"Could not find type ({entryCollectionName} definition for collection {this.name}");
-      }
-
-      // locally defined collection
-      else if (entryCollection != null)
-      {
-        ContainedType = entryCollection;
-        IsUsingLocallyDefinedCollection = true;
       }
     }
 
@@ -559,7 +590,7 @@ namespace LoreViewer.Settings
     {
       // Keep ContainedType as a reference
       LoreCollectionDefinition colDef = this.MemberwiseClone() as LoreCollectionDefinition;
-      colDef.ContainedType = this.ContainedType;
+      colDef.SetContainedType(this.ContainedType);
       return colDef;
     }
 
@@ -751,11 +782,11 @@ namespace LoreViewer.Settings
 
     internal static List<LoreCollectionDefinition>? MergeCollections(List<LoreCollectionDefinition>? baseCols, List<LoreCollectionDefinition>? childCols)
     {
-      if (baseCols == null && childCols == null) return null;
+      if (CollectionHelpers.CollectionNullOrEmpty(baseCols) && CollectionHelpers.CollectionNullOrEmpty(childCols)) return null;
 
-      if (baseCols == null && childCols != null) return childCols;
+      if (CollectionHelpers.CollectionNullOrEmpty(baseCols) && !CollectionHelpers.CollectionNullOrEmpty(childCols)) return childCols;
 
-      if (baseCols != null && childCols == null) return baseCols.Select(c => c.CloneFromParent() as LoreCollectionDefinition).ToList();
+      if (!CollectionHelpers.CollectionNullOrEmpty(baseCols) && CollectionHelpers.CollectionNullOrEmpty(childCols)) return baseCols.Select(c => c.CloneFromParent() as LoreCollectionDefinition).ToList();
 
       List<LoreCollectionDefinition> ret = new List<LoreCollectionDefinition>();
 
@@ -836,5 +867,10 @@ namespace LoreViewer.Settings
 
       return ret;
     }
+  }
+
+  public static class CollectionHelpers
+  {
+    public static bool CollectionNullOrEmpty(IEnumerable<object> col) => col == null || !col.Any();
   }
 }
