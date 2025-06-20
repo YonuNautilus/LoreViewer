@@ -454,6 +454,7 @@ namespace LoreViewer.Settings
 
   public class LoreCollectionDefinition : LoreDefinitionBase, IRequirable, IDeepCopyable<LoreCollectionDefinition>
   {
+
     [DefaultValue("")]
     public string entryTypeName { get; set; } = string.Empty;
 
@@ -463,11 +464,21 @@ namespace LoreViewer.Settings
 
     public LoreCollectionDefinition entryCollection { get; set; }
 
+    private LoreDefinitionBase m_oContainedType;
+
     [YamlIgnore]
     public LoreDefinitionBase ContainedType 
-    { 
-      get; 
-      set; 
+    {
+      get 
+      {
+        return m_oContainedType;
+      }
+      set
+      {
+        m_oContainedType = value;
+        if(value is LoreTypeDefinition t) { entryTypeName = t.name; entryCollectionName = ""; }
+        if(value is LoreCollectionDefinition c) { entryTypeName = ""; entryCollectionName = c.name; }
+      }
     }
 
     [DefaultValue(false)]

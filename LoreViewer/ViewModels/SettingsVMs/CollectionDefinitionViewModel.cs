@@ -72,12 +72,12 @@ namespace LoreViewer.ViewModels.SettingsVMs
         }
         else
         {
-          if (AllCollectionVMs.Count > 0) colDef.ContainedType = AllCollectionVMs.FirstOrDefault().Definition;
+          if (AllCollectionVMs.Count > 0) ContainedTypeVM = AllCollectionVMs.FirstOrDefault();
           else
             UseNewCollectionDefinition(new LoreCollectionDefinition() { name = "New Collection" });
 
         }
-        this.RaisePropertyChanged("ContainedType");
+        this.RaisePropertyChanged("ContainedTypeVM");
         this.RaisePropertyChanged("EntryCollection");
         this.RaisePropertyChanged("IsCollectionOfCollections");
         this.RaisePropertyChanged("IsCollectionOfNodes");
@@ -91,7 +91,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public string ContainedTypeName { get => colDef.entryTypeName; }
 
-    public LoreDefinitionBase ContainedType { get => colDef.ContainedType; set => colDef.ContainedType = value; }
+    public LoreDefinitionBase ContainedType { get => colDef.ContainedType; }
     public LoreDefinitionViewModel ContainedTypeVM
     {
       get
@@ -111,7 +111,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       {
         if(value != null)
         {
-          ContainedType = value.Definition;
+          colDef.ContainedType = value.Definition;
           SettingsRefresher.Apply(CurrentSettingsViewModel);
         }
       }
