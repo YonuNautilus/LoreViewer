@@ -70,7 +70,8 @@ public static class DefinitionTreeDataGridBuilder
                 return new TextBox
                 {
                   [!!TextBox.TextProperty] = new Binding("DisplayName"),
-                  [!TextBox.IsReadOnlyProperty] = new Binding("NameIsReadOnly")
+                  [!TextBox.IsReadOnlyProperty] = new Binding("NameIsReadOnly"),
+                  [!TextBox.IsEnabledProperty] = new Binding("CanEditName")
                 };
             })
           ),

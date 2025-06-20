@@ -266,7 +266,7 @@ namespace LoreViewer.Settings
       return typeDef;
     }
 
-    public LoreTypeDefinition CloneFromParent()
+    public LoreTypeDefinition CloneFromBase()
     {
       LoreTypeDefinition typeDef = Clone();
       typeDef.Base = this;
@@ -356,7 +356,7 @@ namespace LoreViewer.Settings
       return typeDef;
     }
 
-    public LoreSectionDefinition CloneFromParent()
+    public LoreSectionDefinition CloneFromBase()
     {
       LoreSectionDefinition secDef = Clone();
       secDef.Base = this;
@@ -444,7 +444,7 @@ namespace LoreViewer.Settings
       return fieldDef;
     }
 
-    public LoreFieldDefinition CloneFromParent()
+    public LoreFieldDefinition CloneFromBase()
     {
       LoreFieldDefinition fieldDef = Clone();
       fieldDef.Base = this;
@@ -545,7 +545,11 @@ namespace LoreViewer.Settings
         entryCollection.ParentDefinition = this;
         entryCollection.PostProcess(settings);
         if (IsInherited)
+        {
+          if (this.entryCollection == (Base as LoreCollectionDefinition).entryCollection)
+            entryCollection = (Base as LoreCollectionDefinition).entryCollection.CloneFromBase();
           this.entryCollection.MergeFrom((Base as LoreCollectionDefinition).entryCollection);
+        }
       }
 
       if (MoreThanOneTrue(!string.IsNullOrWhiteSpace(entryTypeName), entryCollection != null, !string.IsNullOrWhiteSpace(entryCollectionName)))
@@ -594,10 +598,14 @@ namespace LoreViewer.Settings
       return colDef;
     }
 
-    public LoreCollectionDefinition CloneFromParent()
+    public LoreCollectionDefinition CloneFromBase()
     {
       LoreCollectionDefinition colDef = this.MemberwiseClone() as LoreCollectionDefinition;
       colDef.Base = this;
+
+      if (IsUsingLocallyDefinedCollection)
+        colDef.entryCollection = this.entryCollection.CloneFromBase();
+
       return colDef;
     }
   }
@@ -677,7 +685,7 @@ namespace LoreViewer.Settings
       return emNodeDef;
     }
 
-    public LoreEmbeddedNodeDefinition CloneFromParent()
+    public LoreEmbeddedNodeDefinition CloneFromBase()
     {
       LoreEmbeddedNodeDefinition enodeDef = Clone();
       enodeDef.Base = this;
@@ -693,7 +701,7 @@ namespace LoreViewer.Settings
 
       if (baseFields == null && childFields != null) return childFields;
 
-      if (baseFields != null && childFields == null) return baseFields = baseFields.Select(f => f.CloneFromParent()).ToList();
+      if (baseFields != null && childFields == null) return baseFields = baseFields.Select(f => f.CloneFromBase()).ToList();
 
       List<LoreFieldDefinition> ret = new();
 
@@ -716,7 +724,7 @@ namespace LoreViewer.Settings
         }
         else if (childField == null && baseField != null)
         {
-          resultingField = baseField.CloneFromParent();
+          resultingField = baseField.CloneFromBase();
           resultingField.MergeFrom(baseField);
         }
         else if (childField != null && baseField == null)
@@ -740,7 +748,7 @@ namespace LoreViewer.Settings
 
       if (baseSections == null && childSections != null) return childSections;
 
-      if (baseSections != null && childSections == null) return baseSections.Select(s => s.CloneFromParent() as LoreSectionDefinition).ToList();
+      if (baseSections != null && childSections == null) return baseSections.Select(s => s.CloneFromBase() as LoreSectionDefinition).ToList();
 
       List<LoreSectionDefinition> ret = new List<LoreSectionDefinition>();
 
@@ -762,7 +770,7 @@ namespace LoreViewer.Settings
         }
         else if (childSection == null && baseSection != null)
         {
-          resultingSection = baseSection.CloneFromParent();
+          resultingSection = baseSection.CloneFromBase();
           resultingSection.MergeFrom(baseSection);
         }
         else if (childSection != null && baseSection == null)
@@ -786,7 +794,7 @@ namespace LoreViewer.Settings
 
       if (CollectionHelpers.CollectionNullOrEmpty(baseCols) && !CollectionHelpers.CollectionNullOrEmpty(childCols)) return childCols;
 
-      if (!CollectionHelpers.CollectionNullOrEmpty(baseCols) && CollectionHelpers.CollectionNullOrEmpty(childCols)) return baseCols.Select(c => c.CloneFromParent() as LoreCollectionDefinition).ToList();
+      if (!CollectionHelpers.CollectionNullOrEmpty(baseCols) && CollectionHelpers.CollectionNullOrEmpty(childCols)) return baseCols.Select(c => c.CloneFromBase() as LoreCollectionDefinition).ToList();
 
       List<LoreCollectionDefinition> ret = new List<LoreCollectionDefinition>();
 
@@ -806,7 +814,7 @@ namespace LoreViewer.Settings
         }
         else if (childCollection == null && baseCollection != null)
         {
-          resultingCollection = baseCollection.CloneFromParent() as LoreCollectionDefinition;
+          resultingCollection = baseCollection.CloneFromBase() as LoreCollectionDefinition;
           resultingCollection.MergeFrom(baseCollection);
         }
         else if (childCollection != null && baseCollection == null)
@@ -830,7 +838,7 @@ namespace LoreViewer.Settings
 
       if (baseEmbds == null && childEmbds != null) return childEmbds;
 
-      if (baseEmbds != null && childEmbds == null) return baseEmbds.Select(e => e.CloneFromParent() as LoreEmbeddedNodeDefinition).ToList();
+      if (baseEmbds != null && childEmbds == null) return baseEmbds.Select(e => e.CloneFromBase() as LoreEmbeddedNodeDefinition).ToList();
 
       List<LoreEmbeddedNodeDefinition> ret = new List<LoreEmbeddedNodeDefinition>();
 
@@ -850,7 +858,7 @@ namespace LoreViewer.Settings
         }
         else if (childEmbedded == null && baseEmbedded != null)
         {
-          resultingEmbedded = baseEmbedded.CloneFromParent();
+          resultingEmbedded = baseEmbedded.CloneFromBase();
           resultingEmbedded.MergeFrom(baseEmbedded);
         }
         else if (childEmbedded != null && baseEmbedded == null)

@@ -20,6 +20,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     #endregion
 
     public ReactiveCommand<Unit, Unit> AddLocalCollectionCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> RevertContainedTypeCommand { get; set; }
 
     private LoreCollectionDefinition colDef { get => Definition as LoreCollectionDefinition; }
 
@@ -45,6 +46,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool IsUsingLocalCollectionDef { get => colDef.IsUsingLocallyDefinedCollection; }
 
     public bool IsNotUsingLocalCollectionDef { get => !colDef.IsUsingLocallyDefinedCollection; }
+
+    public bool CanRevertContainedType { get => IsNotUsingLocalCollectionDef && IsInherited; }
+
+    public bool NotUsingParentDefinedType { get => CanRevertContainedType && (colDef.ContainedType != (colDef.Base as LoreCollectionDefinition).Base); }
 
     public bool UsesTypesOrNull
     {
@@ -130,6 +135,16 @@ namespace LoreViewer.ViewModels.SettingsVMs
       AddLocalCollectionCommand = ReactiveCommand.Create(CreateNewLocalCollection);
       if (colDef.IsUsingLocallyDefinedCollection)
         UseNewCollectionDefinition(colDef.entryCollection);
+
+      RevertContainedTypeCommand = ReactiveCommand.Create(() =>
+      {
+        if (colDef.IsCollectionOfCollections)
+          colDef.SetContainedType(AllCollectionVMs.First(cvm => cvm.Name == (colDef.Base as LoreCollectionDefinition).ContainedType.name)?.ContainedType);
+        else
+          colDef.SetContainedType(CurrentSettingsViewModel.Types.First(tvm => tvm.Name == (colDef.Base as LoreCollectionDefinition).ContainedType.name).Definition);
+
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      });
     }
 
 
@@ -140,12 +155,12 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public override void RefreshUI()
     {
-      this.RaisePropertyChanged("AllTypeVMs");
-      this.RaisePropertyChanged("AllCollectionVMs");
-      this.RaisePropertyChanged("IsCollectionOfNodes");
-      this.RaisePropertyChanged("IsCollectionOfCollections");
-      this.RaisePropertyChanged("EntryCollection");
-      this.RaisePropertyChanged("ContainedTypeVM");
+      this.RaisePropertyChanged(nameof(TypesFromSettings));
+      this.RaisePropertyChanged(nameof(AllCollectionVMs));
+      this.RaisePropertyChanged(nameof(IsCollectionOfNodes));
+      this.RaisePropertyChanged(nameof(IsCollectionOfCollections));
+      this.RaisePropertyChanged(nameof(EntryCollection));
+      this.RaisePropertyChanged(nameof(ContainedTypeVM));
       this.RaisePropertyChanged(nameof(IsRequired));
       base.RefreshUI();
     }

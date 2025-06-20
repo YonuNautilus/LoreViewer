@@ -501,5 +501,6 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     this.RaisePropertyChanged(nameof(DisplayName));
     this.RaisePropertyChanged(nameof(CanEditRequired));
     this.RaisePropertyChanged(nameof(CanEditName));
+    this.RaisePropertyChanged(nameof(NameIsReadOnly));
   }
 }

@@ -89,6 +89,6 @@ namespace LoreViewer.Settings.Interfaces
   {
     T Clone();
 
-    T CloneFromParent();
+    T CloneFromBase();
   }
 }

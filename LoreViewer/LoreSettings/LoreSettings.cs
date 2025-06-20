@@ -30,9 +30,10 @@ namespace LoreViewer.Settings
         if (settings.EnableSerializationPruning)
         {
           settingsToSerialize = this.Clone();
-          settingsToSerialize.PostProcess();
           settingsToSerialize.PruneForSerialization();
         }
+        else
+          settingsToSerialize.PostProcess();
 
         return serializer.Serialize(settingsToSerialize);
       }
@@ -198,7 +199,7 @@ namespace LoreViewer.Settings
       return newSettings;
     }
 
-    public LoreSettings CloneFromParent()
+    public LoreSettings CloneFromBase()
     {
       return Clone();
     }
@@ -228,7 +229,7 @@ namespace LoreViewer.Settings
       return newSettings;
     }
 
-    public AppSettings CloneFromParent()
+    public AppSettings CloneFromBase()
     {
       return Clone();
     }
