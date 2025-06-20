@@ -76,7 +76,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(Name));
       this.RaisePropertyChanged(nameof(CanEditName));
 
-      SettingsRefresher.Apply(CurrentSettingsViewModel);
+      //SettingsRefresher.Apply(CurrentSettingsViewModel);
     }
 
     protected LoreDefinitionViewModel(LoreDefinitionBase definitionBase)

@@ -67,8 +67,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
             UseNewCollectionDefinition(new LoreCollectionDefinition() { name = "New Collection" });
 
         }
-        RefreshUI();
-
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
       }
     }
 
@@ -78,7 +77,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       set
       {
         colDef.required = value;
-        RefreshUI();
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
       }
     }
 
@@ -147,6 +146,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged("IsCollectionOfCollections");
       this.RaisePropertyChanged("EntryCollection");
       this.RaisePropertyChanged("ContainedTypeVM");
+      this.RaisePropertyChanged(nameof(IsRequired));
       base.RefreshUI();
     }
 
@@ -156,7 +156,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       locallyDefinedCollectionVM = newVM;
       ContainedTypeVM = newVM;
 
-      RefreshUI();
+      SettingsRefresher.Apply(CurrentSettingsViewModel);
     }
   }
 }

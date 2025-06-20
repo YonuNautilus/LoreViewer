@@ -307,6 +307,9 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
   internal void RefreshTreeNode()
   {
 
+    if (DefinitionVM != null)
+      DefinitionVM.RefreshUI();
+
     // If this is a grouping node, we need to ensure this group contains the correct nodes for the corresponding contained fields on the definition model.
     // i.e. if this is a field grouping node under a type node, we need to make sure this grouping of fields isn't missing any fields on the parent or that it doesn't contain extra fields
 
