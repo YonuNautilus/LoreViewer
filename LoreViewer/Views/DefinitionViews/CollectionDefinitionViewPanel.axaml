@@ -21,16 +21,15 @@
       <ColumnDefinition Width="240"/>
     </Grid.ColumnDefinitions>
 
-    <Label Grid.Row="0" Grid.Column="0" Content="Collection Title"/>
-    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
+    <Label Grid.Row="0" Grid.Column="0" Content="Collection Name" VerticalAlignment="Center" />
+    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" />
 
-    <Label Grid.Row="1" Grid.Column="0" Content="Content Type"/>
-    
+    <Label Grid.Row="1" Grid.Column="0" Content="Content Kind" VerticalAlignment="Center"/>
     <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
       <ToggleSwitch OnContent="Contains Nodes"  OffContent="Contains Collections" IsChecked="{Binding UsesTypesOrNull}"></ToggleSwitch>
     </Panel>
 
-    <Label Grid.Row="2" Grid.Column="0" Content="Contained Type" />
+    <Label Grid.Row="2" Grid.Column="0" Content="Contained Type" VerticalAlignment="Center"/>
     <ComboBox IsEnabled="{Binding IsCollectionOfNodes}" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding TypesFromSettings}" SelectedItem="{Binding ContainedTypeVM}" >
       <ComboBox.ItemTemplate>
         <DataTemplate>
@@ -39,7 +38,7 @@
       </ComboBox.ItemTemplate>
     </ComboBox>
     
-    <Label Grid.Row="3" Grid.Column="0" Content="Contained Collection" />
+    <Label Grid.Row="3" Grid.Column="0" Content="Contained Collection" VerticalAlignment="Center"/>
     <DockPanel IsEnabled="{Binding IsCollectionOfCollections}" Grid.Row="3" Grid.Column="1">
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
         <Button ToolTip.Tip="Use New Collection Definition"
@@ -47,12 +46,12 @@
                 IsEnabled="{Binding IsNotUsingLocalCollectionDef}">
           <Image Source="avares://LoreViewer/Resources/add.png" Margin="-5" />
         </Button>
-        <Button ToolTip.Tip="Edit Collection Definition"
+        <!--Button ToolTip.Tip="Edit Collection Definition"
                 Command="{Binding EditDefinitionCommand}"
                 CommandParameter="{Binding EntryCollectionVM}"
                 IsEnabled="{Binding IsUsingLocalCollectionDef}">
           <Image Source="avares://LoreViewer/Resources/pencil.png" />
-        </Button>
+        </Button-->
       </StackPanel>
       <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllCollectionVMs}" SelectedItem="{Binding ContainedTypeVM}" >
         <ComboBox.ItemTemplate>
@@ -63,7 +62,7 @@
       </ComboBox>
     </DockPanel>
 
-    <Label Grid.Row="4" Grid.Column="0" Content="Required" />
+    <Label Grid.Row="4" Grid.Column="0" Content="Required" VerticalAlignment="Center"/>
     <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsRequired}" />
 
   </Grid>

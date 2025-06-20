@@ -481,6 +481,21 @@ namespace LoreViewer.Settings
       }
     }
 
+
+    private bool m_bUsingLocallyDefinedCollection = false;
+
+    public bool IsUsingLocallyDefinedCollection
+    {
+      get
+      {
+        return m_bUsingLocallyDefinedCollection;
+      }
+      set
+      {
+        m_bUsingLocallyDefinedCollection = value;
+      }
+    }
+
     [DefaultValue(false)]
     public bool SortEntries { get; set; }
 
@@ -513,8 +528,13 @@ namespace LoreViewer.Settings
         else
           throw new System.Exception($"Could not find type ({entryCollectionName} definition for collection {this.name}");
       }
+
+      // locally defined collection
       else if (entryCollection != null)
+      {
         ContainedType = entryCollection;
+        IsUsingLocallyDefinedCollection = true;
+      }
     }
 
     public override bool IsModifiedFromBase

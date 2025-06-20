@@ -33,12 +33,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes { get => m_cEmbeddeds; }
 
-    public override bool UsesTypes { get { return false; } }
-    public override bool UsesFields { get { return true; } }
-    public override bool UsesSections { get { return true; } }
-    public override bool UsesCollections { get { return true; } }
-    public override bool UsesEmbeddedNodes { get { return true; } }
-
     public TypeDefinitionViewModel(LoreTypeDefinition definition) : base(definition)
     {
     }

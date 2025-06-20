@@ -17,13 +17,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<TypeDefinitionViewModel> Types => null;
-
-    public override bool UsesAny { get { return false; } }
-    public override bool UsesTypes { get { return false; } }
-    public override bool UsesFields { get { return false; } }
-    public override bool UsesSections { get { return false; } }
-    public override bool UsesCollections { get { return false; } }
-    public override bool UsesEmbeddedNodes { get { return false; } }
     #endregion
 
     public ReactiveCommand<Unit, Unit> AddLocalCollectionCommand { get; set; }
@@ -49,12 +42,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool IsCollectionOfCollections { get => colDef.IsCollectionOfCollections; }
     public bool IsCollectionOfNodes { get => !colDef.IsCollectionOfCollections; }
     
-    public bool IsUsingLocalCollectionDef { get => !IsNotUsingLocalCollectionDef; }
+    public bool IsUsingLocalCollectionDef { get => colDef.IsUsingLocallyDefinedCollection; }
 
-    public bool IsNotUsingLocalCollectionDef
-    {
-      get => !IsCollectionOfCollections || ContainedTypeVM != locallyDefinedCollectionVM;
-    }
+    public bool IsNotUsingLocalCollectionDef { get => !colDef.IsUsingLocallyDefinedCollection; }
 
     public bool UsesTypesOrNull
     {
@@ -77,17 +67,20 @@ namespace LoreViewer.ViewModels.SettingsVMs
             UseNewCollectionDefinition(new LoreCollectionDefinition() { name = "New Collection" });
 
         }
-        this.RaisePropertyChanged("ContainedTypeVM");
-        this.RaisePropertyChanged("EntryCollection");
-        this.RaisePropertyChanged("IsCollectionOfCollections");
-        this.RaisePropertyChanged("IsCollectionOfNodes");
-        this.RaisePropertyChanged("AllTypes");
-        this.RaisePropertyChanged("AllTypeVMs");
+        RefreshUI();
 
       }
     }
 
-    public bool IsRequired { get => colDef.required; }
+    public bool IsRequired
+    {
+      get => colDef.required;
+      set
+      {
+        colDef.required = value;
+        RefreshUI();
+      }
+    }
 
     public string ContainedTypeName { get => colDef.entryTypeName; }
 
@@ -102,6 +95,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
           case LoreTypeDefinition typeDef:
             return CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.Definition == typeDef);
           case LoreCollectionDefinition colDef:
+            if (this.IsUsingLocalCollectionDef)
+              return locallyDefinedCollectionVM;
             return AllCollectionVMs.FirstOrDefault(cvm => cvm.Definition == colDef);
           default:
             return null;
@@ -134,6 +129,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public CollectionDefinitionViewModel(LoreCollectionDefinition definition) : base(definition)
     {
       AddLocalCollectionCommand = ReactiveCommand.Create(CreateNewLocalCollection);
+      if (colDef.IsUsingLocallyDefinedCollection)
+        UseNewCollectionDefinition(colDef.entryCollection);
     }
 
 
@@ -142,17 +139,24 @@ namespace LoreViewer.ViewModels.SettingsVMs
       UseNewCollectionDefinition(new LoreCollectionDefinition() { name = "New Collection" });
     }
 
-    public void UseNewCollectionDefinition(LoreCollectionDefinition newColDef)
+    public override void RefreshUI()
     {
-      var newVM = new CollectionDefinitionViewModel(newColDef);
-      locallyDefinedCollectionVM = newVM;
       this.RaisePropertyChanged("AllTypeVMs");
       this.RaisePropertyChanged("AllCollectionVMs");
       this.RaisePropertyChanged("IsCollectionOfNodes");
       this.RaisePropertyChanged("IsCollectionOfCollections");
       this.RaisePropertyChanged("EntryCollection");
-      ContainedTypeVM = newVM;
       this.RaisePropertyChanged("ContainedTypeVM");
+      base.RefreshUI();
+    }
+
+    public void UseNewCollectionDefinition(LoreCollectionDefinition newColDef)
+    {
+      var newVM = new CollectionDefinitionViewModel(newColDef);
+      locallyDefinedCollectionVM = newVM;
+      ContainedTypeVM = newVM;
+
+      RefreshUI();
     }
   }
 }

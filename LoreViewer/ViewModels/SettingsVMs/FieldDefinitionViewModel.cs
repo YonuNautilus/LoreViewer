@@ -13,12 +13,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<CollectionDefinitionViewModel> Collections => null;
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
-
-    public override bool UsesTypes { get { return false; } }
-    public override bool UsesFields { get { return true; } }
-    public override bool UsesSections { get { return false; } }
-    public override bool UsesCollections { get { return false; } }
-    public override bool UsesEmbeddedNodes { get { return false; } }
     #endregion
 
     public static List<EFieldStyle> FieldStyles { get => Enum.GetValues(typeof(EFieldStyle)).Cast<EFieldStyle>().ToList(); }
