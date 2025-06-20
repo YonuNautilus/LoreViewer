@@ -207,7 +207,7 @@ namespace LoreViewer.Settings
 
       fields = DefinitionMergeManager.MergeFields(ParentType.fields, fields);
       sections = DefinitionMergeManager.MergeSections(ParentType.sections, sections);
-      collections = DefinitionMergeManager.MergeCollections(ParentType.collections, collections);
+      collections = DefinitionMergeManager.MergeCollections(ParentType.collections, collections, this);
       embeddedNodeDefs = DefinitionMergeManager.MergeEmbeddedNodeDefs(ParentType.embeddedNodeDefs, embeddedNodeDefs);
     }
 
@@ -251,8 +251,10 @@ namespace LoreViewer.Settings
 
       if (collections != null)
         foreach (LoreCollectionDefinition colDef in collections)
-          if (!colDef.processed)
-            colDef.PostProcess(settings);
+        {
+          colDef.OwningDefinition = this;
+          colDef.PostProcess(settings);
+        }
     }
 
     public LoreTypeDefinition Clone()
@@ -481,7 +483,7 @@ namespace LoreViewer.Settings
     {
       if (def is LoreCollectionDefinition c)
       {
-        if (c.ParentDefinition != null)
+        if (c.OwningDefinition != null)
         {
           // It's inline
           entryCollection = c;
@@ -510,13 +512,13 @@ namespace LoreViewer.Settings
 
     /// <summary>
     /// Locally defined collection definitions need to have a reference to their parent, ie the owning definition, be it a type definition or another collection definition.
-    /// Globally defined collection definition will not have ParentDefinition set.
+    /// Globally defined collection definition will not have OwningDefinition set.
     /// </summary>
     [YamlIgnore]
-    public bool IsLocallyDefined { get => ParentDefinition != null; }
+    public bool IsLocallyDefined { get => OwningDefinition != null; }
 
     [YamlIgnore]
-    public LoreDefinitionBase? ParentDefinition { get; set; }
+    public LoreDefinitionBase? OwningDefinition { get; set; }
 
     [YamlIgnore]
     public bool IsUsingLocallyDefinedCollection
@@ -542,14 +544,14 @@ namespace LoreViewer.Settings
       // If using a locally defined collection definition
       if (entryCollection != null)
       {
-        entryCollection.ParentDefinition = this;
-        entryCollection.PostProcess(settings);
+        entryCollection.OwningDefinition = this;
         if (IsInherited)
         {
           if (this.entryCollection == (Base as LoreCollectionDefinition).entryCollection)
             entryCollection = (Base as LoreCollectionDefinition).entryCollection.CloneFromBase();
           this.entryCollection.MergeFrom((Base as LoreCollectionDefinition).entryCollection);
         }
+        entryCollection.PostProcess(settings);
       }
 
       if (MoreThanOneTrue(!string.IsNullOrWhiteSpace(entryTypeName), entryCollection != null, !string.IsNullOrWhiteSpace(entryCollectionName)))
@@ -580,14 +582,26 @@ namespace LoreViewer.Settings
 
         if (this.required != (Base as LoreCollectionDefinition).required) return true;
 
+        if (this.ContainedType != (Base as LoreCollectionDefinition).ContainedType) return true;
+
         return false;
       }
     }
 
-    public void MergeFrom(LoreCollectionDefinition parentCollection)
+    public void MergeFrom(LoreCollectionDefinition baseCollection)
     {
-      Base = parentCollection;
-      this.required |= parentCollection.required;
+      Base = baseCollection;
+      if (!baseCollection.IsCollectionOfCollections && !this.IsCollectionOfCollections)
+      {
+        if (!(this.ContainedType as LoreTypeDefinition).IsATypeOf(baseCollection.ContainedType as LoreTypeDefinition))
+          SetContainedType(baseCollection.ContainedType);
+      }
+      else if (baseCollection.IsCollectionOfCollections && this.IsCollectionOfCollections && (ContainedType as LoreCollectionDefinition).IsLocallyDefined)
+      {
+        (this.ContainedType as LoreCollectionDefinition).MergeFrom(baseCollection.ContainedType as LoreCollectionDefinition);
+      }
+
+      this.required |= baseCollection.required;
     }
 
     public LoreCollectionDefinition Clone()
@@ -601,11 +615,21 @@ namespace LoreViewer.Settings
     public LoreCollectionDefinition CloneFromBase()
     {
       LoreCollectionDefinition colDef = this.MemberwiseClone() as LoreCollectionDefinition;
+
+      // If entryCollectionName is NOT null or empty, then we know 'this' collection definition's contents are a GLOBALLY DEFINED collection, and should NOT have BASE SET
+      //if (string.IsNullOrEmpty(entryCollectionName))
       colDef.Base = this;
 
       if (IsUsingLocallyDefinedCollection)
         colDef.entryCollection = this.entryCollection.CloneFromBase();
 
+      return colDef;
+    }
+
+    public LoreCollectionDefinition CloneFromBaseWithOwner(LoreDefinitionBase owner)
+    {
+      LoreCollectionDefinition colDef = CloneFromBase();
+      colDef.OwningDefinition = this;
       return colDef;
     }
   }
@@ -788,13 +812,13 @@ namespace LoreViewer.Settings
       return ret;
     }
 
-    internal static List<LoreCollectionDefinition>? MergeCollections(List<LoreCollectionDefinition>? baseCols, List<LoreCollectionDefinition>? childCols)
+    internal static List<LoreCollectionDefinition>? MergeCollections(List<LoreCollectionDefinition>? baseCols, List<LoreCollectionDefinition>? childCols, LoreDefinitionBase baseOwningDefinition = null)
     {
       if (CollectionHelpers.CollectionNullOrEmpty(baseCols) && CollectionHelpers.CollectionNullOrEmpty(childCols)) return null;
 
       if (CollectionHelpers.CollectionNullOrEmpty(baseCols) && !CollectionHelpers.CollectionNullOrEmpty(childCols)) return childCols;
 
-      if (!CollectionHelpers.CollectionNullOrEmpty(baseCols) && CollectionHelpers.CollectionNullOrEmpty(childCols)) return baseCols.Select(c => c.CloneFromBase() as LoreCollectionDefinition).ToList();
+      if (!CollectionHelpers.CollectionNullOrEmpty(baseCols) && CollectionHelpers.CollectionNullOrEmpty(childCols)) return baseCols.Select(c => c.CloneFromBaseWithOwner(baseOwningDefinition) as LoreCollectionDefinition).ToList();
 
       List<LoreCollectionDefinition> ret = new List<LoreCollectionDefinition>();
 

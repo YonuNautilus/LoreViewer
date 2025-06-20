@@ -94,7 +94,7 @@
         <Label Grid.Column="0" Grid.Row="0">Original YAML</Label>
         <Label Grid.Column="1" Grid.Row="0">New YAML</Label>
 
-        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+        <!--ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition/>
@@ -103,7 +103,7 @@
             <TextBox Grid.Column="0" Text="{Binding OriginalYAML}"/>
             <TextBox Grid.Column="1" IsReadOnly="True" Text="{Binding NewYAML}"/>
           </Grid>
-        </ScrollViewer>
+        </ScrollViewer-->
       </Grid>
     </Grid>
 

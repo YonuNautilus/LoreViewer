@@ -287,7 +287,7 @@ namespace LoreViewer.Parser
           if (!string.IsNullOrEmpty(tag))
           {
             // Parse collection based on {collection:...} tag, which is not even locally defined, it is MARKDOWN defined at the TOP LEVEL of a file.
-            // It should not be treated as a locally (YAML) defined collection (ie no ParentDefinition needed to be set)
+            // It should not be treated as a locally (YAML) defined collection (ie no OwningDefinition needed to be set)
             if (BlockIsACollection(block))
             {
               if (BlockIsANestedCollection(block))
@@ -416,7 +416,7 @@ namespace LoreViewer.Parser
                   // otherwise, tagged as {collection:type}
                   else
                   {
-                    LoreCollectionDefinition lcd = new LoreCollectionDefinition() { ParentDefinition = typeDef, entryTypeName = GetCollectionType(newTag) };
+                    LoreCollectionDefinition lcd = new LoreCollectionDefinition() { OwningDefinition = typeDef, entryTypeName = GetCollectionType(newTag) };
                     lcd.SetContainedType(_settings.GetTypeDefinition(GetCollectionType(newTag)));
                     newCollection = ParseCollection(doc, ref currentIndex, hb, lcd, ctx);
                   }
@@ -520,7 +520,7 @@ namespace LoreViewer.Parser
       return newNode;
     }
 
-    // This creates on-the-fly 'locally-defined' collection definitions. So having ParentDefinition might be useful
+    // This creates on-the-fly 'locally-defined' collection definitions. So having OwningDefinition might be useful
     private LoreCollectionDefinition MakeNestedDefinitions(string innerTag, LoreParsingContext ctx)
     {
       LoreCollectionDefinition lcd = new LoreCollectionDefinition();
@@ -528,7 +528,7 @@ namespace LoreViewer.Parser
       if (TagIsANestedCollection(innerTag))
       {
         lcd.SetContainedType(MakeNestedDefinitions(GetCollectionType(innerTag), ctx));
-        (lcd.ContainedType as LoreCollectionDefinition).ParentDefinition = lcd;
+        (lcd.ContainedType as LoreCollectionDefinition).OwningDefinition = lcd;
       }
       else if (_settings.HasTypeDefinition(GetCollectionType(innerTag)))
       {
