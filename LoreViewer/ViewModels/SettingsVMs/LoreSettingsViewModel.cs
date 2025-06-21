@@ -1,8 +1,10 @@
-﻿using LoreViewer.Settings;
+﻿using Avalonia.Controls;
+using LoreViewer.Settings;
 using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 
 namespace LoreViewer.ViewModels.SettingsVMs;
@@ -15,6 +17,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
   public LoreSettings m_oLoreSettings;
 
+  public TreeDataGrid curTree;
 
   public bool IgnoreCase
   { 
@@ -96,6 +99,27 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   {
     foreach (LoreTypeDefinition def in m_oLoreSettings.types)
       Types.Add(new TypeDefinitionViewModel(def));
+  }
+
+  public void GoToNodeOfDefinition(LoreDefinitionBase definition)
+  {
+    DefinitionTreeNodeViewModel dtvm = FindNodeOfDefinition(definition);
+
+    //if(dtvm != null && curTree != null)
+      //TreeRootNodes[0] = dtvm;
+  }
+
+  private DefinitionTreeNodeViewModel FindNodeOfDefinition(LoreDefinitionBase definition)
+  {
+    DefinitionTreeNodeViewModel dtvm;
+
+    foreach(DefinitionTreeNodeViewModel node in TreeRootNodes)
+    {
+      dtvm = node.FindNodeOfDefinition(definition);
+      if (dtvm != null) return dtvm;
+    }
+
+    return null;
   }
 
 

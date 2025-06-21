@@ -34,6 +34,19 @@ namespace LoreViewer.ViewModels.SettingsVMs
         return ret;
       }
     }
+    
+    public ObservableCollection<TypeDefinitionViewModel> ValidTypeVMs
+    {
+      get
+      {
+        if (IsLocallyDefinedDef && IsInherited)
+        {
+          var containedTypeOfBase = (colDef.Base as LoreCollectionDefinition)?.ContainedType as LoreTypeDefinition;
+          return new ObservableCollection<TypeDefinitionViewModel>(TypesFromSettings.Where(tdvm => tdvm.typeDef.IsATypeOf(containedTypeOfBase)));
+        }
+        return TypesFromSettings;
+      }
+    }
 
     public ObservableCollection<TypeDefinitionViewModel> TypesFromSettings { get => CurrentSettingsViewModel.Types; }
 
@@ -42,6 +55,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public bool IsCollectionOfCollections { get => colDef.IsCollectionOfCollections; }
     public bool IsCollectionOfNodes { get => !colDef.IsCollectionOfCollections; }
+
+    public bool IsLocallyDefinedDef { get => colDef.IsLocallyDefined; }
     
     public bool IsUsingLocalCollectionDef { get => colDef.IsUsingLocallyDefinedCollection; }
 

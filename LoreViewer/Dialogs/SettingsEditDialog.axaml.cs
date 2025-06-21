@@ -41,6 +41,8 @@ public partial class SettingsEditDialog : Window
         vm.SelectedNode = selected;
       }
     };
+
+    vm.curTree = DefinitionTreeDataGrid;
   }
 
   private void SaveButtonClick(object sender, RoutedEventArgs e)
@@ -110,6 +112,19 @@ public static class DefinitionTreeDataGridBuilder
                 ret.Children.Add(label);
               }
 
+              if(node.IsInherited)
+              {
+                ContextMenu inheritanceMenu = new ContextMenu();
+                inheritanceMenu.Items.Add(new MenuItem
+                {
+                  Header = "Go to base definition",
+                  Command = node.GoToNodeOfDefinitionCommand,
+                  CommandParameter = node.DefinitionVM.Definition.Base
+                });
+
+                ret.ContextMenu = inheritanceMenu;
+              }
+
               return ret;
             })),
 
@@ -176,6 +191,8 @@ public static class DefinitionTreeDataGridBuilder
 
                 panel.Children.Add(addButton);
               }
+
+              panel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
 
               return panel;
             }))

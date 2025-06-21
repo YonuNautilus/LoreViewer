@@ -212,7 +212,7 @@ namespace LoreViewer.Settings
     }
 
     public bool IsParentOf(LoreTypeDefinition subTypeDef) => subTypeDef.isExtendedType && (subTypeDef.ParentType == this || this.IsParentOf(subTypeDef.ParentType));
-    public bool IsATypeOf(LoreTypeDefinition parentTypeDef) => this == parentTypeDef || parentTypeDef.IsParentOf(this);
+    public bool IsATypeOf(LoreTypeDefinition parentTypeDef) => this == parentTypeDef || (parentTypeDef?.IsParentOf(this) ?? false);
 
     public override void PostProcess(LoreSettings settings)
     {

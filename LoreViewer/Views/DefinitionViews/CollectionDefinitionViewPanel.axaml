@@ -22,7 +22,7 @@
     </Grid.ColumnDefinitions>
 
     <Label Grid.Row="0" Grid.Column="0" Content="Collection Name" VerticalAlignment="Center" />
-    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" />
+    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" IsEnabled="{Binding IsNotInherited}" />
 
     <Label Grid.Row="1" Grid.Column="0" Content="Content Kind" VerticalAlignment="Center"/>
     <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
@@ -34,7 +34,7 @@
       <Button DockPanel.Dock="Right" ToolTip.Tip="Revert Contained Type" Command="{Binding RevertContainedTypeCommand}" IsVisible="{Binding CanRevertContainedType}">
         <Image Source="avares://LoreViewer/Resources/repeat.png"/>
       </Button>
-      <ComboBox IsEnabled="{Binding IsCollectionOfNodes}" ItemsSource="{Binding TypesFromSettings}" SelectedItem="{Binding ContainedTypeVM}" >
+      <ComboBox IsEnabled="{Binding IsCollectionOfNodes}" ItemsSource="{Binding ValidTypeVMs}" SelectedItem="{Binding ContainedTypeVM}" >
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Name}" />
@@ -45,7 +45,7 @@
       
     <Label Grid.Row="3" Grid.Column="0" Content="Contained Collection" VerticalAlignment="Center"/>
     <DockPanel IsEnabled="{Binding IsCollectionOfCollections}" Grid.Row="3" Grid.Column="1">
-      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" IsEnabled="{Binding IsNotInherited}">
         <Button ToolTip.Tip="Use New Collection Definition"
                 Command="{Binding AddLocalCollectionCommand}"
                 IsEnabled="{Binding IsNotUsingLocalCollectionDef}">
@@ -58,7 +58,7 @@
           <Image Source="avares://LoreViewer/Resources/pencil.png" />
         </Button-->
       </StackPanel>
-      <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllCollectionVMs}" SelectedItem="{Binding ContainedTypeVM}" >
+      <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllCollectionVMs}" SelectedItem="{Binding ContainedTypeVM}" IsEnabled="{Binding IsNotInherited}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Name}" />

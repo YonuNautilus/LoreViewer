@@ -34,6 +34,10 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
   private LoreSettingsViewModel _settings;
   private Type _addType;
 
+  public ReactiveCommand<LoreDefinitionBase, Unit> GoToNodeOfDefinitionCommand { get; }
+
+  public LoreSettingsViewModel CurrentSettingsVM => _settings;
+
   public DefinitionTreeNodeViewModel? Parent { get; private set; }
   public ObservableCollection<DefinitionTreeNodeViewModel> Children { get; } = new();
 
@@ -111,7 +115,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
 
   public DefinitionTreeNodeViewModel()
   {
-
+    GoToNodeOfDefinitionCommand = ReactiveCommand.Create<LoreDefinitionBase>(GoToNodeOfDefinition);
   }
 
   // Group node constructor
@@ -224,6 +228,8 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
       }
     });
   }
+
+  public void GoToNodeOfDefinition(LoreDefinitionBase definition) => LoreDefinitionViewModel.CurrentSettingsViewModel.GoToNodeOfDefinition(definition);
 
   public void AddChild(DefinitionTreeNodeViewModel child)
   {
@@ -502,5 +508,24 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     this.RaisePropertyChanged(nameof(CanEditRequired));
     this.RaisePropertyChanged(nameof(CanEditName));
     this.RaisePropertyChanged(nameof(NameIsReadOnly));
+  }
+
+  internal DefinitionTreeNodeViewModel? FindNodeOfDefinition(LoreDefinitionBase definition)
+  {
+    DefinitionTreeNodeViewModel dtvm;
+
+    if (!IsGroupNode)
+    {
+      if (this.DefinitionVM.Definition == definition) return this;
+    }
+    else
+    {
+      foreach (DefinitionTreeNodeViewModel node in Children)
+      {
+        dtvm = node.FindNodeOfDefinition(definition);
+        if (dtvm != null) return dtvm;
+      }
+    }
+    return null;
   }
 }
