@@ -67,7 +67,15 @@ public static class DefinitionTreeDataGridBuilder
             {
               if (node == null) return new Panel();
               if (node.IsGroupNode || (node.IsInherited && node.DefinitionVM is not TypeDefinitionViewModel))
-                return new Label { [!Label.ContentProperty] = new Binding("DisplayName") };
+                return new TextBox
+                {
+                  [!TextBox.TextProperty] = new Binding("DisplayName"),
+                  BorderThickness = new Thickness(0),
+                  Padding = new Thickness(0),
+                  IsReadOnly = true,
+                  VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                  IsHitTestVisible = false
+                };
               else
                 return new TextBox
                 {

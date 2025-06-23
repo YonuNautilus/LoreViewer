@@ -6,7 +6,9 @@
              xmlns:local="using:LoreViewer.Views.DefinitionViews"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
              x:DataType="vm:FieldDefinitionViewModel"
-             x:Class="LoreViewer.Views.DefinitionViews.FieldDefinitionViewPanel">
+             x:Class="LoreViewer.Views.DefinitionViews.FieldDefinitionViewPanel"
+             Margin="5"
+             HorizontalAlignment="Center">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
@@ -15,7 +17,7 @@
     </Grid.RowDefinitions>
 
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="120"/>
+      <ColumnDefinition Width="Auto"/>
       <ColumnDefinition Width="250"/>
     </Grid.ColumnDefinitions>
 

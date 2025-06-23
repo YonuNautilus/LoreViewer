@@ -90,5 +90,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
         RefreshLists();
     }
 
+    public override string ToString() => Definition != null ? $"VM of {Definition}" : Name;
   }
 }

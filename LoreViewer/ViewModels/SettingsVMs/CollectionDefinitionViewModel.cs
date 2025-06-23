@@ -161,7 +161,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
         UseNewCollectionDefinition(colDef.entryCollection);
 
       //Default to a type (ie node) collection if no contained type is specified
-
       if (ContainedType == null)
         definition.SetContainedType(CurrentSettings.types.FirstOrDefault());
 

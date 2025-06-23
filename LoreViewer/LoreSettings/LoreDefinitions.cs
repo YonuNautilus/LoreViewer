@@ -658,12 +658,11 @@ namespace LoreViewer.Settings
     {
       get
       {
-        if (IsInherited) return (Base as LoreEmbeddedNodeDefinition).nodeType;
-        else return m_oNodeType;
+        return m_oNodeType;
       }
       set
       {
-        if(IsInherited && !value.IsATypeOf((Base as LoreEmbeddedNodeDefinition).nodeType)) throw new Exception("Cannot change node type of inherited embedded node definition");
+        if(IsInherited && !value.IsATypeOf((Base as LoreEmbeddedNodeDefinition).nodeType)) throw new Exception("Cannot change node type of inherited embedded node definition to an entirely different type");
         else m_oNodeType = value;
       }
     }
@@ -698,10 +697,14 @@ namespace LoreViewer.Settings
       }
     }
 
-    public void MergeFrom(LoreEmbeddedNodeDefinition parentEmdedded)
+    public void MergeFrom(LoreEmbeddedNodeDefinition baseEmbedded)
     {
-      Base = parentEmdedded;
+      Base = baseEmbedded;
 
+      if (!(this.nodeType as LoreTypeDefinition).IsATypeOf(baseEmbedded.nodeType as LoreTypeDefinition))
+        nodeType = (baseEmbedded.nodeType);
+
+      this.required |= baseEmbedded.required;
     }
 
     public LoreEmbeddedNodeDefinition Clone()

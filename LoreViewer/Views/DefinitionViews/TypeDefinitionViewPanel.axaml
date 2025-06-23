@@ -6,7 +6,9 @@
              xmlns:local="using:LoreViewer.Views.DefinitionViews"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
              x:DataType="vm:TypeDefinitionViewModel"
-             x:Class="LoreViewer.Views.DefinitionViews.TypeDefinitionViewPanel">
+             x:Class="LoreViewer.Views.DefinitionViews.TypeDefinitionViewPanel"
+             Margin="5"
+             HorizontalAlignment="Center">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
