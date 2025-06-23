@@ -1,0 +1,37 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  
+  <!--FIELDS-->
+  <x:String x:Key="Tooltip_Field_Required">
+    This field must be present in markdown if its parent exists.</x:String>
+  <x:String x:Key="Tooltip_Field_Style">
+    The style of this field's value(s):
+    Single Value (Default) - This field has only one value
+    Nested Fields - This field does not have its own value, but instead holds fields within it.
+    Multiple Values - This field has multiple values, like a list of aliases.
+    Purely Textual - This field contain textual information, and can exist in 'nested list items'
+    List of options - (NOT YET IMPLEMENTED) This field can only have one value from a list of options
+  </x:String>
+  
+  <!--SECTIONS-->
+  <x:String x:Key="Tooltip_Section_Required">
+    This section must be present in markdown if its parent exists
+  </x:String>
+  <x:String x:Key="Tooltip_Section_Freeform">
+    (NOT YET IMPLEMENTED)
+    Everything under this section (except same-level or ancestor headings) are used as the textual content of the section.
+    This means this section cannot have fields or subsections.
+  </x:String>
+  
+  <!--COLLECTIONS-->
+  
+  
+  <!--EMBEDDEDS-->
+  <x:String x:Key="Tooltip_Embedded_Required">
+    This embedded node must be present in markdown
+  </x:String>
+  
+  
+  <!--TYPES-->
+  <x:String x:Key="Tooltip_EmbeddedNode">Defines a required or optional sub-node embedded in this node.</x:String>
+</ResourceDictionary>

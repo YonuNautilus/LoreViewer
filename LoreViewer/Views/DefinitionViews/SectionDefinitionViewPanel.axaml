@@ -24,11 +24,11 @@
     <Label Grid.Row="0" Grid.Column="0" Content="Section Name"/>
     <TextBox IsEnabled="{Binding IsNotInherited}" Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
 
-    <Label Grid.Row="1" Grid.Column="0" Content="Freeform" ToolTip.Tip=""/>
+    <Label Grid.Row="1" Grid.Column="0" Content="Freeform" ToolTip.Tip="{StaticResource Tooltip_Section_Freeform}"/>
     <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsFreeform}" />
 
     <Label Grid.Row="2" Grid.Column="0" Content="Required" />
-    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" />
+    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" ToolTip.Tip="{StaticResource Tooltip_Section_Required}"/>
 
   </Grid>
 </UserControl>

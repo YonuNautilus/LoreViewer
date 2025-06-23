@@ -15,6 +15,7 @@
     <AvaloniaResource Include="Resources\**" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaXaml Remove="Resources\GlobalValues\CommonText.axaml" />
     <AvaloniaXaml Remove="Resources\Themes\TreeDataGridTheme.axaml" />
   </ItemGroup>
 
@@ -46,6 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Update="Resources\GlobalValues\CommonText.axaml">
+      <SubType>Designer</SubType>
+    </AvaloniaResource>
     <AvaloniaResource Update="Resources\Themes\TreeDataGridTheme.axaml">
       <SubType>Designer</SubType>
     </AvaloniaResource>

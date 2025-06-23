@@ -16,16 +16,27 @@
     <Style Selector="Button.rounded">
       <Setter Property="CornerRadius" Value="20"/>
     </Style>
+
+    <Style Selector="TreeDataGridRow:selected">
+      <Setter Property="Background" Value="Navy" />
+    </Style>
   </Application.Styles>
 
   <Application.Resources>
-    <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"/>
-    <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter" />
+    <ResourceDictionary>
 
-    <conv:EnumDescriptionConverter x:Key="EnumConverter" />
-    <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
-    
-    
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://LoreViewer/Resources/GlobalValues/CommonText.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+
+      <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"/>
+      <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter" />
+
+      <conv:EnumDescriptionConverter x:Key="EnumConverter" />
+      <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
+
+
+    </ResourceDictionary>
   </Application.Resources>
-
 </Application>

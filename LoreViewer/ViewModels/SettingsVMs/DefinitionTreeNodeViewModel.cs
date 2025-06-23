@@ -157,28 +157,28 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
         if (Parent?.DefinitionVM?.Definition is IFieldDefinitionContainer fCont && groupName == FieldGroupName)
         {
           var newDef = new LoreFieldDefinition { name = DefinitionTreeNodeViewModel.fieldNamer.GetName() };
-          fCont.fields.Add(newDef);
+          fCont.AddField(newDef);
           var newVM = new FieldDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (Parent?.DefinitionVM?.Definition is ISectionDefinitionContainer sCont && groupName == SectionGroupName)
         {
           var newDef = new LoreSectionDefinition { name = DefinitionTreeNodeViewModel.sectionNamer.GetName() };
-          sCont.sections.Add(newDef);
+          sCont.AddSection(newDef);
           var newVM = new SectionDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (Parent?.DefinitionVM?.Definition is ICollectionDefinitionContainer cCont && groupName == CollectionGroupName)
         {
           var newDef = new LoreCollectionDefinition { name = DefinitionTreeNodeViewModel.collectionNamer.GetName() };
-          cCont.collections.Add(newDef);
+          cCont.AddCollection(newDef);
           var newVM = new CollectionDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (Parent?.DefinitionVM?.Definition is IEmbeddedNodeDefinitionContainer eCont && groupName == EmbeddedNodsGroupName)
         {
           var newDef = new LoreEmbeddedNodeDefinition { name = DefinitionTreeNodeViewModel.embeddedNamer.GetName() };
-          eCont.embeddedNodeDefs.Add(newDef);
+          eCont.AddEmbedded(newDef);
           var newVM = new EmbeddedNodeDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }

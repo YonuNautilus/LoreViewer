@@ -7,12 +7,10 @@ using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using DocumentFormat.OpenXml.Vml.Office;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using LoreViewer.ViewModels.SettingsVMs;
 using System.Collections.ObjectModel;
-using Tmds.DBus.Protocol;
 
 namespace LoreViewer.Dialogs;
 
