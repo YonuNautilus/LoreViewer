@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DynamicData;
+using DynamicData.Cache.Internal;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
@@ -92,6 +93,8 @@ namespace LoreViewer.Settings
 
     public abstract bool IsModifiedFromBase { get; }
 
+
+    internal abstract void MakeIndependent();
   }
 
   /// <summary>
@@ -125,6 +128,7 @@ namespace LoreViewer.Settings
     #region ICollectionDefinitionContainer
     [YamlMember(3)]
     public List<LoreCollectionDefinition> collections { get; set; } = new List<LoreCollectionDefinition>();
+    public bool HasCollections => collections != null && collections.Count > 0;
     public bool HasCollectionDefinition(string collectionName) => collections?.Any(col => col.name == collectionName) ?? false;
     public LoreCollectionDefinition? GetCollectionDefinition(string collectionName) => collections?.FirstOrDefault(c => c.name == collectionName) ?? null;
     #endregion ICollectionDefinitionContainer
@@ -275,6 +279,21 @@ namespace LoreViewer.Settings
       typeDef.Base = this;
       return typeDef;
     }
+
+    internal override void MakeIndependent()
+    {
+      this.Base = null;
+      this.ParentType = null;
+      extends = null;
+
+      if(HasFields) foreach(LoreFieldDefinition field in fields) field.MakeIndependent();
+
+      if(HasSections) foreach(LoreSectionDefinition section in sections) section.MakeIndependent();
+
+      if(HasCollections) foreach(LoreCollectionDefinition collection in collections) collection.MakeIndependent();
+
+      if(HasNestedNodes) foreach(LoreEmbeddedNodeDefinition embedded in embeddedNodeDefs) embedded.MakeIndependent();
+    }
   }
 
   /// <summary>
@@ -365,6 +384,15 @@ namespace LoreViewer.Settings
       secDef.Base = this;
       return secDef;
     }
+
+    internal override void MakeIndependent()
+    {
+      this.Base = null;
+
+      if (HasFields) foreach (LoreFieldDefinition field in fields) field.MakeIndependent();
+
+      if(HasSections) foreach(LoreSectionDefinition section in sections) section.MakeIndependent();
+    }
   }
 
   public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreFieldDefinition>
@@ -452,6 +480,13 @@ namespace LoreViewer.Settings
       LoreFieldDefinition fieldDef = Clone();
       fieldDef.Base = this;
       return fieldDef;
+    }
+
+    internal override void MakeIndependent()
+    {
+      this.Base = null;
+      
+      if(HasFields) foreach(LoreFieldDefinition field in fields) field.MakeIndependent();
     }
   }
 
@@ -633,6 +668,13 @@ namespace LoreViewer.Settings
       colDef.OwningDefinition = this;
       return colDef;
     }
+
+    internal override void MakeIndependent()
+    {
+      this.Base = null;
+
+      if (IsCollectionOfCollections && IsUsingLocallyDefinedCollection) ContainedType.MakeIndependent();
+    }
   }
 
   public class LoreEmbeddedNodeDefinition : LoreDefinitionBase, IRequirable, IDeepCopyable<LoreEmbeddedNodeDefinition>
@@ -720,6 +762,11 @@ namespace LoreViewer.Settings
       LoreEmbeddedNodeDefinition enodeDef = Clone();
       enodeDef.Base = this;
       return enodeDef;
+    }
+
+    internal override void MakeIndependent()
+    {
+      this.Base = null;
     }
   }
 

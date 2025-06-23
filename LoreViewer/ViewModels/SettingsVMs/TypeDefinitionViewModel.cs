@@ -1,8 +1,10 @@
 ﻿using LoreViewer.Settings;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -17,7 +19,15 @@ namespace LoreViewer.ViewModels.SettingsVMs
     // Returns all types from settings EXCEPT for the current viewmodel's definition and any subtypes
     public List<LoreTypeDefinition> AllTypesExceptMine { get => CurrentSettings.types.Except(CurrentSettings.types.Where(def => (Definition as LoreTypeDefinition).IsParentOf(def))).ToList(); }
 
-    public LoreTypeDefinition ExtendsType { get => typeDef.ParentType; }
+    public LoreTypeDefinition ExtendsType
+    {
+      get => typeDef.ParentType;
+      set
+      {
+        typeDef.ParentType = value;
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      }
+    }
 
     public bool HasEmbeddedNodes { get => typeDef.HasNestedNodes; }
     public bool HasCollections { get => typeDef.collections != null && typeDef.collections.Count > 0; }
@@ -33,8 +43,19 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes { get => m_cEmbeddeds; }
 
+
+    public ReactiveCommand<Unit, Unit> MakeIndependentCommand { get; set; }
+
+
     public TypeDefinitionViewModel(LoreTypeDefinition definition) : base(definition)
     {
+      MakeIndependentCommand = ReactiveCommand.Create(() =>
+      {
+        if (Definition != null)
+          typeDef.MakeIndependent();
+
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      });
     }
 
 
@@ -65,6 +86,14 @@ namespace LoreViewer.ViewModels.SettingsVMs
       if (typeDef.collections != null)
         foreach (LoreCollectionDefinition def in typeDef.collections)
           m_cCollections.Add(new CollectionDefinitionViewModel(def));
+    }
+
+
+    public override void RefreshUI()
+    {
+      this.RaisePropertyChanged(nameof(ExtendsType));
+      this.RaisePropertyChanged(nameof(ExtendsTypeName));
+      base.RefreshUI();
     }
 
     public override void RefreshLists()

@@ -17,23 +17,29 @@
 
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="120"/>
-      <ColumnDefinition Width="250"/>
+      <ColumnDefinition Width="240"/>
     </Grid.ColumnDefinitions>
 
     <Label Grid.Row="0" Grid.Column="0" Content="Type Name"/>
     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
 
     <Label Grid.Row="1" Grid.Column="0" Content="Extends" />
-    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-      <ComboBox ItemsSource="{Binding AllTypesExceptMine}" SelectedItem="{Binding ExtendsType}">
+    <DockPanel Grid.Row="1" Grid.Column="1">
+      <Button DockPanel.Dock="Right"
+        ToolTip.Tip="Decouple this type definition from its parent - Make it independent"
+        Command="{Binding MakeIndependentCommand}"
+        IsVisible="{Binding IsInherited}">
+        <Image Source="avares://LoreViewer/Resources/broken_link.png"/>
+      </Button>
+      <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllTypesExceptMine}" SelectedItem="{Binding ExtendsType}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding}" />
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>
-      <Button ToolTip.Tip="Decouple this type definition from its parent - Make it independent"></Button>
-    </StackPanel>
+      
+    </DockPanel>
 
   </Grid>
 </UserControl>
