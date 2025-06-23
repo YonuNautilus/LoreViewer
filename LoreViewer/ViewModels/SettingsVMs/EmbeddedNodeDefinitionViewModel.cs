@@ -14,22 +14,22 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<TypeDefinitionViewModel> Types => null;
     #endregion
 
-    private LoreEmbeddedNodeDefinition emdDef => Definition as LoreEmbeddedNodeDefinition;
-    public string TypeName { get => emdDef?.entryTypeName; set => ApplyNewType(value); }
+    private LoreEmbeddedNodeDefinition embDef => Definition as LoreEmbeddedNodeDefinition;
+    public string TypeName { get => embDef?.entryTypeName; set => ApplyNewType(value); }
 
-    public bool IsRequired { get => emdDef.required; set => emdDef.required = value; }
+    public bool IsRequired { get => embDef.required; set => embDef.required = value; }
 
     public TypeDefinitionViewModel NodeTypeVM
     {
       get
       {
-        return CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.Definition == emdDef.nodeType);
+        return CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.Definition == embDef.nodeType);
       }
       set
       {
         if(value != null)
         {
-          emdDef.nodeType = value.Definition as LoreTypeDefinition;
+          embDef.nodeType = value.Definition as LoreTypeDefinition;
           SettingsRefresher.Apply(CurrentSettingsViewModel);
         }
       }
@@ -37,7 +37,14 @@ namespace LoreViewer.ViewModels.SettingsVMs
     }
 
     public TypeDefinitionViewModel Type { get; set; }
-    public EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase) { Type = new TypeDefinitionViewModel(emdDef.nodeType); }
+    public EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase)
+    {
+      if (CurrentSettingsViewModel != null && embDef != null)
+      {
+        Type = CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.Definition == definitionBase);
+      }
+      //Type = new TypeDefinitionViewModel(embDef.nodeType);
+    }
 
     public override void RefreshLists()
     {
@@ -49,7 +56,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       LoreTypeDefinition newType = CurrentSettings.GetTypeDefinition(typeName);
       if (newType != null)
       {
-        emdDef.nodeType = newType;
+        embDef.nodeType = newType;
         Type = new TypeDefinitionViewModel(newType);
       }
     }

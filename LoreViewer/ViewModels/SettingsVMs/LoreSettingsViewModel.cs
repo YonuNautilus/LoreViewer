@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using LoreViewer.Settings;
 using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -85,7 +86,8 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     get => _selectedDef;
     set
     {
-      this.RaiseAndSetIfChanged(ref _selectedDef, value);
+      _selectedDef = value;
+      this.RaisePropertyChanged(nameof(SelectedDefinition));
     }
   }
 

@@ -28,22 +28,22 @@
         <RowDefinition Height="Auto"/>  
       </Grid.RowDefinitions>
       
-      <ContentControl Grid.Row="0" Content="{Binding SelectedDefinition}">
+      <ContentControl x:Name="DefView" Grid.Row="0" Content="{Binding SelectedDefinition}">
         <ContentControl.DataTemplates>
           <DataTemplate DataType="{x:Type vm:TypeDefinitionViewModel}">
-            <defViews:TypeDefinitionViewPanel DataContext="{Binding}"/>
+            <defViews:TypeDefinitionViewPanel x:Name="TypeView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
           </DataTemplate>
           <DataTemplate DataType="{x:Type vm:FieldDefinitionViewModel}">
-            <defViews:FieldDefinitionViewPanel />
+            <defViews:FieldDefinitionViewPanel x:Name="FieldView" DataContext="{Binding}" Tag="{Binding UniqueID}" />
           </DataTemplate>
           <DataTemplate DataType="{x:Type vm:SectionDefinitionViewModel}">
-            <defViews:SectionDefinitionViewPanel />
+            <defViews:SectionDefinitionViewPanel x:Name="SectionView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
           </DataTemplate>
           <DataTemplate DataType="{x:Type vm:CollectionDefinitionViewModel}">
-            <defViews:CollectionDefinitionViewPanel DataContext="{Binding}" />
+            <defViews:CollectionDefinitionViewPanel x:Name="CollectionView" DataContext="{Binding}" Tag="{Binding UniqueID}" />
           </DataTemplate>
           <DataTemplate DataType="{x:Type vm:EmbeddedNodeDefinitionViewModel}">
-            <defViews:EmbeddedDefinitionViewPanel />
+            <defViews:EmbeddedDefinitionViewPanel x:Name="EmbeddedView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
           </DataTemplate>
         </ContentControl.DataTemplates>
       </ContentControl>

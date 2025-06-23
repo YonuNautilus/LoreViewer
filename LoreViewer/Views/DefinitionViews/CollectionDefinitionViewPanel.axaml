@@ -6,7 +6,9 @@
              xmlns:local="using:LoreViewer.Views.DefinitionViews"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
              x:DataType="vm:CollectionDefinitionViewModel"
-             x:Class="LoreViewer.Views.DefinitionViews.CollectionDefinitionViewPanel">
+             x:Class="LoreViewer.Views.DefinitionViews.CollectionDefinitionViewPanel"
+             Margin="5"
+             HorizontalAlignment="Center">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
@@ -17,7 +19,7 @@
     </Grid.RowDefinitions>
 
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="130"/>
+      <ColumnDefinition Width="Auto"/>
       <ColumnDefinition Width="240"/>
     </Grid.ColumnDefinitions>
 
@@ -68,7 +70,7 @@
     </DockPanel>
 
     <Label Grid.Row="4" Grid.Column="0" Content="Required" VerticalAlignment="Center"/>
-    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsRequired}" />
+    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanChangeRequired}"/>
 
   </Grid>
 </UserControl>

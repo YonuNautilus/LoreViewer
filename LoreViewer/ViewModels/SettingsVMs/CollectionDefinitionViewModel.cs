@@ -66,6 +66,15 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public bool NotUsingParentDefinedType { get => CanRevertContainedType && (colDef.ContainedType != (colDef.Base as LoreCollectionDefinition).Base); }
 
+    public bool CanChangeRequired
+    {
+      get
+      {
+        if (IsInherited) return !(colDef.Base as LoreCollectionDefinition).required;
+        else return true;
+      }
+    }
+
     public bool UsesTypesOrNull
     {
       get
@@ -123,7 +132,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
       set
       {
-        if(value != null && !IsInherited)
+        if(value != null)
         {
           colDef.SetContainedType(value.Definition);
           SettingsRefresher.Apply(CurrentSettingsViewModel);
@@ -151,6 +160,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
       if (colDef.IsUsingLocallyDefinedCollection)
         UseNewCollectionDefinition(colDef.entryCollection);
 
+      //Default to a type (ie node) collection if no contained type is specified
+
+      if (ContainedType == null)
+        definition.SetContainedType(CurrentSettings.types.FirstOrDefault());
+
       RevertContainedTypeCommand = ReactiveCommand.Create(() =>
       {
         if (colDef.IsCollectionOfCollections)
@@ -177,6 +191,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(EntryCollection));
       this.RaisePropertyChanged(nameof(ContainedTypeVM));
       this.RaisePropertyChanged(nameof(IsRequired));
+      this.RaisePropertyChanged(nameof(CanChangeRequired));
       base.RefreshUI();
     }
 

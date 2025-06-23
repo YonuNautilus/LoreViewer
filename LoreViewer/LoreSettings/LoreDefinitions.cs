@@ -2,6 +2,7 @@
 using DynamicData;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
+using ReactiveUI;
 using SharpYaml.Serialization;
 using System;
 using System.Collections.Generic;
@@ -690,6 +691,8 @@ namespace LoreViewer.Settings
         if (Base == null) return true;
 
         if (this.required != (Base as LoreEmbeddedNodeDefinition).required) return true;
+
+        if (this.nodeType != (Base as LoreEmbeddedNodeDefinition).nodeType) return true;
 
         return false;
       }
