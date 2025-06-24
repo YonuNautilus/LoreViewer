@@ -7,6 +7,7 @@ using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using DocumentFormat.OpenXml.Drawing;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using LoreViewer.ViewModels.SettingsVMs;
@@ -182,7 +183,8 @@ public static class DefinitionTreeDataGridBuilder
                 deleteButton.Bind(Button.CommandProperty, new Binding(nameof(node.DeleteCommand)));
                 panel.Children.Add(deleteButton);
               }
-              else
+
+              if(node.IsGroupNode || (node.DefinitionVM != null && node.DefinitionVM is FieldDefinitionViewModel))
               {
                 // Optional: add "+" add button for group nodes
                 var addButton = new Button
@@ -194,6 +196,11 @@ public static class DefinitionTreeDataGridBuilder
                   addButton.Bind(Button.CommandProperty, new Binding(nameof(node.AddDefinitionCommand)));
                 else
                   addButton.Bind(Button.CommandProperty, new Binding(nameof(node.AddDefinitionCommand)));
+
+                if(node.DefinitionVM is FieldDefinitionViewModel fdvm)
+                {
+                  addButton.Bind(Button.IsEnabledProperty, new Binding(nameof(node.IsNestedFieldsStyle)));
+                }
 
                 panel.Children.Add(addButton);
               }

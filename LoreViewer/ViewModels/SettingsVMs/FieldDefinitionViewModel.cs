@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Settings;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,7 +19,17 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public static List<EFieldStyle> FieldStyles { get => Enum.GetValues(typeof(EFieldStyle)).Cast<EFieldStyle>().ToList(); }
 
     private LoreFieldDefinition fieldDef { get => Definition as LoreFieldDefinition; }
-    public bool IsRequired { get => fieldDef.required; set => fieldDef.required = value; }
+    public bool IsRequired
+    {
+      get => fieldDef.required;
+      set
+      {
+        fieldDef.required = value;
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      }
+    }
+    
+    public bool IsNestedFieldsStyle { get => fieldDef.style == EFieldStyle.NestedValues; }
 
     public bool HasSubFields { get => fieldDef.HasFields; }
     public bool NoSubFields { get => !fieldDef.HasFields; }
@@ -42,7 +53,22 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public override ObservableCollection<FieldDefinitionViewModel> Fields { get =>  m_cFields; }
 
-    public EFieldStyle Style { get => fieldDef.style; set => fieldDef.style = value; }
+    public EFieldStyle Style
+    {
+      get => fieldDef.style;
+      set
+      {
+        fieldDef.style = value;
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      }
+    }
+
+    public override void RefreshUI()
+    {
+      this.RaisePropertyChanged(nameof(Style));
+      this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
+      base.RefreshUI();
+    }
 
     public FieldDefinitionViewModel(LoreFieldDefinition defintion) : base(defintion) { }
 

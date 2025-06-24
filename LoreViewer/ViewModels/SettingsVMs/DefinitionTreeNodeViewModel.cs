@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Spreadsheet;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
@@ -57,6 +58,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     }
   }
 
+  public bool IsNestedFieldsStyle => DefinitionVM is FieldDefinitionViewModel fdvm ? fdvm.IsNestedFieldsStyle : false;
 
   public bool IsInherited => DefinitionVM?.IsInherited ?? false;
   public bool CanDelete
@@ -154,6 +156,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     {
       AddDefinitionCommand = ReactiveCommand.Create(() =>
       {
+
         if (Parent?.DefinitionVM?.Definition is IFieldDefinitionContainer fCont && groupName == FieldGroupName)
         {
           var newDef = new LoreFieldDefinition { name = DefinitionTreeNodeViewModel.fieldNamer.GetName() };
@@ -195,6 +198,21 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     IsGroupNode = false;
 
     BuildChildren();
+
+    if(vm is FieldDefinitionViewModel fdvm)
+    {
+      AddDefinitionCommand = ReactiveCommand.Create(() =>
+      {
+        if (DefinitionVM != null && DefinitionVM.Definition is LoreFieldDefinition fDef && fDef.style == EFieldStyle.NestedValues)
+        {
+          IFieldDefinitionContainer fCont = DefinitionVM.Definition as IFieldDefinitionContainer;
+          var newDef = new LoreFieldDefinition { name = DefinitionTreeNodeViewModel.fieldNamer.GetName() };
+          fCont.AddField(newDef);
+          var newVM = new FieldDefinitionViewModel(newDef);
+          AddChild(new DefinitionTreeNodeViewModel(newVM));
+        }
+      });
+    }
 
     DeleteCommand = ReactiveCommand.Create(() =>
     {
@@ -257,16 +275,26 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     if (DefinitionVM.Definition is IFieldDefinitionContainer ifcont)
     {
       // If this is a field definition, but it's NOT a nested values field, break out of this method
-      if (ifcont is LoreFieldDefinition fd && fd.style != EFieldStyle.NestedValues)
-        return;
-
-      var fieldGroup = new DefinitionTreeNodeViewModel(FieldGroupName, addType: typeof(LoreFieldDefinition));
-      if (DefinitionVM.Fields != null)
+      if (ifcont is LoreFieldDefinition fd)
       {
-        foreach (var f in DefinitionVM.Fields)
-          fieldGroup.AddChild(new DefinitionTreeNodeViewModel(f));
+        if (fd.style != EFieldStyle.NestedValues) return;
+
+        if (DefinitionVM.Fields != null)
+        {
+          foreach (var f in DefinitionVM.Fields)
+            AddChild(new DefinitionTreeNodeViewModel(f));
+        }
       }
-      AddChild(fieldGroup);
+      else
+      {
+        var fieldGroup = new DefinitionTreeNodeViewModel(FieldGroupName, addType: typeof(LoreFieldDefinition));
+        if (DefinitionVM.Fields != null)
+        {
+          foreach (var f in DefinitionVM.Fields)
+            fieldGroup.AddChild(new DefinitionTreeNodeViewModel(f));
+        }
+        AddChild(fieldGroup);
+      }
     }
 
     if (DefinitionVM.Definition is ISectionDefinitionContainer iscont)
@@ -508,6 +536,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     this.RaisePropertyChanged(nameof(CanEditRequired));
     this.RaisePropertyChanged(nameof(CanEditName));
     this.RaisePropertyChanged(nameof(NameIsReadOnly));
+    this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
   }
 
   internal DefinitionTreeNodeViewModel? FindNodeOfDefinition(LoreDefinitionBase definition)
