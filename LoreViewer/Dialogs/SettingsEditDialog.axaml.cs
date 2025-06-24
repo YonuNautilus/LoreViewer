@@ -65,21 +65,15 @@ public static class DefinitionTreeDataGridBuilder
             cellTemplate: new FuncDataTemplate<DefinitionTreeNodeViewModel>((node, _) =>
             {
               if (node == null) return new Panel();
-              if (node.IsGroupNode || (node.IsInherited && node.DefinitionVM is not TypeDefinitionViewModel))
-                return new TextBox
-                {
-                  [!TextBox.TextProperty] = new Binding("DisplayName"),
-                  BorderThickness = new Thickness(0),
-                  Padding = new Thickness(0),
-                  IsReadOnly = true,
-                  VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                  IsHitTestVisible = false
-                };
               else
                 return new TextBox
                 {
-                  [!!TextBox.TextProperty] = new Binding("DisplayName"),
+                  [!TextBox.TextProperty] = new Binding("DisplayName"),
+                  [!TextBox.BorderThicknessProperty] = new Binding("TextboxBorderThickness"),
+                  [!TextBox.PaddingProperty] = new Binding("TextboxBorderThickness"),
                   [!TextBox.IsReadOnlyProperty] = new Binding("NameIsReadOnly"),
+                  [!TextBox.IsHitTestVisibleProperty] = new Binding("CanEditName"),
+                  VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                 };
             })
           ),
@@ -164,11 +158,9 @@ public static class DefinitionTreeDataGridBuilder
               if (node == null)
                 return new StackPanel();
 
-              var panel = new StackPanel
+              var buttonGrid = new Grid
               {
-                Orientation = Avalonia.Layout.Orientation.Horizontal,
-                Spacing = 4,
-                Height = 20
+                ColumnDefinitions = new ColumnDefinitions { new ColumnDefinition(1, GridUnitType.Star), new ColumnDefinition(1, GridUnitType.Star) },
               };
 
               if (!node.IsGroupNode)
@@ -181,7 +173,11 @@ public static class DefinitionTreeDataGridBuilder
                   [!Button.IsEnabledProperty] = new Binding("CanDelete")
                 };
                 deleteButton.Bind(Button.CommandProperty, new Binding(nameof(node.DeleteCommand)));
-                panel.Children.Add(deleteButton);
+
+                ToolTip.SetTip(deleteButton, "Delete this definition");
+
+                Grid.SetColumn(deleteButton, 0);
+                buttonGrid.Children.Add(deleteButton);
               }
 
               if(node.IsGroupNode || (node.DefinitionVM != null && node.DefinitionVM is FieldDefinitionViewModel))
@@ -202,12 +198,15 @@ public static class DefinitionTreeDataGridBuilder
                   addButton.Bind(Button.IsEnabledProperty, new Binding(nameof(node.IsNestedFieldsStyle)));
                 }
 
-                panel.Children.Add(addButton);
+                ToolTip.SetTip(addButton, "Add a new definition within this definition/group");
+
+                Grid.SetColumn(addButton, 1);
+                buttonGrid.Children.Add(addButton);
               }
 
-              panel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
+              buttonGrid.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
 
-              return panel;
+              return buttonGrid;
             }))
     }
     };

@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Drawing;
+﻿using Avalonia;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Spreadsheet;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
@@ -111,6 +112,15 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     {
       if (IsGroupNode) return false;
       else return DefinitionVM?.CanEditName ?? false;
+    }
+  }
+
+  public Thickness TextboxBorderThickness
+  {
+    get
+    {
+      if (IsGroupNode || !CanEditName) return new Thickness(0);
+      else return new Thickness(1);
     }
   }
 
@@ -537,6 +547,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     this.RaisePropertyChanged(nameof(CanEditName));
     this.RaisePropertyChanged(nameof(NameIsReadOnly));
     this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
+    this.RaisePropertyChanged(nameof(TextboxBorderThickness));
   }
 
   internal DefinitionTreeNodeViewModel? FindNodeOfDefinition(LoreDefinitionBase definition)
@@ -557,4 +568,6 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     }
     return null;
   }
+
+  public override string ToString() => DisplayName;
 }
