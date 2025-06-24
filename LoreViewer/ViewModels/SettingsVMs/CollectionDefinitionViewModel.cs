@@ -158,7 +158,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       AddLocalCollectionCommand = ReactiveCommand.Create(CreateNewLocalCollection);
       if (colDef.IsUsingLocallyDefinedCollection)
-        UseNewCollectionDefinition(colDef.entryCollection);
+      {
+        var newVM = new CollectionDefinitionViewModel(colDef.entryCollection);
+        locallyDefinedCollectionVM = newVM;
+        ContainedTypeVM = newVM;
+      }
 
       //Default to a type (ie node) collection if no contained type is specified
       if (ContainedType == null)

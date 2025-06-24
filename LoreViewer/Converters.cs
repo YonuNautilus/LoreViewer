@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Data.Converters;
+using LoreViewer.Settings;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
@@ -64,5 +66,4 @@ namespace LoreViewer.Converters
       throw new NotSupportedException();
     }
   }
-
 }

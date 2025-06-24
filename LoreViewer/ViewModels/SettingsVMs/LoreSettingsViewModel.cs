@@ -72,7 +72,6 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     set
     {
       SelectedDefinition = value?.DefinitionVM;
-      this.RaiseAndSetIfChanged(ref _selectedNode, value);
     }
   }
 

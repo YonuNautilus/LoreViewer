@@ -25,15 +25,15 @@
     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
 
     <Label Grid.Row="1" Grid.Column="0" Content="Style" />
-    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-      <ComboBox IsEnabled="{Binding CanEditStyle}" ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}">
+    <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" ToolTip.Tip="{Binding TooltipText}">
+      <ComboBox IsEnabled="{Binding CanEditStyle}" ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}" >
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>
-    </StackPanel>
+    </Panel>
 
     <Label Grid.Row="2" Grid.Column="0" Content="Required" />
     <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" />

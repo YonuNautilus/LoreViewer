@@ -11,6 +11,8 @@ using DocumentFormat.OpenXml.Drawing;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using LoreViewer.ViewModels.SettingsVMs;
+using ReactiveUI;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace LoreViewer.Dialogs;
@@ -41,7 +43,19 @@ public partial class SettingsEditDialog : Window
       }
     };
 
+    source.RowExpanded += (_, e) =>
+    {
+      if(e.Row != null)
+      {
+        e.Row.Model.RefreshTreeNode();
+      }
+    };
+    
+
     vm.curTree = DefinitionTreeDataGrid;
+
+    foreach (DefinitionTreeNodeViewModel nodeVM in source.Items)
+      nodeVM.RefreshTreeNode();
   }
 
   private void SaveButtonClick(object sender, RoutedEventArgs e)
@@ -77,8 +91,12 @@ public static class DefinitionTreeDataGridBuilder
                 };
             })
           ),
-          childSelector: x => x.Children
-        ),
+          childSelector: x =>
+          {
+            x.RefreshTreeNode();
+            return x.Children;
+          }
+        ){},
 
       new TemplateColumn<DefinitionTreeNodeViewModel>(
             header: "Inherited",
@@ -91,7 +109,7 @@ public static class DefinitionTreeDataGridBuilder
 
               StackPanel ret = new StackPanel
               {
-                IsVisible = node.IsInherited,
+                [!StackPanel.IsVisibleProperty] = new Binding("IsInherited"),
                 Orientation = Avalonia.Layout.Orientation.Horizontal,
                 Margin = new Thickness(5, 0,0,0)
               };
@@ -195,7 +213,7 @@ public static class DefinitionTreeDataGridBuilder
 
                 if(node.DefinitionVM is FieldDefinitionViewModel fdvm)
                 {
-                  addButton.Bind(Button.IsEnabledProperty, new Binding(nameof(node.IsNestedFieldsStyle)));
+                  addButton.Bind(Button.IsEnabledProperty, new Binding("IsNestedFieldsStyle"));
                 }
 
                 ToolTip.SetTip(addButton, "Add a new definition within this definition/group");

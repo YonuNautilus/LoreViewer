@@ -1,5 +1,7 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.Spreadsheet;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
@@ -220,6 +222,8 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           fCont.AddField(newDef);
           var newVM = new FieldDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
+
+          SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
         }
       });
     }
@@ -248,6 +252,12 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
         {
           eCont.embeddedNodeDefs.Remove(emb);
           emb.IsDeleted = true;
+        }
+        // Otherwise, remove a nested field definition
+        else if (parentNode.DefinitionVM?.Definition is IFieldDefinitionContainer nestedFCont && nestedFCont.HasFields && vm.Definition is LoreFieldDefinition fd)
+        {
+          nestedFCont.fields.Remove(fd);
+          fd.IsDeleted = true;
         }
 
         parentNode.RemoveChild(this);
@@ -350,9 +360,6 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
 
   internal void RefreshTreeNode()
   {
-
-    if (DefinitionVM != null)
-      DefinitionVM.RefreshUI();
 
     // If this is a grouping node, we need to ensure this group contains the correct nodes for the corresponding contained fields on the definition model.
     // i.e. if this is a field grouping node under a type node, we need to make sure this grouping of fields isn't missing any fields on the parent or that it doesn't contain extra fields
@@ -532,6 +539,25 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
       }
     }
 
+    // Handle a field's nested fields being deleted or added
+    if (this.DefinitionVM?.Definition is LoreFieldDefinition lfd && lfd.style == EFieldStyle.NestedValues && lfd.HasFields)
+    {
+      FieldDefinitionViewModel curContainingDvm = DefinitionVM as FieldDefinitionViewModel;
+
+      // Check if we need to remove a node (that's an inherited definition) due to the base definition being deleted.
+      for (int i = Children.Count - 1; i >= 0; i--)
+      {
+        DefinitionTreeNodeViewModel treeNode = Children[i];
+        if ((bool)(treeNode.DefinitionVM?.Definition.WasDeleted))
+        {
+          Children.Remove(treeNode);
+        }
+      }
+    }
+
+    if (DefinitionVM != null)
+      DefinitionVM.RefreshUI();
+
     foreach (DefinitionTreeNodeViewModel vm in Children)
       vm.RefreshTreeNode();
 
@@ -545,6 +571,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     this.RaisePropertyChanged(nameof(DisplayName));
     this.RaisePropertyChanged(nameof(CanEditRequired));
     this.RaisePropertyChanged(nameof(CanEditName));
+    this.RaisePropertyChanged(nameof(CanDelete));
     this.RaisePropertyChanged(nameof(NameIsReadOnly));
     this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
     this.RaisePropertyChanged(nameof(TextboxBorderThickness));

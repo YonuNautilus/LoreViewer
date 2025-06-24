@@ -479,6 +479,10 @@ namespace LoreViewer.Settings
     {
       LoreFieldDefinition fieldDef = Clone();
       fieldDef.Base = this;
+
+      if (fieldDef.style == EFieldStyle.NestedValues)
+        fieldDef.fields = DefinitionMergeManager.MergeFields(fields, fieldDef.fields);
+
       return fieldDef;
     }
 
@@ -627,7 +631,13 @@ namespace LoreViewer.Settings
     public void MergeFrom(LoreCollectionDefinition baseCollection)
     {
       Base = baseCollection;
-      if (!baseCollection.IsCollectionOfCollections && !this.IsCollectionOfCollections)
+
+      // make sure to skip if ContainedType hasn't yet been resolved
+      if(baseCollection.ContainedType == null)
+      {
+
+      }
+      else if (!baseCollection.IsCollectionOfCollections && !this.IsCollectionOfCollections)
       {
         if (!(this.ContainedType as LoreTypeDefinition).IsATypeOf(baseCollection.ContainedType as LoreTypeDefinition))
           SetContainedType(baseCollection.ContainedType);
@@ -743,7 +753,12 @@ namespace LoreViewer.Settings
     {
       Base = baseEmbedded;
 
-      if (!(this.nodeType as LoreTypeDefinition).IsATypeOf(baseEmbedded.nodeType as LoreTypeDefinition))
+      // Skip if NodeType has been resolved yet
+      if(baseEmbedded.nodeType == null)
+      {
+
+      }
+      else if (!(this.nodeType as LoreTypeDefinition).IsATypeOf(baseEmbedded.nodeType as LoreTypeDefinition))
         nodeType = (baseEmbedded.nodeType);
 
       this.required |= baseEmbedded.required;

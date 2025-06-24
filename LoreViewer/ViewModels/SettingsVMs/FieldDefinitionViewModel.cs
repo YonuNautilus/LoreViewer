@@ -67,7 +67,21 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       this.RaisePropertyChanged(nameof(Style));
       this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
+      this.RaisePropertyChanged(nameof(HasSubFields));
+      this.RaisePropertyChanged(nameof(NoSubFields));
+      this.RaisePropertyChanged(nameof(TooltipText));
+      this.RaisePropertyChanged(nameof(CanEditStyle));
       base.RefreshUI();
+    }
+
+    public string TooltipText
+    {
+      get
+      {
+        if (Style == EFieldStyle.NestedValues && HasSubFields)
+          return "Cannot change field style from Nested Values until this field's nested values are cleared.\r\nIf this field is inherited, the parent's nested fields must be cleared.";
+        return null;
+      }
     }
 
     public FieldDefinitionViewModel(LoreFieldDefinition defintion) : base(defintion) { }
@@ -84,5 +98,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       RefreshFieldDefs();
     }
+
+
   }
 }
