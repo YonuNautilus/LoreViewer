@@ -66,7 +66,24 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public string Name { get => Definition.name; set => Definition.name = value; }
+    public string Name
+    {
+      get => Definition.name;
+      set
+      {
+        Definition.name = value;
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      }
+    }
+
+    public string InheritanceLabelString
+    {
+      get
+      {
+        if (IsInherited) return $"({Definition.Base.name})";
+        else return "";
+      }
+    }
 
     public virtual bool UsesAny { get { return true; } }
 
@@ -78,6 +95,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(IsNotInherited));
       this.RaisePropertyChanged(nameof(Name));
       this.RaisePropertyChanged(nameof(CanEditName));
+      this.RaisePropertyChanged(nameof(InheritanceLabelString));
 
       //SettingsRefresher.Apply(CurrentSettingsViewModel);
     }

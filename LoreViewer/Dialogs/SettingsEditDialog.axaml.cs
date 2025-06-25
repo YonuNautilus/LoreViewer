@@ -70,16 +70,22 @@ public static class DefinitionTreeDataGridBuilder
             cellTemplate: new FuncDataTemplate<DefinitionTreeNodeViewModel>((node, _) =>
             {
               if (node == null) return new Panel();
-              else
-                return new TextBox
+
+              TextBox retBox = new TextBox
+              {
+                [!!TextBox.TextProperty] = new Binding("DisplayName")
                 {
-                  [!TextBox.TextProperty] = new Binding("DisplayName"),
-                  [!TextBox.BorderThicknessProperty] = new Binding("TextboxBorderThickness"),
-                  [!TextBox.PaddingProperty] = new Binding("TextboxBorderThickness"),
-                  [!TextBox.IsReadOnlyProperty] = new Binding("NameIsReadOnly"),
-                  [!TextBox.IsHitTestVisibleProperty] = new Binding("CanEditName"),
-                  VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                };
+                  UpdateSourceTrigger = UpdateSourceTrigger.LostFocus
+                },
+                [!TextBox.BorderThicknessProperty] = new Binding("TextboxBorderThickness"),
+                [!TextBox.PaddingProperty] = new Binding("TextboxBorderThickness"),
+                [!TextBox.IsReadOnlyProperty] = new Binding("NameIsReadOnly"),
+                [!TextBox.IsHitTestVisibleProperty] = new Binding("CanEditName"),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+              };
+
+              return retBox;
+
             })
           ),
           childSelector: x =>
@@ -102,7 +108,7 @@ public static class DefinitionTreeDataGridBuilder
               {
                 [!StackPanel.IsVisibleProperty] = new Binding("IsInherited"),
                 Orientation = Avalonia.Layout.Orientation.Horizontal,
-                Margin = new Thickness(5, 0,0,0)
+                Margin = new Thickness(5,0,0,0)
               };
 
               ToolTip.SetTip(ret, toolTipText);
@@ -111,29 +117,29 @@ public static class DefinitionTreeDataGridBuilder
               {
                 Source = new Bitmap(AssetLoader.Open(new System.Uri(imgURI))),
                 Width = 24,
+                [!Image.IsVisibleProperty] = new Binding(nameof(node.IsInherited))
               };
 
 
               ret.Children.Add(img);
 
-              if(node.DefinitionVM?.Definition is LoreTypeDefinition && node.DefinitionVM.Definition.IsInherited)
-              {
-                var label = new Label { Content = $"({node.DefinitionVM.Definition.Base.name})", };
-                ret.Children.Add(label);
-              }
+              var label = new Label { [!Label.ContentProperty] = new Binding(nameof(node.InheritanceLabelString)) };
+              ret.Children.Add(label);
 
-              if(node.IsInherited)
+              ContextMenu inheritanceMenu = new ContextMenu
               {
-                ContextMenu inheritanceMenu = new ContextMenu();
-                inheritanceMenu.Items.Add(new MenuItem
-                {
-                  Header = "Go to base definition",
-                  Command = node.GoToNodeOfDefinitionCommand,
-                  CommandParameter = node.DefinitionVM.Definition.Base
-                });
+                [!ContextMenu.IsEnabledProperty] = new Binding(nameof(node.IsInherited))
+              };
 
-                ret.ContextMenu = inheritanceMenu;
-              }
+              inheritanceMenu.Items.Add(new MenuItem
+              {
+                Header = "Go to base definition",
+                Command = node.GoToNodeOfDefinitionCommand,
+                CommandParameter = node.DefinitionVM.Definition.Base
+              });
+
+              ret.ContextMenu = inheritanceMenu;
+
 
               return ret;
             })),

@@ -5,6 +5,7 @@ using Avalonia.Controls.Selection;
 using Avalonia.Utilities;
 using LoreViewer.Settings;
 using ReactiveUI;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -241,14 +242,23 @@ public class AppSettingsViewModel : ViewModelBase
 
 public static class SettingsRefresher
 {
+  static bool isRefreshing = false;
   public static void Apply(LoreSettingsViewModel vm)
   {
+    if (isRefreshing) return;
     if (vm?.m_oLoreSettings == null) return;
+    isRefreshing = true;
+    try
+    {
+      vm?.m_oLoreSettings.PostProcess();
+      vm?.NotifyYAMLChanged();
+      vm?.RefreshTreeNodes();
+    }
+    catch(Exception e)
+    {
+      throw e;
+    }
 
-    vm?.m_oLoreSettings.PostProcess();
-
-    vm.NotifyYAMLChanged();
-
-    vm.RefreshTreeNodes();
+    isRefreshing = false;
   }
 }

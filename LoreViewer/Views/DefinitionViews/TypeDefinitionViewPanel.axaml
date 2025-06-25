@@ -31,10 +31,10 @@
         IsVisible="{Binding IsInherited}">
         <Image Source="avares://LoreViewer/Resources/broken_link.png"/>
       </Button>
-      <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllTypesExceptMine}" SelectedItem="{Binding ExtendsType}">
+      <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding AllValidTypes}" SelectedItem="{Binding ExtendsTypeVM}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding}" />
+            <TextBlock Text="{Binding Name}" />
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>

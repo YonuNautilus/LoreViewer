@@ -28,10 +28,14 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
-        var ret = new ObservableCollection<CollectionDefinitionViewModel>(CurrentSettingsViewModel.Collections);
-        if(locallyDefinedCollectionVM != null)
-          ret.Add(locallyDefinedCollectionVM);
-        return ret;
+        if(CurrentSettingsViewModel != null)
+        {
+          var ret = new ObservableCollection<CollectionDefinitionViewModel>(CurrentSettingsViewModel.Collections);
+          if (locallyDefinedCollectionVM != null)
+            ret.Add(locallyDefinedCollectionVM);
+          return ret;
+        }
+        return new ObservableCollection<CollectionDefinitionViewModel>();
       }
     }
     
@@ -123,8 +127,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
           case LoreTypeDefinition typeDef:
             return CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.Definition == typeDef);
           case LoreCollectionDefinition colDef:
-            if (this.IsUsingLocalCollectionDef)
-              return locallyDefinedCollectionVM;
             return AllCollectionVMs.FirstOrDefault(cvm => cvm.Definition == colDef);
           default:
             return null;

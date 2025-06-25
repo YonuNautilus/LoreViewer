@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using Avalonia.Animation.Easings;
+using LoreViewer.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -17,14 +18,27 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public string ExtendsTypeName { get => typeDef.extends; }
 
     // Returns all types from settings EXCEPT for the current viewmodel's definition and any subtypes
-    public List<LoreTypeDefinition> AllTypesExceptMine { get => CurrentSettings.types.Except(CurrentSettings.types.Where(def => (Definition as LoreTypeDefinition).IsParentOf(def))).ToList(); }
-
-    public LoreTypeDefinition ExtendsType
+    //public ObservableCollection<TypeDefinitionViewModel> AllValidTypes { get => new ObservableCollection<TypeDefinitionViewModel>(CurrentSettingsViewModel.Types.Except(CurrentSettingsViewModel.Types.Where(defVM => typeDef.IsATypeOf(defVM.typeDef))).ToList().Concat(new TypeDefinitionViewModel[] { _extendsTypeVM })); }
+    public ObservableCollection<TypeDefinitionViewModel> AllValidTypes
     {
-      get => typeDef.ParentType;
+      get
+      {
+        if (typeDef.isExtendedType)
+          // If this is an extended type,We don't want to see child types or itself
+          return new ObservableCollection<TypeDefinitionViewModel>(CurrentSettingsViewModel.Types.Except(CurrentSettingsViewModel.Types.Where(defVM => defVM.typeDef.IsATypeOf(typeDef))).ToList());
+        else
+          // if this is not an extended type, we want to see all types except child types
+          return new ObservableCollection<TypeDefinitionViewModel>(CurrentSettingsViewModel.Types.Except(CurrentSettingsViewModel.Types.Where(defVM => typeDef.IsParentOf(defVM.typeDef))).ToList());
+      }
+    }
+    
+
+    public TypeDefinitionViewModel ExtendsTypeVM
+    {
+      get => CurrentSettingsViewModel.Types.FirstOrDefault(tdvm => tdvm.Definition == typeDef.ParentType);
       set
       {
-        typeDef.ParentType = value;
+        typeDef.ParentType = value.typeDef;
         SettingsRefresher.Apply(CurrentSettingsViewModel);
       }
     }
@@ -49,6 +63,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public TypeDefinitionViewModel(LoreTypeDefinition definition) : base(definition)
     {
+
+
       MakeIndependentCommand = ReactiveCommand.Create(() =>
       {
         if (Definition != null)
@@ -91,9 +107,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public override void RefreshUI()
     {
-      this.RaisePropertyChanged(nameof(ExtendsType));
+      this.RaisePropertyChanged(nameof(ExtendsTypeVM));
       this.RaisePropertyChanged(nameof(ExtendsTypeName));
       base.RefreshUI();
+      //this.RaisePropertyChanged(nameof(AllValidTypes));
     }
 
     public override void RefreshLists()

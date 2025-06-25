@@ -47,6 +47,8 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
   public string GroupName { get; } = string.Empty;
   public bool IsGroupNode { get; }
 
+  public string InheritanceLabelString => DefinitionVM?.InheritanceLabelString;
+
   public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
   public ReactiveCommand<Unit, Unit> AddDefinitionCommand { get; }
 
@@ -56,6 +58,11 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     {
       if (IsGroupNode) return Children.Any() ? $"{GroupName} ({Children.Count})" : GroupName;
       else return DefinitionVM?.Name ?? "(Unnamed)";
+    }
+    set
+    {
+      if(DefinitionVM != null)
+        DefinitionVM.Name = value;
     }
   }
 
@@ -573,6 +580,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     this.RaisePropertyChanged(nameof(NameIsReadOnly));
     this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
     this.RaisePropertyChanged(nameof(TextboxBorderThickness));
+    this.RaisePropertyChanged(nameof(InheritanceLabelString));
   }
 
   internal DefinitionTreeNodeViewModel? FindNodeOfDefinition(LoreDefinitionBase definition, out IndexPath pathToVM)
