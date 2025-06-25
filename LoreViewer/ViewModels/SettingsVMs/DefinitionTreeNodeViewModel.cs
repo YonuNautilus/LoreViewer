@@ -1,8 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Drawing.Diagrams;
-using DocumentFormat.OpenXml.Spreadsheet;
+using DynamicData;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
@@ -577,22 +575,33 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     this.RaisePropertyChanged(nameof(TextboxBorderThickness));
   }
 
-  internal DefinitionTreeNodeViewModel? FindNodeOfDefinition(LoreDefinitionBase definition)
+  internal DefinitionTreeNodeViewModel? FindNodeOfDefinition(LoreDefinitionBase definition, out IndexPath pathToVM)
   {
     DefinitionTreeNodeViewModel dtvm;
 
     if (!IsGroupNode)
     {
-      if (this.DefinitionVM.Definition == definition) return this;
-    }
-    else
-    {
-      foreach (DefinitionTreeNodeViewModel node in Children)
+      if (this.DefinitionVM.Definition == definition)
       {
-        dtvm = node.FindNodeOfDefinition(definition);
-        if (dtvm != null) return dtvm;
+        pathToVM = new IndexPath();
+        return this;
       }
     }
+
+    foreach (DefinitionTreeNodeViewModel node in Children)
+    {
+      dtvm = node.FindNodeOfDefinition(definition, out var resultingPath);
+      if (dtvm != null)
+      {
+        if (resultingPath.Count == 0)
+          pathToVM = new IndexPath(Children.IndexOf(node));
+        else
+          pathToVM = new IndexPath(new int[] { Children.IndexOf(node) }.Concat(resultingPath.ToArray()));
+        return dtvm;
+      }
+    }
+
+    pathToVM = new IndexPath();
     return null;
   }
 

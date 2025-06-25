@@ -1,9 +1,14 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Selection;
+using Avalonia.Utilities;
 using LoreViewer.Settings;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Xml.XPath;
 
 namespace LoreViewer.ViewModels.SettingsVMs;
 
@@ -101,25 +106,32 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
   public void GoToNodeOfDefinition(LoreDefinitionBase definition)
   {
-    DefinitionTreeNodeViewModel dtvm = FindNodeOfDefinition(definition);
+    DefinitionTreeNodeViewModel dtvm = FindNodeOfDefinition(definition, out var pathToNode);
 
-    //if(dtvm != null && curTree != null)
-      //TreeRootNodes[0] = dtvm;
+    if (dtvm != null && curTree != null)
+    {
+      (curTree.Rows as HierarchicalRows<DefinitionTreeNodeViewModel>).Expand(pathToNode);
+      curTree.RowSelection.SelectedIndex = pathToNode;
+    }
   }
 
-  private DefinitionTreeNodeViewModel FindNodeOfDefinition(LoreDefinitionBase definition)
+  private DefinitionTreeNodeViewModel FindNodeOfDefinition(LoreDefinitionBase definition, out IndexPath pathToVM)
   {
     DefinitionTreeNodeViewModel dtvm;
 
     foreach(DefinitionTreeNodeViewModel node in TreeRootNodes)
     {
-      dtvm = node.FindNodeOfDefinition(definition);
-      if (dtvm != null) return dtvm;
+      dtvm = node.FindNodeOfDefinition(definition, out var resultingPath);
+      if (dtvm != null)
+      {
+        pathToVM = new IndexPath(new int[] { TreeRootNodes.IndexOf(node) }.Concat(resultingPath.ToArray()));
+        return dtvm;
+      }
     }
 
+    pathToVM = new IndexPath();
     return null;
   }
-
 
   private void ConstructCollectionDefinitionViewModels()
   {

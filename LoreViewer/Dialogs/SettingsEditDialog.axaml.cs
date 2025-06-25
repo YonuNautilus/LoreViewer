@@ -43,15 +43,6 @@ public partial class SettingsEditDialog : Window
       }
     };
 
-    source.RowExpanded += (_, e) =>
-    {
-      if(e.Row != null)
-      {
-        e.Row.Model.RefreshTreeNode();
-      }
-    };
-    
-
     vm.curTree = DefinitionTreeDataGrid;
 
     foreach (DefinitionTreeNodeViewModel nodeVM in source.Items)
