@@ -7,12 +7,9 @@ using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using DocumentFormat.OpenXml.Drawing;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using LoreViewer.ViewModels.SettingsVMs;
-using ReactiveUI;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace LoreViewer.Dialogs;
@@ -29,6 +26,7 @@ public partial class SettingsEditDialog : Window
     InitializeComponent();
 
     var vm = new LoreSettingsViewModel(settings);
+    vm.SetView(this);
     LoreDefinitionViewModel.CurrentSettingsViewModel = vm;
     this.DataContext = vm;
 

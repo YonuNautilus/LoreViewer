@@ -18,9 +18,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public LoreDefinitionViewModel SelectedItem { get; set; }
 
     public static LoreSettings CurrentSettings { get; set; }
-
-    protected Visual m_oView;
-    public void SetView(Visual visual) => m_oView = visual;
     public ReactiveCommand<LoreDefinitionViewModel, Unit> DeleteDefinitionCommand { get; set; }
     public ReactiveCommand<LoreDefinitionViewModel, Unit> EditDefinitionCommand { get; set; }
 

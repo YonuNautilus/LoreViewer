@@ -16,6 +16,11 @@
       <ColumnDefinition Width="2*"/>
     </Grid.ColumnDefinitions>
 
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition Height="30"/>
+    </Grid.RowDefinitions>
+
     <Border Grid.Column="0" BorderBrush="Black" BorderThickness="2">
       <TreeDataGrid x:Name="DefinitionTreeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       </TreeDataGrid>
@@ -105,6 +110,12 @@
         </ScrollViewer>
       </Grid>
     </Grid>
+
+    <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
+      <Button Command="{Binding SaveSettingsCommand}">
+        Save
+      </Button>
+    </StackPanel>
 
   </Grid>
 </Window>

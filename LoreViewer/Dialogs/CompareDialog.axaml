@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LoreViewer.Dialogs.CompareDialog"
+        xmlns:set="using:LoreViewer.Settings"
+        x:DataType="set:DiffVM"
+        Title="CompareDialog">
+
+  <Grid>
+    <ScrollViewer>
+      <TreeDataGrid x:Name="DiffTreeDataGrid">
+        
+      </TreeDataGrid>
+
+
+      <!--Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <ListBox Grid.Column="0" x:Name="LeftBox" ItemsSource="{Binding Left}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Text}" Foreground="{Binding LineColor}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ListBox Grid.Column="1" x:Name="RightBox" ItemsSource="{Binding Right}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Text}" Foreground="{Binding LineColor}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid-->
+    </ScrollViewer>
+  </Grid>
+</Window>

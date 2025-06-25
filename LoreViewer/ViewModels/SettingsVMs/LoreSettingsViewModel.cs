@@ -1,21 +1,23 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Selection;
-using Avalonia.Utilities;
+using LoreViewer.Dialogs;
 using LoreViewer.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Xml.XPath;
+using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs;
 
 public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 {
+  protected Visual m_oView;
+  public void SetView(Visual visual) => m_oView = visual;
 
   public string OriginalYAML { get => m_oLoreSettings.OriginalYAML; }
   public string NewYAML { get => m_oLoreSettings.CurrentYAML; }
@@ -23,6 +25,8 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public LoreSettings m_oLoreSettings;
 
   public TreeDataGrid curTree;
+
+  public ReactiveCommand<Unit, Unit> SaveSettingsCommand { get; }
 
   public bool IgnoreCase
   { 
@@ -159,6 +163,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
     CurrentSettings = _settings;
 
+    SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings);
 
     var typesGroup = new DefinitionTreeNodeViewModel("Types", this, typeof(LoreTypeDefinition));
     foreach (var type in m_oLoreSettings.types)
@@ -196,6 +201,16 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
       default: return null;
     }
   }
+
+  private async Task SaveSettings()
+  {
+    SettingsDiffer dfr = new SettingsDiffer();
+    var output = dfr.DoCompare(OriginalYAML, NewYAML);
+    CompareDialog cd = new CompareDialog();
+    cd.DataContext = output;
+    bool confirm = await cd.ShowDialog<bool>(TopLevel.GetTopLevel(m_oView) as Window);
+  }
+
 
   public void RefreshYaml()
   {
