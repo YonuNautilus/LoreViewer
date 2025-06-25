@@ -2,41 +2,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" Width="300" Height="450"
         x:Class="LoreViewer.Dialogs.CompareDialog"
-        xmlns:set="using:LoreViewer.Settings"
-        x:DataType="set:DiffVM"
+        xmlns:set="using:LoreViewer.ViewModels.SettingsVMs"
+        x:DataType="set:LoreSettingsViewModel"
         Title="CompareDialog">
 
   <Grid>
-    <ScrollViewer>
-      <TreeDataGrid x:Name="DiffTreeDataGrid">
-        
-      </TreeDataGrid>
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition Height="30"/>
+    </Grid.RowDefinitions>
 
-
-      <!--Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition/>
-          <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-
-        <ListBox Grid.Column="0" x:Name="LeftBox" ItemsSource="{Binding Left}">
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding Text}" Foreground="{Binding LineColor}" />
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-
-        <ListBox Grid.Column="1" x:Name="RightBox" ItemsSource="{Binding Right}">
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding Text}" Foreground="{Binding LineColor}" />
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-      </Grid-->
-    </ScrollViewer>
+    <TreeDataGrid Grid.Row="0" x:Name="DiffTreeDataGrid" Source="{Binding DiffRowsSource}" >
+      <TreeDataGrid.Styles>
+        <Style Selector="TreeDataGridRow">
+          <Setter Property="Height" Value="18" />
+          </Style>
+      </TreeDataGrid.Styles>
+    </TreeDataGrid>
+    <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft">
+      <Button Content="Save"/>
+    </StackPanel>
   </Grid>
 </Window>

@@ -76,6 +76,17 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
 
 
+  private FlatTreeDataGridSource<DiffRowVM> m_oDiffRowsSource;
+  public FlatTreeDataGridSource<DiffRowVM> DiffRowsSource
+  {
+    get => m_oDiffRowsSource;
+    set => this.RaiseAndSetIfChanged(ref m_oDiffRowsSource, value);
+  }
+
+
+
+
+
   private DefinitionTreeNodeViewModel? _selectedNode;
   public DefinitionTreeNodeViewModel? SelectedNode
   {
@@ -205,9 +216,9 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   private async Task SaveSettings()
   {
     SettingsDiffer dfr = new SettingsDiffer();
-    var output = dfr.DoCompare(OriginalYAML, NewYAML);
-    CompareDialog cd = new CompareDialog();
-    cd.DataContext = output;
+    var output = dfr.DoSideBySideCompare(OriginalYAML, NewYAML);
+    DiffRowsSource = SettingsDiffTreeDataGridBuilder.BuildTreeSource(output);
+    CompareDialog cd = new CompareDialog(this);
     bool confirm = await cd.ShowDialog<bool>(TopLevel.GetTopLevel(m_oView) as Window);
   }
 
