@@ -194,7 +194,7 @@ namespace LoreViewer.Settings
 
       newSettings.OriginalYAML = this.OriginalYAML;
 
-      newSettings.PostProcess();
+        newSettings.PostProcess();
 
       return newSettings;
     }

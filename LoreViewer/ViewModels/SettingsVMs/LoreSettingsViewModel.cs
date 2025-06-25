@@ -7,6 +7,7 @@ using LoreViewer.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Xml.XPath;
@@ -256,9 +257,13 @@ public static class SettingsRefresher
     }
     catch(Exception e)
     {
-      throw e;
+      Trace.TraceError(e.Message);
+      Trace.TraceError(e.StackTrace);
+    }
+    finally
+    {
+      isRefreshing = false;
     }
 
-    isRefreshing = false;
   }
 }

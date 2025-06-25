@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using DynamicData;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
+using Markdig.Syntax;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -378,6 +379,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
       // Check if we need to remove a node (that's an inherited definition) due to the base definition being deleted.
       for (int i = Children.Count - 1; i >= 0; i--)
       {
+        // Check if definition or its base was deleted.
         DefinitionTreeNodeViewModel treeNode = Children[i];
         if ((bool)(treeNode.DefinitionVM?.Definition.WasDeleted))
         {
@@ -385,17 +387,26 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
         }
       }
 
-
       if (GroupName == FieldGroupName)
       {
         IFieldDefinitionContainer curContainingFieldContainerModel = curContainingModel as IFieldDefinitionContainer;
 
         if (curContainingFieldContainerModel.HasFields)
         {
-          // Check if we need to new definitions
+
+          // Check if we need to add new definitions
           for (int i = 0; i < curContainingFieldContainerModel.fields.Count; i++)
           {
             LoreFieldDefinition curFieldModel = curContainingFieldContainerModel.fields[i];
+
+
+            // Do some reordering, keeping the order the SAME as the model-level list of fields.
+            // This prevents 'duplicate' nodes from being created by the code below because I'm dumb
+            var nodeOfName = Children.FirstOrDefault(node => node.DefinitionVM.Definition == curFieldModel);
+            if(nodeOfName != null && Children.IndexOf(nodeOfName) != i)
+            {
+              Children.Move(Children.IndexOf(nodeOfName), i);
+            }
 
             // If Children is empty, we want to avoid an out of range exception, shortcut to add new field
             if (Children.Count < 1)
@@ -430,6 +441,16 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           for (int i = 0; i < curContainingSectionContainerModel.sections.Count; i++)
           {
             LoreSectionDefinition curSectionModel = curContainingSectionContainerModel.sections[i];
+
+
+            // Do some reordering, keeping the order the SAME as the model-level list of sections.
+            // This prevents 'duplicate' nodes from being created by the code below because I'm dumb
+            var nodeOfName = Children.FirstOrDefault(node => node.DefinitionVM.Definition == curSectionModel);
+            if (nodeOfName != null && Children.IndexOf(nodeOfName) != i)
+            {
+              Children.Move(Children.IndexOf(nodeOfName), i);
+            }
+
 
             // If Children is empty, we want to avoid an out of range exception, shortcut to add new section
             if (Children.Count < 1)
@@ -466,6 +487,14 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           {
             LoreCollectionDefinition curCollectionModel = curContainingCollectionContainerModel.collections[i];
 
+            // Do some reordering, keeping the order the SAME as the model-level list of fields.
+            // This prevents 'duplicate' nodes from being created by the code below because I'm dumb
+            var nodeOfName = Children.FirstOrDefault(node => node.DefinitionVM.Definition == curCollectionModel);
+            if (nodeOfName != null && Children.IndexOf(nodeOfName) != i)
+            {
+              Children.Move(Children.IndexOf(nodeOfName), i);
+            }
+
             // If Children is empty, we want to avoid an out of range exception, shortcut to add new collection
             if (Children.Count < 1)
             {
@@ -499,6 +528,15 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           for (int i = 0; i < curContainingEmbeddedContainerModel.embeddedNodeDefs.Count; i++)
           {
             LoreEmbeddedNodeDefinition curEmbeddedModel = curContainingEmbeddedContainerModel.embeddedNodeDefs[i];
+
+
+            // Do some reordering, keeping the order the SAME as the model-level list of fields.
+            // This prevents 'duplicate' nodes from being created by the code below because I'm dumb
+            var nodeOfName = Children.FirstOrDefault(node => node.DefinitionVM.Definition == curEmbeddedModel);
+            if (nodeOfName != null && Children.IndexOf(nodeOfName) != i)
+            {
+              Children.Move(Children.IndexOf(nodeOfName), i);
+            }
 
             // If Children is empty, we want to avoid an out of range exception, shortcut to add new embedded node
             if (Children.Count < 1)
@@ -549,9 +587,21 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     {
       FieldDefinitionViewModel curContainingDvm = DefinitionVM as FieldDefinitionViewModel;
 
+
       // Check if we need to remove a node (that's an inherited definition) due to the base definition being deleted.
       for (int i = Children.Count - 1; i >= 0; i--)
       {
+        LoreFieldDefinition curFieldModel = (curContainingDvm.Definition as LoreFieldDefinition).fields[i];
+
+        // Do some reordering, keeping the order the SAME as the model-level list of fields.
+        // This prevents 'duplicate' nodes from being created by the code below because I'm dumb
+        var nodeOfName = Children.FirstOrDefault(node => node.DefinitionVM.Definition == curFieldModel);
+        if (nodeOfName != null && Children.IndexOf(nodeOfName) != i)
+        {
+          Children.Move(Children.IndexOf(nodeOfName), i);
+        }
+
+
         DefinitionTreeNodeViewModel treeNode = Children[i];
         if ((bool)(treeNode.DefinitionVM?.Definition.WasDeleted))
         {

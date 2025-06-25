@@ -88,12 +88,8 @@ public static class DefinitionTreeDataGridBuilder
 
             })
           ),
-          childSelector: x =>
-          {
-            x.RefreshTreeNode();
-            return x.Children;
-          }
-        ){},
+          childSelector: x => x.Children
+        ),
 
       new TemplateColumn<DefinitionTreeNodeViewModel>(
             header: "Inherited",

@@ -38,6 +38,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
       get => CurrentSettingsViewModel.Types.FirstOrDefault(tdvm => tdvm.Definition == typeDef.ParentType);
       set
       {
+        // try making the definition independent first, might make merging fields easier
+        typeDef.MakeIndependent();
         typeDef.ParentType = value.typeDef;
         SettingsRefresher.Apply(CurrentSettingsViewModel);
       }
