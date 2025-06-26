@@ -220,6 +220,13 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     DiffRowsSource = SettingsDiffTreeDataGridBuilder.BuildTreeSource(output);
     CompareDialog cd = new CompareDialog(this);
     bool confirm = await cd.ShowDialog<bool>(TopLevel.GetTopLevel(m_oView) as Window);
+
+    if (confirm)
+    {
+      CurrentSettings.WriteSettingsToFile();
+      var win = TopLevel.GetTopLevel(m_oView) as Window;
+      win.Close(CurrentSettings);
+    }
   }
 
 

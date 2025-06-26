@@ -622,7 +622,11 @@ namespace LoreViewer.Settings
 
         if (this.required != (Base as LoreCollectionDefinition).required) return true;
 
-        if (this.ContainedType != (Base as LoreCollectionDefinition).ContainedType) return true;
+        if (this.IsUsingLocallyDefinedCollection)
+        {
+          if(this.ContainedType.IsModifiedFromBase) return true;
+        }
+        else if (this.ContainedType != (Base as LoreCollectionDefinition).ContainedType) return true;
 
         return false;
       }
@@ -636,6 +640,11 @@ namespace LoreViewer.Settings
       if(baseCollection.ContainedType == null)
       {
 
+      }
+
+      else if(this.ContainedType == null)
+      {
+        if (baseCollection.IsUsingLocallyDefinedCollection) SetContainedType((baseCollection.ContainedType as LoreCollectionDefinition).CloneFromBaseWithOwner(this));
       }
       else if (!baseCollection.IsCollectionOfCollections && !this.IsCollectionOfCollections)
       {

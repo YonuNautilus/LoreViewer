@@ -86,7 +86,7 @@
                         <Label DockPanel.Dock="Left">Validation Errors</Label>
                       </DockPanel>
                       <Button Classes="rounded" IsVisible="{Binding ActualNodeIsSelected}" Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}" Command="{Binding OpenFileToLine}" CommandParameter="{Binding CurrentlySelectedTreeNode.element}"/>
-                      <!--DataGrid ItemsSource="{Binding CurrentlySelectedTreeNode.element, Converter={StaticResource ValidationErrorListConverter}}">
+                      <DataGrid ItemsSource="{Binding CurrentlySelectedTreeNode.element, Converter={StaticResource ValidationErrorListConverter}}">
                         <DataGrid.Columns>
                           <DataGridTemplateColumn Header="Error" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
@@ -96,7 +96,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                           </DataGridTemplateColumn>
                         </DataGrid.Columns>
-                      </DataGrid-->
+                      </DataGrid>
                     </StackPanel>
                   </Border>
                 </Grid>
@@ -123,7 +123,7 @@
 
               <Label Content="Errors" Grid.Row="0" />
 
-              <!--DataGrid x:Name="ErrorsList" Grid.Row="1" HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding Errors}" Name="ErrorsListView" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" CanUserResizeColumns="True">
+              <DataGrid x:Name="ErrorsList" Grid.Row="1" HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding Errors}" Name="ErrorsListView" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" CanUserResizeColumns="True">
                 <DataGrid.Columns>
                   <DataGridTextColumn Header="File" Width="Auto" Binding="{Binding Item1}" CanUserResize="True"/>
                   <DataGridTextColumn Header="BlockIndex" Binding="{Binding Item2}"/>
@@ -137,7 +137,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
                 </DataGrid.Columns>
-              </DataGrid-->
+              </DataGrid>
             </Grid>
           </Border>
 

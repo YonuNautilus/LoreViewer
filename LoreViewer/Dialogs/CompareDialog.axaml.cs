@@ -3,12 +3,13 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using LoreViewer.Settings;
 using LoreViewer.ViewModels.SettingsVMs;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
@@ -29,9 +30,18 @@ public partial class CompareDialog : Window
     this.DataContext = vm;
 
     this.MinWidth = SettingsDiffTreeDataGridBuilder.CurrentMaxWidthLeft + SettingsDiffTreeDataGridBuilder.CurrentMaxWidthRight + 60;
-    this.Width = this.MaxWidth;
+    this.Width = this.MaxWidth = this.MinWidth;
   }
 
+  private async void SaveButton_Click(object sender, RoutedEventArgs e)
+  {
+    await Dispatcher.UIThread.InvokeAsync(() => this.Close(true), DispatcherPriority.Background);
+  }
+
+  private async void CancelButton_Click(object sender, RoutedEventArgs e)
+  {
+    await Dispatcher.UIThread.InvokeAsync(() => this.Close(false), DispatcherPriority.Background);
+  }
 }
 
 public static class SettingsDiffTreeDataGridBuilder

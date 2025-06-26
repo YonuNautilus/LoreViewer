@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace LoreViewer.Settings
 {
@@ -202,6 +203,24 @@ namespace LoreViewer.Settings
     public LoreSettings CloneFromBase()
     {
       return Clone();
+    }
+
+    internal void WriteSettingsToFile()
+    {
+      string filePath = Path.Combine(FolderPath, LoreSettingsFileName);
+      string tempPath = filePath + ".tmp";
+
+
+      if (File.Exists(tempPath))
+      {
+        File.Replace(filePath, tempPath, null); // atomic replace
+      }
+      else
+      {
+        File.Copy(filePath, tempPath); // just move into place
+      }
+
+      File.WriteAllText(Path.Combine(FolderPath, LoreSettingsFileName), CurrentYAML, Encoding.UTF8);
     }
   }
   public class AppSettings : IDeepCopyable<AppSettings>
