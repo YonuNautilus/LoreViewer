@@ -91,7 +91,7 @@ namespace LoreViewer.ViewModels
 
     private Visual m_oView;
 
-    private string m_sPathToNPpp = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Notepad++", "notepad++.exe");
+    private string m_sPathToNPpp = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles%"), "Notepad++", "notepad++.exe");
 
     public LoreViewModel(Visual view)
     {
@@ -171,8 +171,10 @@ namespace LoreViewer.ViewModels
         if (m_bNPppExists)
           Process.Start(m_sPathToNPpp, $"{fullPathToFile} -n{dat.Item3}");
         else
-          Trace.WriteLine("NOT EDITING FAILED FILE, NPP NOT INSTALLED");
+          Trace.WriteLine("NO IN-APP EDITOR AVAILABLE");
       }
+      else
+        Trace.WriteLine("EDITING FAILED FILE, NPP NOT INSTALLED");
     }
     public async void ReloadLoreFolder()
     {
