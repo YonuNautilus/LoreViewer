@@ -91,11 +91,23 @@ namespace LoreViewer.ViewModels
 
     private Visual m_oView;
 
-    private string m_sPathToNPpp = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles%"), "Notepad++", "notepad++.exe");
+    private string m_sPathToNPppx64 = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles%"), "Notepad++", "notepad++.exe");
+    private string m_sPathToNPppx86 = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Notepad++", "notepad++.exe");
+    private string m_sPathToNPpp;
 
     public LoreViewModel(Visual view)
     {
-      m_bNPppExists = Path.Exists(m_sPathToNPpp);
+      if (Path.Exists(m_sPathToNPppx86))
+      {
+        m_bNPppExists = true;
+        m_sPathToNPpp = m_sPathToNPppx86;
+      }
+      else if (Path.Exists(m_sPathToNPppx64))
+      {
+
+        m_bNPppExists = true;
+        m_sPathToNPpp = m_sPathToNPppx64;
+      }
       m_oView = view;
       OpenLibraryFolderCommand = ReactiveCommand.CreateFromTask(HandleOpenLibraryCommandAsync);
       OpenLoreSettingsEditor = ReactiveCommand.CreateFromTask(OpenLoreSettingEditorDialog);
