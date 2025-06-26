@@ -28,12 +28,14 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
   private const string SectionGroupName = "Sections";
   private const string CollectionGroupName = "Collections";
   private const string EmbeddedNodsGroupName = "Embedded Nodes";
+  private const string PicklistGroupName = "Picklists";
 
   private static NewNameTracker tpyeNamer = new NewNameTracker("NewType");
   private static NewNameTracker fieldNamer = new NewNameTracker("NewField");
   private static NewNameTracker sectionNamer = new NewNameTracker("NewSection");
   private static NewNameTracker collectionNamer = new NewNameTracker("NewCollection");
   private static NewNameTracker embeddedNamer = new NewNameTracker("NewEmbedded");
+  private static NewNameTracker picklistNamer = new NewNameTracker("NewPicklist");
   private LoreSettingsViewModel _settings;
   private Type _addType;
 
@@ -165,8 +167,15 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           var newVM = new CollectionDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
+        else if (_addType == typeof(LorePicklistDefinition))
+        {
+          var newDef = new LorePicklistDefinition { name = DefinitionTreeNodeViewModel.picklistNamer.GetName() };
+          _settings.m_oLoreSettings.picklists.Add(newDef);
+          var newVM = new PicklistDefinitionViewModel(newDef);
+          AddChild(new DefinitionTreeNodeViewModel(newVM));
+        }
 
-        SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
+          SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
       });
     }
     // For adding field, section, collection and embedded node definitions at the type level
@@ -203,8 +212,15 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           var newVM = new EmbeddedNodeDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
+        else if (Parent?.DefinitionVM.Definition is IPicklistDefinitionContainer pCont && groupName == PicklistGroupName)
+        {
+          var newDef = new LorePicklistDefinition { name = DefinitionTreeNodeViewModel.picklistNamer.GetName() };
+          pCont.AddPicklistDefinition(newDef);
+          var newVM = new PicklistDefinitionViewModel(newDef);
+          AddChild(new DefinitionTreeNodeViewModel(newVM));
+        }
 
-        SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
+          SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
       });
     }
   }
@@ -227,6 +243,23 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           var newDef = new LoreFieldDefinition { name = DefinitionTreeNodeViewModel.fieldNamer.GetName() };
           fCont.AddField(newDef);
           var newVM = new FieldDefinitionViewModel(newDef);
+          AddChild(new DefinitionTreeNodeViewModel(newVM));
+
+          SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
+        }
+      });
+    }
+
+    if (vm is PicklistDefinitionViewModel pldvm)
+    {
+      AddDefinitionCommand = ReactiveCommand.Create(() =>
+      {
+        if (DefinitionVM != null && DefinitionVM.Definition is LorePicklistDefinition pickDef)
+        {
+          IPicklistDefinitionContainer pCont = DefinitionVM.Definition as IPicklistDefinitionContainer;
+          var newDef = new LorePicklistDefinition { name = DefinitionTreeNodeViewModel.picklistNamer.GetName() };
+          pCont.AddPicklistDefinition(newDef);
+          var newVM = new PicklistDefinitionViewModel(newDef);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
 
           SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
@@ -361,6 +394,14 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     if(DefinitionVM is CollectionDefinitionViewModel cdvm && cdvm.IsUsingLocalCollectionDef)
     {
       AddChild(new DefinitionTreeNodeViewModel(cdvm.ContainedTypeVM));
+    }
+
+    if (DefinitionVM.Definition is IPicklistDefinitionContainer ipcont && ipcont.HasOptions)
+    {
+      foreach (var p in DefinitionVM.PicklistOptions)
+      {
+        AddChild(new DefinitionTreeNodeViewModel(p));
+      }
     }
   }
 

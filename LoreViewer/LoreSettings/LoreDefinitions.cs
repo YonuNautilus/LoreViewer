@@ -27,12 +27,6 @@ namespace LoreViewer.Settings
     PickList = 3
   }
 
-  public enum ECollectionMode
-  {
-    Nodes,
-    Collections
-  }
-
   public abstract class LoreDefinitionBase
   {
     [YamlIgnore]
@@ -791,6 +785,38 @@ namespace LoreViewer.Settings
     internal override void MakeIndependent()
     {
       this.Base = null;
+    }
+  }
+
+  public class LorePicklistDefinition : LoreDefinitionBase, IPicklistDefinitionContainer, IDeepCopyable<LorePicklistDefinition>
+  {
+    #region IPicklistDefinitionContainer
+    [YamlMember(1)]
+    public List<LorePicklistDefinition> options { get; set; }
+
+    public bool HasPicklistDefinition(string listItemName) => options.Any(t => listItemName == t.name);
+
+    public bool HasOptions => options != null && options.Count() > 0;
+
+    public void AddPicklistDefinition(LorePicklistDefinition picklistDefinition)
+    {
+      if (options == null) options = new List<LorePicklistDefinition>();
+      if (!options.Contains(picklistDefinition)) options.Add(picklistDefinition);
+    }
+    #endregion IPicklistDefinitionContainer
+
+    public override bool IsModifiedFromBase => false;
+
+    public LorePicklistDefinition() { }
+
+    public override void PostProcess(LoreSettings settings)
+    {
+      throw new NotImplementedException();
+    }
+
+    internal override void MakeIndependent()
+    {
+      throw new NotImplementedException();
     }
   }
 

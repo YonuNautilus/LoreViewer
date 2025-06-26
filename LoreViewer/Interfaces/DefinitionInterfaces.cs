@@ -78,6 +78,21 @@ namespace LoreViewer.Settings.Interfaces
     }
   }
 
+  public interface IPicklistDefinitionContainer
+  {
+    List<LorePicklistDefinition> options { get; set; }
+
+    public bool HasPicklistDefinition(string listItemName) => options.Any(t => listItemName == t.name);
+
+    public bool HasOptions => options != null && options.Count() > 0;
+
+    public void AddPicklistDefinition(LorePicklistDefinition picklistDefinition)
+    {
+      if (options == null) options = new List<LorePicklistDefinition>();
+      if (!options.Contains(picklistDefinition)) options.Add(picklistDefinition);
+    }
+  }
+
   public interface IRequirable
   {
     [YamlMember(-90)]

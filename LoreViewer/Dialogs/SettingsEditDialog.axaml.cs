@@ -65,6 +65,7 @@ public static class DefinitionTreeDataGridBuilder
         new HierarchicalExpanderColumn<DefinitionTreeNodeViewModel>(
           new TemplateColumn<DefinitionTreeNodeViewModel>(
             header: "Name",
+            width: new GridLength(1, GridUnitType.Star),
             cellTemplate: new FuncDataTemplate<DefinitionTreeNodeViewModel>((node, _) =>
             {
               if (node == null) return new Panel();
@@ -189,7 +190,7 @@ public static class DefinitionTreeDataGridBuilder
                 buttonGrid.Children.Add(deleteButton);
               }
 
-              if(node.IsGroupNode || (node.DefinitionVM != null && node.DefinitionVM is FieldDefinitionViewModel))
+              if(node.IsGroupNode || (node.DefinitionVM != null && node.DefinitionVM is FieldDefinitionViewModel) || (node.DefinitionVM != null && node.DefinitionVM is PicklistDefinitionViewModel))
               {
                 // Optional: add "+" add button for group nodes
                 var addButton = new Button

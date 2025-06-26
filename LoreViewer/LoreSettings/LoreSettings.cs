@@ -64,6 +64,9 @@ namespace LoreViewer.Settings
     [YamlMember(1000)]
     public AppSettings settings { get; set; }
 
+    [YamlMember(2)]
+    public List<LorePicklistDefinition> picklists = new List<LorePicklistDefinition>();
+
     public LoreSettings()
     {
 

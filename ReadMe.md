@@ -1,26 +1,84 @@
-# LoreViewer: Markdown-Based Lore Parser & Viewer
+# LoreViewer: Markdown-Based World Building Tool
 
-**LoreViewer** is a markdown-native, YAML-configurable lore parser and viewer designed to help worldbuilders, writers, and GMs structure their lore documents without sacrificing human readability.
+**LoreViewer** is a markdown-native, YAML-configurable lore parser and viewer designed to help worldbuilders, writers, and GMs structure, write, and reference their documents without sacrificing human readability of their files.
 
-This tool allows you to define your own schema for different types of lore elements (e.g., characters, timeline events, organizations), while keeping everything stored in plain `.md` files with rich structure.
+This tool will allow users to define their own schema for different types of lore elements (e.g., characters, timeline events, organizations), while keeping everything stored in plain markdown files with rich structure.
+
+## Before We Move On...
+
+I need to state that tagging headings for LoreViewer uses the curly bracket {}. This is also used for Markdown extended syntax for giving a heading a custom ID for hyperlinking.
+
+I did not realize that was a feature of extended syntax. I liked curly brackets because most rendered did not display the brackets or its contents. I now understand why.
+
+So, as of v0.6 and earlier (and later unless otherwise stated) markdown files for LoreViewer will not allow custom IDs from markdown's extended syntax. Very sorry.
+
+#### How do I fix this?
+
+A few options:
+1. Don't, and suck it up. I didn't design this app with markdown hyperlinks in mind. But I also don't want to steamroll a part of that extended Syntax
+2. Switch to HTML style comments for heading tags.
+`# Paula Mer Verdel <!--Character-->`\
+This doesn't get in the way of custom heading IDs, and it's invisible when the markdown is rendered.
+When writing to markdown files becomes an in-app feature, I will need to be careful to ensure that the html comment is written to the SAME LINE as the heading because I don't think Markdig will do that.
 
 ---
 
-## Core Values of LoreViewer
+## Core Values of LoreViewer <!--test-->
 1. Human-Readable Markdown First
     - Markdown files must remain human-reable. They should be intuitive to read and write without this software.
     - Heading structure and tags are designed to be out-of-the-way but easily written by hand.
-    - The schema enforces **structure** but never obfuscates it.
+    - The schema (YAML) enforces **structure** but never obfuscates it.
 2. Precision in Exception Handling
-    - Errors are **contextual**: they include file name, block index, and node type.
+    - Errors are **contextual**: they include file name and line number, or block index.
     - Exceptions are meaningful: no vague stack traces.
     - Errors should **guide**, not confuse—especially since writers may not be developers.
-3. Schema-Driven, But ^Somewhat^ Forgiving
-    - (Currently, users cannot add attributes to a LoreElement that are not defined in schema)
-	- Allow LoreSections and LoreNodeCollections to exist even when not defined in schema.
+3. Schema-Driven, But Somewhat Forgiving
+	- Allow Sections and Collections of elements to exist in an element even when not defined for that type in schema.
 4. Mergable, Divisible, Decentralized Content
-    - Nodes can be written across multiple markdown files, but will still be viewed as **one element** in LoreViewer
+    - Nodes can be written across multiple markdown files, but will still be viewed as **one element** in-app.
 	- Allowing file separation is built on the understanding that human-driven file organization comes in many forms.
+
+---
+
+## As of v0.6:
+
+LoreViewer is still very early in its development. Many of my desired features are not present, but the very basic core is there.
+
+### Main Interface
+
+#### Parsed lore
+
+This interface is where the user's folder of lore files with settings is selected, and parsed lore is displayed
+
+![Main LoreViewer Interface](./docs/ParsedLore.png)
+
+In the left side, under the 'Nodes and Collections' tab are lists of all the resulting elements and collections of elements defined in the markdown files.
+At the top left, buttons for navigating to the lore folder and refreshing parsed contents are readily available.
+
+![Main LoreViewer Interface Labeled](./docs/ParsedLore_RightSide.png)
+
+A selected element will display its infomation on the top right side panel.
+Any validation errors (files were able to be parsed fully, but some rules defined in schema were violated) will appear on the bottom right corner and give the user the opportunity to fix them, either using an in-app basic editor, or Notepad++ (if installed)
+
+#### Errors and Warnings
+
+The second tab, Errors and Warnings, shows any errors that prevented a markdown file from being parsed, and any warnings (which as of yet do not exist).
+
+![LoreViewer Errors Interface](./docs/ParsedLore_Errors.png)
+
+Errors will tell you which file had a parsing error, what the error was, where in the file the error occured, and provides a button to open the file to the relevant line (using Notepad++ if installed).
+
+---
+
+### Settings Editor (New for v0.6!)
+
+LoreViewer now includes an in-app settings editor! Even though settings are in YAML and fairly easy to read and edit by hand, having an option to do so in the app is a vital piece of LoreViewer.
+
+![Settings Editor](./docs/Settings_Editor.png)
+
+Here users can see all their defined Types and Collections, and add, remove, or alter any schema definitions. Types can be set to extend other types and inherit their fields, sections, etc. Fields can have their style changed (i.e. from a single value field to a field that contains subfields). And more.
+
+On the right side is a quick comparison view to see what in the YAML schema has changed. When the save button in the bottom right is clicked, another diff view, showing colors for additions/deletions is shown as well, to give the user another chance to look over their new schema file before saving it.
 
 ---
 
@@ -38,6 +96,12 @@ This tool allows you to define your own schema for different types of lore eleme
 ---
 
 ## Core Concepts
+
+### Two Domains: Settings/Schema & Lore/Parsed Markdown
+
+LoreViewer operates across two conceptual layers, the schema domain (what's defined in the YAML settings file) and the Lore domain (what's written in the markdown files).
+
+For info on these layers, please see the [LoreViewer Wiki](https://github.com/YonuNautilus/LoreViewer/wiki)
 
 ### Quick Definitions: Nodes, Sections, Fields/Attributes, collections
 

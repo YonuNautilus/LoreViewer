@@ -114,6 +114,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
   private ObservableCollection<TypeDefinitionViewModel> m_cTypes = new ObservableCollection<TypeDefinitionViewModel>();
   private ObservableCollection<CollectionDefinitionViewModel> m_cCollections = new ObservableCollection<CollectionDefinitionViewModel>();
+  private ObservableCollection<PicklistDefinitionViewModel> m_cPicklists = new ObservableCollection<PicklistDefinitionViewModel>();
 
   private void ConstructTypeDefinitionViewModels()
   {
@@ -162,6 +163,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
   public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
   public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
+  public override ObservableCollection<PicklistDefinitionViewModel> PicklistOptions { get => m_cPicklists; }
 
 
   public ObservableCollection<DefinitionTreeNodeViewModel> TreeRootNodes { get; set; } = new ObservableCollection<DefinitionTreeNodeViewModel>();
@@ -193,8 +195,17 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
       collectionsGroup.AddChild(node);
     }
 
+    var picklistGroup = new DefinitionTreeNodeViewModel("Picklists", this, typeof(LorePicklistDefinition));
+    foreach (var picklist in m_oLoreSettings.picklists)
+    {
+      var pickVM = new PicklistDefinitionViewModel(picklist);
+      var node = new DefinitionTreeNodeViewModel(pickVM);
+      picklistGroup.AddChild(node);
+    }
+
     TreeRootNodes.Add(typesGroup);
     TreeRootNodes.Add(collectionsGroup);
+    TreeRootNodes.Add(picklistGroup);
   }
 
   public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)

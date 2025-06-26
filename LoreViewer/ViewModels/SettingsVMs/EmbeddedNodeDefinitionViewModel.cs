@@ -14,10 +14,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<TypeDefinitionViewModel> Types => null;
+    public override ObservableCollection<PicklistDefinitionViewModel> PicklistOptions => null;
+    #endregion
 
     public ReactiveCommand<Unit, Unit> RevertContainedTypeCommand { get; set; }
-
-    #endregion
     private LoreEmbeddedNodeDefinition embDef => Definition as LoreEmbeddedNodeDefinition;
 
     public bool CanRevertContainedType { get => IsInherited; }

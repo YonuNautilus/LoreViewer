@@ -17,6 +17,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<TypeDefinitionViewModel> Types => null;
+    public override ObservableCollection<PicklistDefinitionViewModel> PicklistOptions => null;
     #endregion
 
     public ReactiveCommand<Unit, Unit> AddLocalCollectionCommand { get; set; }
