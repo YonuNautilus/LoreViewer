@@ -15,6 +15,8 @@ namespace LoreViewer.Settings
 
       if (settings.types.Count < 1) settings.types = null;
       if (settings.collections.Count < 1) settings.collections = null;
+
+      if (settings.picklists.Count() == 0) settings.picklists = null;
     }
 
 

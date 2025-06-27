@@ -1,14 +1,14 @@
 ﻿using LoreViewer.Settings;
 using ReactiveUI;
 using System;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
   public abstract class LoreDefinitionViewModel : LoreSettingsObjectViewModel
   {
     public static LoreSettingsViewModel CurrentSettingsViewModel { get; set; }
+
+    public LoreSettingsViewModel CurrentSettingsVM => CurrentSettingsViewModel;
 
     public Guid UniqueID { get => Guid.NewGuid(); }
 

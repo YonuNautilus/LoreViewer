@@ -1,9 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using DynamicData;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
-using Markdig.Syntax;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -281,22 +279,47 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           sCont.sections.Remove(sec);
           sec.IsDeleted = true;
         }
-        else if (parentNode.Parent?.DefinitionVM?.Definition is ICollectionDefinitionContainer cCont && vm.Definition is LoreCollectionDefinition col)
+        else if (vm.Definition is LoreCollectionDefinition col)
         {
-          cCont.collections.Remove(col);
-          col.IsDeleted = true;
+          if(parentNode.Parent?.DefinitionVM?.Definition is ICollectionDefinitionContainer cCont)
+          {
+            cCont.collections.Remove(col);
+            col.IsDeleted = true;
+          }
+          else if(parentNode.IsGroupNode)
+          {
+            vm.CurrentSettingsVM.m_oLoreSettings.collections.Remove(col);
+            col.IsDeleted = true;
+          }
+        }
+        else if (parentNode.IsGroupNode && vm.Definition is LoreTypeDefinition type)
+        {
+          vm.CurrentSettingsVM.m_oLoreSettings.types.Remove(type);
+          type.IsDeleted = true;
         }
         else if (parentNode.Parent?.DefinitionVM?.Definition is IEmbeddedNodeDefinitionContainer eCont && vm.Definition is LoreEmbeddedNodeDefinition emb)
         {
           eCont.embeddedNodeDefs.Remove(emb);
           emb.IsDeleted = true;
         }
-        // Otherwise, remove a nested field definition
+        else if (vm.Definition is LorePicklistDefinition pld)
+        {
+          vm.CurrentSettingsVM.m_oLoreSettings.picklists.Remove(pld);
+          pld.IsDeleted = true;
+        }
+
+        // Otherwise, remove a nested field definition OR a nested picklist entry definition
+        else if (parentNode.DefinitionVM?.Definition is IPicklistEntryDefinitionContainer pCont && vm.Definition is LorePicklistEntryDefinition pled)
+        {
+          pCont.entries.Remove(pled);
+          pled.IsDeleted = true;
+        }
         else if (parentNode.DefinitionVM?.Definition is IFieldDefinitionContainer nestedFCont && nestedFCont.HasFields && vm.Definition is LoreFieldDefinition fd)
         {
           nestedFCont.fields.Remove(fd);
           fd.IsDeleted = true;
         }
+
 
         parentNode.RemoveChild(this);
 

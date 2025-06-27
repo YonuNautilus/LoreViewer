@@ -247,10 +247,12 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     }
   }
 
-
-  public void RefreshYaml()
+  public void RefreshYAMLComparison()
   {
-    this.RaisePropertyChanged("NewYAML");
+    SettingsDiffer dfr = new SettingsDiffer();
+    var output = dfr.DoSideBySideCompare(OriginalYAML, NewYAML);
+    DiffRowsSource = SettingsDiffTreeDataGridBuilder.BuildTreeSource(output);
+    this.RaisePropertyChanged(nameof(DiffRowsSource));
   }
 
 
@@ -303,6 +305,7 @@ public static class SettingsRefresher
     try
     {
       vm?.m_oLoreSettings.PostProcess();
+      vm?.RefreshYAMLComparison();
       vm?.NotifyYAMLChanged();
       vm?.RefreshTreeNodes();
     }
