@@ -49,6 +49,8 @@
           <DataTemplate DataType="{x:Type vm:EmbeddedNodeDefinitionViewModel}">
             <defViews:EmbeddedDefinitionViewPanel x:Name="EmbeddedView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
           </DataTemplate>
+          <DataTemplate DataType="{x:Type vm:PicklistDefinitionViewModel}" />
+          <DataTemplate DataType="{x:Type vm:PicklistEntryDefinitionViewModel}" />
         </ContentControl.DataTemplates>
       </ContentControl>
 

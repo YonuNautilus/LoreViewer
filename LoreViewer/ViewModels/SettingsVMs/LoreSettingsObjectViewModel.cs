@@ -30,7 +30,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public abstract ObservableCollection<SectionDefinitionViewModel> Sections { get; }
     public abstract ObservableCollection<CollectionDefinitionViewModel> Collections { get; }
     public abstract ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes { get; }
-    public abstract ObservableCollection<PicklistDefinitionViewModel> PicklistOptions { get; }
+    public abstract ObservableCollection<PicklistDefinitionViewModel> Picklists { get; }
+    public abstract ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries { get; }
 
 
 

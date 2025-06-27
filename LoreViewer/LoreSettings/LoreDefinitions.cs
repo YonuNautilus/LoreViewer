@@ -424,11 +424,12 @@ namespace LoreViewer.Settings
     private string m_sPicklistName;
 
     [YamlMember(1)]
+    [DefaultValue("")]
     public string picklistName
     {
       get
       {
-        if()
+        return m_sPicklistName;
       }
       set
       {
@@ -436,18 +437,34 @@ namespace LoreViewer.Settings
       }
     }
 
-
+    private string m_sPicklistBranchRestriction;
 
     [YamlMember(2)]
+    [DefaultValue("")]
+    public string picklistBranchRestriction
+    {
+      get
+      {
+        return m_sPicklistBranchRestriction;
+      }
+      set
+      {
+        m_sPicklistBranchRestriction = value;
+      }
+    }
+
+    private LorePicklistDefinition m_oPicklist;
+    [YamlIgnore]
     public LorePicklistDefinition picklist
     {
       get
       {
-
+        return this.m_oPicklist;
       }
       set
       {
-
+        m_oPicklist = value;
+        if (m_oPicklist.isBranch) picklistBranchRestriction = m_oPicklist.name;
       }
     }
 
@@ -465,9 +482,17 @@ namespace LoreViewer.Settings
     {
       if(style == EFieldStyle.PickList)
       {
-        if (!string.IsNullOrEmpty(picklis0tName))
+        if (string.IsNullOrWhiteSpace(picklistName)) throw new FieldPicklistNameNotGivenException(this);
+
+        // At this point, a picklist name was given. Check if it is valid.
+        if (settings.picklists.Any())
         {
 
+        }
+        // NO Picklists found in definition
+        else
+        {
+          throw new PicklistsDefinitionNotFoundException(this);
         }
       }
     }
@@ -828,49 +853,100 @@ namespace LoreViewer.Settings
     }
   }
 
-  public class LorePicklistDefinition : LoreDefinitionBase, IPicklistDefinitionContainer, IDeepCopyable<LorePicklistDefinition>
+  public class LorePicklistDefinition : LoreDefinitionBase, IPicklistEntryDefinitionContainer, IDeepCopyable<LorePicklistDefinition>
+  {
+    [YamlIgnore]
+    public bool HasEntries => entries != null && entries.Count() > 0;
+
+    public List<LorePicklistEntryDefinition> entries { get; set; }
+    public override bool IsModifiedFromBase => true;
+
+    [YamlIgnore]
+    public bool isBranch = false;
+
+    public override void PostProcess(LoreSettings settings)
+    {
+      if(HasEntries)
+        entries.ForEach(entry => entry.PostProcess(settings));
+    }
+
+    internal override void MakeIndependent() { }
+
+    public LorePicklistDefinition Clone()
+    {
+      LorePicklistDefinition pDef = new();
+      pDef.name = this.name;
+      pDef.entries = this.entries?.Select(ple => ple.Clone()).ToList();
+      return pDef;
+    }
+
+    public LorePicklistDefinition CloneFromBase() => throw new NotImplementedException();
+  }
+
+  public class LorePicklistEntryDefinition : LoreDefinitionBase, IPicklistEntryDefinitionContainer, IDeepCopyable<LorePicklistEntryDefinition>
   {
     #region IPicklistDefinitionContainer
     [YamlMember(1)]
-    public List<LorePicklistDefinition> options { get; set; }
+    public List<LorePicklistEntryDefinition> entries { get; set; }
 
-    public bool HasPicklistDefinition(string listItemName) => options.Any(t => listItemName == t.name);
+    public bool HasPicklistDefinition(string listItemName) => entries.Any(t => listItemName == t.name);
 
-    public bool HasOptions => options != null && options.Count() > 0;
+    public bool HasEntries => entries != null && entries.Count() > 0;
 
-    public void AddPicklistDefinition(LorePicklistDefinition picklistDefinition)
+    public void AddPicklistDefinition(LorePicklistEntryDefinition picklistDefinition)
     {
-      if (options == null) options = new List<LorePicklistDefinition>();
-      if (!options.Contains(picklistDefinition)) options.Add(picklistDefinition);
+      if (entries == null) entries = new List<LorePicklistEntryDefinition>();
+      if (!entries.Contains(picklistDefinition)) entries.Add(picklistDefinition);
     }
     #endregion IPicklistDefinitionContainer
 
     public override bool IsModifiedFromBase => true;
 
-    public LorePicklistDefinition() { }
+    public LorePicklistEntryDefinition() { }
+
+    /// <summary>
+    /// Turn this entry and its subentries into a separate picklist, used for value selection when a field has picklist branch restricted
+    /// </summary>
+    /// <returns></returns>
+    public LorePicklistDefinition MakePicklistFromEntry()
+    {
+      LorePicklistDefinition retList = new LorePicklistDefinition();
+      // Dont clone the items in the list, just make a new list
+      retList.entries = entries?.Select(e => e).ToList() ?? new List<LorePicklistEntryDefinition>();
+      retList.entries.Insert(0, this);
+      retList.isBranch = true;
+      return retList;
+    }
+
+    [YamlIgnore]
+    LorePicklistEntryDefinition? OwningEntry;
 
     public override void PostProcess(LoreSettings settings)
     {
-      throw new NotImplementedException();
+      if (HasEntries)
+      {
+        entries.ForEach(entry => entry.OwningEntry = this);
+        entries.ForEach(entry => entry.PostProcess(settings));
+      }
     }
 
     internal override void MakeIndependent()
     {
-      throw new NotImplementedException();
+      
     }
 
-    public LorePicklistDefinition Clone()
+    public LorePicklistEntryDefinition Clone()
     {
-      LorePicklistDefinition oClone = new LorePicklistDefinition();
+      LorePicklistEntryDefinition oClone = new LorePicklistEntryDefinition();
       oClone.name = this.name;
-      if(HasOptions)
-        oClone.options = this.options.Select(o => o.Clone()).ToList();
+      if(HasEntries)
+        oClone.entries = this.entries.Select(o => o.Clone()).ToList();
       return oClone;
     }
 
-    public LorePicklistDefinition CloneFromBase()
+    public LorePicklistEntryDefinition CloneFromBase()
     {
-      LorePicklistDefinition oClone = this.Clone();
+      LorePicklistEntryDefinition oClone = this.Clone();
       oClone.Base = this;
       return oClone;
     }

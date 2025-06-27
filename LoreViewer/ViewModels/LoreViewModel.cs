@@ -71,6 +71,9 @@ namespace LoreViewer.ViewModels
       }
     }
 
+    public bool HadSettingsParsingError { get; set; }
+    public bool NoSettingsParsingError { get => !HadSettingsParsingError; }
+
 
     private LoreTreeItem _currentlySelectedTreeNode;
     public LoreTreeItem CurrentlySelectedTreeNode
@@ -177,7 +180,15 @@ namespace LoreViewer.ViewModels
 
     private void GoToFileAtLine(Tuple<string, int, int, Exception> dat)
     {
-      string fullPathToFile = Path.Combine(LoreLibraryFolderPath, dat.Item1);
+      string fullPathToFile;
+
+      // If this was a settings parsing error, get the path to the settings file
+      if (HadSettingsParsingError)
+        fullPathToFile = Path.Combine(LoreLibraryFolderPath, LoreSettings.LoreSettingsFileName);
+      else
+        // If this was a Lore parsing error, get the path to the markdown file from the lore parsing exception
+        fullPathToFile = Path.Combine(LoreLibraryFolderPath, dat.Item1);
+
       if (Path.Exists(fullPathToFile))
       {
         if (m_bNPppExists)
@@ -218,12 +229,19 @@ namespace LoreViewer.ViewModels
       try
       {
         _settings = LoreSettings.ParseSettingsFromFolder(LoreLibraryFolderPath);
+        HadSettingsParsingError = false;
       }
       catch (Exception e)
       {
         Errors.Add(new Tuple<string, int, int, Exception>(e.Message, -1, -1, e));
+        HadSettingsParsingError = true;
         IsParsing = false;
         return;
+      }
+      finally
+      {
+        this.RaisePropertyChanged(nameof(NoSettingsParsingError));
+        this.RaisePropertyChanged(nameof(HadSettingsParsingError));
       }
 
       _parser = new LoreParser(_settings);

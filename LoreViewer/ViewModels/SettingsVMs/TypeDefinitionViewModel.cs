@@ -58,7 +58,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<SectionDefinitionViewModel> Sections { get => m_cSections; }
     public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes { get => m_cEmbeddeds; }
-    public override ObservableCollection<PicklistDefinitionViewModel> PicklistOptions => null;
+    public override ObservableCollection<PicklistDefinitionViewModel> Picklists => null;
+    public override ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries => null;
 
 
     public ReactiveCommand<Unit, Unit> MakeIndependentCommand { get; set; }

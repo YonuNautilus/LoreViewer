@@ -14,7 +14,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<CollectionDefinitionViewModel> Collections => null;
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
-    public override ObservableCollection<PicklistDefinitionViewModel> PicklistOptions => null;
+    public override ObservableCollection<PicklistDefinitionViewModel> Picklists => null;
+    public override ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries => null;
     #endregion
 
     public static List<EFieldStyle> FieldStyles { get => Enum.GetValues(typeof(EFieldStyle)).Cast<EFieldStyle>().ToList(); }
@@ -31,6 +32,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     }
     
     public bool IsNestedFieldsStyle { get => fieldDef.style == EFieldStyle.NestedValues; }
+
+    public bool IsPicklistFieldStyle { get => fieldDef.style == EFieldStyle.PickList; }
 
     public bool HasSubFields { get => fieldDef.HasFields; }
     public bool NoSubFields { get => !fieldDef.HasFields; }
@@ -68,6 +71,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       this.RaisePropertyChanged(nameof(Style));
       this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
+      this.RaisePropertyChanged(nameof(IsPicklistFieldStyle));
       this.RaisePropertyChanged(nameof(HasSubFields));
       this.RaisePropertyChanged(nameof(NoSubFields));
       this.RaisePropertyChanged(nameof(TooltipText));

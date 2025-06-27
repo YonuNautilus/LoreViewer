@@ -9,7 +9,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
     public override ObservableCollection<CollectionDefinitionViewModel> Collections => null;
     public override ObservableCollection<TypeDefinitionViewModel> Types => null;
-    public override ObservableCollection<PicklistDefinitionViewModel> PicklistOptions => null;
+    public override ObservableCollection<PicklistDefinitionViewModel> Picklists => null;
+    public override ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries => null;
     #endregion 
 
     public bool HasFields { get => secDef.HasFields; }

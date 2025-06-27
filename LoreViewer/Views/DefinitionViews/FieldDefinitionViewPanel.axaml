@@ -13,12 +13,14 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
       <RowDefinition Height="30"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="30"/>
     </Grid.RowDefinitions>
 
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto"/>
-      <ColumnDefinition Width="250"/>
+      <ColumnDefinition Width="150"/>
+      <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
 
     <Label Grid.Row="0" Grid.Column="0" Content="Field Name"/>
@@ -34,9 +36,23 @@
         </ComboBox.ItemTemplate>
       </ComboBox>
     </Panel>
-
-    <Label Grid.Row="2" Grid.Column="0" Content="Required" />
-    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" />
+    
+    <Label Grid.Row="2" Content="Picklist"  IsVisible="{Binding IsPicklistFieldStyle}"/>
+    <Panel Grid.Row="2" Grid.Column="1" IsVisible="{Binding IsPicklistFieldStyle}">
+      <ComboBox>
+        
+      </ComboBox>
+    </Panel>
+    
+    <Label Grid.Row="3" Content="Picklist Branch Restriction  "  IsVisible="{Binding IsPicklistFieldStyle}"/>
+    <Panel Grid.Row="3" Grid.Column="1" IsVisible="{Binding IsPicklistFieldStyle}">
+      <ComboBox>
+        
+      </ComboBox>
+    </Panel>
+    
+    <Label Grid.Row="4" Grid.Column="0" Content="Required" />
+    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsRequired}" />
 
   </Grid>
 </UserControl>

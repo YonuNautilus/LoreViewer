@@ -1,17 +1,10 @@
 ﻿using DynamicData;
 using LoreViewer.Settings;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
-  public class PicklistDefinitionViewModel : LoreDefinitionViewModel
+  public class PicklistEntryDefinitionViewModel : LoreDefinitionViewModel
   {
     #region overrides
     public override ObservableCollection<TypeDefinitionViewModel> Types => null;
@@ -27,10 +20,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries { get => m_cEntries; }
 
 
-    public LorePicklistDefinition pickDef => Definition as LorePicklistDefinition;
+    public LorePicklistEntryDefinition pickEntryDef => Definition as LorePicklistEntryDefinition;
 
 
-    public PicklistDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase)
+    public PicklistEntryDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase)
     {
 
     }
@@ -43,9 +36,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
     private void RefreshPicklists()
     {
       m_cEntries.Clear();
-      if (pickDef.HasEntries)
-        foreach (var ple in pickDef.entries)
-          m_cEntries.Add(new PicklistEntryDefinitionViewModel(ple));
+      if (pickEntryDef.HasEntries)
+        foreach (var pl in pickEntryDef.entries)
+          m_cEntries.Add(new PicklistEntryDefinitionViewModel(pl));
     }
 
     public override void RefreshLists()

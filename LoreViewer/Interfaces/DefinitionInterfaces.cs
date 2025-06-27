@@ -78,18 +78,18 @@ namespace LoreViewer.Settings.Interfaces
     }
   }
 
-  public interface IPicklistDefinitionContainer
+  public interface IPicklistEntryDefinitionContainer
   {
-    List<LorePicklistDefinition> options { get; set; }
+    List<LorePicklistEntryDefinition> entries { get; set; }
 
-    public bool HasPicklistDefinition(string listItemName) => options.Any(t => listItemName == t.name);
+    public bool HasPicklistDefinition(string listItemName) => entries.Any(t => listItemName == t.name);
 
-    public bool HasOptions => options != null && options.Count() > 0;
+    public virtual bool HasEntries => entries != null && entries.Count() > 0;
 
-    public void AddPicklistDefinition(LorePicklistDefinition picklistDefinition)
+    public void AddPicklistDefinition(LorePicklistEntryDefinition picklistDefinition)
     {
-      if (options == null) options = new List<LorePicklistDefinition>();
-      if (!options.Contains(picklistDefinition)) options.Add(picklistDefinition);
+      if (entries == null) entries = new List<LorePicklistEntryDefinition>();
+      if (!entries.Contains(picklistDefinition)) entries.Add(picklistDefinition);
     }
   }
 

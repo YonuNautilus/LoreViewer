@@ -14,7 +14,7 @@ namespace LoreViewer.Settings
   /// </summary>
   public class LoreSettings : IDeepCopyable<LoreSettings>
   {
-    const string LoreSettingsFileName = "Lore_Settings.yaml";
+    public static readonly string LoreSettingsFileName = "Lore_Settings.yaml";
 
     [YamlIgnore]
     public string CurrentYAML
@@ -103,6 +103,10 @@ namespace LoreViewer.Settings
 
     public void PostProcess()
     {
+      // Picklists are easiest, do them first: just connect to parent
+      if (picklists.Count() > 0)
+        picklists.ForEach(pl => pl.PostProcess(this));
+
       CheckDuplicateNames();
 
       ResolveTypeInheritance();
@@ -114,8 +118,34 @@ namespace LoreViewer.Settings
     {
       IEnumerable<LoreDefinitionBase> defsWithSameName = types.Concat<LoreDefinitionBase>(collections).GroupBy(d => d.name).Where(group => group.Count() > 1).SelectMany(def => def);
       if (defsWithSameName.Any())
-      {
         throw new DuplicateDefinitionNamesException(defsWithSameName.First());
+
+      IEnumerable<LorePicklistDefinition> picklistsWithSameName = picklists.GroupBy(pl => pl.name).Where(group => group.Count() > 1).SelectMany(pDef => pDef);
+      if (picklistsWithSameName.Any())
+        throw new DuplicatePicklistNameException(picklistsWithSameName.First());
+
+      foreach(LorePicklistDefinition pl in picklists)
+      {
+        if (pl.HasEntries)
+        {
+          var flattenedEntries = FlattenPicklistEntries(pl.entries);
+          var picklistEntriesWithSameName = flattenedEntries.GroupBy(ple => ple.name).Where(group => group.Count() > 1).SelectMany(pleDef => pleDef);
+          if (picklistEntriesWithSameName.Any())
+            throw new DuplicatePicklistEntryNameException(pl, picklistEntriesWithSameName.First());
+        }
+      }
+    }
+
+
+    private static IEnumerable<LorePicklistEntryDefinition> FlattenPicklistEntries(IEnumerable<LorePicklistEntryDefinition> entries)
+    {
+      foreach (var entry in entries)
+      {
+        yield return entry;
+
+        if (entry.HasEntries)
+          foreach (var child in FlattenPicklistEntries(entry.entries))
+            yield return child;
       }
     }
 

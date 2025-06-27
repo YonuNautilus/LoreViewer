@@ -190,7 +190,11 @@ public static class DefinitionTreeDataGridBuilder
                 buttonGrid.Children.Add(deleteButton);
               }
 
-              if(node.IsGroupNode || (node.DefinitionVM != null && node.DefinitionVM is FieldDefinitionViewModel) || (node.DefinitionVM != null && node.DefinitionVM is PicklistDefinitionViewModel))
+              if(node.IsGroupNode ||
+                (node.DefinitionVM != null && (
+                      (node.DefinitionVM is FieldDefinitionViewModel) || 
+                      (node.DefinitionVM is PicklistDefinitionViewModel) ||
+                      (node.DefinitionVM is PicklistEntryDefinitionViewModel))))
               {
                 // Optional: add "+" add button for group nodes
                 var addButton = new Button

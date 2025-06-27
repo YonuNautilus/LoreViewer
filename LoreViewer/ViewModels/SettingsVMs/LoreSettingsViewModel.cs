@@ -163,7 +163,8 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
   public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
   public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
-  public override ObservableCollection<PicklistDefinitionViewModel> PicklistOptions { get => m_cPicklists; }
+  public override ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries => null;
+  public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => m_cPicklists; }
 
 
   public ObservableCollection<DefinitionTreeNodeViewModel> TreeRootNodes { get; set; } = new ObservableCollection<DefinitionTreeNodeViewModel>();
@@ -195,7 +196,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
       collectionsGroup.AddChild(node);
     }
 
-    var picklistGroup = new DefinitionTreeNodeViewModel("Picklists", this, typeof(LorePicklistDefinition));
+    var picklistGroup = new DefinitionTreeNodeViewModel("Picklists", this, typeof(LorePicklistEntryDefinition));
     foreach (var picklist in m_oLoreSettings.picklists)
     {
       var pickVM = new PicklistDefinitionViewModel(picklist);
