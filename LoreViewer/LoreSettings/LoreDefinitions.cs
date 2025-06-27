@@ -419,6 +419,37 @@ namespace LoreViewer.Settings
     [YamlMember(0)]
     [DefaultValue(false)]
     public bool required { get; set; }
+    
+
+    private string m_sPicklistName;
+
+    [YamlMember(1)]
+    public string picklistName
+    {
+      get
+      {
+        if()
+      }
+      set
+      {
+        m_sPicklistName = value;
+      }
+    }
+
+
+
+    [YamlMember(2)]
+    public LorePicklistDefinition picklist
+    {
+      get
+      {
+
+      }
+      set
+      {
+
+      }
+    }
 
     [YamlIgnore]
     public bool multivalue => style == EFieldStyle.MultiValue;
@@ -430,7 +461,16 @@ namespace LoreViewer.Settings
     public bool HasOwnFields => HasFields ? fields.All(f => !f.IsInherited) : false;
 
 
-    public override void PostProcess(LoreSettings settings) { }
+    public override void PostProcess(LoreSettings settings)
+    {
+      if(style == EFieldStyle.PickList)
+      {
+        if (!string.IsNullOrEmpty(picklis0tName))
+        {
+
+        }
+      }
+    }
 
     public override bool IsModifiedFromBase
     {
@@ -805,7 +845,7 @@ namespace LoreViewer.Settings
     }
     #endregion IPicklistDefinitionContainer
 
-    public override bool IsModifiedFromBase => false;
+    public override bool IsModifiedFromBase => true;
 
     public LorePicklistDefinition() { }
 
@@ -817,6 +857,22 @@ namespace LoreViewer.Settings
     internal override void MakeIndependent()
     {
       throw new NotImplementedException();
+    }
+
+    public LorePicklistDefinition Clone()
+    {
+      LorePicklistDefinition oClone = new LorePicklistDefinition();
+      oClone.name = this.name;
+      if(HasOptions)
+        oClone.options = this.options.Select(o => o.Clone()).ToList();
+      return oClone;
+    }
+
+    public LorePicklistDefinition CloneFromBase()
+    {
+      LorePicklistDefinition oClone = this.Clone();
+      oClone.Base = this;
+      return oClone;
     }
   }
 

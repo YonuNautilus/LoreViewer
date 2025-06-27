@@ -193,12 +193,13 @@ namespace LoreViewer.Settings
 
       newSettings.types = this.types.Select(t => t.Clone()).ToList();  
       newSettings.collections = this.collections.Select(c => c.Clone()).ToList();
+      newSettings.picklists = this.picklists.Select(p => p.Clone()).ToList();
 
       newSettings.settings = this.settings.Clone();
 
       newSettings.OriginalYAML = this.OriginalYAML;
 
-        newSettings.PostProcess();
+      newSettings.PostProcess();
 
       return newSettings;
     }
