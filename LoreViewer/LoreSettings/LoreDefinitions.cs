@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Linq;
 
 namespace LoreViewer.Settings
@@ -429,7 +430,8 @@ namespace LoreViewer.Settings
     {
       get
       {
-        return m_sPicklistName;
+        if (Picklist != null) return Picklist.name;
+        else return m_sPicklistName;
       }
       set
       {
@@ -445,7 +447,8 @@ namespace LoreViewer.Settings
     {
       get
       {
-        return m_sPicklistBranchRestriction;
+        if (PicklistBranchConstraint != null) return PicklistBranchConstraint.name;
+        else return m_sPicklistBranchRestriction;
       }
       set
       {
@@ -455,7 +458,7 @@ namespace LoreViewer.Settings
 
     private LorePicklistDefinition m_oPicklist;
     [YamlIgnore]
-    public LorePicklistDefinition picklist
+    public LorePicklistDefinition Picklist
     {
       get
       {
@@ -464,9 +467,30 @@ namespace LoreViewer.Settings
       set
       {
         m_oPicklist = value;
-        if (m_oPicklist.isBranch) picklistBranchRestriction = m_oPicklist.name;
+        m_sPicklistName = value?.name;
+        //if (m_oPicklist.isBranch) picklistBranchRestriction = m_oPicklist.name;
       }
     }
+
+    private LorePicklistEntryDefinition m_oPicklistBranchConstraint;
+    [YamlIgnore]
+    public LorePicklistEntryDefinition PicklistBranchConstraint
+    {
+      get => m_oPicklistBranchConstraint;
+      set
+      {
+        if (value != null && value != m_oPicklistBranchConstraint)
+        {
+          m_oPicklistBranchConstraint = value;
+        }
+        else
+        {
+          m_oPicklistBranchConstraint = null;
+          picklistBranchRestriction = null;
+        }
+      }
+    }
+
 
     [YamlIgnore]
     public bool multivalue => style == EFieldStyle.MultiValue;
@@ -484,7 +508,7 @@ namespace LoreViewer.Settings
       {
         if (string.IsNullOrWhiteSpace(picklistName)) throw new FieldPicklistNameNotGivenException(this);
 
-        // At this point, a picklist name was given. Check if it is valid.
+        // At this point, a Picklist name was given. Check if it is valid.
         if (settings.picklists.Any())
         {
 
@@ -510,6 +534,9 @@ namespace LoreViewer.Settings
         if (this.HasFields)
           if (this.fields.Any(f => f.IsModifiedFromBase)) return true;
 
+        if(this.style == EFieldStyle.PickList)
+          if (this.picklistBranchRestriction != (Base as LoreFieldDefinition).picklistBranchRestriction) return true;
+
         return false;
       }
     }
@@ -522,6 +549,12 @@ namespace LoreViewer.Settings
     {
       Base = parentField;
 
+      if(this.Picklist == null && parentField.Picklist != null)
+        Picklist = parentField.Picklist;
+
+      if(PicklistBranchConstraint == null && parentField.PicklistBranchConstraint != null)
+        PicklistBranchConstraint = parentField.PicklistBranchConstraint;
+
       this.required |= parentField.required;
     }
 
@@ -529,7 +562,9 @@ namespace LoreViewer.Settings
     {
       LoreFieldDefinition fieldDef = this.MemberwiseClone() as LoreFieldDefinition;
       fieldDef.fields = this.fields?.Select(f => f.Clone()).ToList();
-      //fieldDef.Base = this;
+
+      fieldDef.picklistName = this.picklistName;
+      fieldDef.picklistBranchRestriction = this.picklistBranchRestriction;
 
       return fieldDef;
     }
@@ -905,7 +940,7 @@ namespace LoreViewer.Settings
     public LorePicklistEntryDefinition() { }
 
     /// <summary>
-    /// Turn this entry and its subentries into a separate picklist, used for value selection when a field has picklist branch restricted
+    /// Turn this entry and its subentries into a separate Picklist, used for value selection when a field has Picklist branch restricted
     /// </summary>
     /// <returns></returns>
     public LorePicklistDefinition MakePicklistFromEntry()
@@ -1139,5 +1174,17 @@ namespace LoreViewer.Settings
   public static class CollectionHelpers
   {
     public static bool CollectionNullOrEmpty(IEnumerable<object> col) => col == null || !col.Any();
+
+    public static IEnumerable<LorePicklistEntryDefinition> FlattenPicklistEntries(this IEnumerable<LorePicklistEntryDefinition> entries)
+    {
+      foreach (var entry in entries)
+      {
+        yield return entry;
+
+        if (entry.HasEntries)
+          foreach (var child in entry.entries.FlattenPicklistEntries())
+            yield return child;
+      }
+    }
   }
 }

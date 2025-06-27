@@ -128,7 +128,7 @@ namespace LoreViewer.Settings
       {
         if (pl.HasEntries)
         {
-          var flattenedEntries = FlattenPicklistEntries(pl.entries);
+          var flattenedEntries = pl.entries.FlattenPicklistEntries();
           var picklistEntriesWithSameName = flattenedEntries.GroupBy(ple => ple.name).Where(group => group.Count() > 1).SelectMany(pleDef => pleDef);
           if (picklistEntriesWithSameName.Any())
             throw new DuplicatePicklistEntryNameException(pl, picklistEntriesWithSameName.First());
@@ -136,18 +136,6 @@ namespace LoreViewer.Settings
       }
     }
 
-
-    private static IEnumerable<LorePicklistEntryDefinition> FlattenPicklistEntries(IEnumerable<LorePicklistEntryDefinition> entries)
-    {
-      foreach (var entry in entries)
-      {
-        yield return entry;
-
-        if (entry.HasEntries)
-          foreach (var child in FlattenPicklistEntries(entry.entries))
-            yield return child;
-      }
-    }
 
     private void ResolveTypeInheritance()
     {

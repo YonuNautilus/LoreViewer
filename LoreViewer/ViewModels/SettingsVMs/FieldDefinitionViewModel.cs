@@ -14,11 +14,12 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<CollectionDefinitionViewModel> Collections => null;
     public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
-    public override ObservableCollection<PicklistDefinitionViewModel> Picklists => null;
     public override ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries => null;
     #endregion
 
     public static List<EFieldStyle> FieldStyles { get => Enum.GetValues(typeof(EFieldStyle)).Cast<EFieldStyle>().ToList(); }
+
+    public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => CurrentSettingsViewModel.Picklists; }
 
     private LoreFieldDefinition fieldDef { get => Definition as LoreFieldDefinition; }
     public bool IsRequired
@@ -67,6 +68,32 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
+    public PicklistDefinitionViewModel Picklist
+    {
+      get
+      {
+        return CurrentSettingsViewModel.Picklists.FirstOrDefault(plvm => plvm.Definition == fieldDef.Picklist);
+      }
+      set
+      {
+        fieldDef.Picklist = value?.pickDef;
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      }
+    }
+
+    public PicklistEntryDefinitionViewModel PicklistBranchRestriction
+    {
+      get
+      {
+        return Picklist.GetBranch(fieldDef.PicklistBranchConstraint);
+      }
+      set
+      {
+        fieldDef.PicklistBranchConstraint = value?.pickEntryDef;
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      }
+    }
+
     public override void RefreshUI()
     {
       this.RaisePropertyChanged(nameof(Style));
@@ -76,6 +103,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(NoSubFields));
       this.RaisePropertyChanged(nameof(TooltipText));
       this.RaisePropertyChanged(nameof(CanEditStyle));
+      this.RaisePropertyChanged(nameof(Picklist));
+      this.RaisePropertyChanged(nameof(Picklists));
+      this.RaisePropertyChanged(nameof(PicklistBranchRestriction));
       base.RefreshUI();
     }
 

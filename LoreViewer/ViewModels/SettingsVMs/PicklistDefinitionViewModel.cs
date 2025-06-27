@@ -35,9 +35,23 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     }
 
-    public void AddNewSubOption()
+    public ObservableCollection<PicklistEntryDefinitionViewModel> ValidBranchRestrictionChoices
     {
+      get
+      {
+        var entriesWithChildren = PicklistEntries.FlattenPicklistEntryViewModels().Where(evm => evm.pickEntryDef.HasEntries);
+        return new ObservableCollection<PicklistEntryDefinitionViewModel>(entriesWithChildren);
+      }
+    }
 
+    public PicklistEntryDefinitionViewModel GetBranch(LorePicklistEntryDefinition branchDef)
+    {
+      foreach (PicklistEntryDefinitionViewModel pledvm in PicklistEntries)
+      {
+        var ret = pledvm.GetBranch(branchDef);
+        if (ret != null) return ret;
+      }
+      return null;
     }
 
     private void RefreshPicklists()

@@ -39,8 +39,12 @@
     
     <Label Grid.Row="2" Content="Picklist"  IsVisible="{Binding IsPicklistFieldStyle}"/>
     <Panel Grid.Row="2" Grid.Column="1" IsVisible="{Binding IsPicklistFieldStyle}">
-      <ComboBox>
-        
+      <ComboBox IsEnabled="{Binding IsPicklistFieldStyle}" ItemsSource="{Binding Picklists}" SelectedItem="{Binding Picklist}">
+        <ComboBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Name}" />
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
       </ComboBox>
     </Panel>
     

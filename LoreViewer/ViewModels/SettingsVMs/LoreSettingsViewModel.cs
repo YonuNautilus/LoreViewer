@@ -122,6 +122,12 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
       Types.Add(new TypeDefinitionViewModel(def));
   }
 
+  private void ConstructPicklistViewModels()
+  {
+    foreach (LorePicklistDefinition def in m_oLoreSettings.picklists)
+      Picklists.Add(new PicklistDefinitionViewModel(def));
+  }
+
   public void GoToNodeOfDefinition(LoreDefinitionBase definition)
   {
     DefinitionTreeNodeViewModel dtvm = FindNodeOfDefinition(definition, out var pathToNode);
@@ -172,8 +178,6 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public LoreSettingsViewModel(LoreSettings _settings)
   { 
     m_oLoreSettings = _settings;
-    ConstructCollectionDefinitionViewModels();
-    ConstructTypeDefinitionViewModels();
 
     CurrentSettings = _settings;
 
@@ -184,7 +188,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     {
       var typeVM = new TypeDefinitionViewModel(type);
       var node = new DefinitionTreeNodeViewModel(typeVM);
-      //node.BuildChildren();
+      Types.Add(typeVM);
       typesGroup.AddChild(node);
     }
 
@@ -193,6 +197,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     {
       var colVM = new CollectionDefinitionViewModel(collection);
       var node = new DefinitionTreeNodeViewModel(colVM);
+      Collections.Add(colVM);
       collectionsGroup.AddChild(node);
     }
 
@@ -201,6 +206,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     {
       var pickVM = new PicklistDefinitionViewModel(picklist);
       var node = new DefinitionTreeNodeViewModel(pickVM);
+      Picklists.Add(pickVM);
       picklistGroup.AddChild(node);
     }
 
