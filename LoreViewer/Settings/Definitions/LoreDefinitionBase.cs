@@ -1,15 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
-using DynamicData;
-using DynamicData.Cache.Internal;
-using LoreViewer.Exceptions.SettingsParsingExceptions;
-using LoreViewer.Settings.Interfaces;
-using ReactiveUI;
 using SharpYaml.Serialization;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
 using System.Linq;
 
 namespace LoreViewer.Settings
@@ -24,7 +17,7 @@ namespace LoreViewer.Settings
     MultiValue = 1,
     [Description("Purely Textual")]
     Textual = 2,
-    [Description("List of options")]
+    [Description("Picklist Options")]
     PickList = 3
   }
 
@@ -91,8 +84,6 @@ namespace LoreViewer.Settings
 
     internal abstract void MakeIndependent();
   }
-
-  
 
   public static class DefinitionMergeManager
   {
