@@ -35,6 +35,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
   private static NewNameTracker collectionNamer = new NewNameTracker("NewCollection");
   private static NewNameTracker embeddedNamer = new NewNameTracker("NewEmbedded");
   private static NewNameTracker picklistNamer = new NewNameTracker("NewPicklist");
+  private static NewNameTracker picklistEntryNamer = new NewNameTracker("NewPicklistEntry");
   private LoreSettingsViewModel _settings;
   private Type _addType;
 
