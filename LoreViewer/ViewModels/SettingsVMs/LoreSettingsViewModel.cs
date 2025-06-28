@@ -27,6 +27,7 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public TreeDataGrid curTree;
 
   public ReactiveCommand<Unit, Unit> SaveSettingsCommand { get; }
+  public ReactiveCommand<Unit, Unit> SaveSettingsWithCompareCommand { get; }
 
   public bool IgnoreCase
   { 
@@ -116,18 +117,6 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   private ObservableCollection<CollectionDefinitionViewModel> m_cCollections = new ObservableCollection<CollectionDefinitionViewModel>();
   private ObservableCollection<PicklistDefinitionViewModel> m_cPicklists = new ObservableCollection<PicklistDefinitionViewModel>();
 
-  private void ConstructTypeDefinitionViewModels()
-  {
-    foreach (LoreTypeDefinition def in m_oLoreSettings.types)
-      Types.Add(new TypeDefinitionViewModel(def));
-  }
-
-  private void ConstructPicklistViewModels()
-  {
-    foreach (LorePicklistDefinition def in m_oLoreSettings.picklists)
-      Picklists.Add(new PicklistDefinitionViewModel(def));
-  }
-
   public void GoToNodeOfDefinition(LoreDefinitionBase definition)
   {
     DefinitionTreeNodeViewModel dtvm = FindNodeOfDefinition(definition, out var pathToNode);
@@ -157,12 +146,6 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     return null;
   }
 
-  private void ConstructCollectionDefinitionViewModels()
-  {
-    foreach (LoreCollectionDefinition def in m_oLoreSettings.collections)
-      Collections.Add(new CollectionDefinitionViewModel(def));
-  }
-
   public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.settings); }
   public override ObservableCollection<TypeDefinitionViewModel> Types { get => m_cTypes; }
   public override ObservableCollection<FieldDefinitionViewModel> Fields => null;
@@ -181,7 +164,8 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
     CurrentSettings = _settings;
 
-    SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings);
+    SaveSettingsWithCompareCommand = ReactiveCommand.CreateFromTask(SaveSettingsAsync);
+    SaveSettingsCommand = ReactiveCommand.Create(SaveSettings);
 
     var typesGroup = new DefinitionTreeNodeViewModel("Types", this, typeof(LoreTypeDefinition));
     foreach (var type in m_oLoreSettings.types)
@@ -213,6 +197,8 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     TreeRootNodes.Add(typesGroup);
     TreeRootNodes.Add(collectionsGroup);
     TreeRootNodes.Add(picklistGroup);
+
+    RefreshYAMLComparison();
   }
 
   public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)
@@ -231,7 +217,14 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
     }
   }
 
-  private async Task SaveSettings()
+  private void SaveSettings()
+  {
+    CurrentSettings.WriteSettingsToFile();
+    var win = TopLevel.GetTopLevel(m_oView) as Window;
+    win.Close(CurrentSettings);
+  }
+
+  private async Task SaveSettingsAsync()
   {
     SettingsDiffer dfr = new SettingsDiffer();
     var output = dfr.DoSideBySideCompare(OriginalYAML, NewYAML);
@@ -263,6 +256,9 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
   public void RefreshTreeNodes()
   {
+    // First check for nodes that have been added (at the top level) but have not yet been added to 
+
+
     foreach (DefinitionTreeNodeViewModel nodeVM in TreeRootNodes)
     {
       nodeVM.RefreshTreeNode();

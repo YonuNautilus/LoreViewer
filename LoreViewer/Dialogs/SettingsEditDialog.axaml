@@ -22,7 +22,7 @@
     </Grid.RowDefinitions>
 
     <Border Grid.Column="0" BorderBrush="Black" BorderThickness="2">
-      <TreeDataGrid x:Name="DefinitionTreeDataGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      <TreeDataGrid x:Name="DefinitionTreeDataGrid" VerticalAlignment="Stretch">
       </TreeDataGrid>
     </Border>
     

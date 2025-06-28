@@ -5,6 +5,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using LoreViewer.Settings;
@@ -80,7 +81,6 @@ public static class DefinitionTreeDataGridBuilder
                 [!TextBox.PaddingProperty] = new Binding("TextboxBorderThickness"),
                 [!TextBox.IsReadOnlyProperty] = new Binding("NameIsReadOnly"),
                 [!TextBox.IsHitTestVisibleProperty] = new Binding("CanEditName"),
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
               };
 
               return retBox;

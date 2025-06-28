@@ -1,9 +1,11 @@
-﻿using LoreViewer.Settings;
+﻿using DocumentFormat.OpenXml.Drawing;
+using LoreViewer.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -17,9 +19,13 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries => null;
     #endregion
 
+    public ReactiveCommand<Unit, Unit> ClearUsedPicklistConstraintCommand { get; }
+
     public static List<EFieldStyle> FieldStyles { get => Enum.GetValues(typeof(EFieldStyle)).Cast<EFieldStyle>().ToList(); }
 
     public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => CurrentSettingsViewModel.Picklists; }
+
+    public ObservableCollection<PicklistEntryDefinitionViewModel> ValidPickListBranchChoices { get => Picklist?.ValidBranchRestrictionChoices; }
 
     private LoreFieldDefinition fieldDef { get => Definition as LoreFieldDefinition; }
     public bool IsRequired
@@ -35,6 +41,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool IsNestedFieldsStyle { get => fieldDef.style == EFieldStyle.NestedValues; }
 
     public bool IsPicklistFieldStyle { get => fieldDef.style == EFieldStyle.PickList; }
+
+    public bool HasPicklistSelected { get => Picklist != null; }
+    public bool HasRestrictionSelected { get => PicklistBranchRestriction != null; }
 
     public bool HasSubFields { get => fieldDef.HasFields; }
     public bool NoSubFields { get => !fieldDef.HasFields; }
@@ -63,19 +72,25 @@ namespace LoreViewer.ViewModels.SettingsVMs
       get => fieldDef.style;
       set
       {
+        if(fieldDef.style == EFieldStyle.PickList && value != EFieldStyle.PickList)
+        {
+          fieldDef.Picklist = null;
+        }
         fieldDef.style = value;
         SettingsRefresher.Apply(CurrentSettingsViewModel);
       }
     }
 
+    private PicklistDefinitionViewModel m_oPicklist;
     public PicklistDefinitionViewModel Picklist
     {
       get
       {
-        return CurrentSettingsViewModel.Picklists.FirstOrDefault(plvm => plvm.Definition == fieldDef.Picklist);
+        return m_oPicklist;
       }
       set
       {
+        m_oPicklist = value;
         fieldDef.Picklist = value?.pickDef;
         SettingsRefresher.Apply(CurrentSettingsViewModel);
       }
@@ -85,7 +100,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
-        return Picklist.GetBranch(fieldDef.PicklistBranchConstraint);
+        return Picklist?.GetBranch(fieldDef.PicklistBranchConstraint);
       }
       set
       {
@@ -106,6 +121,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(Picklist));
       this.RaisePropertyChanged(nameof(Picklists));
       this.RaisePropertyChanged(nameof(PicklistBranchRestriction));
+      this.RaisePropertyChanged(nameof(ValidPickListBranchChoices));
+      this.RaisePropertyChanged(nameof(HasPicklistSelected));
+      this.RaisePropertyChanged(nameof(HasRestrictionSelected));
       base.RefreshUI();
     }
 
@@ -119,7 +137,15 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public FieldDefinitionViewModel(LoreFieldDefinition defintion) : base(defintion) { }
+    public FieldDefinitionViewModel(LoreFieldDefinition defintion) : base(defintion)
+    {
+      ClearUsedPicklistConstraintCommand = ReactiveCommand.Create(ClearUsedPicklistConstraint);
+    }
+
+    private void ClearUsedPicklistConstraint()
+    {
+      PicklistBranchRestriction = null;
+    }
 
     private void RefreshFieldDefs()
     {

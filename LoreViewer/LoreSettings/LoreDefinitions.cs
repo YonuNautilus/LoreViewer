@@ -414,7 +414,16 @@ namespace LoreViewer.Settings
         if (HasFields) m_eStyle = EFieldStyle.NestedValues;
         return m_eStyle;
       }
-      set => m_eStyle = value; 
+      set
+      {
+        if (m_eStyle == EFieldStyle.NestedValues && m_eStyle != value)
+        {
+          Picklist = null;
+          PicklistBranchConstraint = null;
+        }
+        m_eStyle = value; 
+      } 
+
     }
 
     [YamlMember(0)]
@@ -548,6 +557,9 @@ namespace LoreViewer.Settings
     public void MergeFrom(LoreFieldDefinition parentField)
     {
       Base = parentField;
+
+      if (style != EFieldStyle.PickList && parentField.style == EFieldStyle.PickList)
+        this.style = parentField.style;
 
       if(this.Picklist == null && parentField.Picklist != null)
         Picklist = parentField.Picklist;

@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using DynamicData;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
@@ -146,7 +147,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     _settings = svm;
     _addType = addType;
 
-    // For adding type definitions and collections directly at the settings level
+    // For adding type definitions, collections, and picklists directly at the settings level
     if (_settings != null && _addType != null)
     {
       AddDefinitionCommand = ReactiveCommand.Create(() =>
@@ -156,6 +157,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           var newDef = new LoreTypeDefinition { name = DefinitionTreeNodeViewModel.tpyeNamer.GetName() };
           _settings.m_oLoreSettings.types.Add(newDef);
           var newVM = new TypeDefinitionViewModel(newDef);
+          newVM.CurrentSettingsVM.Types.Add(newVM);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (_addType == typeof(LoreCollectionDefinition))
@@ -163,6 +165,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           var newDef = new LoreCollectionDefinition { name = DefinitionTreeNodeViewModel.collectionNamer.GetName() };
           _settings.m_oLoreSettings.collections.Add(newDef);
           var newVM = new CollectionDefinitionViewModel(newDef);
+          newVM.CurrentSettingsVM.Collections.Add(newVM);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
         else if (_addType == typeof(LorePicklistEntryDefinition))
@@ -170,6 +173,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           var newDef = new LorePicklistDefinition { name = DefinitionTreeNodeViewModel.picklistNamer.GetName() };
           _settings.m_oLoreSettings.picklists.Add(newDef);
           var newVM = new PicklistDefinitionViewModel(newDef);
+          newVM.CurrentSettingsVM.Picklists.Add(newVM);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
         }
 
@@ -241,6 +245,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           var newDef = new LoreFieldDefinition { name = DefinitionTreeNodeViewModel.fieldNamer.GetName() };
           fCont.AddField(newDef);
           var newVM = new FieldDefinitionViewModel(newDef);
+          DefinitionVM.Fields.Add(newVM);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
 
           SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
@@ -257,6 +262,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           var newDef = new LorePicklistEntryDefinition { name = DefinitionTreeNodeViewModel.picklistNamer.GetName() };
           pCont.AddPicklistDefinition(newDef);
           var newVM = new PicklistEntryDefinitionViewModel(newDef);
+          DefinitionVM.PicklistEntries.Add(newVM);
           AddChild(new DefinitionTreeNodeViewModel(newVM));
 
           SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
@@ -295,6 +301,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
         else if (parentNode.IsGroupNode && vm.Definition is LoreTypeDefinition type)
         {
           vm.CurrentSettingsVM.m_oLoreSettings.types.Remove(type);
+          vm.CurrentSettingsVM.Types.Remove(vm as TypeDefinitionViewModel);
           type.IsDeleted = true;
         }
         else if (parentNode.Parent?.DefinitionVM?.Definition is IEmbeddedNodeDefinitionContainer eCont && vm.Definition is LoreEmbeddedNodeDefinition emb)
@@ -305,15 +312,18 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
         else if (vm.Definition is LorePicklistDefinition pld)
         {
           vm.CurrentSettingsVM.m_oLoreSettings.picklists.Remove(pld);
+          vm.CurrentSettingsVM.Picklists.Remove(vm as PicklistDefinitionViewModel);
           pld.IsDeleted = true;
         }
 
-        // Otherwise, remove a nested field definition OR a nested picklist entry definition
+        // Otherwise, remove a nested picklist entry definition...
         else if (parentNode.DefinitionVM?.Definition is IPicklistEntryDefinitionContainer pCont && vm.Definition is LorePicklistEntryDefinition pled)
         {
           pCont.entries.Remove(pled);
           pled.IsDeleted = true;
         }
+
+        // or a nested field definition 
         else if (parentNode.DefinitionVM?.Definition is IFieldDefinitionContainer nestedFCont && nestedFCont.HasFields && vm.Definition is LoreFieldDefinition fd)
         {
           nestedFCont.fields.Remove(fd);
@@ -433,7 +443,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     // If this is a grouping node, we need to ensure this group contains the correct nodes for the corresponding contained fields on the definition model.
     // i.e. if this is a field grouping node under a type node, we need to make sure this grouping of fields isn't missing any fields on the parent or that it doesn't contain extra fields
 
-    // Parent in this case is the preceeding node in the tree, which should hold the type or section or whatever definition.
+    // Parent in this case is the preceeding node in the tree, which should hold the type or section or whatever definition -- unless it's a ROOT grouping node
     if (this.IsGroupNode && Parent != null && Parent.DefinitionVM != null)
     {
       LoreDefinitionViewModel curContainingDvm = Parent.DefinitionVM;
