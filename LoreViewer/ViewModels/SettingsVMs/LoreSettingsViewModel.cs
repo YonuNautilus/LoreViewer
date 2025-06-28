@@ -14,7 +14,12 @@ using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs;
 
-public class LoreSettingsViewModel : LoreSettingsObjectViewModel
+/// <summary>
+/// The View Model for the LoreSettings model object.
+/// This View Model holds references to view models for all Types, globally-defined Collections, and Picklists from the LoreSettings object.
+/// It also creates the Hierarchy collection object that is used to display the definition tree.
+/// </summary>
+public class LoreSettingsViewModel : ViewModelBase
 {
   protected Visual m_oView;
   public void SetView(Visual visual) => m_oView = visual;
@@ -147,13 +152,9 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   }
 
   public AppSettingsViewModel ParserSettings { get => new AppSettingsViewModel(m_oLoreSettings.settings); }
-  public override ObservableCollection<TypeDefinitionViewModel> Types { get => m_cTypes; }
-  public override ObservableCollection<FieldDefinitionViewModel> Fields => null;
-  public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
-  public override ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
-  public override ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes => null;
-  public override ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries => null;
-  public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => m_cPicklists; }
+  public ObservableCollection<TypeDefinitionViewModel> Types { get => m_cTypes; }
+  public ObservableCollection<CollectionDefinitionViewModel> Collections { get => m_cCollections; }
+  public ObservableCollection<PicklistDefinitionViewModel> Picklists { get => m_cPicklists; }
 
 
   public ObservableCollection<DefinitionTreeNodeViewModel> TreeRootNodes { get; set; } = new ObservableCollection<DefinitionTreeNodeViewModel>();
@@ -161,8 +162,6 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
   public LoreSettingsViewModel(LoreSettings _settings)
   { 
     m_oLoreSettings = _settings;
-
-    CurrentSettings = _settings;
 
     SaveSettingsWithCompareCommand = ReactiveCommand.CreateFromTask(SaveSettingsAsync);
     SaveSettingsCommand = ReactiveCommand.Create(SaveSettings);
@@ -219,9 +218,9 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
   private void SaveSettings()
   {
-    CurrentSettings.WriteSettingsToFile();
+    m_oLoreSettings.WriteSettingsToFile();
     var win = TopLevel.GetTopLevel(m_oView) as Window;
-    win.Close(CurrentSettings);
+    win.Close(m_oLoreSettings);
   }
 
   private async Task SaveSettingsAsync()
@@ -234,9 +233,9 @@ public class LoreSettingsViewModel : LoreSettingsObjectViewModel
 
     if (confirm)
     {
-      CurrentSettings.WriteSettingsToFile();
+      m_oLoreSettings.WriteSettingsToFile();
       var win = TopLevel.GetTopLevel(m_oView) as Window;
-      win.Close(CurrentSettings);
+      win.Close(m_oLoreSettings);
     }
   }
 
