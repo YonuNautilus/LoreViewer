@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Platform.Storage;
 using DocumentFormat.OpenXml.Bibliography;
 using LoreViewer.Dialogs;
 using LoreViewer.Settings;
@@ -270,12 +271,20 @@ public class LoreSettingsViewModel : ViewModelBase
   public void RefreshTreeNodes()
   {
     // First check for nodes that have been added (at the top level) but have not yet been added to 
-
-
     foreach (DefinitionTreeNodeViewModel nodeVM in TreeRootNodes)
     {
       nodeVM.RefreshTreeNode();
     }
+  }
+
+  public void RefreshDefinitionVMs()
+  {
+    foreach (LoreDefinitionViewModel vm in Types)
+      vm.RefreshChildren();
+    foreach (LoreDefinitionViewModel vm in Collections)
+      vm.RefreshChildren();
+    foreach (LoreDefinitionViewModel vm in Picklists)
+      vm.RefreshChildren();
   }
 
 
@@ -291,37 +300,38 @@ public class LoreSettingsViewModel : ViewModelBase
     {
       case ETreeNodeType.RootTypeGroupingNode:
         m_oLoreSettings.types.Add(new LoreTypeDefinition { name = tpyeNamer.GetName() });
-        return;
+        break;
       case ETreeNodeType.RootCollectionGroupingNode:
         m_oLoreSettings.collections.Add(new LoreCollectionDefinition { name = collectionNamer.GetName() });
-        return;
+        break;
       case ETreeNodeType.RootPicklistGroupingNode:
         m_oLoreSettings.picklists.Add(new LorePicklistDefinition { name = picklistEntryNamer.GetName() });
-        return;
+        break;
 
       case ETreeNodeType.FieldGroupingNode:
         (treeVM.Parent.DefinitionVM.Definition as IFieldDefinitionContainer).AddField(new LoreFieldDefinition { name = fieldNamer.GetName() });
-        return;
+        break;
       case ETreeNodeType.SectionGroupingNode:
         (treeVM.Parent.DefinitionVM.Definition as ISectionDefinitionContainer).AddSection(new LoreSectionDefinition { name = sectionNamer.GetName() });
-        return;
+        break;
       case ETreeNodeType.CollectionGroupingNode:
         (treeVM.Parent.DefinitionVM.Definition as ICollectionDefinitionContainer).AddCollection(new LoreCollectionDefinition { name = collectionNamer.GetName() });
-        return;
+        break;
       case ETreeNodeType.EmbeddedNodeGroupingNode:
         (treeVM.Parent.DefinitionVM.Definition as IEmbeddedNodeDefinitionContainer).AddEmbedded(new LoreEmbeddedNodeDefinition { name = embeddedNamer.GetName() });
-        return;
+        break;
 
       case ETreeNodeType.FieldDefinitionNode:
         (treeVM.DefinitionVM.Definition as IFieldDefinitionContainer).AddField(new LoreFieldDefinition { name = fieldNamer.GetName() });
-        return;
+        break;
       case ETreeNodeType.PicklistEntryDefinitionNode:
       case ETreeNodeType.PicklistDefinitionNode:
         (treeVM.DefinitionVM.Definition as IPicklistEntryDefinitionContainer).AddPicklistDefinition(new LorePicklistEntryDefinition { name = picklistEntryNamer.GetName() });
-        return;
+        break;
       default:
         throw new Exception($"CANNOT ADD A NEW DEFINITION TO THIS DEFINITION: {treeVM.DefinitionVM?.Name}");
     }
+    SettingsRefresher.Apply(this);
   }
 
   /// <summary>
@@ -373,6 +383,7 @@ public static class SettingsRefresher
       vm?.m_oLoreSettings.PostProcess();
       vm?.RefreshYAMLComparison();
       vm?.NotifyYAMLChanged();
+      vm?.RefreshDefinitionVMs();
       vm?.RefreshTreeNodes();
     }
     catch(Exception e)

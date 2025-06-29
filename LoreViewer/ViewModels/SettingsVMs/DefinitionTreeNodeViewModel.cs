@@ -56,12 +56,21 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
     ETreeNodeType.RootCollectionGroupingNode,
     ETreeNodeType.RootPicklistGroupingNode };
 
-  private ETreeNodeType[] DefinitionLevelGroupingNodeType = {
+  private ETreeNodeType[] DefinitionLevelGroupingNodeTypes = {
     ETreeNodeType.FieldGroupingNode,
     ETreeNodeType.SectionGroupingNode,
     ETreeNodeType.CollectionGroupingNode,
     ETreeNodeType.EmbeddedNodeGroupingNode };
 
+  private ETreeNodeType[] DefinitionNodeTypes = {
+    ETreeNodeType.TypeDefinitionNode,
+    ETreeNodeType.FieldDefinitionNode,
+    ETreeNodeType.SectionDefinitionNode,
+    ETreeNodeType.CollectionDefinitionNode,
+    ETreeNodeType.EmbeddedNodeDefinitionNode,
+    ETreeNodeType.PicklistDefinitionNode,
+    ETreeNodeType.PicklistEntryDefinitionNode,
+  };
 
   private string TypeGroupName => Children.Any() ? $"Types ({Children.Count})" : "Types";
   private string FieldGroupName => Children.Any() ? $"Fields ({Children.Count})" : "Fields";
@@ -86,6 +95,9 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
   public LoreDefinitionViewModel? DefinitionVM { get; }
   public string GroupName { get; } = string.Empty;
   public bool IsGroupNode { get { return GroupingNodeTypes.Contains(TreeNodeType); } }
+  public bool IsRootGroupNode { get { return RootGroupingNodeTypes.Contains(TreeNodeType); } }
+  public bool IsDefinitionLevelGroupingNode { get { return DefinitionLevelGroupingNodeTypes.Contains(TreeNodeType); } }
+  public bool IsDefinitionNode { get { return DefinitionNodeTypes.Contains(TreeNodeType); } }
 
   public string InheritanceLabelString => DefinitionVM?.InheritanceLabelString;
 
@@ -225,82 +237,91 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
       child.Parent = null;
   }
 
-  public void BuildChildren()
+  private void BuildChildren()
   {
+    // For Picklist, Picklist Entries
+    if(TreeNodeType == ETreeNodeType.PicklistDefinitionNode || TreeNodeType == ETreeNodeType.PicklistEntryDefinitionNode)
+      foreach(PicklistEntryDefinitionViewModel pledvm in DefinitionVM.PicklistEntries)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.PicklistEntryDefinitionNode, CurrentSettingsVM, pledvm));
 
-    if (DefinitionVM.Definition is IFieldDefinitionContainer ifcont)
-    {
-      // If this is a field definition, but it's NOT a nested values field, break out of this method
-      if (ifcont is LoreFieldDefinition fd)
-      {
-        if (fd.style != EFieldStyle.NestedValues) return;
-
-        if (DefinitionVM.Fields != null)
-        {
-          foreach (var f in DefinitionVM.Fields)
-            AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, f));
-        }
-      }
-      else
-      {
-        var fieldGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.FieldGroupingNode, CurrentSettingsVM, DefinitionVM);
-        if (DefinitionVM.Fields != null)
-        {
-          foreach (var f in DefinitionVM.Fields)
-            fieldGroup.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, f));
-        }
-        AddChild(fieldGroup);
-      }
-    }
-
-    if (DefinitionVM.Definition is ISectionDefinitionContainer iscont)
-    {
-      var sectionGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.SectionGroupingNode, CurrentSettingsVM, DefinitionVM);
-      if (DefinitionVM.Sections != null)
-      {
-        foreach (var s in DefinitionVM.Sections)
-          sectionGroup.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.SectionDefinitionNode, CurrentSettingsVM, s));
-      }
-      AddChild(sectionGroup);
-    }
-
-    if (DefinitionVM.Definition is ICollectionDefinitionContainer iccont)
-    {
-      var colGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionGroupingNode, CurrentSettingsVM, DefinitionVM);
-      if (DefinitionVM.Sections != null)
-      {
-        foreach (var c in DefinitionVM.Collections)
-          colGroup.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, CurrentSettingsVM, c));
-      }
-      AddChild(colGroup);
-    }
+    // For Fields with nested fields
+    if (TreeNodeType == ETreeNodeType.FieldDefinitionNode && (DefinitionVM as FieldDefinitionViewModel).HasSubFields)
+      foreach(FieldDefinitionViewModel fdvm in DefinitionVM.Fields)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, fdvm));
 
 
-    if (DefinitionVM.Definition is IEmbeddedNodeDefinitionContainer iecont)
-    {
-      var embedGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.EmbeddedNodeGroupingNode, CurrentSettingsVM, DefinitionVM);
-      if (DefinitionVM.EmbeddedNodes != null)
-      {
-        foreach (var e in DefinitionVM.EmbeddedNodes)
-          embedGroup.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.EmbeddedNodeDefinitionNode, CurrentSettingsVM, e));
-      }
-      AddChild(embedGroup);
-    }
+    // For Locally Defined Collection
+    if (TreeNodeType == ETreeNodeType.CollectionDefinitionNode && DefinitionVM is CollectionDefinitionViewModel lcdvm && lcdvm.IsUsingLocalCollectionDef)
+      AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, CurrentSettingsVM, lcdvm.ContainedTypeVM as CollectionDefinitionViewModel));
+
+
+    // Now for grouping nodes
+    if (TreeNodeType == ETreeNodeType.FieldGroupingNode && DefinitionVM.Fields != null)
+      foreach (FieldDefinitionViewModel f in DefinitionVM.Fields)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, f));
+
+    if(TreeNodeType == ETreeNodeType.SectionGroupingNode && DefinitionVM.Sections != null)
+      foreach(SectionDefinitionViewModel s in DefinitionVM.Sections)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.SectionDefinitionNode, CurrentSettingsVM, s));
+
+    if (TreeNodeType == ETreeNodeType.CollectionGroupingNode && DefinitionVM.Collections != null)
+      foreach (CollectionDefinitionViewModel c in DefinitionVM.Collections)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, CurrentSettingsVM, c));
+
+    if(TreeNodeType == ETreeNodeType.EmbeddedNodeDefinitionNode && DefinitionVM.EmbeddedNodes != null)
+      foreach (EmbeddedNodeDefinitionViewModel e in DefinitionVM.EmbeddedNodes)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.EmbeddedNodeDefinitionNode, CurrentSettingsVM, e));
 
     // Handle locally defined collection definition
     if(DefinitionVM is CollectionDefinitionViewModel cdvm && cdvm.IsUsingLocalCollectionDef)
     {
-      AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode,CurrentSettingsVM, cdvm.ContainedTypeVM));
+      AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, CurrentSettingsVM, cdvm.ContainedTypeVM));
     }
 
-    if (DefinitionVM.Definition is IPicklistEntryDefinitionContainer ipcont && ipcont.HasEntries)
+
+
+    // For definition-level nodes that need grouping nodes as children (Type nodes, Section Nodes)
+    if (IsDefinitionNode)
     {
-      foreach (var p in DefinitionVM.PicklistEntries)
-      {
-        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.PicklistEntryDefinitionNode, CurrentSettingsVM, p));
-      }
+      // Do not make a Field grouping nodes under field nodes -- if a field has nested fields, they are NOT put in a grouping node
+      if (DefinitionVM.Definition is IFieldDefinitionContainer && DefinitionVM is not FieldDefinitionViewModel)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.FieldGroupingNode, CurrentSettingsVM, DefinitionVM));
+
+      if (DefinitionVM.Definition is ISectionDefinitionContainer)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.SectionGroupingNode, CurrentSettingsVM, DefinitionVM));
+
+      if (DefinitionVM.Definition is ICollectionDefinitionContainer)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionGroupingNode, CurrentSettingsVM, DefinitionVM));
+
+      if (DefinitionVM.Definition is IEmbeddedNodeDefinitionContainer)
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.EmbeddedNodeGroupingNode, CurrentSettingsVM, DefinitionVM));
     }
   }
+
+  private void BuildFieldChildren(DefinitionTreeNodeViewModel parentNode, ObservableCollection<FieldDefinitionViewModel> fieldsToAdd)
+  {
+    foreach (FieldDefinitionViewModel fdvm in fieldsToAdd)
+      parentNode.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, fdvm));
+  }
+
+  private void BuildSectionChildren(DefinitionTreeNodeViewModel parentNode, ObservableCollection<SectionDefinitionViewModel> sectionsToAdd)
+  {
+    foreach (SectionDefinitionViewModel sdvm in sectionsToAdd)
+      parentNode.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.SectionDefinitionNode, CurrentSettingsVM, sdvm));
+  }
+
+  private void BuildCollectionChildren(DefinitionTreeNodeViewModel parentNode, ObservableCollection<CollectionDefinitionViewModel> collectionsToAdd)
+  {
+    foreach (CollectionDefinitionViewModel cdvm in collectionsToAdd)
+      parentNode.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, CurrentSettingsVM, cdvm));
+  }
+
+  private void BuildEmbededNodeChildren(DefinitionTreeNodeViewModel parentNode, ObservableCollection<EmbeddedNodeDefinitionViewModel> embeddedNodesToAdd)
+  {
+    foreach (EmbeddedNodeDefinitionViewModel endvm in embeddedNodesToAdd)
+      parentNode.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.EmbeddedNodeDefinitionNode, CurrentSettingsVM, endvm));
+  }
+
 
   internal void RefreshTreeNode()
   {
@@ -348,7 +369,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
       switch (TreeNodeType)
       {
         case ETreeNodeType.FieldGroupingNode:
-          for (int i = 0; i < DefinitionVM.Fields.Count(); i++)
+          for (int i = 0; i < DefinitionVM.Fields?.Count(); i++)
           {
             FieldDefinitionViewModel fdvmToAdd = DefinitionVM.Fields[i];
             if (!Children.Any(node => node.DefinitionVM as FieldDefinitionViewModel == fdvmToAdd))
@@ -358,7 +379,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
           }
           break;
         case ETreeNodeType.SectionGroupingNode:
-          for (int i = 0; i < DefinitionVM.Sections.Count(); i++)
+          for (int i = 0; i < DefinitionVM.Sections?.Count(); i++)
           {
             SectionDefinitionViewModel sdvmToAdd = DefinitionVM.Sections[i];
             if (!Children.Any(node => node.DefinitionVM as SectionDefinitionViewModel == sdvmToAdd))
@@ -368,7 +389,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
           }
           break;
         case ETreeNodeType.CollectionGroupingNode:
-          for (int i = 0; i < DefinitionVM.Collections.Count(); i++)
+          for (int i = 0; i < DefinitionVM.Collections?.Count(); i++)
           {
             CollectionDefinitionViewModel cdvmToAdd = DefinitionVM.Collections[i];
             if (!Children.Any(node => node.DefinitionVM as CollectionDefinitionViewModel == cdvmToAdd))
@@ -378,7 +399,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
           }
           break;
         case ETreeNodeType.EmbeddedNodeGroupingNode:
-          for (int i = 0; i < DefinitionVM.EmbeddedNodes.Count(); i++)
+          for (int i = 0; i < DefinitionVM.EmbeddedNodes?.Count(); i++)
           {
             EmbeddedNodeDefinitionViewModel endvmToAdd = DefinitionVM.EmbeddedNodes[i];
             if (!Children.Any(node => node.DefinitionVM as EmbeddedNodeDefinitionViewModel == endvmToAdd))
@@ -401,7 +422,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
         if (fieldNodeToDel.DefinitionVM != null && fieldNodeToDel.DefinitionVM.Definition.WasDeleted)
         {
           DefinitionVM.Fields.Remove(fieldNodeToDel.DefinitionVM as FieldDefinitionViewModel);
-          Children.Remove(fieldNodeToDel);
+          RemoveChild(fieldNodeToDel);
         }
       }
 
@@ -424,7 +445,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
         if (picklistEntryToDel.DefinitionVM != null && picklistEntryToDel.DefinitionVM.Definition.WasDeleted)
         {
           DefinitionVM.PicklistEntries.Remove(picklistEntryToDel.DefinitionVM as PicklistEntryDefinitionViewModel);
-          Children.Remove(picklistEntryToDel);
+          RemoveChild(picklistEntryToDel);
         }
       }
 
@@ -437,6 +458,9 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
           InsertChild(i, new DefinitionTreeNodeViewModel(ETreeNodeType.PicklistEntryDefinitionNode, CurrentSettingsVM, picklistEntryToAdd));
         }
       }
+
+      foreach (DefinitionTreeNodeViewModel childNode in Children)
+        childNode.RefreshTreeNode();
     }
 
     /*

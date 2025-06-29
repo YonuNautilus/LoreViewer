@@ -1,7 +1,9 @@
 ﻿using LoreViewer.Settings;
+using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -124,6 +126,115 @@ namespace LoreViewer.ViewModels.SettingsVMs
     }
 
     public virtual void BuildLists() { }
+
+
+    /// <summary>
+    /// Central logic method for refreshing the definition view models.
+    /// Deletes contained viewmodels if deleted on the model, or adds a new contained viewmodel if added in the model
+    /// </summary>
+    public void RefreshChildren()
+    {
+      // Fields
+      if(Definition is IFieldDefinitionContainer ifdc && ifdc.HasFields)
+      {
+        // Check for additions
+        for(int i = Fields.Count - 1; i >= 0; i--)
+        {
+          FieldDefinitionViewModel lfd = Fields[i];
+          if (lfd.Definition.WasDeleted) Fields.Remove(lfd);
+        }
+
+        // Check additions
+        for (int i = ifdc.fields.Count - 1; i >= 0; i--)
+        {
+          LoreFieldDefinition lfd = ifdc.fields[i];
+          if (!Fields.Any(fdvm => fdvm.Definition == lfd))
+            Fields.Insert(i, new FieldDefinitionViewModel(lfd, CurrentSettingsViewModel));
+        }
+
+        // Propagate refresh down to field children
+        foreach (FieldDefinitionViewModel fd in Fields)
+          fd.RefreshChildren();
+      }
+
+
+      // Sections
+      if(Definition is ISectionDefinitionContainer isdc && isdc.HasSections)
+      {
+        // Check for additions
+        for(int i = Sections.Count - 1; i >= 0; i--)
+        {
+          SectionDefinitionViewModel lsd = Sections[i];
+          if (lsd.Definition.WasDeleted) Sections.Remove(lsd);
+        }
+
+        // Check additions
+        for (int i = isdc.sections.Count - 1; i >= 0; i--)
+        {
+          LoreSectionDefinition lsd = isdc.sections[i];
+          if (!Sections.Any(fdvm => fdvm.Definition == lsd))
+            Sections.Insert(i, new SectionDefinitionViewModel(lsd, CurrentSettingsViewModel));
+        }
+
+        // Propagate refresh down to section children
+        foreach (SectionDefinitionViewModel sd in Sections)
+          sd.RefreshChildren();
+      }
+
+
+      // Collections
+      if(Definition is ICollectionDefinitionContainer icdc && icdc.HasCollections)
+      {
+        // Check for additions
+        for(int i = Collections.Count - 1; i >= 0; i--)
+        {
+          CollectionDefinitionViewModel lcd = Collections[i];
+          if (lcd.Definition.WasDeleted) Collections.Remove(lcd);
+        }
+
+        // Check additions
+        for (int i = icdc.collections.Count - 1; i >= 0; i--)
+        {
+          LoreCollectionDefinition lcd = icdc.collections[i];
+          if (!Collections.Any(fdvm => fdvm.Definition == lcd))
+            Collections.Insert(i, new CollectionDefinitionViewModel(lcd, CurrentSettingsViewModel));
+        }
+
+        // Propagate refresh down to collection children
+        foreach (CollectionDefinitionViewModel cd in Collections)
+          cd.RefreshChildren();
+      }
+
+
+      // EmbeddedNodes
+      if(Definition is IEmbeddedNodeDefinitionContainer iedc && iedc.HasNestedNodes)
+      {
+        // Check for additions
+        for(int i = EmbeddedNodes.Count - 1; i >= 0; i--)
+        {
+          EmbeddedNodeDefinitionViewModel led = EmbeddedNodes[i];
+          if (led.Definition.WasDeleted) EmbeddedNodes.Remove(led);
+        }
+
+        // Check additions
+        for (int i = iedc.embeddedNodeDefs.Count - 1; i >= 0; i--)
+        {
+          LoreEmbeddedNodeDefinition lcd = iedc.embeddedNodeDefs[i];
+          if (!EmbeddedNodes.Any(fdvm => fdvm.Definition == lcd))
+            EmbeddedNodes.Insert(i, new EmbeddedNodeDefinitionViewModel(lcd, CurrentSettingsViewModel));
+        }
+
+        // Propagate refresh down to embeddedNode children
+        foreach (EmbeddedNodeDefinitionViewModel ed in EmbeddedNodes)
+          ed.RefreshChildren();
+      }
+
+
+
+
+
+      RefreshUI();
+    }
 
     public override string ToString() => Definition != null ? $"VM of {Definition}" : Name;
   }
