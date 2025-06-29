@@ -1,8 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Platform.Storage;
-using DocumentFormat.OpenXml.Bibliography;
 using LoreViewer.Dialogs;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
@@ -11,7 +9,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Mime;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -340,9 +337,39 @@ public class LoreSettingsViewModel : ViewModelBase
   /// definition from its containing definition, or from the settings itself if its a globally defined definition
   /// </summary>
   /// <param name="definitionTreeNodeViewModel"></param>
-  internal void DeleteDefinition(DefinitionTreeNodeViewModel definitionTreeNodeViewModel)
+  internal void DeleteDefinition(DefinitionTreeNodeViewModel treeVM)
   {
-    
+    switch (treeVM.TreeNodeType)
+    {
+      case ETreeNodeType.TypeDefinitionNode:
+        m_oLoreSettings.types.Remove(treeVM.DefinitionVM.Definition as LoreTypeDefinition);
+        break;
+      case ETreeNodeType.FieldDefinitionNode:
+        (treeVM.Parent.DefinitionVM.Definition as IFieldDefinitionContainer).fields.Remove(treeVM.DefinitionVM.Definition as LoreFieldDefinition);
+        break;
+      case ETreeNodeType.SectionDefinitionNode:
+        (treeVM.Parent.DefinitionVM.Definition as ISectionDefinitionContainer).sections.Remove(treeVM.DefinitionVM.Definition as LoreSectionDefinition);
+        break;
+      case ETreeNodeType.CollectionDefinitionNode:
+        if(treeVM.Parent.IsRootGroupNode)
+          m_oLoreSettings.collections.Remove(treeVM.DefinitionVM.Definition as LoreCollectionDefinition);
+        else
+          (treeVM.Parent.DefinitionVM.Definition as ICollectionDefinitionContainer).collections.Remove(treeVM.DefinitionVM.Definition as LoreCollectionDefinition);
+          break;
+      case ETreeNodeType.EmbeddedNodeDefinitionNode: 
+        (treeVM.Parent.DefinitionVM.Definition as IEmbeddedNodeDefinitionContainer).embeddedNodeDefs.Remove(treeVM.DefinitionVM.Definition as LoreEmbeddedNodeDefinition);
+        break;
+      case ETreeNodeType.PicklistDefinitionNode:
+        m_oLoreSettings.picklists.Remove(treeVM.DefinitionVM.Definition as LorePicklistDefinition);
+        break;
+      case ETreeNodeType.PicklistEntryDefinitionNode:
+        (treeVM.Parent.DefinitionVM.Definition as IPicklistEntryDefinitionContainer).entries.Remove(treeVM.DefinitionVM.Definition as LorePicklistEntryDefinition);
+        break;
+      default:
+        throw new Exception($"CANNOT DELETE THIS NODE: node type: {treeVM.TreeNodeType} | definition type {treeVM.DefinitionVM.Definition.GetType().Name}");
+    }
+    treeVM.DefinitionVM.Definition.IsDeleted = true;
+    SettingsRefresher.Apply(this);
   }
 }
 
