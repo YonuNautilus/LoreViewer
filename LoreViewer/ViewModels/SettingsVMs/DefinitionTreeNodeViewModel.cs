@@ -110,7 +110,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
         case ETreeNodeType.RootTypeGroupingNode:
           return TypeGroupName;
         case ETreeNodeType.RootCollectionGroupingNode:
-        case ETreeNodeType.CollectionDefinitionNode:
+        case ETreeNodeType.CollectionGroupingNode:
           return CollectionGroupName;
         case ETreeNodeType.RootPicklistGroupingNode:
           return PicklistGroupName;

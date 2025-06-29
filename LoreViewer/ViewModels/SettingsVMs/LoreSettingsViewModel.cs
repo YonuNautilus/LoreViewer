@@ -295,14 +295,27 @@ public class LoreSettingsViewModel : ViewModelBase
   {
     switch (treeVM.TreeNodeType)
     {
+      // At root level, we should be fine to create the definition view model and add to this class's list
       case ETreeNodeType.RootTypeGroupingNode:
-        m_oLoreSettings.types.Add(new LoreTypeDefinition { name = tpyeNamer.GetName() });
+        LoreTypeDefinition newTypeDef = new LoreTypeDefinition { name = tpyeNamer.GetName() };
+        m_oLoreSettings.types.Add(newTypeDef);
+        TypeDefinitionViewModel newTypeVM = new TypeDefinitionViewModel(newTypeDef, this);
+        Types.Add(newTypeVM);
+        TreeRootNodes[0].AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.TypeDefinitionNode, this, newTypeVM));
         break;
       case ETreeNodeType.RootCollectionGroupingNode:
-        m_oLoreSettings.collections.Add(new LoreCollectionDefinition { name = collectionNamer.GetName() });
+        LoreCollectionDefinition newColDef = new LoreCollectionDefinition { name = collectionNamer.GetName() };
+        m_oLoreSettings.collections.Add(newColDef);
+        CollectionDefinitionViewModel newColVM = new CollectionDefinitionViewModel(newColDef, this);
+        Collections.Add(newColVM);
+        TreeRootNodes[1].AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, this, newColVM));
         break;
       case ETreeNodeType.RootPicklistGroupingNode:
-        m_oLoreSettings.picklists.Add(new LorePicklistDefinition { name = picklistEntryNamer.GetName() });
+        LorePicklistDefinition newPickDef = new LorePicklistDefinition { name = picklistEntryNamer.GetName() };
+        m_oLoreSettings.picklists.Add(newPickDef);
+        PicklistDefinitionViewModel newPickVM = new PicklistDefinitionViewModel(newPickDef, this);
+        Picklists.Add(newPickVM);
+        TreeRootNodes[2].AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.PicklistDefinitionNode, this, newPickVM));
         break;
 
       case ETreeNodeType.FieldGroupingNode:
