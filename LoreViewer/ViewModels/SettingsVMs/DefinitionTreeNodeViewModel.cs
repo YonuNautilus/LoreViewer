@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
+using DocumentFormat.OpenXml.Wordprocessing;
 using DynamicData;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
@@ -11,33 +13,68 @@ using System.Reactive;
 
 namespace LoreViewer.ViewModels.SettingsVMs;
 
-public class DefinitionTreeNodeViewModel : ReactiveObject
+public enum ETreeNodeType
 {
-  private class NewNameTracker
-  {
-    private int number = 1;
-    private string prefix = string.Empty;
-    public NewNameTracker(string namePrefix) { prefix = namePrefix; }
+  RootTypeGroupingNode,
+  RootCollectionGroupingNode,
+  RootPicklistGroupingNode,
 
-    public string GetName() => $"{prefix}_{number++}";
-  }
+  FieldGroupingNode,
+  SectionGroupingNode,
+  CollectionGroupingNode,
+  EmbeddedNodeGroupingNode,
 
-  private const string TypeGroupName = "Types";
-  private const string FieldGroupName = "Fields";
-  private const string SectionGroupName = "Sections";
-  private const string CollectionGroupName = "Collections";
-  private const string EmbeddedNodsGroupName = "Embedded Nodes";
-  private const string PicklistGroupName = "Picklists";
+  TypeDefinitionNode,
+  FieldDefinitionNode,
+  SectionDefinitionNode,
+  CollectionDefinitionNode,
+  EmbeddedNodeDefinitionNode,
+  PicklistDefinitionNode,
+  PicklistEntryDefinitionNode,
+}
 
-  private static NewNameTracker tpyeNamer = new NewNameTracker("NewType");
-  private static NewNameTracker fieldNamer = new NewNameTracker("NewField");
-  private static NewNameTracker sectionNamer = new NewNameTracker("NewSection");
-  private static NewNameTracker collectionNamer = new NewNameTracker("NewCollection");
-  private static NewNameTracker embeddedNamer = new NewNameTracker("NewEmbedded");
-  private static NewNameTracker picklistNamer = new NewNameTracker("NewPicklist");
-  private static NewNameTracker picklistEntryNamer = new NewNameTracker("NewPicklistEntry");
+
+/// <summary>
+/// A viewmodel for any node representing a definition or grouping of definitions in the lore settings edit dialog's TreeDataGrid.
+/// This class exposes properties like name, inheritance status, and commands for the add and delete buttons that appear on the node.
+/// </summary>
+public class DefinitionTreeNodeViewModel : ViewModelBase
+{
+
+  private ETreeNodeType[] GroupingNodeTypes = {
+    ETreeNodeType.RootTypeGroupingNode,
+    ETreeNodeType.RootCollectionGroupingNode,
+    ETreeNodeType.RootPicklistGroupingNode,
+
+    ETreeNodeType.FieldGroupingNode,
+    ETreeNodeType.SectionGroupingNode,
+    ETreeNodeType.CollectionGroupingNode,
+    ETreeNodeType.EmbeddedNodeGroupingNode };
+
+  private ETreeNodeType[] RootGroupingNodeTypes = {
+    ETreeNodeType.RootTypeGroupingNode,
+    ETreeNodeType.RootCollectionGroupingNode,
+    ETreeNodeType.RootPicklistGroupingNode };
+
+  private ETreeNodeType[] DefinitionLevelGroupingNodeType = {
+    ETreeNodeType.FieldGroupingNode,
+    ETreeNodeType.SectionGroupingNode,
+    ETreeNodeType.CollectionGroupingNode,
+    ETreeNodeType.EmbeddedNodeGroupingNode };
+
+
+  private string TypeGroupName => Children.Any() ? $"Types ({Children.Count})" : "Types";
+  private string FieldGroupName => Children.Any() ? $"Fields ({Children.Count})" : "Fields";
+  private string SectionGroupName => Children.Any() ? $"Sections ({Children.Count})" : "Sections";
+  private string CollectionGroupName => Children.Any() ? $"Collections ({Children.Count})" : "Collections";
+  private string EmbeddedNodesGroupName => Children.Any() ? $"Embedded Nodes ({Children.Count})" : "Embedded Nodes";
+  private string PicklistGroupName => Children.Any() ? $"Picklists ({Children.Count})" : "Picklists";
+
+
   private LoreSettingsViewModel _settings;
   private Type _addType;
+
+  public ETreeNodeType TreeNodeType { get; }
 
   public ReactiveCommand<LoreDefinitionBase, Unit> GoToNodeOfDefinitionCommand { get; }
 
@@ -48,19 +85,35 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
 
   public LoreDefinitionViewModel? DefinitionVM { get; }
   public string GroupName { get; } = string.Empty;
-  public bool IsGroupNode { get; }
+  public bool IsGroupNode { get { return GroupingNodeTypes.Contains(TreeNodeType); } }
 
   public string InheritanceLabelString => DefinitionVM?.InheritanceLabelString;
 
-  public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+  public ReactiveCommand<Unit, Unit> DeleteDefinitionCommand { get; }
   public ReactiveCommand<Unit, Unit> AddDefinitionCommand { get; }
 
   public string DisplayName
   {
     get
     {
-      if (IsGroupNode) return Children.Any() ? $"{GroupName} ({Children.Count})" : GroupName;
-      else return DefinitionVM?.Name ?? "(Unnamed)";
+      switch (TreeNodeType)
+      {
+        case ETreeNodeType.RootTypeGroupingNode:
+          return TypeGroupName;
+        case ETreeNodeType.RootCollectionGroupingNode:
+        case ETreeNodeType.CollectionDefinitionNode:
+          return CollectionGroupName;
+        case ETreeNodeType.RootPicklistGroupingNode:
+          return PicklistGroupName;
+        case ETreeNodeType.FieldGroupingNode:
+          return FieldGroupName;
+        case ETreeNodeType.SectionGroupingNode:
+          return SectionGroupName;
+        case ETreeNodeType.EmbeddedNodeGroupingNode:
+          return EmbeddedNodesGroupName;
+        default:
+          return DefinitionVM?.Name ?? "(Unnamed)";
+      }
     }
     set
     {
@@ -96,7 +149,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
       if (DefinitionVM?.Definition is IRequirable iReq && value.HasValue)
       {
         iReq.required = value.Value;
-        SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
+        SettingsRefresher.Apply(CurrentSettingsVM);
       }
     }
   }
@@ -135,211 +188,24 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
   }
 
 
-  public DefinitionTreeNodeViewModel()
+  private DefinitionTreeNodeViewModel(LoreSettingsViewModel curSettingsVM)
   {
+    _settings = curSettingsVM;
     GoToNodeOfDefinitionCommand = ReactiveCommand.Create<LoreDefinitionBase>(GoToNodeOfDefinition);
+    AddDefinitionCommand = ReactiveCommand.Create(() => curSettingsVM.AddDefinition(this));
+    DeleteDefinitionCommand = ReactiveCommand.Create(() => curSettingsVM.DeleteDefinition(this));
   }
 
-  // Group node constructor
-  public DefinitionTreeNodeViewModel(string groupName, LoreSettingsViewModel svm = null, Type addType = null)
+
+  public DefinitionTreeNodeViewModel(ETreeNodeType thisNodeType, LoreSettingsViewModel curSettingsVM, LoreDefinitionViewModel defVM = null) : this(curSettingsVM)
   {
-    IsGroupNode = true;
-    GroupName = groupName;
-    _settings = svm;
-    _addType = addType;
-
-    // For adding type definitions, collections, and picklists directly at the settings level
-    if (_settings != null && _addType != null)
-    {
-      AddDefinitionCommand = ReactiveCommand.Create(() =>
-      {
-        if (_addType == typeof(LoreTypeDefinition))
-        {
-          var newDef = new LoreTypeDefinition { name = DefinitionTreeNodeViewModel.tpyeNamer.GetName() };
-          _settings.m_oLoreSettings.types.Add(newDef);
-          var newVM = new TypeDefinitionViewModel(newDef);
-          newVM.CurrentSettingsVM.Types.Add(newVM);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-        }
-        else if (_addType == typeof(LoreCollectionDefinition))
-        {
-          var newDef = new LoreCollectionDefinition { name = DefinitionTreeNodeViewModel.collectionNamer.GetName() };
-          _settings.m_oLoreSettings.collections.Add(newDef);
-          var newVM = new CollectionDefinitionViewModel(newDef);
-          newVM.CurrentSettingsVM.Collections.Add(newVM);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-        }
-        else if (_addType == typeof(LorePicklistEntryDefinition))
-        {
-          var newDef = new LorePicklistDefinition { name = DefinitionTreeNodeViewModel.picklistNamer.GetName() };
-          _settings.m_oLoreSettings.picklists.Add(newDef);
-          var newVM = new PicklistDefinitionViewModel(newDef);
-          newVM.CurrentSettingsVM.Picklists.Add(newVM);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-        }
-
-          SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
-      });
-    }
-    // For adding field, section, collection and embedded node definitions at the type level
-    else
-    {
-      AddDefinitionCommand = ReactiveCommand.Create(() =>
-      {
-
-        if (Parent?.DefinitionVM?.Definition is IFieldDefinitionContainer fCont && groupName == FieldGroupName)
-        {
-          var newDef = new LoreFieldDefinition { name = DefinitionTreeNodeViewModel.fieldNamer.GetName() };
-          fCont.AddField(newDef);
-          var newVM = new FieldDefinitionViewModel(newDef);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-        }
-        else if (Parent?.DefinitionVM?.Definition is ISectionDefinitionContainer sCont && groupName == SectionGroupName)
-        {
-          var newDef = new LoreSectionDefinition { name = DefinitionTreeNodeViewModel.sectionNamer.GetName() };
-          sCont.AddSection(newDef);
-          var newVM = new SectionDefinitionViewModel(newDef);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-        }
-        else if (Parent?.DefinitionVM?.Definition is ICollectionDefinitionContainer cCont && groupName == CollectionGroupName)
-        {
-          var newDef = new LoreCollectionDefinition { name = DefinitionTreeNodeViewModel.collectionNamer.GetName() };
-          cCont.AddCollection(newDef);
-          var newVM = new CollectionDefinitionViewModel(newDef);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-        }
-        else if (Parent?.DefinitionVM?.Definition is IEmbeddedNodeDefinitionContainer eCont && groupName == EmbeddedNodsGroupName)
-        {
-          var newDef = new LoreEmbeddedNodeDefinition { name = DefinitionTreeNodeViewModel.embeddedNamer.GetName() };
-          eCont.AddEmbedded(newDef);
-          var newVM = new EmbeddedNodeDefinitionViewModel(newDef);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-        }
-        else if (Parent?.DefinitionVM.Definition is IPicklistEntryDefinitionContainer pCont && groupName == PicklistGroupName)
-        {
-          var newDef = new LorePicklistEntryDefinition { name = DefinitionTreeNodeViewModel.picklistNamer.GetName() };
-          pCont.AddPicklistDefinition(newDef);
-          var newVM = new PicklistDefinitionViewModel(newDef);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-        }
-
-          SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
-      });
-    }
-  }
-
-  // Leaf node constructor
-  public DefinitionTreeNodeViewModel(LoreDefinitionViewModel vm) : this()
-  {
-    DefinitionVM = vm;
-    IsGroupNode = false;
+    TreeNodeType = thisNodeType;
+    DefinitionVM = defVM;
 
     BuildChildren();
-
-    if(vm is FieldDefinitionViewModel fdvm)
-    {
-      AddDefinitionCommand = ReactiveCommand.Create(() =>
-      {
-        if (DefinitionVM != null && DefinitionVM.Definition is LoreFieldDefinition fDef && fDef.style == EFieldStyle.NestedValues)
-        {
-          IFieldDefinitionContainer fCont = DefinitionVM.Definition as IFieldDefinitionContainer;
-          var newDef = new LoreFieldDefinition { name = DefinitionTreeNodeViewModel.fieldNamer.GetName() };
-          fCont.AddField(newDef);
-          var newVM = new FieldDefinitionViewModel(newDef);
-          DefinitionVM.Fields.Add(newVM);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-
-          SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
-        }
-      });
-    }
-
-    if (vm is PicklistDefinitionViewModel pldvm || vm is PicklistEntryDefinitionViewModel pledvm)
-    {
-      AddDefinitionCommand = ReactiveCommand.Create(() =>
-      {
-        if (DefinitionVM != null && DefinitionVM.Definition is IPicklistEntryDefinitionContainer pCont)
-        {
-          var newDef = new LorePicklistEntryDefinition { name = DefinitionTreeNodeViewModel.picklistNamer.GetName() };
-          pCont.AddPicklistDefinition(newDef);
-          var newVM = new PicklistEntryDefinitionViewModel(newDef);
-          DefinitionVM.PicklistEntries.Add(newVM);
-          AddChild(new DefinitionTreeNodeViewModel(newVM));
-
-          SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
-        }
-      });
-    }
-
-    DeleteCommand = ReactiveCommand.Create(() =>
-    {
-      if (Parent is DefinitionTreeNodeViewModel parentNode)
-      {
-        // Attempt to remove from parent model container
-        if (parentNode.Parent?.DefinitionVM?.Definition is IFieldDefinitionContainer fCont && vm.Definition is LoreFieldDefinition fld)
-        {
-          fCont.fields.Remove(fld);
-          fld.IsDeleted = true;
-        }
-        else if (parentNode.Parent?.DefinitionVM?.Definition is ISectionDefinitionContainer sCont && vm.Definition is LoreSectionDefinition sec)
-        {
-          sCont.sections.Remove(sec);
-          sec.IsDeleted = true;
-        }
-        else if (vm.Definition is LoreCollectionDefinition col)
-        {
-          if(parentNode.Parent?.DefinitionVM?.Definition is ICollectionDefinitionContainer cCont)
-          {
-            cCont.collections.Remove(col);
-            col.IsDeleted = true;
-          }
-          else if(parentNode.IsGroupNode)
-          {
-            vm.CurrentSettingsVM.m_oLoreSettings.collections.Remove(col);
-            col.IsDeleted = true;
-          }
-        }
-        else if (parentNode.IsGroupNode && vm.Definition is LoreTypeDefinition type)
-        {
-          vm.CurrentSettingsVM.m_oLoreSettings.types.Remove(type);
-          vm.CurrentSettingsVM.Types.Remove(vm as TypeDefinitionViewModel);
-          type.IsDeleted = true;
-        }
-        else if (parentNode.Parent?.DefinitionVM?.Definition is IEmbeddedNodeDefinitionContainer eCont && vm.Definition is LoreEmbeddedNodeDefinition emb)
-        {
-          eCont.embeddedNodeDefs.Remove(emb);
-          emb.IsDeleted = true;
-        }
-        else if (vm.Definition is LorePicklistDefinition pld)
-        {
-          vm.CurrentSettingsVM.m_oLoreSettings.picklists.Remove(pld);
-          vm.CurrentSettingsVM.Picklists.Remove(vm as PicklistDefinitionViewModel);
-          pld.IsDeleted = true;
-        }
-
-        // Otherwise, remove a nested picklist entry definition...
-        else if (parentNode.DefinitionVM?.Definition is IPicklistEntryDefinitionContainer pCont && vm.Definition is LorePicklistEntryDefinition pled)
-        {
-          pCont.entries.Remove(pled);
-          pled.IsDeleted = true;
-        }
-
-        // or a nested field definition 
-        else if (parentNode.DefinitionVM?.Definition is IFieldDefinitionContainer nestedFCont && nestedFCont.HasFields && vm.Definition is LoreFieldDefinition fd)
-        {
-          nestedFCont.fields.Remove(fd);
-          fd.IsDeleted = true;
-        }
-
-
-        parentNode.RemoveChild(this);
-
-        SettingsRefresher.Apply(LoreDefinitionViewModel.CurrentSettingsViewModel);
-      }
-    });
   }
 
-  public void GoToNodeOfDefinition(LoreDefinitionBase definition) => LoreDefinitionViewModel.CurrentSettingsViewModel.GoToNodeOfDefinition(definition);
+  public void GoToNodeOfDefinition(LoreDefinitionBase definition) => DefinitionVM.CurrentSettingsViewModel.GoToNodeOfDefinition(definition);
 
   public void AddChild(DefinitionTreeNodeViewModel child)
   {
@@ -361,8 +227,6 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
 
   public void BuildChildren()
   {
-    if (DefinitionVM == null)
-      return;
 
     if (DefinitionVM.Definition is IFieldDefinitionContainer ifcont)
     {
@@ -374,16 +238,16 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
         if (DefinitionVM.Fields != null)
         {
           foreach (var f in DefinitionVM.Fields)
-            AddChild(new DefinitionTreeNodeViewModel(f));
+            AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, f));
         }
       }
       else
       {
-        var fieldGroup = new DefinitionTreeNodeViewModel(FieldGroupName, addType: typeof(LoreFieldDefinition));
+        var fieldGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.FieldGroupingNode, CurrentSettingsVM, DefinitionVM);
         if (DefinitionVM.Fields != null)
         {
           foreach (var f in DefinitionVM.Fields)
-            fieldGroup.AddChild(new DefinitionTreeNodeViewModel(f));
+            fieldGroup.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, f));
         }
         AddChild(fieldGroup);
       }
@@ -391,22 +255,22 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
 
     if (DefinitionVM.Definition is ISectionDefinitionContainer iscont)
     {
-      var sectionGroup = new DefinitionTreeNodeViewModel(SectionGroupName, addType: typeof(LoreSectionDefinition));
+      var sectionGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.SectionGroupingNode, CurrentSettingsVM, DefinitionVM);
       if (DefinitionVM.Sections != null)
       {
         foreach (var s in DefinitionVM.Sections)
-          sectionGroup.AddChild(new DefinitionTreeNodeViewModel(s));
+          sectionGroup.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.SectionDefinitionNode, CurrentSettingsVM, s));
       }
       AddChild(sectionGroup);
     }
 
     if (DefinitionVM.Definition is ICollectionDefinitionContainer iccont)
     {
-      var colGroup = new DefinitionTreeNodeViewModel(CollectionGroupName, addType: typeof(LoreCollectionDefinition));
+      var colGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionGroupingNode, CurrentSettingsVM, DefinitionVM);
       if (DefinitionVM.Sections != null)
       {
         foreach (var c in DefinitionVM.Collections)
-          colGroup.AddChild(new DefinitionTreeNodeViewModel(c));
+          colGroup.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, CurrentSettingsVM, c));
       }
       AddChild(colGroup);
     }
@@ -414,11 +278,11 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
 
     if (DefinitionVM.Definition is IEmbeddedNodeDefinitionContainer iecont)
     {
-      var embedGroup = new DefinitionTreeNodeViewModel(EmbeddedNodsGroupName, addType: typeof(LoreEmbeddedNodeDefinition));
+      var embedGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.EmbeddedNodeGroupingNode, CurrentSettingsVM, DefinitionVM);
       if (DefinitionVM.EmbeddedNodes != null)
       {
         foreach (var e in DefinitionVM.EmbeddedNodes)
-          embedGroup.AddChild(new DefinitionTreeNodeViewModel(e));
+          embedGroup.AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.EmbeddedNodeDefinitionNode, CurrentSettingsVM, e));
       }
       AddChild(embedGroup);
     }
@@ -426,23 +290,157 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
     // Handle locally defined collection definition
     if(DefinitionVM is CollectionDefinitionViewModel cdvm && cdvm.IsUsingLocalCollectionDef)
     {
-      AddChild(new DefinitionTreeNodeViewModel(cdvm.ContainedTypeVM));
+      AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode,CurrentSettingsVM, cdvm.ContainedTypeVM));
     }
 
     if (DefinitionVM.Definition is IPicklistEntryDefinitionContainer ipcont && ipcont.HasEntries)
     {
       foreach (var p in DefinitionVM.PicklistEntries)
       {
-        AddChild(new DefinitionTreeNodeViewModel(p));
+        AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.PicklistEntryDefinitionNode, CurrentSettingsVM, p));
       }
     }
   }
 
   internal void RefreshTreeNode()
   {
+    // When a definition is added or deleted, that one definition (model), its viewmodel, and the tree node view model are deleted (in LoreSettingsViewModel).
+    // But that does not delete inherited versions of that definition (where it applies).
+    // Example, We have a base Type Being, and a subtype Character. If we delete field Appearance on Being in the settings editor dialog, this won't delete the Appearance
+    // field on Character type -- the Field definition on the Character type will be marked as deleted on its WasDeleted boolean property -- during this check (RefreshTreeNode),
+    // if a node with a definition has been found with WasDeleted true, it will remove the definition view model and tree node.
 
     // If this is a grouping node, we need to ensure this group contains the correct nodes for the corresponding contained fields on the definition model.
     // i.e. if this is a field grouping node under a type node, we need to make sure this grouping of fields isn't missing any fields on the parent or that it doesn't contain extra fields
+
+    // Handle additions/deletions for grouping nodes.
+    if (IsGroupNode)
+    {
+      // Handle deletions
+      for (int i = Children.Count() - 1; i >= 0; i--)
+      {
+        DefinitionTreeNodeViewModel dtnvm = Children[i];
+        if(dtnvm.DefinitionVM != null && dtnvm.DefinitionVM.Definition.WasDeleted)
+        {
+          switch (dtnvm.DefinitionVM)
+          {
+            case FieldDefinitionViewModel fdvmToDel:
+              DefinitionVM.Fields.Remove(fdvmToDel);
+              break;
+            case SectionDefinitionViewModel sdvmToDel:
+              DefinitionVM.Sections.Remove(sdvmToDel);
+              break;
+            case CollectionDefinitionViewModel cdvmToDel:
+              DefinitionVM.Collections.Remove(cdvmToDel);
+              break;
+            case EmbeddedNodeDefinitionViewModel endvmToDel:
+              DefinitionVM.EmbeddedNodes.Remove(endvmToDel);
+              break;
+          }
+
+          Children.Remove(dtnvm);
+        }
+      }
+
+      // Handle additions
+      ObservableCollection<LoreDefinitionViewModel> listToCheck;
+      Type typeToAdd;
+      switch (TreeNodeType)
+      {
+        case ETreeNodeType.FieldGroupingNode:
+          for (int i = 0; i < DefinitionVM.Fields.Count(); i++)
+          {
+            FieldDefinitionViewModel fdvmToAdd = DefinitionVM.Fields[i];
+            if (!Children.Any(node => node.DefinitionVM as FieldDefinitionViewModel == fdvmToAdd))
+            {
+              InsertChild(i, new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, fdvmToAdd));
+            }
+          }
+          break;
+        case ETreeNodeType.SectionGroupingNode:
+          for (int i = 0; i < DefinitionVM.Sections.Count(); i++)
+          {
+            SectionDefinitionViewModel sdvmToAdd = DefinitionVM.Sections[i];
+            if (!Children.Any(node => node.DefinitionVM as SectionDefinitionViewModel == sdvmToAdd))
+            {
+              InsertChild(i, new DefinitionTreeNodeViewModel(ETreeNodeType.SectionDefinitionNode, CurrentSettingsVM, sdvmToAdd));
+            }
+          }
+          break;
+        case ETreeNodeType.CollectionGroupingNode:
+          for (int i = 0; i < DefinitionVM.Collections.Count(); i++)
+          {
+            CollectionDefinitionViewModel cdvmToAdd = DefinitionVM.Collections[i];
+            if (!Children.Any(node => node.DefinitionVM as CollectionDefinitionViewModel == cdvmToAdd))
+            {
+              InsertChild(i, new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, CurrentSettingsVM, cdvmToAdd));
+            }
+          }
+          break;
+        case ETreeNodeType.EmbeddedNodeGroupingNode:
+          for (int i = 0; i < DefinitionVM.EmbeddedNodes.Count(); i++)
+          {
+            EmbeddedNodeDefinitionViewModel endvmToAdd = DefinitionVM.EmbeddedNodes[i];
+            if (!Children.Any(node => node.DefinitionVM as EmbeddedNodeDefinitionViewModel == endvmToAdd))
+            {
+              InsertChild(i, new DefinitionTreeNodeViewModel(ETreeNodeType.EmbeddedNodeDefinitionNode, CurrentSettingsVM, endvmToAdd));
+            }
+          }
+          break;
+      }
+    }
+
+
+    // Now handle non-grouping nodes (ie picklist and picklist definition nodes, and fields with nested fields
+    if(TreeNodeType == ETreeNodeType.FieldDefinitionNode && DefinitionVM is FieldDefinitionViewModel fdvm && fdvm.Style == EFieldStyle.NestedValues)
+    {
+      // Handle deletions
+      for (int i = Children.Count() - 1; i >= 0; i--)
+      {
+        DefinitionTreeNodeViewModel fieldNodeToDel = Children[i];
+        if (fieldNodeToDel.DefinitionVM != null && fieldNodeToDel.DefinitionVM.Definition.WasDeleted)
+        {
+          DefinitionVM.Fields.Remove(fieldNodeToDel.DefinitionVM as FieldDefinitionViewModel);
+          Children.Remove(fieldNodeToDel);
+        }
+      }
+
+      // Handle additions
+      for(int i = 0; i < DefinitionVM.Fields.Count(); i++)
+      {
+        FieldDefinitionViewModel fieldDefToAdd = DefinitionVM.Fields[i];
+        if (!Children.Any(node => node.DefinitionVM as FieldDefinitionViewModel == fieldDefToAdd))
+        {
+          InsertChild(i, new DefinitionTreeNodeViewModel(ETreeNodeType.FieldDefinitionNode, CurrentSettingsVM, fieldDefToAdd));
+        }
+      }
+    }
+    else if(TreeNodeType == ETreeNodeType.PicklistDefinitionNode || TreeNodeType == ETreeNodeType.PicklistEntryDefinitionNode)
+    {
+      // Handle deletions
+      for (int i = Children.Count() - 1; i >= 0; i--)
+      {
+        DefinitionTreeNodeViewModel picklistEntryToDel = Children[i];
+        if (picklistEntryToDel.DefinitionVM != null && picklistEntryToDel.DefinitionVM.Definition.WasDeleted)
+        {
+          DefinitionVM.PicklistEntries.Remove(picklistEntryToDel.DefinitionVM as PicklistEntryDefinitionViewModel);
+          Children.Remove(picklistEntryToDel);
+        }
+      }
+
+      // Handle additions
+      for (int i = 0; i < DefinitionVM.PicklistEntries.Count(); i++)
+      {
+        PicklistEntryDefinitionViewModel picklistEntryToAdd = DefinitionVM.PicklistEntries[i];
+        if (!Children.Any(node => node.DefinitionVM as PicklistEntryDefinitionViewModel == picklistEntryToAdd))
+        {
+          InsertChild(i, new DefinitionTreeNodeViewModel(ETreeNodeType.PicklistEntryDefinitionNode, CurrentSettingsVM, picklistEntryToAdd));
+        }
+      }
+    }
+
+    /*
+
 
     // Parent in this case is the preceeding node in the tree, which should hold the type or section or whatever definition -- unless it's a ROOT grouping node
     if (this.IsGroupNode && Parent != null && Parent.DefinitionVM != null)
@@ -477,7 +475,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
             // Do some reordering, keeping the order the SAME as the model-level list of fields.
             // This prevents 'duplicate' nodes from being created by the code below because I'm dumb
             var nodeOfName = Children.FirstOrDefault(node => node.DefinitionVM.Definition == curFieldModel);
-            if(nodeOfName != null && Children.IndexOf(nodeOfName) != i)
+            if (nodeOfName != null && Children.IndexOf(nodeOfName) != i)
             {
               Children.Move(Children.IndexOf(nodeOfName), i);
             }
@@ -593,7 +591,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
           }
         }
       }
-      else if (GroupName == EmbeddedNodsGroupName)
+      else if (GroupName == EmbeddedNodesGroupName)
       {
         IEmbeddedNodeDefinitionContainer curContainingEmbeddedContainerModel = curContainingModel as IEmbeddedNodeDefinitionContainer;
 
@@ -683,6 +681,7 @@ public class DefinitionTreeNodeViewModel : ReactiveObject
         }
       }
     }
+    */
 
     if (DefinitionVM != null)
       DefinitionVM.RefreshUI();

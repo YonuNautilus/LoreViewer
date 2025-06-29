@@ -28,7 +28,7 @@ public partial class SettingsEditDialog : Window
 
     var vm = new LoreSettingsViewModel(settings);
     vm.SetView(this);
-    LoreDefinitionViewModel.CurrentSettingsViewModel = vm;
+    //LoreDefinitionViewModel.CurrentSettingsViewModel = vm;
     this.DataContext = vm;
 
     var source = DefinitionTreeDataGridBuilder.BuildTreeSource(vm.TreeRootNodes);
@@ -182,7 +182,7 @@ public static class DefinitionTreeDataGridBuilder
                   Padding = new Thickness(-5),
                   [!Button.IsEnabledProperty] = new Binding("CanDelete")
                 };
-                deleteButton.Bind(Button.CommandProperty, new Binding(nameof(node.DeleteCommand)));
+                deleteButton.Bind(Button.CommandProperty, new Binding(nameof(node.DeleteDefinitionCommand)));
 
                 ToolTip.SetTip(deleteButton, "Delete this definition");
 

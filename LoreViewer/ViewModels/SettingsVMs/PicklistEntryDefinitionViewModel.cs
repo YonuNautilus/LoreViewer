@@ -24,7 +24,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public LorePicklistEntryDefinition pickEntryDef => Definition as LorePicklistEntryDefinition;
 
 
-    public PicklistEntryDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase)
+    public PicklistEntryDefinitionViewModel(LoreDefinitionBase definitionBase, LoreSettingsViewModel curSettingsVM) : base(definitionBase, curSettingsVM)
     {
 
     }
@@ -43,17 +43,17 @@ namespace LoreViewer.ViewModels.SettingsVMs
       return null;
     }
 
-    private void RefreshPicklists()
+    private void BuildPicklists()
     {
       m_cEntries.Clear();
       if (pickEntryDef.HasEntries)
         foreach (var pl in pickEntryDef.entries)
-          m_cEntries.Add(new PicklistEntryDefinitionViewModel(pl));
+          m_cEntries.Add(new PicklistEntryDefinitionViewModel(pl, CurrentSettingsViewModel));
     }
 
-    public override void RefreshLists()
+    public override void BuildLists()
     {
-      RefreshPicklists();
+      BuildPicklists();
     }
 
 

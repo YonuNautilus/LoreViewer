@@ -72,7 +72,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public ObservableCollection<TypeDefinitionViewModel> TypesFromSettings { get => CurrentSettingsViewModel.Types; }
 
-    public EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase) : base(definitionBase)
+    public EmbeddedNodeDefinitionViewModel(LoreDefinitionBase definitionBase, LoreSettingsViewModel curSettingsVM) : base(definitionBase, curSettingsVM)
     {
       if (CurrentSettingsViewModel != null && embDef != null && embDef.nodeType == null)
         embDef.nodeType = CurrentSettingsViewModel.Types.FirstOrDefault()?.Definition as LoreTypeDefinition;
@@ -96,7 +96,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       base.RefreshUI();
     }
 
-    public override void RefreshLists()
+    public override void BuildLists()
     {
 
     }

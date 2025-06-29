@@ -137,7 +137,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
-    public FieldDefinitionViewModel(LoreFieldDefinition defintion) : base(defintion)
+    public FieldDefinitionViewModel(LoreFieldDefinition defintion, LoreSettingsViewModel curSettingsVM) : base(defintion, curSettingsVM)
     {
       ClearUsedPicklistConstraintCommand = ReactiveCommand.Create(ClearUsedPicklistConstraint);
     }
@@ -152,10 +152,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
       m_cFields.Clear();
       if (fieldDef.fields != null)
         foreach (LoreFieldDefinition def in fieldDef.fields)
-          m_cFields.Add(new FieldDefinitionViewModel(def));
+          m_cFields.Add(new FieldDefinitionViewModel(def, CurrentSettingsViewModel));
     }
 
-    public override void RefreshLists()
+    public override void BuildLists()
     {
       RefreshFieldDefs();
     }

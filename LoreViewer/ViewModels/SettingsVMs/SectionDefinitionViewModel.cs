@@ -23,9 +23,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public override ObservableCollection<SectionDefinitionViewModel> Sections => null;
     public override ObservableCollection<FieldDefinitionViewModel> Fields => null;
     public LoreDefinitionViewModel CurrentlySelectedDefinition { get; set; }
-    public SectionDefinitionViewModel(LoreSectionDefinition definition) : base(definition) { }
+    public SectionDefinitionViewModel(LoreSectionDefinition definition, LoreSettingsViewModel curSettingsVM) : base(definition, curSettingsVM) { }
 
-    public override void RefreshLists()
+    public override void BuildLists()
     {
 
     }

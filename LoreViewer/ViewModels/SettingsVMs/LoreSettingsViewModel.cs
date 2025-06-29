@@ -1,13 +1,16 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
+using DocumentFormat.OpenXml.Bibliography;
 using LoreViewer.Dialogs;
 using LoreViewer.Settings;
+using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mime;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -21,6 +24,23 @@ namespace LoreViewer.ViewModels.SettingsVMs;
 /// </summary>
 public class LoreSettingsViewModel : ViewModelBase
 {
+  private class NewNameTracker
+  {
+    private int number = 1;
+    private string prefix = string.Empty;
+    public NewNameTracker(string namePrefix) { prefix = namePrefix; }
+
+    public string GetName() => $"{prefix}_{number++}";
+  }
+
+  private NewNameTracker tpyeNamer = new NewNameTracker("NewType");
+  private NewNameTracker fieldNamer = new NewNameTracker("NewField");
+  private NewNameTracker sectionNamer = new NewNameTracker("NewSection");
+  private NewNameTracker collectionNamer = new NewNameTracker("NewCollection");
+  private NewNameTracker embeddedNamer = new NewNameTracker("NewEmbedded");
+  private NewNameTracker picklistNamer = new NewNameTracker("NewPicklist");
+  private NewNameTracker picklistEntryNamer = new NewNameTracker("NewPicklistEntry");
+
   protected Visual m_oView;
   public void SetView(Visual visual) => m_oView = visual;
 
@@ -159,6 +179,16 @@ public class LoreSettingsViewModel : ViewModelBase
 
   public ObservableCollection<DefinitionTreeNodeViewModel> TreeRootNodes { get; set; } = new ObservableCollection<DefinitionTreeNodeViewModel>();
 
+  /// <summary>
+  /// Creates the LoreSettingsViewModel for the input LoreSettings object.
+  /// This creates definition view models for all definitions in the settings and the root grouping nodes for the DataTreeGrid.
+  /// Because those two processes are recursive, the entire structure for both definition view models and tree node view models is created.
+  /// 
+  /// 1. for each type, collection, or picklist defined in the settings, create a viewmodel for it.
+  /// 2. That calls the DefinitionViewModel base constructor, which calls the BuildList method overriden on all definitionVM classes, creating viewmodels for all of its contained definitions.
+  /// 3. after each type, collection, or picklist view model has been created, create a new DefinitionTreeNodeViewModel with it, which will create nodes for all of the newly created definition view models as well.
+  /// </summary>
+  /// <param name="_settings">The LoreSettings object this View Model is built for.</param>
   public LoreSettingsViewModel(LoreSettings _settings)
   { 
     m_oLoreSettings = _settings;
@@ -166,29 +196,29 @@ public class LoreSettingsViewModel : ViewModelBase
     SaveSettingsWithCompareCommand = ReactiveCommand.CreateFromTask(SaveSettingsAsync);
     SaveSettingsCommand = ReactiveCommand.Create(SaveSettings);
 
-    var typesGroup = new DefinitionTreeNodeViewModel("Types", this, typeof(LoreTypeDefinition));
+    var typesGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.RootTypeGroupingNode, this);
     foreach (var type in m_oLoreSettings.types)
     {
-      var typeVM = new TypeDefinitionViewModel(type);
-      var node = new DefinitionTreeNodeViewModel(typeVM);
+      var typeVM = new TypeDefinitionViewModel(type, this);
+      var node = new DefinitionTreeNodeViewModel(ETreeNodeType.TypeDefinitionNode, this, typeVM);
       Types.Add(typeVM);
       typesGroup.AddChild(node);
     }
 
-    var collectionsGroup = new DefinitionTreeNodeViewModel("Collections", this, typeof(LoreCollectionDefinition));
+    var collectionsGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.RootCollectionGroupingNode, this);
     foreach (var collection in m_oLoreSettings.collections)
     {
-      var colVM = new CollectionDefinitionViewModel(collection);
-      var node = new DefinitionTreeNodeViewModel(colVM);
+      var colVM = new CollectionDefinitionViewModel(collection, this);
+      var node = new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, this, colVM);
       Collections.Add(colVM);
       collectionsGroup.AddChild(node);
     }
 
-    var picklistGroup = new DefinitionTreeNodeViewModel("Picklists", this, typeof(LorePicklistEntryDefinition));
+    var picklistGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.RootPicklistGroupingNode, this);
     foreach (var picklist in m_oLoreSettings.picklists)
     {
-      var pickVM = new PicklistDefinitionViewModel(picklist);
-      var node = new DefinitionTreeNodeViewModel(pickVM);
+      var pickVM = new PicklistDefinitionViewModel(picklist, this);
+      var node = new DefinitionTreeNodeViewModel(ETreeNodeType.PicklistDefinitionNode, this, pickVM);
       Picklists.Add(pickVM);
       picklistGroup.AddChild(node);
     }
@@ -198,22 +228,6 @@ public class LoreSettingsViewModel : ViewModelBase
     TreeRootNodes.Add(picklistGroup);
 
     RefreshYAMLComparison();
-  }
-
-  public static LoreDefinitionViewModel CreateViewModel(LoreDefinitionBase def)
-  {
-    switch (def)
-    {
-      case LoreTypeDefinition typeDef:
-        return new TypeDefinitionViewModel(typeDef);
-      case LoreFieldDefinition fieldDef:
-        return new FieldDefinitionViewModel(fieldDef);
-      case LoreSectionDefinition secDef:
-        return new SectionDefinitionViewModel(secDef);
-      case LoreCollectionDefinition colDef:
-        return new CollectionDefinitionViewModel(colDef);
-      default: return null;
-    }
   }
 
   private void SaveSettings()
@@ -262,6 +276,63 @@ public class LoreSettingsViewModel : ViewModelBase
     {
       nodeVM.RefreshTreeNode();
     }
+  }
+
+
+  /// <summary>
+  /// Central logic for adding a new definition to the settings model.
+  /// Depending on the node type of the input tree node (the one on which the button was clicked),
+  /// this method will add a new definition of the proper type to the correct definition
+  /// </summary>
+  /// <param name="treeVM"></param>
+  internal void AddDefinition(DefinitionTreeNodeViewModel treeVM)
+  {
+    switch (treeVM.TreeNodeType)
+    {
+      case ETreeNodeType.RootTypeGroupingNode:
+        m_oLoreSettings.types.Add(new LoreTypeDefinition { name = tpyeNamer.GetName() });
+        return;
+      case ETreeNodeType.RootCollectionGroupingNode:
+        m_oLoreSettings.collections.Add(new LoreCollectionDefinition { name = collectionNamer.GetName() });
+        return;
+      case ETreeNodeType.RootPicklistGroupingNode:
+        m_oLoreSettings.picklists.Add(new LorePicklistDefinition { name = picklistEntryNamer.GetName() });
+        return;
+
+      case ETreeNodeType.FieldGroupingNode:
+        (treeVM.Parent.DefinitionVM.Definition as IFieldDefinitionContainer).AddField(new LoreFieldDefinition { name = fieldNamer.GetName() });
+        return;
+      case ETreeNodeType.SectionGroupingNode:
+        (treeVM.Parent.DefinitionVM.Definition as ISectionDefinitionContainer).AddSection(new LoreSectionDefinition { name = sectionNamer.GetName() });
+        return;
+      case ETreeNodeType.CollectionGroupingNode:
+        (treeVM.Parent.DefinitionVM.Definition as ICollectionDefinitionContainer).AddCollection(new LoreCollectionDefinition { name = collectionNamer.GetName() });
+        return;
+      case ETreeNodeType.EmbeddedNodeGroupingNode:
+        (treeVM.Parent.DefinitionVM.Definition as IEmbeddedNodeDefinitionContainer).AddEmbedded(new LoreEmbeddedNodeDefinition { name = embeddedNamer.GetName() });
+        return;
+
+      case ETreeNodeType.FieldDefinitionNode:
+        (treeVM.DefinitionVM.Definition as IFieldDefinitionContainer).AddField(new LoreFieldDefinition { name = fieldNamer.GetName() });
+        return;
+      case ETreeNodeType.PicklistEntryDefinitionNode:
+      case ETreeNodeType.PicklistDefinitionNode:
+        (treeVM.DefinitionVM.Definition as IPicklistEntryDefinitionContainer).AddPicklistDefinition(new LorePicklistEntryDefinition { name = picklistEntryNamer.GetName() });
+        return;
+      default:
+        throw new Exception($"CANNOT ADD A NEW DEFINITION TO THIS DEFINITION: {treeVM.DefinitionVM?.Name}");
+    }
+  }
+
+  /// <summary>
+  /// Central logic for deleting an existing definition from the settings model.
+  /// Depending on the node type of the input tree node, this method will remove the
+  /// definition from its containing definition, or from the settings itself if its a globally defined definition
+  /// </summary>
+  /// <param name="definitionTreeNodeViewModel"></param>
+  internal void DeleteDefinition(DefinitionTreeNodeViewModel definitionTreeNodeViewModel)
+  {
+    
   }
 }
 

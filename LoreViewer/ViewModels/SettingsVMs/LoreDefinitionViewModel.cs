@@ -1,14 +1,27 @@
 ﻿using LoreViewer.Settings;
 using ReactiveUI;
 using System;
+using System.Collections.ObjectModel;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
-  public abstract class LoreDefinitionViewModel : LoreSettingsObjectViewModel
+  /// <summary>
+  /// A view model for a node of the TreeDataGrid in the Lore settings editor dialog.
+  /// Exposes common properties on the contained DefinitionViewModel, like name and inheritance.
+  /// </summary>
+  public abstract class LoreDefinitionViewModel : ViewModelBase
   {
-    public static LoreSettingsViewModel CurrentSettingsViewModel { get; set; }
+    public abstract ObservableCollection<TypeDefinitionViewModel> Types { get; }
+    public abstract ObservableCollection<FieldDefinitionViewModel> Fields { get; }
+    public abstract ObservableCollection<SectionDefinitionViewModel> Sections { get; }
+    public abstract ObservableCollection<CollectionDefinitionViewModel> Collections { get; }
+    public abstract ObservableCollection<EmbeddedNodeDefinitionViewModel> EmbeddedNodes { get; }
+    public abstract ObservableCollection<PicklistDefinitionViewModel> Picklists { get; }
+    public abstract ObservableCollection<PicklistEntryDefinitionViewModel> PicklistEntries { get; }
 
-    public LoreSettingsViewModel CurrentSettingsVM => CurrentSettingsViewModel;
+
+    public LoreDefinitionBase Definition { get; }
+    public LoreSettingsViewModel CurrentSettingsViewModel { get; }
 
     public Guid UniqueID { get => Guid.NewGuid(); }
 
@@ -100,13 +113,17 @@ namespace LoreViewer.ViewModels.SettingsVMs
       //SettingsRefresher.Apply(CurrentSettingsViewModel);
     }
 
-    protected LoreDefinitionViewModel(LoreDefinitionBase definitionBase)
+    protected LoreDefinitionViewModel(LoreDefinitionBase definitionBase, LoreSettingsViewModel currentSettingsVM)
     {
+      CurrentSettingsViewModel = currentSettingsVM;
+
       Definition = definitionBase;
 
       if(definitionBase != null)
-        RefreshLists();
+        BuildLists();
     }
+
+    public virtual void BuildLists() { }
 
     public override string ToString() => Definition != null ? $"VM of {Definition}" : Name;
   }

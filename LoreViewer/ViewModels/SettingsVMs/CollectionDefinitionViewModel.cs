@@ -158,19 +158,19 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public LoreTypeDefinition EntryType { get => colDef.ContainedType as LoreTypeDefinition; }
 
-    public CollectionDefinitionViewModel(LoreCollectionDefinition definition) : base(definition)
+    public CollectionDefinitionViewModel(LoreCollectionDefinition definition, LoreSettingsViewModel curSettingsVM) : base(definition, curSettingsVM)
     {
       AddLocalCollectionCommand = ReactiveCommand.Create(CreateNewLocalCollection);
       if (colDef.IsUsingLocallyDefinedCollection)
       {
-        var newVM = new CollectionDefinitionViewModel(colDef.entryCollection);
+        var newVM = new CollectionDefinitionViewModel(colDef.entryCollection, curSettingsVM);
         locallyDefinedCollectionVM = newVM;
         ContainedTypeVM = newVM;
       }
 
       //Default to a type (ie node) collection if no contained type is specified
       if (ContainedType == null)
-        definition.SetContainedType(CurrentSettings.types.FirstOrDefault());
+        definition.SetContainedType(CurrentSettingsViewModel.m_oLoreSettings.types.FirstOrDefault());
 
       RevertContainedTypeCommand = ReactiveCommand.Create(() =>
       {
@@ -204,7 +204,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public void UseNewCollectionDefinition(LoreCollectionDefinition newColDef)
     {
-      var newVM = new CollectionDefinitionViewModel(newColDef);
+      var newVM = new CollectionDefinitionViewModel(newColDef, CurrentSettingsViewModel);
       locallyDefinedCollectionVM = newVM;
       ContainedTypeVM = newVM;
 
