@@ -311,7 +311,7 @@ public class LoreSettingsViewModel : ViewModelBase
         TreeRootNodes[1].AddChild(new DefinitionTreeNodeViewModel(ETreeNodeType.CollectionDefinitionNode, this, newColVM));
         break;
       case ETreeNodeType.RootPicklistGroupingNode:
-        LorePicklistDefinition newPickDef = new LorePicklistDefinition { name = picklistEntryNamer.GetName() };
+        LorePicklistDefinition newPickDef = new LorePicklistDefinition { name = picklistNamer.GetName() };
         m_oLoreSettings.picklists.Add(newPickDef);
         PicklistDefinitionViewModel newPickVM = new PicklistDefinitionViewModel(newPickDef, this);
         Picklists.Add(newPickVM);

@@ -12,7 +12,7 @@
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="3*"/>
-      <ColumnDefinition Width="3*"/>
+      <ColumnDefinition Width="300"/>
       <ColumnDefinition Width="Auto"/>
     </Grid.ColumnDefinitions>
 
@@ -32,7 +32,7 @@
         <RowDefinition Height="Auto"/>  
       </Grid.RowDefinitions>
       
-      <ContentControl x:Name="DefView" Grid.Row="0" Content="{Binding SelectedDefinition}">
+      <ContentControl x:Name="DefView" Grid.Row="0" Content="{Binding SelectedDefinition}" HorizontalAlignment="Stretch">
         <ContentControl.DataTemplates>
           <DataTemplate DataType="{x:Type vm:TypeDefinitionViewModel}">
             <defViews:TypeDefinitionViewPanel x:Name="TypeView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
@@ -70,12 +70,12 @@
 
             <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
               <Label>Markdown Extensions:</Label>
-              <TextBox AcceptsReturn="True" Text="{Binding MarkdownExtensions}" />
+              <TextBox AcceptsReturn="True" Text="{Binding MarkdownExtensions}" Height="60"/>
             </StackPanel>
 
             <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
               <Label>Blocked Paths:</Label>
-              <TextBox AcceptsReturn="True" Text="{Binding BlockedPaths}" />
+              <TextBox AcceptsReturn="True" Text="{Binding BlockedPaths}" Height="60"/>
             </StackPanel>
 
           </Grid>

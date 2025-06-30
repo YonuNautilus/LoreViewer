@@ -152,7 +152,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       // Fields
       if(Definition is IFieldDefinitionContainer ifdc && ifdc.HasFields)
       {
-        // Check for additions
+        // Check for deletions
         for(int i = Fields.Count - 1; i >= 0; i--)
         {
           FieldDefinitionViewModel lfd = Fields[i];
@@ -176,7 +176,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       // Sections
       if(Definition is ISectionDefinitionContainer isdc && isdc.HasSections)
       {
-        // Check for additions
+        // Check for deletions
         for(int i = Sections.Count - 1; i >= 0; i--)
         {
           SectionDefinitionViewModel lsd = Sections[i];
@@ -200,7 +200,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       // Collections
       if(Definition is ICollectionDefinitionContainer icdc && icdc.HasCollections)
       {
-        // Check for additions
+        // Check for deletions
         for(int i = Collections.Count - 1; i >= 0; i--)
         {
           CollectionDefinitionViewModel lcd = Collections[i];
@@ -224,7 +224,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       // EmbeddedNodes
       if(Definition is IEmbeddedNodeDefinitionContainer iedc && iedc.HasNestedNodes)
       {
-        // Check for additions
+        // Check for deletions
         for(int i = EmbeddedNodes.Count - 1; i >= 0; i--)
         {
           EmbeddedNodeDefinitionViewModel led = EmbeddedNodes[i];
@@ -245,6 +245,27 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
 
 
+      if(Definition is IPicklistEntryDefinitionContainer ipedc && ipedc.HasEntries)
+      {
+        // Check for deletions
+        for(int i = PicklistEntries.Count - 1; i >= 0; i--)
+        {
+          PicklistEntryDefinitionViewModel pledvm = PicklistEntries[i];
+          if (pledvm.Definition.WasDeleted) PicklistEntries.Remove(pledvm);
+        }
+
+        // Check for additions
+        for (int i = ipedc.entries.Count - 1; i >= 0; i--)
+        {
+          LorePicklistEntryDefinition ple = ipedc.entries[i];
+          if(!PicklistEntries.Any(plevm => plevm.Definition == ple))
+            PicklistEntries.Insert(i, new PicklistEntryDefinitionViewModel(ple, CurrentSettingsViewModel));
+        }
+
+        // propagate refresh down to picklist entry childre
+        foreach (PicklistEntryDefinitionViewModel pledvm in PicklistEntries)
+          pledvm.RefreshChildren();
+      }
 
 
 

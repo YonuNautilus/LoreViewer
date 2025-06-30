@@ -1,4 +1,5 @@
-﻿using LoreViewer.LoreElements;
+﻿using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
+using LoreViewer.LoreElements;
 using LoreViewer.Settings;
 using System;
 using System.IO;
@@ -24,6 +25,8 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     }
   }
 
+
+  #region Nodes
   public abstract class LoreNodeParsingException : LoreParsingException
   {
     public LoreNodeParsingException(string filePath, int blockIndex, int lineNumber, string msg)
@@ -89,7 +92,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     public UnexpectedSectionNameException(string filePath, int blockIndex, int lineNumber, string headingTitle, string subHeadingTitle)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, subHeadingTitle, lineNumber)) { }
   }
-
+  #endregion
 
   /*
    LoreAttributeParsingException
@@ -98,11 +101,12 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
 │   ├── UnexpectedFlatValueException
 │   └── UnexpectedMultiStructureException
    */
+
+  #region Attributes
   public abstract class LoreAttributeParsingException : LoreParsingException
   {
     public LoreAttributeParsingException(string filePath, int blockIndex, int lineNumber, string msg)
       : base(filePath, blockIndex, lineNumber, msg) { }
-
   }
 
   public class UnexpectedFieldNameException : LoreAttributeParsingException
@@ -119,7 +123,17 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, attributeName)) { }
   }
 
-  public class LoreCollectionParsingException : LoreParsingException
+  public class AttributeNotValidPicklistOptionException : LoreAttributeParsingException
+  {
+    static string msgBase = "Attribute '{0}' is defined by a Picklist-type field using picklist '{2}'. The attribute's value {1} was not found in picklist '{2}'";
+    public AttributeNotValidPicklistOptionException(string filePath, int blockIndex, int lineNumber, LoreAttribute attribute, LoreFieldDefinition field, string badValue) :
+      base(filePath, blockIndex, lineNumber, string.Format(msgBase, attribute.Name, badValue, field.PicklistBranchConstraint?.name ?? field.Picklist.name))
+    { }
+  }
+  #endregion
+
+  #region Collections
+  public abstract class LoreCollectionParsingException : LoreParsingException
   {
     public LoreCollectionParsingException(string filePath, int blockIndex, int lineNumber, string msg)
       : base(filePath, blockIndex, lineNumber, msg) { }
@@ -152,8 +166,9 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     public CollectionWithUnknownTypeException(string filePath, int blockIndex, int lineNumber, string type)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, type)) { }
   }
+  #endregion
 
-
+  #region Embedded Nodes
   public abstract class EmbeddedNodeParsingException : LoreParsingException
   {
     public EmbeddedNodeParsingException(string filePath, int blockIndex, int lineNumber, string msg)
@@ -174,4 +189,6 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     public EmbeddedNodeAlreadyAddedException(string filePath, int blockIndex, int lineNumber, LoreNode parentNode, LoreTypeDefinition newNodeType, string newNodeTitle)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, newNodeType, newNodeType.name, parentNode.Name, parentNode.Definition.name)) { }
   }
+
+  #endregion
 }

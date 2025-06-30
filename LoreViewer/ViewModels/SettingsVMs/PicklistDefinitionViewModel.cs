@@ -54,6 +54,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
       return null;
     }
 
+    public override void RefreshUI()
+    {
+      
+    }
+
     private void RefreshPicklists()
     {
       m_cEntries.Clear();
