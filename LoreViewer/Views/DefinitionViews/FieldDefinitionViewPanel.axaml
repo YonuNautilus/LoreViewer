@@ -29,10 +29,10 @@
 
     <Label Grid.Row="1" Grid.Column="0" Content="Style" />
     <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" ToolTip.Tip="{Binding TooltipText}">
-      <ComboBox IsEnabled="{Binding CanEditStyle}" ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding Style}" Tag="{Binding}" x:Name="FieldStyleCombobox" >
+      <ComboBox IsEnabled="{Binding CanEditStyle}" ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding SelectedFieldStyle}" >
         <ComboBox.ItemTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding Path=Style Converter={StaticResource EnumConverter}}" />
+            <TextBlock Text="{Binding Path=Style, Converter={StaticResource EnumConverter}}" IsVisible="{Binding IsAllowed}" IsHitTestVisible="{Binding IsAllowed}"/>
           </DataTemplate>
         </ComboBox.ItemTemplate>
       </ComboBox>
@@ -40,7 +40,7 @@
     
     <Label Grid.Row="2" Content="Picklist"  IsVisible="{Binding IsPicklistFieldStyle}"/>
     <Panel Grid.Row="2" Grid.Column="1" IsVisible="{Binding IsPicklistFieldStyle}">
-      <ComboBox IsEnabled="{Binding IsPicklistFieldStyle}" ItemsSource="{Binding Picklists}" SelectedItem="{Binding Picklist}">
+      <ComboBox IsEnabled="{Binding IsNotInherited}" ItemsSource="{Binding Picklists}" SelectedItem="{Binding Picklist}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Name}" />
@@ -51,7 +51,7 @@
     
     <Label Grid.Row="3" Content="Picklist Branch Restriction  "  IsVisible="{Binding HasPicklistSelected}"/>
     <DockPanel Grid.Row="3" Grid.Column="1" IsVisible="{Binding HasPicklistSelected}">
-      <Button DockPanel.Dock="Right" Command="{Binding ClearUsedPicklistConstraintCommand}" IsEnabled="{Binding HasRestrictionSelected}" ToolTip.Tip="Clear Picklist Branch Constraint" Height="26" Padding="0">
+      <Button DockPanel.Dock="Right" Command="{Binding ClearUsedPicklistConstraintCommand}" IsEnabled="{Binding CanBreakPicklistBranchConstraint}" ToolTip.Tip="Clear Picklist Branch Constraint" Height="26" Padding="0">
         <Image Source="avares://LoreViewer/Resources/broken_link.png" />
       </Button>
       <ComboBox ItemsSource="{Binding ValidPickListBranchChoices}" SelectedItem="{Binding PicklistBranchRestriction}" IsEnabled="{Binding HasPicklistSelected}">
