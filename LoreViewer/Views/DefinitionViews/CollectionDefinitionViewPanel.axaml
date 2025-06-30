@@ -70,7 +70,7 @@
     </DockPanel>
 
     <Label Grid.Row="4" Grid.Column="0" Content="Required" VerticalAlignment="Center"/>
-    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanChangeRequired}"/>
+    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}"/>
 
   </Grid>
 </UserControl>

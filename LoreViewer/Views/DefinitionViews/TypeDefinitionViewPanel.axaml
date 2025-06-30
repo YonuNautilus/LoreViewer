@@ -21,7 +21,7 @@
     </Grid.ColumnDefinitions>
 
     <Label Grid.Row="0" Grid.Column="0" Content="Type Name"/>
-    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}"/>
+    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" />
 
     <Label Grid.Row="1" Grid.Column="0" Content="Extends" />
     <DockPanel Grid.Row="1" Grid.Column="1">

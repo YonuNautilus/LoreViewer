@@ -167,10 +167,9 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
   {
     get
     {
-      if (DefinitionVM?.Definition is IRequirable iReq)
+      if (DefinitionVM != null)
       {
-        if (DefinitionVM.IsInherited && (DefinitionVM.Definition.Base as IRequirable).required)
-          return false;
+        return DefinitionVM.CanEditRequired;
       }
       return true;
     }

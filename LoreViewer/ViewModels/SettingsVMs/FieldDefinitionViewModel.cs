@@ -1,9 +1,11 @@
 ﻿using DocumentFormat.OpenXml.Drawing;
+using HarfBuzzSharp;
 using LoreViewer.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive;
 
@@ -21,7 +23,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public ReactiveCommand<Unit, Unit> ClearUsedPicklistConstraintCommand { get; }
 
-    public static List<EFieldStyle> FieldStyles { get => Enum.GetValues(typeof(EFieldStyle)).Cast<EFieldStyle>().ToList(); }
+    private ObservableCollection<SelectableFieldStyleViewModel> m_oSelectableStyles;
+    public ObservableCollection<SelectableFieldStyleViewModel> FieldStyles { get => m_oSelectableStyles; }
 
     public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => CurrentSettingsViewModel.Picklists; }
 
@@ -57,6 +60,9 @@ namespace LoreViewer.ViewModels.SettingsVMs
         if (fieldDef.HasFields)
           return false;
 
+        if (fieldDef.IsInherited && (fieldDef.Base as LoreFieldDefinition).style == EFieldStyle.SingleValue)
+          return true;
+
         // Whether inherited or not, as long as no subfields, user can edit the style.
         return true;
       }
@@ -67,19 +73,45 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public override ObservableCollection<FieldDefinitionViewModel> Fields { get =>  m_cFields; }
 
+
+    private EFieldStyle m_ofieldStyle;
     public EFieldStyle Style
     {
-      get => fieldDef.style;
+      get { return m_ofieldStyle; }
       set
       {
         if(fieldDef.style == EFieldStyle.PickList && value != EFieldStyle.PickList)
         {
           fieldDef.Picklist = null;
+          m_oPicklist = null;
+          m_oPicklistConstraint = null;
         }
         fieldDef.style = value;
-        SettingsRefresher.Apply(CurrentSettingsViewModel);
+        m_ofieldStyle = fieldDef.style;
       }
     }
+
+
+
+    private SelectableFieldStyleViewModel? m_oSelectedFieldStyle;
+    public SelectableFieldStyleViewModel? SelectedFieldStyle
+    {
+      get => m_oSelectedFieldStyle;
+      set
+      {
+        if (m_oSelectedFieldStyle != value)
+        {
+          m_oSelectedFieldStyle = value;
+          this.RaisePropertyChanged();
+
+          if (value != null)
+            Style = value.Style;
+          SettingsRefresher.Apply(CurrentSettingsViewModel);
+        }
+      }
+    }
+
+
 
     private PicklistDefinitionViewModel m_oPicklist;
     public PicklistDefinitionViewModel Picklist
@@ -96,14 +128,16 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
+    private PicklistEntryDefinitionViewModel m_oPicklistConstraint;
     public PicklistEntryDefinitionViewModel PicklistBranchRestriction
     {
       get
       {
-        return Picklist?.GetBranch(fieldDef.PicklistBranchConstraint);
+        return m_oPicklistConstraint;
       }
       set
       {
+        m_oPicklistConstraint = value;
         fieldDef.PicklistBranchConstraint = value?.pickEntryDef;
         SettingsRefresher.Apply(CurrentSettingsViewModel);
       }
@@ -111,7 +145,13 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public override void RefreshUI()
     {
+      if(m_oPicklist == null && fieldDef.Picklist != null)
+      {
+        m_oPicklist = CurrentSettingsViewModel.Picklists.FirstOrDefault(pl => pl.Definition == fieldDef.Picklist);
+      }
+
       this.RaisePropertyChanged(nameof(Style));
+      this.RaisePropertyChanged(nameof(FieldStyles));
       this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
       this.RaisePropertyChanged(nameof(IsPicklistFieldStyle));
       this.RaisePropertyChanged(nameof(HasSubFields));
@@ -140,6 +180,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public FieldDefinitionViewModel(LoreFieldDefinition defintion, LoreSettingsViewModel curSettingsVM) : base(defintion, curSettingsVM)
     {
       ClearUsedPicklistConstraintCommand = ReactiveCommand.Create(ClearUsedPicklistConstraint);
+      m_oSelectableStyles = new ObservableCollection<SelectableFieldStyleViewModel>(Enum.GetValues(typeof(EFieldStyle)).Cast<EFieldStyle>().Select(fs => new SelectableFieldStyleViewModel(fs, this)));
+      m_oSelectedFieldStyle = m_oSelectableStyles.FirstOrDefault(m => m.Style == fieldDef.style);
     }
 
     private void ClearUsedPicklistConstraint()
@@ -159,7 +201,48 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       RefreshFieldDefs();
     }
+  }
 
 
+  public class SelectableFieldStyleViewModel : ViewModelBase
+  {
+    FieldDefinitionViewModel m_oParentVM;
+
+    public EFieldStyle Style { get; }
+    public bool IsAllowed
+    {
+      get
+      {
+        if (m_oParentVM.IsInherited)
+        {
+          if ((m_oParentVM.Definition.Base as LoreFieldDefinition).style == EFieldStyle.SingleValue)
+          {
+            switch (Style)
+            {
+              case EFieldStyle.SingleValue:
+              case EFieldStyle.MultiValue:
+              case EFieldStyle.Textual:
+                return true;
+              default: return false;
+            }
+          }
+          else return false;
+        }
+        return false;
+      }
+    }
+
+    public SelectableFieldStyleViewModel(EFieldStyle style, FieldDefinitionViewModel parentVM)
+    {
+      Style = style;
+      m_oParentVM = parentVM;
+
+      // Subscribe to parent ViewModel changes that affect IsAllowed
+      m_oParentVM.WhenAnyValue(
+          vm => vm.Style,
+          vm => vm.IsInherited,
+          vm => (vm.Definition.Base as LoreFieldDefinition).style
+      ).Subscribe(_ => this.RaisePropertyChanged(nameof(IsAllowed)));
+    }
   }
 }

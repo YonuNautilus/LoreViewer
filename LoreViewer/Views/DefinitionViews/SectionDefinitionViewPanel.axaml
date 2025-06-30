@@ -28,7 +28,7 @@
     <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsFreeform}" />
 
     <Label Grid.Row="2" Grid.Column="0" Content="Required" />
-    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" ToolTip.Tip="{StaticResource Tooltip_Section_Required}"/>
+    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}" ToolTip.Tip="{StaticResource Tooltip_Section_Required}"/>
 
   </Grid>
 </UserControl>

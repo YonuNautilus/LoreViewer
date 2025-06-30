@@ -2,6 +2,7 @@
 using Avalonia.Data.Converters;
 using LoreViewer.Settings;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -62,6 +63,32 @@ namespace LoreViewer.Converters
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+
+
+  public class AllowedStyleConverter : IMultiValueConverter
+  {
+    public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
+    {
+      if (values.Count < 2)
+        return false;
+
+      if (values[0] is EFieldStyle style && values[1] is IEnumerable allowedStyles)
+      {
+        foreach (var allowed in allowedStyles)
+        {
+          if (allowed is EFieldStyle allowedStyle && allowedStyle == style)
+            return true;
+        }
+      }
+
+      return false;
+    }
+
+    public object ConvertBack(IList values, Type targetType, object parameter, CultureInfo culture)
     {
       throw new NotSupportedException();
     }

@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using DocumentFormat.OpenXml.InkML;
+using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using ReactiveUI;
 using System;
@@ -81,6 +82,19 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
+    public bool CanEditRequired
+    {
+      get
+      {
+        if (Definition is IRequirable iReq)
+        {
+          if (IsInherited && (Definition.Base as IRequirable).required)
+            return false;
+        }
+        return true;
+      }
+    }
+
     public string Name
     {
       get => Definition.name;
@@ -110,6 +124,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(IsNotInherited));
       this.RaisePropertyChanged(nameof(Name));
       this.RaisePropertyChanged(nameof(CanEditName));
+      this.RaisePropertyChanged(nameof(CanEditRequired));
       this.RaisePropertyChanged(nameof(InheritanceLabelString));
 
       //SettingsRefresher.Apply(CurrentSettingsViewModel);

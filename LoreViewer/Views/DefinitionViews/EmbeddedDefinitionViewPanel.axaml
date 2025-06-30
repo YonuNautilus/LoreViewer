@@ -39,7 +39,7 @@
     </DockPanel>
 
     <Label Grid.Row="2" Grid.Column="0" Content="Required" />
-    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" />
+    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}" />
 
   </Grid>
 </UserControl>

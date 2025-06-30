@@ -175,8 +175,20 @@ namespace LoreViewer.Settings
     {
       Base = parentField;
 
-      if (style != EFieldStyle.PickList && parentField.style == EFieldStyle.PickList)
-        this.style = parentField.style;
+      // Notes on what inherited field styles can be to override their base.
+      // inherited can be Multivalue or purely textual to override base's single value
+      // inherited can be purely textual to override base's single value.
+      // Otherwise, inherited must match base type
+
+      if(parentField.style == EFieldStyle.SingleValue)
+      {
+        if (style != EFieldStyle.MultiValue && style != EFieldStyle.Textual)
+          style = EFieldStyle.SingleValue;
+      }
+      else
+      {
+        style = parentField.style;
+      }
 
       if (this.Picklist == null && parentField.Picklist != null)
         Picklist = parentField.Picklist;
