@@ -843,7 +843,7 @@ namespace LoreViewer.Parser
           else
           {
             if (lb.Count > 1)
-              throw new NestedBulletsOnSingleValueChildlessAttributeException(ctx.FilePath, currentIndex, lb.Line + 1, newAttribute.Definition.name);
+              throw new NestedBulletsOnSingleValueChildlessAttributeException(ctx.FilePath, currentIndex, lb.Line + 1, newAttribute.DefinitionAs<LoreFieldDefinition>());
 
             ListItemBlock lib = lb[0] as ListItemBlock;
 

@@ -3,6 +3,7 @@ using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Settings.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LoreViewer.Validation
 {
@@ -180,6 +181,19 @@ namespace LoreViewer.Validation
             {
               result.LogError(entity, $"Missing required attribute '{def.name}'");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
+            }
+
+            // Check if an attribute follows its options if field is picklist style
+            if(contains && def.style == Settings.EFieldStyle.PickList)
+            {
+              LoreAttribute attr = container.GetAttribute(def.name);
+              string attrVal = attr.Value;
+              var options = def.GetPicklistOptions();
+              if (!options.Contains(attrVal))
+              {
+                result.LogError(attr, $"Attribute {def.name} of style Picklist has invalid value {attrVal}. Valid Values are {string.Join(", ", options)}");
+                result.LoreEntityValidationStates[attr] = EValidationState.Failed;
+              }
             }
           }
         }

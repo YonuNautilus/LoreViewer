@@ -1,4 +1,5 @@
-﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Settings.Interfaces;
 using SharpYaml.Serialization;
 using System.Collections.Generic;
@@ -135,9 +136,17 @@ namespace LoreViewer.Settings
         if (string.IsNullOrWhiteSpace(picklistName)) throw new FieldPicklistNameNotGivenException(this);
 
         // At this point, a Picklist name was given. Check if it is valid.
-        if (settings.picklists.Any())
+        if (settings.picklists.Any(p => p.name == picklistName))
         {
+          Picklist = settings.picklists.FirstOrDefault(p => p.name == picklistName);
 
+          if (!string.IsNullOrWhiteSpace(picklistBranchRestriction))
+          {
+            if (Picklist.HasEntries && Picklist.entries.FlattenPicklistEntries().Any(p => p.name == picklistBranchRestriction))
+              PicklistBranchConstraint = Picklist.entries.FlattenPicklistEntries().First(p => p.name == picklistBranchRestriction);
+                
+
+          }
         }
         // NO Picklists found in definition
         else
@@ -227,7 +236,19 @@ namespace LoreViewer.Settings
 
       if (HasFields) foreach (LoreFieldDefinition field in fields) field.MakeIndependent();
     }
+
+
+    public List<string> GetPicklistOptions()
+    {
+      if (style != EFieldStyle.PickList) return new List<string>();
+
+      List<string> ret = new();
+
+      if (PicklistBranchConstraint != null)
+        return PicklistBranchConstraint.entries.FlattenPicklistEntries().Select(e => e.name).ToList();
+
+      else
+        return Picklist.entries.FlattenPicklistEntries().Select(e => e.name).ToList();
+    }
   }
-
-
 }

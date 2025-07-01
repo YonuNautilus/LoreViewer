@@ -165,6 +165,10 @@ namespace LoreViewer.Settings
 
       processed = true;
 
+      if(fields != null)
+        foreach(LoreFieldDefinition fDef in fields)
+          fDef.PostProcess(settings);
+
       if (collections != null)
         foreach (LoreCollectionDefinition colDef in collections)
         {
