@@ -11,7 +11,7 @@ namespace LoreViewer.ViewModels
   /// <summary>
   /// A ViewModel for LoreElements to be displayed
   /// </summary>
-  public class LoreTreeItem : ReactiveObject
+  public class LoreTreeItem : ViewModelBase
   {
     public string DisplayName { get; set; }
     public string Summary { get; set; } = string.Empty;
@@ -61,7 +61,6 @@ namespace LoreViewer.ViewModels
 
         if (ln is LoreNode)
           if (ln.Nodes != null && ln.Nodes.Count() > 0)
-            //Children.AddNode(CreateParentItem(ln.Nodes, "Nodes"));
             foreach (LoreNode node in ln.Nodes)
               Children.Add(new LoreTreeItem(node));
       }

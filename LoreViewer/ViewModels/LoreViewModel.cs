@@ -280,8 +280,6 @@ namespace LoreViewer.ViewModels
   public class ValidationErrorToImagePathConverter : IValueConverter
   {
 
-    public static readonly ValidationErrorToImagePathConverter instance = new();
-
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
       if (value is LoreEntity e)
@@ -295,7 +293,7 @@ namespace LoreViewer.ViewModels
             image = "avares://LoreViewer/Resources/close.png";
             break;
           case EValidationState.ChildFailed:
-            image = "avared://LoreViewer/Reources/warning.png";
+            image = "avares://LoreViewer/Resources/warning.png";
             break;
           case EValidationState.Passed:
             image = "avares://LoreViewer/Resources/valid.png";

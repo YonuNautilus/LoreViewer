@@ -58,7 +58,7 @@ namespace v0_6.PositiveTests
       Assert.That(typea.fields[1].required, Is.False);
       Assert.That(typeb.fields[1].required, Is.True);
       Assert.That(typea.fields[1].style, Is.EqualTo(EFieldStyle.MultiValue));
-      Assert.That(typeb.fields[1].style, Is.EqualTo(EFieldStyle.Textual));
+      Assert.That(typeb.fields[1].style, Is.EqualTo(EFieldStyle.MultiValue));
 
       Assert.That(typea.fields[2], Is.Not.SameAs(typeb.fields[2]));
       Assert.That(typea.fields[2].Base, Is.Null);

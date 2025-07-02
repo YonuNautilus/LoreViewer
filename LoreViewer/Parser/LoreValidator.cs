@@ -193,6 +193,7 @@ namespace LoreViewer.Validation
               {
                 result.LogError(attr, $"Attribute {def.name} of style Picklist has invalid value {attrVal}. Valid Values are {string.Join(", ", options)}");
                 result.LoreEntityValidationStates[attr] = EValidationState.Failed;
+                result.PropagateDescendentError(entity, attr);
               }
             }
           }
