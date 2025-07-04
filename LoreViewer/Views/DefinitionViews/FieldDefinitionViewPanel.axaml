@@ -16,6 +16,7 @@
       <RowDefinition Height="30"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="30"/>
     </Grid.RowDefinitions>
 
@@ -49,7 +50,7 @@
       </ComboBox>
     </Panel>
     
-    <Label Grid.Row="3" Content="Picklist Branch Restriction  "  IsVisible="{Binding HasPicklistSelected}"/>
+    <Label Grid.Row="3" Content="Picklist Branch Restriction  "  IsVisible="{Binding HasPicklistSelected}" VerticalAlignment="Center"/>
     <DockPanel Grid.Row="3" Grid.Column="1" IsVisible="{Binding HasPicklistSelected}">
       <Button DockPanel.Dock="Right" Command="{Binding ClearUsedPicklistConstraintCommand}" IsEnabled="{Binding CanBreakPicklistBranchConstraint}" ToolTip.Tip="Clear Picklist Branch Constraint" Height="26" Padding="0">
         <Image Source="avares://LoreViewer/Resources/broken_link.png" />
@@ -63,8 +64,11 @@
       </ComboBox>
     </DockPanel>
     
-    <Label Grid.Row="4" Grid.Column="0" Content="Required" />
-    <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}" />
+    <Label Grid.Row="4" Grid.Column="0" Content="Color" VerticalAlignment="Center"/>
+    <ColorPicker Grid.Row="4" Grid.Column="1" Width="100" VerticalAlignment="Center" />
+    
+    <Label Grid.Row="5" Grid.Column="0" Content="Required" />
+    <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}" />
 
   </Grid>
 </UserControl>

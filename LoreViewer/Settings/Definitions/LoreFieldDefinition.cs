@@ -8,6 +8,22 @@ using System.Linq;
 
 namespace LoreViewer.Settings
 {
+  public enum EFieldStyle
+  {
+    [Description("Nested Fields")]
+    NestedValues = -1,
+    [Description("Single Value")]
+    SingleValue = 0,
+    [Description("Multiple Values")]
+    MultiValue = 1,
+    [Description("Purely Textual")]
+    Textual = 2,
+    [Description("Picklist Options")]
+    PickList = 3,
+    [Description("Color")]
+    Color = 4,
+  }
+
   public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreFieldDefinition>
   {
 
@@ -140,13 +156,9 @@ namespace LoreViewer.Settings
         {
           Picklist = settings.picklists.FirstOrDefault(p => p.name == picklistName);
 
-          if (!string.IsNullOrWhiteSpace(picklistBranchRestriction))
-          {
-            if (Picklist.HasEntries && Picklist.entries.FlattenPicklistEntries().Any(p => p.name == picklistBranchRestriction))
-              PicklistBranchConstraint = Picklist.entries.FlattenPicklistEntries().First(p => p.name == picklistBranchRestriction);
-                
-
-          }
+          // If there's a picklist branch constraint:
+          if (Picklist.HasEntries && Picklist.entries.FlattenPicklistEntries().Any(p => p.name == picklistBranchRestriction))
+            PicklistBranchConstraint = Picklist.entries.FlattenPicklistEntries().First(p => p.name == picklistBranchRestriction);
         }
         // NO Picklists found in definition
         else

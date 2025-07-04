@@ -1,5 +1,6 @@
 ﻿using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -184,7 +185,7 @@ namespace LoreViewer.Validation
             }
 
             // Check if an attribute follows its options if field is picklist style
-            if(contains && def.style == Settings.EFieldStyle.PickList)
+            if(contains && def.style == EFieldStyle.PickList)
             {
               LoreAttribute attr = container.GetAttribute(def.name);
               string attrVal = attr.Value;

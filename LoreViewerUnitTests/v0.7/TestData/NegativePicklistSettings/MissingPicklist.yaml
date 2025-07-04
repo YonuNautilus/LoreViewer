@@ -1,0 +1,9 @@
+picklists:
+  - name: Picklist 1
+
+types:
+  - name: Type A
+    fields:
+      - name: A Choice
+        style: PickList
+        picklistName: Picklist 2

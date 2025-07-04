@@ -1,0 +1,8 @@
+types:
+  - name: Type 1
+    fields:
+      - name: PL1
+        style: PickList
+
+picklists:
+  - name:   

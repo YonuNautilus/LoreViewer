@@ -7,19 +7,6 @@ using System.Linq;
 
 namespace LoreViewer.Settings
 {
-  public enum EFieldStyle
-  {
-    [Description("Nested Fields")]
-    NestedValues = -1,
-    [Description("Single Value")]
-    SingleValue = 0,
-    [Description("Multiple Values")]
-    MultiValue = 1,
-    [Description("Purely Textual")]
-    Textual = 2,
-    [Description("Picklist Options")]
-    PickList = 3
-  }
 
   public abstract class LoreDefinitionBase
   {

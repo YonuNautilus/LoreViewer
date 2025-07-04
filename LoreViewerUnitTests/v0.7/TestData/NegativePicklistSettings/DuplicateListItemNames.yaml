@@ -1,0 +1,18 @@
+picklists:
+  - name: Colors
+    entries:
+      - name: red
+        entries:
+          - name: crimson
+          - name: maroon
+          - name: burgundy
+          - name: cherry
+      - name: green
+        entries:
+          - name: moss
+          - name: lime
+          - name: neon
+          - name: tennis ball
+      - name: yellow
+        entries:
+          - name: tennis ball

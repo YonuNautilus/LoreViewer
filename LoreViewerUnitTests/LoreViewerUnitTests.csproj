@@ -173,10 +173,38 @@
     <None Update="v0.6\TestData\PositiveTestData\SettingsWithNewInheritance.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.7\TestData\NegativePicklistParsingData\Crayons.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\NegativePicklistSettings\DuplicateListItemNames.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\NegativePicklistSettings\DuplicateListName.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\NegativePicklistParsingData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\NegativePicklistSettings\InvalidOverride1.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\NegativePicklistSettings\InvalidPicklistInheritance.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\NegativePicklistSettings\MissingPicklist.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\PositivePickListData\Crayons.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\PositivePickListData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="v0.2\TestData\NegativeTestData\" />
+    <Folder Include="v0.7\TestData\PositivePickListData\" />
   </ItemGroup>
 
 </Project>
