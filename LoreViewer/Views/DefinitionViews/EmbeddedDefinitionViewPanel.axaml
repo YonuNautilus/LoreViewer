@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="450"
              xmlns:local="using:LoreViewer.Views.DefinitionViews"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
              x:DataType="vm:EmbeddedNodeDefinitionViewModel"
@@ -17,8 +17,8 @@
     </Grid.RowDefinitions>
 
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto"/>
-      <ColumnDefinition Width="240"/>
+      <ColumnDefinition Width="130"/>
+      <ColumnDefinition Width="200"/>
     </Grid.ColumnDefinitions>
 
     <Label Grid.Row="0" Grid.Column="0" Content="Embedded Node Title"/>

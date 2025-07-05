@@ -1,6 +1,7 @@
 ﻿using LoreViewer.Settings;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -21,6 +22,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     private ObservableCollection<SelectableFieldStyleViewModel> m_oSelectableStyles;
     public ObservableCollection<SelectableFieldStyleViewModel> FieldStyles { get => m_oSelectableStyles; }
+
+    public List<EFieldContentType> ContentTypes { get => Enum.GetValues(typeof(EFieldContentType)).Cast<EFieldContentType>().ToList(); }
 
     public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => CurrentSettingsViewModel.Picklists; }
 
@@ -69,6 +72,14 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
+    public bool CanEditContentType
+    {
+      get
+      {
+        return fieldDef.style == EFieldStyle.Textual || fieldDef.style == EFieldStyle.NestedValues || IsNotInherited;
+      }
+    }
+
 
     private ObservableCollection<FieldDefinitionViewModel> m_cFields = new ObservableCollection<FieldDefinitionViewModel>();
 
@@ -78,8 +89,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get { return fieldDef.style; }
     }
-
-
 
     private SelectableFieldStyleViewModel? m_oSelectedFieldStyle;
     public SelectableFieldStyleViewModel? SelectedFieldStyle
@@ -102,6 +111,23 @@ namespace LoreViewer.ViewModels.SettingsVMs
         }
       }
     }
+
+
+
+    public EFieldContentType ContentType
+    {
+      get { return fieldDef.contentType; }
+      set
+      {
+        if (value == null) return;
+        if(fieldDef.contentType != value)
+        {
+          fieldDef.contentType = value;
+          SettingsRefresher.Apply(CurrentSettingsViewModel);
+        }
+      }
+    }
+
 
 
 
@@ -155,9 +181,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
       if (m_oSelectedFieldStyle.Style != Style) m_oSelectedFieldStyle = m_oSelectableStyles.FirstOrDefault(s => s.Style == Style);
 
       if ((m_oPicklistConstraint != null && m_oPicklistConstraint.Definition != fieldDef.PicklistBranchConstraint) || (m_oPicklistConstraint == null && fieldDef.PicklistBranchConstraint != null))
-        m_oPicklistConstraint = ValidPickListBranchChoices.FirstOrDefault(vc => vc.Definition == fieldDef.PicklistBranchConstraint);
+        if(ValidPickListBranchChoices != null)
+          m_oPicklistConstraint = ValidPickListBranchChoices.FirstOrDefault(vc => vc.Definition == fieldDef.PicklistBranchConstraint);
 
       this.RaisePropertyChanged(nameof(Style));
+      this.RaisePropertyChanged(nameof(ContentType));
       this.RaisePropertyChanged(nameof(FieldStyles));
       this.RaisePropertyChanged(nameof(SelectedFieldStyle));
       this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
@@ -166,6 +194,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(NoSubFields));
       this.RaisePropertyChanged(nameof(TooltipText));
       this.RaisePropertyChanged(nameof(CanEditStyle));
+      this.RaisePropertyChanged(nameof(CanEditContentType));
       this.RaisePropertyChanged(nameof(Picklist));
       this.RaisePropertyChanged(nameof(Picklists));
       this.RaisePropertyChanged(nameof(PicklistBranchRestriction));

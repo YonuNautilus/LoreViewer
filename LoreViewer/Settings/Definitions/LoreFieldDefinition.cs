@@ -24,6 +24,20 @@ namespace LoreViewer.Settings
     Color = 4,
   }
 
+  public enum EFieldContentType
+  {
+    [Description("String of text")]
+    String = 0,
+    [Description("Color (hex code)")]
+    Color = 1,
+    [Description("Number value (integer or floating point)")]
+    Number = 2,
+    [Description("Date")]
+    Date = 3,
+    [Description("Span of time")]
+    Timespan = 4,
+  }
+
   public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreFieldDefinition>
   {
 
@@ -36,6 +50,11 @@ namespace LoreViewer.Settings
     public bool HasFieldDefinition(string fieldName) => fields.Any(f => fieldName.Contains(f.name));
     public LoreFieldDefinition? GetFieldDefinition(string fieldName) => fields.FirstOrDefault(f => f.name == fieldName);
     #endregion IFieldDefinitionContainer implementation
+
+    [YamlMember(0)]
+    [DefaultValue(false)]
+    public bool required { get; set; }
+
 
     private EFieldStyle m_eStyle = EFieldStyle.SingleValue;
 
@@ -57,17 +76,28 @@ namespace LoreViewer.Settings
         }
         m_eStyle = value;
       }
-
     }
 
-    [YamlMember(0)]
-    [DefaultValue(false)]
-    public bool required { get; set; }
+
+    private EFieldContentType m_eContentType = EFieldContentType.String;
+    [YamlMember(2)]
+    [DefaultValue(EFieldContentType.String)]
+    public EFieldContentType contentType
+    {
+      get
+      {
+        return m_eContentType;
+      }
+      set
+      {
+        m_eContentType = value;
+      }
+    }
 
 
     private string m_sPicklistName;
 
-    [YamlMember(1)]
+    [YamlMember(3)]
     [DefaultValue("")]
     public string picklistName
     {
@@ -84,7 +114,7 @@ namespace LoreViewer.Settings
 
     private string m_sPicklistBranchRestriction;
 
-    [YamlMember(2)]
+    [YamlMember(4)]
     [DefaultValue("")]
     public string picklistBranchRestriction
     {
@@ -198,7 +228,6 @@ namespace LoreViewer.Settings
 
       // Notes on what inherited field styles can be to override their base.
       // inherited can be Multivalue or purely textual to override base's single value
-      // inherited can be purely textual to override base's single value.
       // Otherwise, inherited must match base type
 
       if(parentField.style == EFieldStyle.SingleValue)
@@ -210,6 +239,8 @@ namespace LoreViewer.Settings
       {
         style = parentField.style;
       }
+
+      contentType = parentField.contentType;
 
       if (this.Picklist == null && parentField.Picklist != null)
         Picklist = parentField.Picklist;

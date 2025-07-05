@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="370" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="450"
              xmlns:local="using:LoreViewer.Views.DefinitionViews"
              xmlns:vm="using:LoreViewer.ViewModels.SettingsVMs"
              x:DataType="vm:FieldDefinitionViewModel"
@@ -22,14 +22,14 @@
 
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="150"/>
-      <ColumnDefinition MinWidth="100" Width="1*"/>
+      <ColumnDefinition Width="180"/>
     </Grid.ColumnDefinitions>
 
-    <Label Grid.Row="0" Grid.Column="0" Content="Field Name" />
-    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" IsEnabled="{Binding IsNotInherited}"/>
+    <Label Grid.Row="0" Grid.Column="0" Content="Field Name" VerticalAlignment="Center" />
+    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" IsEnabled="{Binding IsNotInherited}" VerticalAlignment="Center"/>
 
-    <Label Grid.Row="1" Grid.Column="0" Content="Style" />
-    <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" ToolTip.Tip="{Binding TooltipText}">
+    <Label Grid.Row="1" Grid.Column="0" Content="Style" VerticalAlignment="Center"/>
+    <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" ToolTip.Tip="{Binding TooltipText}" VerticalAlignment="Center">
       <ComboBox IsEnabled="{Binding CanEditStyle}" ItemsSource="{Binding FieldStyles}" SelectedItem="{Binding SelectedFieldStyle}" >
         <ComboBox.ItemTemplate>
           <DataTemplate>
@@ -39,8 +39,19 @@
       </ComboBox>
     </Panel>
     
-    <Label Grid.Row="2" Content="Picklist"  IsVisible="{Binding IsPicklistFieldStyle}"/>
-    <Panel Grid.Row="2" Grid.Column="1" IsVisible="{Binding IsPicklistFieldStyle}">
+    <Label Grid.Row="2" Grid.Column="0" Content="Content Type" VerticalAlignment="Center"/>
+    <Panel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" >
+      <ComboBox IsEnabled="{Binding CanEditContentType}" ItemsSource="{Binding ContentTypes}" SelectedItem="{Binding ContentType}">
+        <ComboBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
+    </Panel>
+    
+    <Label Grid.Row="3" Content="Picklist"  IsVisible="{Binding IsPicklistFieldStyle}" VerticalAlignment="Center"/>
+    <Panel Grid.Row="3" Grid.Column="1" IsVisible="{Binding IsPicklistFieldStyle}" VerticalAlignment="Center">
       <ComboBox IsEnabled="{Binding IsNotInherited}" ItemsSource="{Binding Picklists}" SelectedItem="{Binding Picklist}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
@@ -50,8 +61,8 @@
       </ComboBox>
     </Panel>
     
-    <Label Grid.Row="3" Content="Picklist Branch Restriction  "  IsVisible="{Binding HasPicklistSelected}" VerticalAlignment="Center"/>
-    <DockPanel Grid.Row="3" Grid.Column="1" IsVisible="{Binding HasPicklistSelected}">
+    <Label Grid.Row="4" Content="Picklist Branch Restriction  " IsVisible="{Binding HasPicklistSelected}" VerticalAlignment="Center"/>
+    <DockPanel Grid.Row="4" Grid.Column="1" IsVisible="{Binding HasPicklistSelected}" VerticalAlignment="Center">
       <Button DockPanel.Dock="Right" Command="{Binding ClearUsedPicklistConstraintCommand}" IsEnabled="{Binding CanBreakPicklistBranchConstraint}" ToolTip.Tip="Clear Picklist Branch Constraint" Height="26" Padding="0">
         <Image Source="avares://LoreViewer/Resources/broken_link.png" />
       </Button>
@@ -64,11 +75,9 @@
       </ComboBox>
     </DockPanel>
     
-    <Label Grid.Row="4" Grid.Column="0" Content="Color" VerticalAlignment="Center"/>
-    <ColorPicker Grid.Row="4" Grid.Column="1" Width="100" VerticalAlignment="Center" />
     
-    <Label Grid.Row="5" Grid.Column="0" Content="Required" />
-    <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}" />
+    <Label Grid.Row="5" Grid.Column="0" Content="Required" VerticalAlignment="Center" />
+    <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}"  VerticalAlignment="Center"/>
 
   </Grid>
 </UserControl>
