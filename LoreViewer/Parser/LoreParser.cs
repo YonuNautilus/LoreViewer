@@ -759,7 +759,7 @@ namespace LoreViewer.Parser
         var inline = contentItem.Inline.FirstChild;
 
         string parsedFieldName = string.Empty;
-        List<string> parsedFieldValues = new List<string>();
+        List<string> readFieldValues = new List<string>();
         List<LoreAttribute> parsedNestedAttributes = new List<LoreAttribute>();
 
         // STEP 1: Get the field name:.
@@ -776,7 +776,7 @@ namespace LoreViewer.Parser
         {
           var fieldAndVal = parsedInlineText.Split(':', 2);
           parsedFieldName = TrimFieldName(fieldAndVal[0]);
-          parsedFieldValues.Add(fieldAndVal[1].Trim());
+          readFieldValues.Add(fieldAndVal[1].Trim());
         }
         // otherwise, it does not have a value, just trim the inline text to a field name.
         else
@@ -831,12 +831,12 @@ namespace LoreViewer.Parser
             newAttribute.Values = new List<string>();
             foreach (ListItemBlock block in lb)
             {
-              parsedFieldValues.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock).Trim());
+              readFieldValues.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock).Trim());
             }
           }
           else if (newDef.style == EFieldStyle.Textual)
           {
-            parsedFieldValues.Add(GetStringFromListBlock(lb));
+            readFieldValues.Add(GetStringFromListBlock(lb));
           }
 
           // if no nested fields and not multivalue, we sure better hope this nested ListBlock is just a single value...
@@ -847,11 +847,11 @@ namespace LoreViewer.Parser
 
             ListItemBlock lib = lb[0] as ListItemBlock;
 
-            parsedFieldValues.Add(GetStringFromParagraphBlock(lib[0] as ParagraphBlock));
+            readFieldValues.Add(GetStringFromParagraphBlock(lib[0] as ParagraphBlock));
           }
         }
 
-        newAttribute.Append(parsedFieldValues);
+        newAttribute.Append(readFieldValues);
         newAttribute.Attributes.Add(parsedNestedAttributes);
         attributeList.Add(newAttribute);
 

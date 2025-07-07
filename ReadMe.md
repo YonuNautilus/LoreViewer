@@ -8,7 +8,7 @@ This tool will allow users to define their own schema for different types of lor
 
 I need to state that tagging headings for LoreViewer uses the curly bracket {}. This is also used for Markdown extended syntax for giving a heading a custom ID for hyperlinking.
 
-I did not realize that was a feature of extended syntax. I liked curly brackets because most rendered did not display the brackets or its contents. I now understand why.
+I did not realize that was a feature of extended syntax. I liked curly brackets because most renderers did not display the brackets or its contents. I now understand why.
 
 So, as of v0.6 and earlier (and later unless otherwise stated) markdown files for LoreViewer will not allow custom IDs from markdown's extended syntax. Very sorry.
 
@@ -25,7 +25,7 @@ When writing to markdown files becomes an in-app feature, I will need to be care
 
 ## Core Values of LoreViewer <!--test-->
 1. Human-Readable Markdown First
-    - Markdown files must remain human-reable. They should be intuitive to read and write without this software.
+    - Markdown files must remain human-readable. They should be intuitive to read and write without this software.
     - Heading structure and tags are designed to be out-of-the-way but easily written by hand.
     - The schema (YAML) enforces **structure** but never obfuscates it.
 2. Precision in Exception Handling
