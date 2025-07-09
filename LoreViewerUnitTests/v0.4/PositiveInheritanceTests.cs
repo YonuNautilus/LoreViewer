@@ -302,11 +302,11 @@ namespace v0_4.PositiveTests
       Assert.NotNull(grandmaNode.GetAttribute("Awards"));
       Assert.NotNull(grandmaNode.GetAttribute("Awards").Attributes);
       Assert.That(grandmaNode.GetAttribute("Awards").Attributes, Has.Count.EqualTo(1));
-      Assert.That(grandmaNode.GetAttribute("Awards").GetAttribute("Oscar").Value, Is.EqualTo("Nominated"));
+      Assert.That(grandmaNode.GetAttribute("Awards").GetAttribute("Oscar").Value.ValueString, Is.EqualTo("Nominated"));
 
       Assert.NotNull(grandmaNode.GetAttribute("Who"));
-      Assert.That(grandmaNode.GetAttribute("Who").Value, Is.EqualTo("Grandma"));
-      Assert.That(grandmaNode.GetAttribute("What").Value, Is.EqualTo("A person"));
+      Assert.That(grandmaNode.GetAttribute("Who").Value.ValueString, Is.EqualTo("Grandma"));
+      Assert.That(grandmaNode.GetAttribute("What").Value.ValueString, Is.EqualTo("A person"));
     }
 
     [Test]
@@ -367,14 +367,14 @@ namespace v0_4.PositiveTests
       Assert.NotNull(parentNode.GetAttribute("Awards"));
       Assert.NotNull(parentNode.GetAttribute("Awards").Attributes);
       Assert.That(parentNode.GetAttribute("Awards").Attributes, Has.Count.EqualTo(2));
-      Assert.That(parentNode.GetAttribute("Awards").GetAttribute("Oscar").Value, Is.EqualTo("Achieved"));
-      Assert.That(parentNode.GetAttribute("Awards").GetAttribute("Tony").Value, Is.EqualTo("Achieved"));
+      Assert.That(parentNode.GetAttribute("Awards").GetAttribute("Oscar").Value.ValueString, Is.EqualTo("Achieved"));
+      Assert.That(parentNode.GetAttribute("Awards").GetAttribute("Tony").Value.ValueString, Is.EqualTo("Achieved"));
 
       Assert.NotNull(parentNode.GetAttribute("Who"));
-      Assert.That(parentNode.GetAttribute("Who").Value, Is.EqualTo("Mother"));
-      Assert.That(parentNode.GetAttribute("What").Value, Is.EqualTo("A Robot"));
-      Assert.That(parentNode.GetAttribute("When").Value, Is.EqualTo("Never"));
-      Assert.That(parentNode.GetAttribute("Where").Value, Is.EqualTo("Kentucky"));
+      Assert.That(parentNode.GetAttribute("Who").Value.ValueString, Is.EqualTo("Mother"));
+      Assert.That(parentNode.GetAttribute("What").Value.ValueString, Is.EqualTo("A Robot"));
+      Assert.That(parentNode.GetAttribute("When").Value.ValueString, Is.EqualTo("Never"));
+      Assert.That(parentNode.GetAttribute("Where").Value.ValueString, Is.EqualTo("Kentucky"));
     }
 
     [Test]
@@ -502,15 +502,15 @@ namespace v0_4.PositiveTests
       Assert.NotNull(childNode.GetAttribute("Awards"));
       Assert.NotNull(childNode.GetAttribute("Awards").Attributes);
       Assert.That(childNode.GetAttribute("Awards").Attributes, Has.Count.EqualTo(3));
-      Assert.That(childNode.GetAttribute("Awards").GetAttribute("Oscar").Value, Is.EqualTo("Lost"));
-      Assert.That(childNode.GetAttribute("Awards").GetAttribute("Tony").Value, Is.EqualTo("Lost"));
-      Assert.That(childNode.GetAttribute("Awards").GetAttribute("Emmy").Value, Is.EqualTo("Nominated"));
+      Assert.That(childNode.GetAttribute("Awards").GetAttribute("Oscar").Value.ValueString, Is.EqualTo("Lost"));
+      Assert.That(childNode.GetAttribute("Awards").GetAttribute("Tony").Value.ValueString, Is.EqualTo("Lost"));
+      Assert.That(childNode.GetAttribute("Awards").GetAttribute("Emmy").Value.ValueString, Is.EqualTo("Nominated"));
 
-      Assert.That(childNode.GetAttribute("Who").Value, Is.EqualTo("Child"));
-      Assert.That(childNode.GetAttribute("What").Value, Is.EqualTo("Fleshy blob"));
-      Assert.That(childNode.GetAttribute("When").Value, Is.EqualTo("Always"));
-      Assert.That(childNode.GetAttribute("Where").Value, Is.EqualTo("North Dakota"));
-      Assert.That(childNode.GetAttribute("Why").Value, Is.EqualTo("No particular reason"));
+      Assert.That(childNode.GetAttribute("Who").Value.ValueString, Is.EqualTo("Child"));
+      Assert.That(childNode.GetAttribute("What").Value.ValueString, Is.EqualTo("Fleshy blob"));
+      Assert.That(childNode.GetAttribute("When").Value.ValueString, Is.EqualTo("Always"));
+      Assert.That(childNode.GetAttribute("Where").Value.ValueString, Is.EqualTo("North Dakota"));
+      Assert.That(childNode.GetAttribute("Why").Value.ValueString, Is.EqualTo("No particular reason"));
     }
 
     [Test]
@@ -681,13 +681,13 @@ namespace v0_4.PositiveTests
       Assert.NotNull(UncleNode.GetAttribute("Awards"));
       Assert.NotNull(UncleNode.GetAttribute("Awards").Attributes);
       Assert.That(UncleNode.GetAttribute("Awards").Attributes, Has.Count.EqualTo(2));
-      Assert.That(UncleNode.GetAttribute("Awards").GetAttribute("Oscar").Value, Is.EqualTo("Won"));
-      Assert.That(UncleNode.GetAttribute("Awards").GetAttribute("Pulitzer").Value, Is.EqualTo("Won"));
+      Assert.That(UncleNode.GetAttribute("Awards").GetAttribute("Oscar").Value.ValueString, Is.EqualTo("Won"));
+      Assert.That(UncleNode.GetAttribute("Awards").GetAttribute("Pulitzer").Value.ValueString, Is.EqualTo("Won"));
 
       Assert.NotNull(UncleNode.GetAttribute("Who"));
-      Assert.That(UncleNode.GetAttribute("Who").Value, Is.EqualTo("Uncle"));
-      Assert.That(UncleNode.GetAttribute("What").Value, Is.EqualTo("An Uncle"));
-      Assert.That(UncleNode.GetAttribute("How").Value, Is.EqualTo("Nobody Knows"));
+      Assert.That(UncleNode.GetAttribute("Who").Value.ValueString, Is.EqualTo("Uncle"));
+      Assert.That(UncleNode.GetAttribute("What").Value.ValueString, Is.EqualTo("An Uncle"));
+      Assert.That(UncleNode.GetAttribute("How").Value.ValueString, Is.EqualTo("Nobody Knows"));
     }
 
     [Test]

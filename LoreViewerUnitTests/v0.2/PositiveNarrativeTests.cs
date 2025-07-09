@@ -129,7 +129,7 @@
       Assert.IsFalse(subsectionToTest.Attributes[1].HasValues);
       Assert.IsTrue(subsectionToTest.Attributes[1].HasValue);
       Assert.That(subsectionToTest.GetAttribute("Field 8"), Is.EqualTo(subsectionToTest.Attributes[1]));
-      Assert.That(subsectionToTest.Attributes[1].Value, Is.EqualTo("I don't care."));
+      Assert.That(subsectionToTest.Attributes[1].Value.ValueString, Is.EqualTo("I don't care."));
     }
   }
 }
