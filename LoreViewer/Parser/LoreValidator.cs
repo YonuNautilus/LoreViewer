@@ -188,7 +188,7 @@ namespace LoreViewer.Validation
             if(contains && def.style == EFieldStyle.PickList)
             {
               LoreAttribute attr = container.GetAttribute(def.name);
-              string attrVal = attr.Value;
+              string attrVal = attr.Value.ValueString;
               var options = def.GetPicklistOptions();
               if (!options.Contains(attrVal))
               {

@@ -83,7 +83,7 @@ namespace LoreViewer.ViewModels
         if (la.HasValue && !la.HasValues)
           DisplayName = DisplayName += $": {la.Value}";
         else if (la.HasValues)
-          foreach (string v in la.Values) Children.Add(new LoreTreeItem(v));
+          foreach (LoreAttributeValue v in la.Values) Children.Add(new LoreTreeItem(v.ValueString));
       }
     }
 

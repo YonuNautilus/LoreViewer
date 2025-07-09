@@ -828,7 +828,7 @@ namespace LoreViewer.Parser
           // if it allows multiple values
           else if (newDef.style == EFieldStyle.MultiValue)
           {
-            newAttribute.Values = new List<string>();
+            newAttribute.Values = new List<LoreAttributeValue>();
             foreach (ListItemBlock block in lb)
             {
               readFieldValues.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock).Trim());

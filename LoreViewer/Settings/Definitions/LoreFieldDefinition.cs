@@ -32,10 +32,12 @@ namespace LoreViewer.Settings
     Color = 1,
     [Description("Number value (integer or floating point)")]
     Number = 2,
+    [Description("Number with units")]
+    Quantity = 3,
     [Description("Date")]
-    Date = 3,
+    Date = 4,
     [Description("Span of time")]
-    Timespan = 4,
+    Timespan = 5,
   }
 
   public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreFieldDefinition>
@@ -240,6 +242,7 @@ namespace LoreViewer.Settings
         style = parentField.style;
       }
 
+      // inherited fields always use parent's content type
       contentType = parentField.contentType;
 
       if (this.Picklist == null && parentField.Picklist != null)

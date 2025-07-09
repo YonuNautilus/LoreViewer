@@ -55,7 +55,7 @@ namespace v0_7.PositiveTests
 
       foreach (string color in colorsToCheck)
       {
-        Assert.That(_parser.Nodes.Where(n => n.GetAttribute("Shade").Value == color).ToList(), Has.Count.EqualTo(1));
+        Assert.That(_parser.Nodes.Where(n => n.GetAttribute("Shade").Value.ValueString == color).ToList(), Has.Count.EqualTo(1));
       }
     }
   }

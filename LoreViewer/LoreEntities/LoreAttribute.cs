@@ -29,15 +29,19 @@ namespace LoreViewer.LoreElements
     public bool HasAttributes => Attributes.Any();
     #endregion
 
-    public string? Value { get; set; } // Simple "key: value" entry, like a single date or name
-    public List<string>? Values { get; set; } // "key: List<value>" entry, like alias for a character
+    public LoreAttributeValue? Value { get; set; } // Simple "key: value" entry, like a single date or name
+    public List<LoreAttributeValue>? Values { get; set; } // "key: List<value>" entry, like alias for a character
 
     public LoreAttribute(string name, LoreFieldDefinition definition) : base(name, definition) { }
     public LoreAttribute(string name, LoreFieldDefinition definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }
 
     public int SourceIndex { get; set; }
 
-    public bool HasValue => Value != null && !string.IsNullOrWhiteSpace(Value);
+    public bool HasValue => Value != null && !string.IsNullOrWhiteSpace(Value.ValueString);
+
+    /// <summary>
+    /// True if this LoreAttribute has multiple (nested) values
+    /// </summary>
     public bool HasValues => Values != null && Values.Count > 0;
     public bool IsNested => Attributes.Count() > 1;
 
@@ -45,15 +49,15 @@ namespace LoreViewer.LoreElements
     {
       if (!HasValues)
       {
-        Values = new List<string>();
+        Values = new List<LoreAttributeValue>();
         if (HasValue)
         {
-          Values.Add(Value);
+          Values.Add(CreateNewAttributeValue(newValue));
           Value = null;
         }
       }
 
-      Values.Add(newValue);
+      Values.Add(CreateNewAttributeValue(newValue));
     }
 
     public void Append(IEnumerable<string> values)
@@ -63,20 +67,35 @@ namespace LoreViewer.LoreElements
       else if (values.Count() == 1)
       {
         Values = null;
-        Value = values.ToArray()[0];
+        Value = CreateNewAttributeValue(values.ToArray()[0]);
       }
 
-    }
-
-    public void Append(LoreAttribute newAttribute)
-    {
-      if (newAttribute.HasValues) { Append(newAttribute.Values); }
-      else { Append(newAttribute.Value); }
     }
 
     public override string ToString()
     {
       return Name;
+    }
+
+    private LoreAttributeValue CreateNewAttributeValue(string valueToParse)
+    {
+      switch (_definition.contentType)
+      {
+        case EFieldContentType.String:
+          return new StringAttributeValue(valueToParse, this);
+        case EFieldContentType.Color:
+          return new ColorAttributeValue(valueToParse, this);
+        case EFieldContentType.Number:
+          return new NumberAttributeValue(valueToParse, this);
+        case EFieldContentType.Quantity:
+          return new QuantityAttributeValue(valueToParse, this);
+        case EFieldContentType.Date:
+          return new DateAttributeValue(valueToParse, this);
+        case EFieldContentType.Timespan:
+          return new TimeSpanAttributeValue(valueToParse, this);
+        default:
+          return null;
+      }
     }
   }
 }
