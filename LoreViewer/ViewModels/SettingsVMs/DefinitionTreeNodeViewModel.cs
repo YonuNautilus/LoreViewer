@@ -131,7 +131,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
     }
   }
 
-  public bool IsNestedFieldsStyle => DefinitionVM is FieldDefinitionViewModel fdvm ? fdvm.IsNestedFieldsStyle : false;
+  public bool IsNestedFieldsStructure => DefinitionVM is FieldDefinitionViewModel fdvm ? fdvm.IsNestedFieldsStructure : false;
 
   public bool IsInherited => DefinitionVM?.IsInherited ?? false;
   public bool CanDelete
@@ -409,7 +409,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
 
 
     // Now handle non-grouping nodes (ie picklist and picklist definition nodes, and fields with nested fields
-    if(TreeNodeType == ETreeNodeType.FieldDefinitionNode && DefinitionVM is FieldDefinitionViewModel fdvm && fdvm.Style == EFieldStyle.NestedValues)
+    if(TreeNodeType == ETreeNodeType.FieldDefinitionNode && DefinitionVM is FieldDefinitionViewModel fdvm && fdvm.InputStructure == EFieldInputStructure.NestedValues)
     {
       // Handle deletions
       for (int i = Children.Count() - 1; i >= 0; i--)
@@ -477,7 +477,7 @@ public class DefinitionTreeNodeViewModel : ViewModelBase
     this.RaisePropertyChanged(nameof(CanEditName));
     this.RaisePropertyChanged(nameof(CanDelete));
     this.RaisePropertyChanged(nameof(NameIsReadOnly));
-    this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
+    this.RaisePropertyChanged(nameof(IsNestedFieldsStructure));
     this.RaisePropertyChanged(nameof(TextboxBorderThickness));
     this.RaisePropertyChanged(nameof(InheritanceLabelString));
   }

@@ -36,8 +36,8 @@
 
       <conv:EnumDescriptionConverter x:Key="EnumConverter" />
       <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
-      
-      <conv:AllowedStyleConverter x:Key="AllowedStyleConverter"/>
+
+      <!--conv:AllowedStyleConverter x:Key="AllowedStyleConverter"/-->
 
     </ResourceDictionary>
   </Application.Resources>

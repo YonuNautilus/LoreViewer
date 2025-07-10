@@ -1,4 +1,5 @@
-﻿using LoreViewer.Settings;
+﻿using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.Settings;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -129,5 +130,19 @@ namespace LoreViewer.LoreElements
 
       }
     }
+  }
+
+  public class PicklistAttributeValue : LoreAttributeValue
+  {
+    public override string Value { get; }
+
+    public PicklistAttributeValue(string value, LoreAttribute owningAttribute) : base(value, owningAttribute) { }
+  }
+
+  public class ReferenceAttributeValue : LoreAttributeValue
+  {
+    public override ILoreNode Value { get; }
+
+    public ReferenceAttributeValue(string value, LoreAttribute owningAttribute) : base(value, owningAttribute) { }
   }
 }

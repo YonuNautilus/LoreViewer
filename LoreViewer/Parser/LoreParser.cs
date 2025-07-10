@@ -826,7 +826,7 @@ namespace LoreViewer.Parser
           }
 
           // if it allows multiple values
-          else if (newDef.style == EFieldStyle.MultiValue)
+          else if (newDef.cardinality == EFieldCardinality.MultiValue)
           {
             newAttribute.Values = new List<LoreAttributeValue>();
             foreach (ListItemBlock block in lb)
@@ -834,7 +834,7 @@ namespace LoreViewer.Parser
               readFieldValues.Add(GetStringFromParagraphBlock(block[0] as ParagraphBlock).Trim());
             }
           }
-          else if (newDef.style == EFieldStyle.Textual)
+          else if (newDef.structure == EFieldInputStructure.Textual)
           {
             readFieldValues.Add(GetStringFromListBlock(lb));
           }

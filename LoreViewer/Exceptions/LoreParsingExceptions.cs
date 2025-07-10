@@ -120,7 +120,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     static string msgBase = "Can't have more than one indented bullet on an attribute that does not have style NestedFields or MultiValue. Attribute: {0}, Style: {1}";
 
     public NestedBulletsOnSingleValueChildlessAttributeException(string filePath, int blockIndex, int lineNumber, LoreFieldDefinition field)
-      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, field.name, field.style)) { }
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, field.name, field.structure)) { }
   }
 
   public class AttributeNotValidPicklistOptionException : LoreAttributeParsingException

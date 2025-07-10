@@ -93,6 +93,10 @@ namespace LoreViewer.LoreElements
           return new DateAttributeValue(valueToParse, this);
         case EFieldContentType.Timespan:
           return new TimeSpanAttributeValue(valueToParse, this);
+        case EFieldContentType.Picklist:
+          return new PicklistAttributeValue(valueToParse, this);
+        case EFieldContentType.ReferenceList:
+          return new ReferenceAttributeValue(valueToParse, this);
         default:
           return null;
       }

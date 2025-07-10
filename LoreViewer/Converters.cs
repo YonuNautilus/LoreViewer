@@ -76,11 +76,11 @@ namespace LoreViewer.Converters
       if (values.Count < 2)
         return false;
 
-      if (values[0] is EFieldStyle style && values[1] is IEnumerable allowedStyles)
+      if (values[0] is EFieldContentType style && values[1] is IEnumerable allowedStyles)
       {
         foreach (var allowed in allowedStyles)
         {
-          if (allowed is EFieldStyle allowedStyle && allowedStyle == style)
+          if (allowed is EFieldContentType allowedStyle && allowedStyle == style)
             return true;
         }
       }

@@ -40,8 +40,10 @@ namespace v0_6.PositiveTests
       LoreFieldDefinition fielda = typea.fields[0];
       LoreFieldDefinition fieldb = typeb.fields[0];
 
-      Assert.That(fielda.style, Is.EqualTo(EFieldStyle.SingleValue));
-      Assert.That(fieldb.style, Is.EqualTo(EFieldStyle.NestedValues));
+      Assert.That(fielda.cardinality, Is.EqualTo(EFieldCardinality.SingleValue));
+      Assert.That(fielda.structure, Is.EqualTo(EFieldInputStructure.Normal));
+      Assert.That(fieldb.cardinality, Is.EqualTo(EFieldCardinality.SingleValue));
+      Assert.That(fieldb.structure, Is.EqualTo(EFieldInputStructure.NestedValues));
 
       Assert.That(fielda.fields, Is.Null);
       Assert.That(fieldb.fields, Is.Not.Null);
@@ -57,8 +59,10 @@ namespace v0_6.PositiveTests
       Assert.That(typeb.fields[1].Base, Is.Not.Null.And.SameAs(typea.fields[1]));
       Assert.That(typea.fields[1].required, Is.False);
       Assert.That(typeb.fields[1].required, Is.True);
-      Assert.That(typea.fields[1].style, Is.EqualTo(EFieldStyle.MultiValue));
-      Assert.That(typeb.fields[1].style, Is.EqualTo(EFieldStyle.MultiValue));
+      Assert.That(typea.fields[1].cardinality, Is.EqualTo(EFieldCardinality.MultiValue));
+      Assert.That(typea.fields[1].structure, Is.EqualTo(EFieldInputStructure.Normal));
+      Assert.That(typeb.fields[1].cardinality, Is.EqualTo(EFieldCardinality.MultiValue));
+      Assert.That(typeb.fields[1].structure, Is.EqualTo(EFieldInputStructure.Normal));
 
       Assert.That(typea.fields[2], Is.Not.SameAs(typeb.fields[2]));
       Assert.That(typea.fields[2].Base, Is.Null);

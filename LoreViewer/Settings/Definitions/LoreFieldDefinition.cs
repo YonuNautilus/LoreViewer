@@ -8,22 +8,12 @@ using System.Linq;
 
 namespace LoreViewer.Settings
 {
-  public enum EFieldStyle
+  public enum EFieldCardinality
   {
-    [Description("Nested Fields")]
-    NestedValues = -1,
     [Description("Single Value")]
     SingleValue = 0,
     [Description("Multiple Values")]
     MultiValue = 1,
-    [Description("Purely Textual")]
-    Textual = 2,
-    [Description("Fixed Options")]
-    PickList = 3,
-    [Description("Lore element options of a specific type")]
-    ReferenceList = 4,
-    [Description("Color")]
-    Color = 5,
   }
 
   public enum EFieldContentType
@@ -40,6 +30,20 @@ namespace LoreViewer.Settings
     Date = 4,
     [Description("Span of time")]
     Timespan = 5,
+    [Description("List of Values")]
+    Picklist = 6,
+    [Description("List of objects")]
+    ReferenceList = 7,
+  }
+
+  public enum EFieldInputStructure
+  {
+    [Description("Normal (Default)")]
+    Normal = 0,
+    [Description("Purely Textual")]
+    Textual = 1,
+    [Description("Nested Fields")]
+    NestedValues = 2,
   }
 
   public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreFieldDefinition>
@@ -60,25 +64,33 @@ namespace LoreViewer.Settings
     public bool required { get; set; }
 
 
-    private EFieldStyle m_eStyle = EFieldStyle.SingleValue;
+    private EFieldInputStructure m_eStructure = EFieldInputStructure.Normal;
 
+    /// <summary>
+    /// Input structure overrides any contentType or Cardinality if it is a value other than Normal
+    /// </summary>
     [YamlMember(1)]
-    [DefaultValue(EFieldStyle.SingleValue)]
-    public EFieldStyle style
+    [DefaultValue(EFieldInputStructure.Normal)]
+    public EFieldInputStructure structure
     {
       get
       {
-        if (HasFields) m_eStyle = EFieldStyle.NestedValues;
-        return m_eStyle;
+        if (HasFields) m_eStructure = EFieldInputStructure.NestedValues;
+        return m_eStructure;
       }
       set
       {
-        if (m_eStyle == EFieldStyle.NestedValues && m_eStyle != value)
+        if (m_eStructure != EFieldInputStructure.Normal && m_eStructure != value)
         {
           Picklist = null;
           PicklistBranchConstraint = null;
+          RefListType = null;
+          reflistTypeName = string.Empty;
+
+          contentType = EFieldContentType.String;
+          cardinality = EFieldCardinality.SingleValue;
         }
-        m_eStyle = value;
+        m_eStructure = value;
       }
     }
 
@@ -95,6 +107,23 @@ namespace LoreViewer.Settings
       set
       {
         m_eContentType = value;
+      }
+    }
+
+
+    private EFieldCardinality m_eCardinality = EFieldCardinality.SingleValue;
+
+    [YamlMember(3)]
+    [DefaultValue(EFieldCardinality.SingleValue)]
+    public EFieldCardinality cardinality
+    {
+      get
+      {
+        return m_eCardinality;
+      }
+      set
+      {
+        m_eCardinality = value;
       }
     }
 
@@ -204,7 +233,7 @@ namespace LoreViewer.Settings
 
 
     [YamlIgnore]
-    public bool multivalue => style == EFieldStyle.MultiValue;
+    public bool multivalue => cardinality == EFieldCardinality.MultiValue;
 
     [YamlIgnore]
     public bool HasRequiredNestedFields => HasFields ? fields.Aggregate(false, (sum, next) => sum || next.required || next.HasRequiredNestedFields, r => r) : false;
@@ -215,7 +244,7 @@ namespace LoreViewer.Settings
 
     public override void PostProcess(LoreSettings settings)
     {
-      if (style == EFieldStyle.PickList)
+      if (contentType == EFieldContentType.Picklist)
       {
         if (string.IsNullOrWhiteSpace(picklistName)) throw new FieldPicklistNameNotGivenException(this);
 
@@ -233,12 +262,25 @@ namespace LoreViewer.Settings
         {
           throw new PicklistsDefinitionNotFoundException(this);
         }
-
-        // Picklist style can only use string content type for now
-        contentType = EFieldContentType.String;
       }
+      else if (contentType == EFieldContentType.ReferenceList)
+      {
+        if (string.IsNullOrWhiteSpace(reflistTypeName)) throw new FieldRefListNameNotGivenException(this);
 
-      else if (style == EFieldStyle.NestedValues || style == EFieldStyle.Textual) contentType = EFieldContentType.String;
+        if (settings.types.Any(t => t.name == reflistTypeName))
+        {
+          RefListType = settings.types.FirstOrDefault(t => t.name == reflistTypeName);
+        }
+        else
+        {
+          throw new ReferenceListTypeNotFoundException(this);
+        }
+      }
+      else if (structure == EFieldInputStructure.NestedValues || structure == EFieldInputStructure.Textual)
+      {
+        contentType = EFieldContentType.String;
+        cardinality = EFieldCardinality.SingleValue;
+      }
     }
 
     public override bool IsModifiedFromBase
@@ -249,12 +291,12 @@ namespace LoreViewer.Settings
 
         if (this.required != (Base as LoreFieldDefinition).required) return true;
 
-        if (this.style != (Base as LoreFieldDefinition).style) return true;
+        if (this.structure != (Base as LoreFieldDefinition).structure) return true;
 
         if (this.HasFields)
           if (this.fields.Any(f => f.IsModifiedFromBase)) return true;
 
-        if (this.style == EFieldStyle.PickList)
+        if (this.contentType == EFieldContentType.Picklist)
           if (this.picklistBranchRestriction != (Base as LoreFieldDefinition).picklistBranchRestriction) return true;
 
         return false;
@@ -268,20 +310,6 @@ namespace LoreViewer.Settings
     public void MergeFrom(LoreFieldDefinition parentField)
     {
       Base = parentField;
-
-      // Notes on what inherited field styles can be to override their base.
-      // inherited can be Multivalue or purely textual to override base's single value
-      // Otherwise, inherited must match base type
-
-      if(parentField.style == EFieldStyle.SingleValue)
-      {
-        if (style != EFieldStyle.MultiValue && style != EFieldStyle.Textual)
-          style = EFieldStyle.SingleValue;
-      }
-      else
-      {
-        style = parentField.style;
-      }
 
       // inherited fields always use parent's content type
       contentType = parentField.contentType;
@@ -311,7 +339,7 @@ namespace LoreViewer.Settings
       LoreFieldDefinition fieldDef = Clone();
       fieldDef.Base = this;
 
-      if (fieldDef.style == EFieldStyle.NestedValues)
+      if (fieldDef.structure == EFieldInputStructure.NestedValues)
         fieldDef.fields = DefinitionMergeManager.MergeFields(fields, fieldDef.fields);
 
       return fieldDef;
@@ -327,7 +355,7 @@ namespace LoreViewer.Settings
 
     public List<string> GetPicklistOptions()
     {
-      if (style != EFieldStyle.PickList) return new List<string>();
+      if (contentType != EFieldContentType.Picklist) return new List<string>();
 
       List<string> ret = new();
 

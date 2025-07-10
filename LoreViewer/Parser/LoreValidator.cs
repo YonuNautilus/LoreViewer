@@ -184,8 +184,8 @@ namespace LoreViewer.Validation
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
             }
 
-            // Check if an attribute follows its options if field is picklist style
-            if(contains && def.style == EFieldStyle.PickList)
+            // Check if an attribute follows its options if field is picklist structure
+            if(contains && def.contentType == EFieldContentType.Picklist)
             {
               LoreAttribute attr = container.GetAttribute(def.name);
               string attrVal = attr.Value.ValueString;

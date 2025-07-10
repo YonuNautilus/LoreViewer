@@ -102,5 +102,15 @@ namespace LoreViewer.Exceptions.SettingsParsingExceptions
     private static string msgBase = "In picklist {0}, found at least one set of picklist entries with the same name: {1}";
     public DuplicatePicklistEntryNameException(LorePicklistDefinition listDef, LorePicklistEntryDefinition entryDef) : base(listDef, string.Format(msgBase, listDef.name, entryDef.name)) { }
   }
-  #endregion Field Exceptions
-}
+  public class FieldRefListNameNotGivenException : SettingsParsingException
+  {
+    private static string msgBase = "Field definition {0} uses reference list, but refListTypeName name was not given";
+    public FieldRefListNameNotGivenException(LoreFieldDefinition fDef) : base(fDef, string.Format(msgBase, fDef.name)) { }
+  }
+  public class ReferenceListTypeNotFoundException : SettingsParsingException
+  {
+    private static string msgBase = "Field definition {0} uses reference list of type {1}, but Type {1} was not defined";
+    public ReferenceListTypeNotFoundException(LoreFieldDefinition fDef) : base(fDef, string.Format(msgBase, fDef.name, fDef.reflistTypeName)) { }
+  }
+    #endregion Field Exceptions
+  }
