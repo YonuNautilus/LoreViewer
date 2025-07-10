@@ -17,7 +17,8 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
-      <RowDefinition Height="30"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
     <Grid.ColumnDefinitions>
@@ -66,7 +67,7 @@
       <Button DockPanel.Dock="Right" Command="{Binding ClearUsedPicklistConstraintCommand}" IsEnabled="{Binding CanBreakPicklistBranchConstraint}" ToolTip.Tip="Clear Picklist Branch Constraint" Height="26" Padding="0">
         <Image Source="avares://LoreViewer/Resources/broken_link.png" />
       </Button>
-      <ComboBox ItemsSource="{Binding ValidPickListBranchChoices}" SelectedItem="{Binding PicklistBranchRestriction}" IsEnabled="{Binding HasPicklistSelected}">
+      <ComboBox VerticalAlignment="Center" ItemsSource="{Binding ValidPickListBranchChoices}" SelectedItem="{Binding PicklistBranchRestriction}" IsEnabled="{Binding HasPicklistSelected}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Name}" />
@@ -74,10 +75,20 @@
         </ComboBox.ItemTemplate>
       </ComboBox>
     </DockPanel>
+
+    <Label Grid.Row="5" Content="Reference List Type" IsVisible="{Binding IsReferencelistFieldStyle}" VerticalAlignment="Center" />
+    <ComboBox Grid.Row="5" Grid.Column="1" IsVisible="{Binding IsReferencelistFieldStyle}" VerticalAlignment="Center"
+              SelectedItem="{Binding RefListType}" ItemsSource="{Binding TypesInSettings}">
+      <ComboBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
     
     
-    <Label Grid.Row="5" Grid.Column="0" Content="Required" VerticalAlignment="Center" />
-    <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}"  VerticalAlignment="Center"/>
+    <Label Grid.Row="6" Grid.Column="0" Content="Required" VerticalAlignment="Center" />
+    <CheckBox Grid.Row="6" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}"  VerticalAlignment="Center"/>
 
   </Grid>
 </UserControl>

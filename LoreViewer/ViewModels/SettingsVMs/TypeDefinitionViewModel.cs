@@ -15,8 +15,6 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public string ExtendsTypeName { get => typeDef.extends; }
 
-    // Returns all types from settings EXCEPT for the current viewmodel's definition and any subtypes
-    //public ObservableCollection<TypeDefinitionViewModel> AllValidTypes { get => new ObservableCollection<TypeDefinitionViewModel>(CurrentSettingsViewModel.Types.Except(CurrentSettingsViewModel.Types.Where(defVM => typeDef.IsATypeOf(defVM.typeDef))).ToList().Concat(new TypeDefinitionViewModel[] { _extendsTypeVM })); }
     public ObservableCollection<TypeDefinitionViewModel> AllValidTypes
     {
       get

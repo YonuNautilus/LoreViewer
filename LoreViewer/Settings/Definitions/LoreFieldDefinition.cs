@@ -18,10 +18,12 @@ namespace LoreViewer.Settings
     MultiValue = 1,
     [Description("Purely Textual")]
     Textual = 2,
-    [Description("Picklist Options")]
+    [Description("Fixed Options")]
     PickList = 3,
+    [Description("Lore element options of a specific type")]
+    ReferenceList = 4,
     [Description("Color")]
-    Color = 4,
+    Color = 5,
   }
 
   public enum EFieldContentType
@@ -143,7 +145,6 @@ namespace LoreViewer.Settings
       {
         m_oPicklist = value;
         m_sPicklistName = value?.name;
-        //if (m_oPicklist.isBranch) picklistBranchRestriction = m_oPicklist.name;
       }
     }
 
@@ -163,6 +164,41 @@ namespace LoreViewer.Settings
           m_oPicklistBranchConstraint = null;
           picklistBranchRestriction = null;
         }
+      }
+    }
+
+
+
+
+    private LoreTypeDefinition m_oRefListType;
+    [YamlIgnore]
+    public LoreTypeDefinition RefListType
+    {
+      get
+      {
+        return this.m_oRefListType;
+      }
+      set
+      {
+        m_oRefListType = value;
+        m_sReferenceListTypeName = value?.name;
+      }
+    }
+
+    private string m_sReferenceListTypeName;
+
+    [YamlMember(3)]
+    [DefaultValue("")]
+    public string reflistTypeName
+    {
+      get
+      {
+        if (RefListType != null) return RefListType.name;
+        else return m_sReferenceListTypeName;
+      }
+      set
+      {
+        m_sReferenceListTypeName = value;
       }
     }
 
@@ -197,7 +233,12 @@ namespace LoreViewer.Settings
         {
           throw new PicklistsDefinitionNotFoundException(this);
         }
+
+        // Picklist style can only use string content type for now
+        contentType = EFieldContentType.String;
       }
+
+      else if (style == EFieldStyle.NestedValues || style == EFieldStyle.Textual) contentType = EFieldContentType.String;
     }
 
     public override bool IsModifiedFromBase

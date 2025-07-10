@@ -23,6 +23,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     private ObservableCollection<SelectableFieldStyleViewModel> m_oSelectableStyles;
     public ObservableCollection<SelectableFieldStyleViewModel> FieldStyles { get => m_oSelectableStyles; }
 
+    public ObservableCollection<TypeDefinitionViewModel> TypesInSettings { get => CurrentSettingsViewModel.Types; }
+
     public List<EFieldContentType> ContentTypes { get => Enum.GetValues(typeof(EFieldContentType)).Cast<EFieldContentType>().ToList(); }
 
     public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => CurrentSettingsViewModel.Picklists; }
@@ -43,9 +45,12 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool IsNestedFieldsStyle { get => fieldDef.style == EFieldStyle.NestedValues; }
 
     public bool IsPicklistFieldStyle { get => fieldDef.style == EFieldStyle.PickList; }
+    public bool IsReferencelistFieldStyle { get => fieldDef.style == EFieldStyle.ReferenceList; }
 
     public bool HasPicklistSelected { get => Picklist != null; }
     public bool HasRestrictionSelected { get => PicklistBranchRestriction != null; }
+
+    public bool HasRefListTypeSelected { get => RefListType != null; }
 
     public bool HasSubFields { get => fieldDef.HasFields; }
     public bool NoSubFields { get => !fieldDef.HasFields; }
@@ -76,7 +81,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
-        return fieldDef.style == EFieldStyle.Textual || fieldDef.style == EFieldStyle.NestedValues || IsNotInherited;
+        return  fieldDef.style == EFieldStyle.Textual || fieldDef.style == EFieldStyle.NestedValues || IsNotInherited;
       }
     }
 
@@ -129,6 +134,20 @@ namespace LoreViewer.ViewModels.SettingsVMs
     }
 
 
+    private TypeDefinitionViewModel m_oRefListType;
+    public TypeDefinitionViewModel RefListType
+    {
+      get
+      {
+        return m_oRefListType;
+      }
+      set
+      {
+        m_oRefListType = value;
+        fieldDef.RefListType = value?.typeDef;
+        SettingsRefresher.Apply(CurrentSettingsViewModel);
+      }
+    }
 
 
     private PicklistDefinitionViewModel m_oPicklist;
@@ -190,11 +209,14 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(SelectedFieldStyle));
       this.RaisePropertyChanged(nameof(IsNestedFieldsStyle));
       this.RaisePropertyChanged(nameof(IsPicklistFieldStyle));
+      this.RaisePropertyChanged(nameof(IsReferencelistFieldStyle));
+      this.RaisePropertyChanged(nameof(IsReferencelistFieldStyle));
       this.RaisePropertyChanged(nameof(HasSubFields));
       this.RaisePropertyChanged(nameof(NoSubFields));
       this.RaisePropertyChanged(nameof(TooltipText));
       this.RaisePropertyChanged(nameof(CanEditStyle));
       this.RaisePropertyChanged(nameof(CanEditContentType));
+      this.RaisePropertyChanged(nameof(RefListType));
       this.RaisePropertyChanged(nameof(Picklist));
       this.RaisePropertyChanged(nameof(Picklists));
       this.RaisePropertyChanged(nameof(PicklistBranchRestriction));

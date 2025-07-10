@@ -9,84 +9,11 @@
         x:Class="LoreViewer.Dialogs.SettingsEditDialog"
         x:DataType="vm:LoreSettingsViewModel"
         Title="SettingsEditDialog">
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="3*"/>
-      <ColumnDefinition Width="350"/>
-      <ColumnDefinition Width="Auto"/>
-    </Grid.ColumnDefinitions>
+  <Grid RowDefinitions="*,30">
 
-    <Grid.RowDefinitions>
-      <RowDefinition/>
-      <RowDefinition Height="30"/>
-    </Grid.RowDefinitions>
+    <Grid Grid.Row="0" ColumnDefinitions="3*,350,Auto">
 
-    <Border Grid.Column="0" BorderBrush="Black" BorderThickness="2">
-      <TreeDataGrid x:Name="DefinitionTreeDataGrid" VerticalAlignment="Stretch">
-      </TreeDataGrid>
-    </Border>
-
-    <Border Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,2,0">
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition />
-          <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <ContentControl x:Name="DefView" Grid.Row="0" Content="{Binding SelectedDefinition}" HorizontalAlignment="Stretch">
-          <ContentControl.DataTemplates>
-            <DataTemplate DataType="{x:Type vm:TypeDefinitionViewModel}">
-              <defViews:TypeDefinitionViewPanel x:Name="TypeView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:FieldDefinitionViewModel}">
-              <defViews:FieldDefinitionViewPanel x:Name="FieldView" DataContext="{Binding}" Tag="{Binding UniqueID}" />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:SectionDefinitionViewModel}">
-              <defViews:SectionDefinitionViewPanel x:Name="SectionView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:CollectionDefinitionViewModel}">
-              <defViews:CollectionDefinitionViewPanel x:Name="CollectionView" DataContext="{Binding}" Tag="{Binding UniqueID}" />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:EmbeddedNodeDefinitionViewModel}">
-              <defViews:EmbeddedDefinitionViewPanel x:Name="EmbeddedView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:PicklistDefinitionViewModel}" />
-            <DataTemplate DataType="{x:Type vm:PicklistEntryDefinitionViewModel}" />
-          </ContentControl.DataTemplates>
-        </ContentControl>
-
-        <Border Grid.Column="1" Grid.Row="1" BorderBrush="Black" BorderThickness="1">
-          <ScrollViewer Margin="50,0,50,10">
-            <Grid ColumnDefinitions="*,auto" RowDefinitions="22,30,30,30,Auto,Auto">
-              <Label Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Content="Parser Settings"/>
-
-              <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Ignore Case:</Label>
-              <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IgnoreCase}" />
-
-              <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Soft Linking:</Label>
-              <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding SoftLinking}" />
-
-              <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Pruning for serialization</Label>
-              <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding EnablePruningForSerialization}" />
-
-              <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-                <Label>Markdown Extensions:</Label>
-                <TextBox AcceptsReturn="True" Text="{Binding MarkdownExtensions}" Height="60"/>
-              </StackPanel>
-
-              <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
-                <Label>Blocked Paths:</Label>
-                <TextBox AcceptsReturn="True" Text="{Binding BlockedPaths}" Height="60"/>
-              </StackPanel>
-
-            </Grid>
-          </ScrollViewer>
-        </Border>
-      </Grid>
-    </Border>
-
-    <Grid Grid.Column="2">
-      <TreeDataGrid x:Name="DiffTreeDataGrid" Source="{Binding DiffRowsSource}">
+      <TreeDataGrid Grid.Column="2" x:Name="DiffTreeDataGrid" Source="{Binding DiffRowsSource}" IsVisible="{Binding IsComparisonOpen}">
         <TreeDataGrid.Styles>
           <Style Selector="TreeDataGridRow">
             <Setter Property="Height" Value="18" />
@@ -97,13 +24,77 @@
           </Style>
         </TreeDataGrid.Styles>
       </TreeDataGrid>
+
+      <Border Grid.Column="0" BorderBrush="Black" BorderThickness="2">
+        <TreeDataGrid x:Name="DefinitionTreeDataGrid" VerticalAlignment="Stretch">
+        </TreeDataGrid>
+      </Border>
+      <Border Grid.Column="1" BorderBrush="Black" BorderThickness="0,0,2,0">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <ContentControl x:Name="DefView" Grid.Row="0" Content="{Binding SelectedDefinition}" HorizontalAlignment="Stretch">
+            <ContentControl.DataTemplates>
+              <DataTemplate DataType="{x:Type vm:TypeDefinitionViewModel}">
+                <defViews:TypeDefinitionViewPanel x:Name="TypeView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type vm:FieldDefinitionViewModel}">
+                <defViews:FieldDefinitionViewPanel x:Name="FieldView" DataContext="{Binding}" Tag="{Binding UniqueID}" />
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type vm:SectionDefinitionViewModel}">
+                <defViews:SectionDefinitionViewPanel x:Name="SectionView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type vm:CollectionDefinitionViewModel}">
+                <defViews:CollectionDefinitionViewPanel x:Name="CollectionView" DataContext="{Binding}" Tag="{Binding UniqueID}" />
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type vm:EmbeddedNodeDefinitionViewModel}">
+                <defViews:EmbeddedDefinitionViewPanel x:Name="EmbeddedView" DataContext="{Binding}" Tag="{Binding UniqueID}"/>
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type vm:PicklistDefinitionViewModel}" />
+              <DataTemplate DataType="{x:Type vm:PicklistEntryDefinitionViewModel}" />
+            </ContentControl.DataTemplates>
+          </ContentControl>
+
+          <Border Grid.Column="1" Grid.Row="1" BorderBrush="Black" BorderThickness="1">
+            <ScrollViewer Margin="50,0,50,10">
+              <Grid ColumnDefinitions="*,auto" RowDefinitions="22,30,30,30,Auto,Auto">
+                <Label Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Content="Parser Settings"/>
+
+                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Ignore Case:</Label>
+                <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IgnoreCase}" />
+
+                <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Soft Linking:</Label>
+                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding SoftLinking}" />
+
+                <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Pruning for serialization</Label>
+                <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding EnablePruningForSerialization}" />
+
+                <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+                  <Label>Markdown Extensions:</Label>
+                  <TextBox AcceptsReturn="True" Text="{Binding MarkdownExtensions}" Height="60"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
+                  <Label>Blocked Paths:</Label>
+                  <TextBox AcceptsReturn="True" Text="{Binding BlockedPaths}" Height="60"/>
+                </StackPanel>
+
+              </Grid>
+            </ScrollViewer>
+          </Border>
+        </Grid>
+      </Border>
     </Grid>
 
-    <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft">
-      <Button Command="{Binding SaveSettingsCommand}">
-        Save
-      </Button>
-    </StackPanel>
 
+
+    <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" FlowDirection="RightToLeft" Spacing="5">
+      <Button Command="{Binding ToggleComparisonPanelCommand}">Toggle YAML Comparison</Button>
+      <Button Command="{Binding SaveSettingsCommand}">Save</Button>
+      <Button Command="{Binding CancelSettingsEditCommand}">Cancel</Button>
+    </StackPanel>
   </Grid>
 </Window>

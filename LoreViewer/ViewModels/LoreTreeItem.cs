@@ -81,7 +81,7 @@ namespace LoreViewer.ViewModels
             Children.Add(new LoreTreeItem(nestedAttr));
 
         if (la.HasValue && !la.HasValues)
-          DisplayName = DisplayName += $": {la.Value}";
+          DisplayName = DisplayName += $": {la.Value.ValueString}";
         else if (la.HasValues)
           foreach (LoreAttributeValue v in la.Values) Children.Add(new LoreTreeItem(v.ValueString));
       }

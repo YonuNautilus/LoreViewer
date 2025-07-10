@@ -210,8 +210,11 @@ namespace LoreViewer.ViewModels
       {
         var dialog = new SettingsEditDialog(_settings);
         LoreSettings newSettings = await dialog.ShowDialog<LoreSettings>(TopLevel.GetTopLevel(m_oView) as Window);
+
         if (newSettings != null)
           Trace.WriteLine("GOT NEW SETTINGS");
+        else
+          Trace.WriteLine("Got NULL from Settings Editor dialog, assuming changes where cancelled");
       }
     }
 

@@ -50,7 +50,11 @@ public class LoreSettingsViewModel : ViewModelBase
   public TreeDataGrid curTree;
 
   public ReactiveCommand<Unit, Unit> SaveSettingsCommand { get; }
+  public ReactiveCommand<Unit, Unit> CancelSettingsEditCommand { get; }
   public ReactiveCommand<Unit, Unit> SaveSettingsWithCompareCommand { get; }
+  public ReactiveCommand<Unit, Unit> ToggleComparisonPanelCommand { get; }
+
+  public bool IsComparisonOpen { get; set; } = false;
 
   public bool IgnoreCase
   { 
@@ -188,11 +192,13 @@ public class LoreSettingsViewModel : ViewModelBase
   /// </summary>
   /// <param name="_settings">The LoreSettings object this View Model is built for.</param>
   public LoreSettingsViewModel(LoreSettings _settings)
-  { 
+  {
     m_oLoreSettings = _settings;
 
     SaveSettingsWithCompareCommand = ReactiveCommand.CreateFromTask(SaveSettingsAsync);
     SaveSettingsCommand = ReactiveCommand.Create(SaveSettings);
+    CancelSettingsEditCommand = ReactiveCommand.Create(CancelSaveAndClose);
+    ToggleComparisonPanelCommand = ReactiveCommand.Create(() => { IsComparisonOpen = !IsComparisonOpen; this.RaisePropertyChanged(nameof(IsComparisonOpen)); });
 
     var typesGroup = new DefinitionTreeNodeViewModel(ETreeNodeType.RootTypeGroupingNode, this);
     foreach (var type in m_oLoreSettings.types)
@@ -235,11 +241,20 @@ public class LoreSettingsViewModel : ViewModelBase
     win.Close(m_oLoreSettings);
   }
 
+  private void CancelSaveAndClose()
+  {
+    var win = TopLevel.GetTopLevel(m_oView) as Window;
+    win.Close(null);
+  }
+
   private async Task SaveSettingsAsync()
   {
     SettingsDiffer dfr = new SettingsDiffer();
     var output = dfr.DoSideBySideCompare(OriginalYAML, NewYAML);
     DiffRowsSource = SettingsDiffTreeDataGridBuilder.BuildTreeSource(output);
+
+    (m_oView as SettingsEditDialog).DiffTreeDataGrid.Width = SettingsDiffTreeDataGridBuilder.CurrentMaxWidthLeft + SettingsDiffTreeDataGridBuilder.CurrentMaxWidthRight + 60;
+
     CompareDialog cd = new CompareDialog(this);
     bool confirm = await cd.ShowDialog<bool>(TopLevel.GetTopLevel(m_oView) as Window);
 
