@@ -1,11 +1,7 @@
 ﻿using LoreViewer.LoreElements.Interfaces;
-using LoreViewer.Settings;
+using LoreViewer.Parser;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnitsNet;
 
 namespace LoreViewer.LoreElements
@@ -141,8 +137,20 @@ namespace LoreViewer.LoreElements
 
   public class ReferenceAttributeValue : LoreAttributeValue
   {
-    public override ILoreNode Value { get; }
+    private ILoreNode m_oNodeValue;
+    public override ILoreNode Value { get => m_oNodeValue; }
 
     public ReferenceAttributeValue(string value, LoreAttribute owningAttribute) : base(value, owningAttribute) { }
+
+    public void ResolveReferenceToNode(LoreParser parser)
+    {
+      // Look for the node by name
+      ILoreNode foundNode = parser.GetNode(ValueString);
+
+      if (foundNode == null)
+        throw new Exception($"NODE {ValueString} NOT FOUND");
+      else
+        m_oNodeValue = foundNode;
+    }
   }
 }

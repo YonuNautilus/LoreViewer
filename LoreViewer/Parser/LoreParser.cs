@@ -163,6 +163,16 @@ namespace LoreViewer.Parser
       ClearParsed();
     }
 
+    public void PerformReferenceResolution()
+    {
+      foreach (ILoreNode n in _nodes)
+      {
+        foreach (LoreAttribute la in n.Attributes)
+        {
+          la.ResolveNodeRefs(this);
+        }
+      }
+    }
 
     public void ParseSettingsFromFile(string settingsFilePath)
     {
@@ -208,6 +218,8 @@ namespace LoreViewer.Parser
       }
 
       PerformMergeFromParsed();
+
+      PerformReferenceResolution();
 
       Validate();
     }

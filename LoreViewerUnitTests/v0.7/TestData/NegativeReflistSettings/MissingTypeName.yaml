@@ -1,0 +1,5 @@
+types:
+  - name: Type 1
+    fields:
+      - name: Node To Reference
+        contentType: ReferenceList

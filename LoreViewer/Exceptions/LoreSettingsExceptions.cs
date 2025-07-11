@@ -104,7 +104,7 @@ namespace LoreViewer.Exceptions.SettingsParsingExceptions
   }
   public class FieldRefListNameNotGivenException : SettingsParsingException
   {
-    private static string msgBase = "Field definition {0} uses reference list, but refListTypeName name was not given";
+    private static string msgBase = "Field definition {0} uses reference list, but reflistTypeName name was not given";
     public FieldRefListNameNotGivenException(LoreFieldDefinition fDef) : base(fDef, string.Format(msgBase, fDef.name)) { }
   }
   public class ReferenceListTypeNotFoundException : SettingsParsingException
@@ -112,5 +112,5 @@ namespace LoreViewer.Exceptions.SettingsParsingExceptions
     private static string msgBase = "Field definition {0} uses reference list of type {1}, but Type {1} was not defined";
     public ReferenceListTypeNotFoundException(LoreFieldDefinition fDef) : base(fDef, string.Format(msgBase, fDef.name, fDef.reflistTypeName)) { }
   }
-    #endregion Field Exceptions
-  }
+  #endregion Field Exceptions
+}

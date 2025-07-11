@@ -280,6 +280,10 @@ namespace LoreViewer.Settings
       {
         contentType = EFieldContentType.String;
         cardinality = EFieldCardinality.SingleValue;
+
+        if(structure == EFieldInputStructure.NestedValues && HasFields)
+          foreach (LoreFieldDefinition lfd in fields)
+            lfd.PostProcess(settings);
       }
     }
 

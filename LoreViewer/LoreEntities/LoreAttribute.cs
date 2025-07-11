@@ -1,5 +1,8 @@
-﻿using LoreViewer.LoreElements.Interfaces;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.Parser;
 using LoreViewer.Settings;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -100,6 +103,26 @@ namespace LoreViewer.LoreElements
         default:
           return null;
       }
+    }
+
+    internal void ResolveNodeRefs(LoreParser loreParser)
+    {
+      LoreFieldDefinition lfd = this.DefinitionAs<LoreFieldDefinition>();
+
+      // First check this attribute (in the case it is not for a field with nested fields.
+      if (lfd.structure != EFieldInputStructure.NestedValues && lfd.contentType == EFieldContentType.ReferenceList)
+      {
+        if (lfd.cardinality == EFieldCardinality.MultiValue)
+          foreach (ReferenceAttributeValue rav in Values)
+            rav.ResolveReferenceToNode(loreParser);
+        else
+          (Value as ReferenceAttributeValue).ResolveReferenceToNode(loreParser);
+      }
+
+      // If it's a field with nested fields...
+      else if (lfd.structure == EFieldInputStructure.NestedValues)
+        foreach(LoreAttribute la in Attributes)
+          la.ResolveNodeRefs(loreParser);
     }
   }
 }

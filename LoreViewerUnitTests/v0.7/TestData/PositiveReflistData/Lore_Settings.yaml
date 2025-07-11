@@ -1,0 +1,16 @@
+types:
+  - name: Type 1
+    fields:
+      - name: Reference List Field
+        contentType: ReferenceList
+        reflistTypeName: Type 2
+
+  - name: Type 2
+  
+  - name: Type 3
+    extends: Type 1
+    fields:
+      - name: RefListField 2
+        contentType: ReferenceList
+        reflistTypeName: Type 1
+        cardinality: MultiValue
