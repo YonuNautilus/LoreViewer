@@ -5,5 +5,5 @@ types:
   - name: Type A
     fields:
       - name: A Choice
-        style: PickList
+        contentType: PickList
         picklistName: Picklist 2

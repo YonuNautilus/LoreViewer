@@ -68,7 +68,7 @@
       - name: CI1 Info
         fields:
           - name: CI1 Field
-            style: multivalue
+            cardinality: multivalue
       - name: CI2 Info
 
   - name: CollectionItem3

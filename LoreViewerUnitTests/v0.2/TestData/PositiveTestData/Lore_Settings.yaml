@@ -11,7 +11,7 @@
         fields:
           - name: Field 1
           - name: Field 2
-            style: MultiValue
+            cardinality: MultiValue
         freeform: false
         sections:
           - name: Freeform Child
@@ -21,14 +21,14 @@
         fields:
           - name: Field 3
           - name: Field 4
-            style: MultiValue
+            cardinality: MultiValue
         freeform: false
         sections:
           - name: Fields-Child
             fields:
               - name: Field 5
               - name: Field 6
-                style: MultiValue
+                cardinality: MultiValue
       
       - name: Freeform With Fields-Child
         freeform: true
@@ -36,13 +36,13 @@
           - name: Fields-Child
             fields:
               - name: Field 7
-                style: MultiValue
+                cardinality: MultiValue
               - name: Field 8
   
   - name: NodeTest
     fields:
       - name: Field 1
-        style: MultiValue
+        cardinality: MultiValue
     sections:
       - name: Fields Section
         fields:

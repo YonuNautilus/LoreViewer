@@ -4,7 +4,7 @@
       - name: FieldA
       - name: RequiredOnSubType
         required: false
-        style: MultiValue
+        cardinality: MultiValue
       - name: UnmodifiedField
     sections:
       - name: Unrequired Section
@@ -26,7 +26,6 @@
           - name: FieldB
       - name: RequiredOnSubType
         required: true
-        style: Textual
     sections:
       - name: Unrequired Section
         required: true

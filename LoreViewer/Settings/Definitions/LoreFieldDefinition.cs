@@ -130,7 +130,7 @@ namespace LoreViewer.Settings
 
     private string m_sPicklistName;
 
-    [YamlMember(3)]
+    [YamlMember(4)]
     [DefaultValue("")]
     public string picklistName
     {
@@ -147,7 +147,7 @@ namespace LoreViewer.Settings
 
     private string m_sPicklistBranchRestriction;
 
-    [YamlMember(4)]
+    [YamlMember(5)]
     [DefaultValue("")]
     public string picklistBranchRestriction
     {
@@ -313,6 +313,8 @@ namespace LoreViewer.Settings
 
       // inherited fields always use parent's content type
       contentType = parentField.contentType;
+      cardinality = parentField.cardinality;
+      structure = parentField.structure;
 
       if (this.Picklist == null && parentField.Picklist != null)
         Picklist = parentField.Picklist;
@@ -320,7 +322,11 @@ namespace LoreViewer.Settings
       if (PicklistBranchConstraint == null && parentField.PicklistBranchConstraint != null)
         PicklistBranchConstraint = parentField.PicklistBranchConstraint;
 
+      if(this.RefListType == null && parentField.RefListType != null)
+        this.RefListType = parentField.RefListType;
+
       this.required |= parentField.required;
+
     }
 
     public LoreFieldDefinition Clone()

@@ -71,12 +71,14 @@ namespace v0_4.PositiveTests
 
       Assert.That(_settings.GetTypeDefinition("CollectionItem2").sections[0].fields, Has.Count.EqualTo(1));
       Assert.That(_settings.GetTypeDefinition("CollectionItem2").sections[0].fields[0].name, Is.EqualTo("CI1 Field"));
-      Assert.That(_settings.GetTypeDefinition("CollectionItem2").sections[0].fields[0].multivalue, Is.EqualTo(true));
+      // This used to be true -- but now it is false, because we don't allow cardinality overrides for inherited fields anymore
+      Assert.That(_settings.GetTypeDefinition("CollectionItem2").sections[0].fields[0].multivalue, Is.EqualTo(false));
       Assert.That(_settings.GetTypeDefinition("CollectionItem2").fields, Is.Null);
 
       Assert.That(_settings.GetTypeDefinition("CollectionItem3").sections[0].fields, Has.Count.EqualTo(1));
       Assert.That(_settings.GetTypeDefinition("CollectionItem3").sections[0].fields[0].name, Is.EqualTo("CI1 Field"));
-      Assert.That(_settings.GetTypeDefinition("CollectionItem3").sections[0].fields[0].multivalue, Is.EqualTo(true));
+      // This used to be true -- but now it is false, because we don't allow cardinality overrides for inherited fields anymore
+      Assert.That(_settings.GetTypeDefinition("CollectionItem3").sections[0].fields[0].multivalue, Is.EqualTo(false));
       Assert.That(_settings.GetTypeDefinition("CollectionItem3").fields, Has.Count.EqualTo(1));
       Assert.That(_settings.GetTypeDefinition("CollectionItem3").fields[0].name, Is.EqualTo("CI3 Field"));
 
