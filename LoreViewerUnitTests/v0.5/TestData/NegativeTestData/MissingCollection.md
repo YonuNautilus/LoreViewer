@@ -1,4 +1,4 @@
-﻿# First Simple Node {MainNodeType}
+﻿# First Simple Node <node type="MainNodeType"/>
 
 - required field: VALUE
 - field with required:
@@ -24,11 +24,11 @@ This subsection is required
 
 This section IS required
 
-## Optional Nested Node {Simple Node}
+## Optional Nested Node <node type="Simple Node"/>
 
 This nested node is NOT required.
 
-## Required Nested Node {Simple Node 2}
+## Required Nested Node <node type="Simple Node 2"/>
 
 - Simple Required Field: A value, since this field is required
 
@@ -38,10 +38,10 @@ This nested node IS required.
 
 This section is defined on the parent node type Simple Node, but is not required
 
-## Parent Of Required Nested Node {SimpleTypeWithRequiredNode}
+## Parent Of Required Nested Node <node type="SimpleTypeWithRequiredNode"/>
 
 This node is not required directly, but its child is
 
-### Required Grandchild {Simple Node}
+### Required Grandchild <node type="Simple Node"/>
 
 This node IS required.

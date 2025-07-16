@@ -1,4 +1,4 @@
-﻿# Malformed Field in Section {SectionNegativeType}
+﻿# Malformed Field in Section <node type="SectionNegativeType" />
 
 ## Summary
 - Theme

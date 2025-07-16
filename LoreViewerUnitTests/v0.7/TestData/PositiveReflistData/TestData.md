@@ -1,15 +1,15 @@
-# First Node {Type 1}
+# First Node <node type="Type 1"/>
 
 - Reference List Field: Second Node
 
-# Second Node {Type 2}
+# Second Node <node type="Type 2"/>
 
-## Section with some text {section}
+## Section with some text <section/>
 
 just to be safe
 
 
-# Third Node {Type 3}
+# Third Node <node type="Type 3"/>
 
 - Reference List Field: Second Node
 - RefListField 2:

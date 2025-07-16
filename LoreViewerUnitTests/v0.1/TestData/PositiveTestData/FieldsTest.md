@@ -1,4 +1,4 @@
-﻿# Vela Orion {TestCharacter}
+﻿# Vela Orion <node type="TestCharacter" />
 
 - Aliases:
   - *V*
@@ -14,7 +14,7 @@
   - Duration: 2012–2021
 
 
-# This is a valid markdown with bullet point fields/attributes {ListFieldsObject}
+# This is a valid markdown with bullet point fields/attributes <node type="ListFieldsObject" />
 
 - flat: This is a flat attribute
 - **flat with bold:** flat attribute with bold name
@@ -36,7 +36,7 @@
   - value 6
 
 
-# Field Format Edge Case Test {FieldEdgeCases}
+# Field Format Edge Case Test <node type="FieldEdgeCases" />
 
 - FlatField: Normal value, no formatting
 

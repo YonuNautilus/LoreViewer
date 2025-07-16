@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Packaging;
 using LoreViewer.Settings;
 using ReactiveUI;
 using System;
@@ -45,7 +46,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool IsNestedFieldsStructure { get => fieldDef.structure == EFieldInputStructure.NestedValues; }
 
     public bool IsPicklistContentType { get => fieldDef.contentType == EFieldContentType.Picklist; }
-    public bool IsReferencelistContentType { get => fieldDef.contentType == EFieldContentType.Picklist; }
+    public bool IsReferencelistContentType { get => fieldDef.contentType == EFieldContentType.ReferenceList; }
 
     public bool HasPicklistSelected { get => Picklist != null; }
     public bool HasRestrictionSelected { get => PicklistBranchRestriction != null; }
@@ -106,6 +107,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
+        if(IsReferencelistContentType && m_oRefListType == null)
+          m_oRefListType = CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.typeDef == fieldDef.RefListType);
         return m_oRefListType;
       }
       set

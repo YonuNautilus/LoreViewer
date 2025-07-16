@@ -1,4 +1,4 @@
-﻿# Object For Subsections Testing {SubsectionsTest}
+﻿# Object For Subsections Testing <node type="SubsectionsTest" />
 
 This object will have *various* sections with **subsections**
 

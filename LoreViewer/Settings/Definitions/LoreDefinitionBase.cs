@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace LoreViewer.Settings
 {
@@ -271,5 +272,11 @@ namespace LoreViewer.Settings
             yield return child;
       }
     }
+  }
+
+  public static class StringHelpers
+  {
+    public const string EMOJI_PATTERN = @"\p{Cs}|[^\u0000-\u007F]";
+    public static string TrimEmoji(this string text) => Regex.Replace(text, EMOJI_PATTERN, "").Trim();
   }
 }

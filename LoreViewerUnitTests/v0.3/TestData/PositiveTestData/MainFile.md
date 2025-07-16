@@ -1,4 +1,4 @@
-﻿# Node To Merge {TopLevelMerge}
+﻿# Node To Merge <node type="TopLevelMerge" />
 
 - Field in main file: Value
 

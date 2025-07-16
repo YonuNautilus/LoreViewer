@@ -1,4 +1,4 @@
-﻿# Node To Merge {TopLevelMerge}
+﻿# Node To Merge <node type="TopLevelMerge" />
 
 - Field in another file: Value in another file
 
@@ -8,7 +8,7 @@ Testing that top-level nodes with same name, same type at the top level of markd
 
 This section is in another file
 
-## Collection of basic nodes {collection:BasicNode}
+## Collection of basic nodes <collection type="BasicNode" />
 
 ### BasicNode1
 

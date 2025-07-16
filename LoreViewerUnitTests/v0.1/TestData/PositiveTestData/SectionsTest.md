@@ -1,4 +1,4 @@
-﻿# Section Target Test {SectionTest}
+﻿# Section Target Test <node type="SectionTest" />
 
 - Label: Demo Entry
 
@@ -34,7 +34,7 @@ Relocated to Earth in 2092. Built a reputation in archival analytics.
 
 
 
-# Fielded Section Test {SectionWithFields}
+# Fielded Section Test <node type="SectionWithFields" />
 
 ## Personality
 

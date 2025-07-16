@@ -1,4 +1,4 @@
-﻿# First Simple Node {MainNodeType}
+﻿# First Simple Node <node type="MainNodeType"/>
 
 - required field: attribute
 - field with required:
@@ -18,7 +18,7 @@ This section is not required, but it has a required subsection and a required fi
 This subsection is required
 
 
-## Required Nested Node {Simple Node 2}
+## Required Nested Node <node type="Simple Node 2"/>
 
 - Simple Required Field: A value, since this field is required
 
@@ -32,7 +32,7 @@ This section is defined on the parent node type Simple Node, but is not required
 
 This section IS required
 
-## Optional Nested Node {Simple Node}
+## Optional Nested Node <node type="Simple Node"/>
 
 This nested node is NOT required.
 
@@ -40,7 +40,7 @@ This nested node is NOT required.
 
 This section is defined on the parent node type Simple Node, but is not required
 
-## Parent Of Required Nested Node {SimpleTypeWithRequiredNode}
+## Parent Of Required Nested Node <node type="SimpleTypeWithRequiredNode"/>
 
 This node is not required directly, but its child is (WHICH IS MISSING in this test)
 

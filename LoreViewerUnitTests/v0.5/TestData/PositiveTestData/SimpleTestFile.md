@@ -1,4 +1,4 @@
-﻿# First Simple Node {MainNodeType}
+﻿# First Simple Node <node type="MainNodeType"/>
 
 - field with required:
   - required nested field: value
@@ -12,11 +12,11 @@ This is the first node: *ALL* requirements are followed, AND split into two file
 
 This section IS required
 
-## Optional Nested Node {Simple Node}
+## Optional Nested Node <node type="Simple Node"/>
 
 This nested node is NOT required.
 
-## Required Nested Node {Simple Node 2}
+## Required Nested Node <node type="Simple Node 2"/>
 
 - Simple Required Field: A value, since this field is required
 

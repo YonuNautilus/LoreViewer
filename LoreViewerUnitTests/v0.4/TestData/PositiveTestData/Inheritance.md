@@ -1,4 +1,4 @@
-﻿# Grandparent {TypeBase}
+﻿# Grandparent <node type="TypeBase" />
 
 - Awards:
   - Oscar: Nominated
@@ -27,7 +27,7 @@ Grandma refuses to throw it away.
 
 ---
 
-# Parent {TypeChild}
+# Parent <node type="TypeChild"/>
 
 - Awards:
   - Tony: Achieved
@@ -97,7 +97,7 @@ Mom's own section
 
 ---
 
-# Daughter {TypeGrandchild}
+# Daughter <node type="TypeGrandchild"/>
 
 - Awards:
   - Tony: Lost
@@ -191,7 +191,7 @@ Baby's first section
 
 ---
 
-# Uncle {Uncle}
+# Uncle <node type="Uncle"/>
 
 - Awards:
   - Oscar: Won

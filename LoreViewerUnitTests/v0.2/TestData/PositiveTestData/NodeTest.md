@@ -1,4 +1,4 @@
-﻿# A Node For Testing Narrative Text When Attributes Are Present {NodeTest}
+﻿# A Node For Testing Narrative Text When Attributes Are Present <node type="NodeTest" />
 
 - Field 1
   + Value 1 (using plus)
@@ -13,7 +13,7 @@ and a bit more text
 
 What does it all ~~do~~ even *mean*?
 
-## An Undefined Section (Should be a freeform narrative text block, no fields) {section}
+## An Undefined Section (Should be a freeform narrative text block, no fields) <section/>
 
 + So here's a listblock to see if it is,
   * deep down...

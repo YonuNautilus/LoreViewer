@@ -1,4 +1,4 @@
-﻿# Base Node {BaseType}
+﻿# Base Node <node type="BaseType"/>
 
 This is the base type
 
@@ -6,14 +6,14 @@ This is the base type
 
 This collection is required
 
-### First Item {ColType2}
+### First Item <node type="ColType2"/>
 
 This node type is allowed
 
-### Second Item {ColType3}
+### Second Item <node type="ColType3"/>
 
 This node type is also allowed
 
-### First Item {ColTypeX}
+### First Item <node type="ColTypeX"/>
 
 This item should triggers a InvalidTypeInCollectionException

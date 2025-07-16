@@ -1,4 +1,4 @@
-﻿# First Simple Node {MainNodeType}
+﻿# First Simple Node<node type="MainNodeType"/>
 
 - required field: attribute
 
@@ -16,10 +16,10 @@ This subsection is required
 
 this collection is required
 
-### A node {Simple Node 2}
+### A node <node type="Simple Node 2"/>
 
 - Simple Required Field: VALUE
 
-### Another Node {Simple Node}
+### Another Node <node type="Simple Node"/>
 
 just a simple node

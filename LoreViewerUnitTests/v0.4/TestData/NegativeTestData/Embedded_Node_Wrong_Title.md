@@ -1,5 +1,5 @@
-﻿# Main Node {MainNode}
+﻿# Main Node <node type="MainNode"/>
 
-## Allowed Title Embedded Node {Embedded1}
+## Allowed Title Embedded Node <node type="Embedded1"/>
 
-## Jimmy {Embedded2}
+## Jimmy <node type="Embedded2"/>

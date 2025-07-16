@@ -4,26 +4,9 @@
 
 This tool will allow users to define their own schema for different types of lore elements (e.g., characters, timeline events, organizations), while keeping everything stored in plain markdown files with rich structure.
 
-## Before We Move On...
-
-I need to state that tagging headings for LoreViewer uses the curly bracket {}. This is also used for Markdown extended syntax for giving a heading a custom ID for hyperlinking.
-
-I did not realize that was a feature of extended syntax. I liked curly brackets because most renderers did not display the brackets or its contents. I now understand why.
-
-So, as of v0.6 and earlier (and later unless otherwise stated) markdown files for LoreViewer will not allow custom IDs from markdown's extended syntax. Very sorry.
-
-#### How do I fix this?
-
-A few options:
-1. Don't, and suck it up. I didn't design this app with markdown hyperlinks in mind. But I also don't want to steamroll a part of that extended Syntax
-2. Switch to HTML style comments for heading tags.
-`# Paula Mer Verdel <!--Character-->`\
-This doesn't get in the way of custom heading IDs, and it's invisible when the markdown is rendered.
-When writing to markdown files becomes an in-app feature, I will need to be careful to ensure that the html comment is written to the SAME LINE as the heading because I don't think Markdig will do that.
-
 ---
 
-## Core Values of LoreViewer <!--test-->
+## Core Values of LoreViewer
 1. Human-Readable Markdown First
     - Markdown files must remain human-readable. They should be intuitive to read and write without this software.
     - Heading structure and tags are designed to be out-of-the-way but easily written by hand.
@@ -249,11 +232,24 @@ Parsing exceptions will contain all of this information, allowing users to know 
 
 ## Markdown Type Tagging
 
-All headings that define nodes or collections must end with a **type tag**:
+To give a markdown file or info within a file a 'type', that heading must be tagged.
+Tagging is done with an HTML tag inline with the heading. There are currently 3 tags:
 
-* `{Character}` — defines a single node
-* `{collection:Character}` — defines a collection of character nodes
-* `{collection:collection:Character}` — defines a nested collection group
+- `<node />`
+  - denotes the heading as the start of a node (a new 'unit of lore')
+- `<collection />` - denotes the heading as a collection: all subheadings are entries in the collection
+- `<section />` - denotes the heading as a Section
+
+### Tag Attributes
+
+These HTML tags use attributes to clarify the type or meaning of the tag, and are required in most cases.
+
+Currently, the only attribute is the string `type`.\
+On `<node />` tags, `type` is used to associate the node with a defined type (as defined in schema).\
+On `<collection />` tags, `type` is used to either associate the collection with a globally defined collection, locally defined collection, or if formatted correctly, a top-level free-floating collection.
+
+***This section will be clarified later...***
+
 
 ---
 

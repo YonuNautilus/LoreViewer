@@ -3,6 +3,7 @@ using LoreViewer.LoreElements;
 using LoreViewer.Settings;
 using System;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 
 namespace LoreViewer.Exceptions.LoreParsingExceptions
 {
@@ -25,7 +26,6 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     }
   }
 
-
   #region Nodes
   public abstract class LoreNodeParsingException : LoreParsingException
   {
@@ -35,7 +35,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
 
   public class NoTagParsingException : LoreNodeParsingException
   {
-    static string msgBase = "Error while parsing file {0}: Level 1 heading block found is not tagged";
+    static string msgBase = "Error while parsing file {0}: Level 1 heading block is not tagged";
     public NoTagParsingException(string filePath, int blockIndex, int lineNumber)
       : base(filePath, blockIndex, lineNumber, String.Format(msgBase, Path.GetFileName(filePath)))
     { }
@@ -80,6 +80,16 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, typeNameParent, typeNameChild)) { }
   }
 
+  public class TypeNotDefinedxception : LoreNodeParsingException
+  {
+    private static string msgBase = "Markdown defined a node of type {0}, but that definition was not found in the schema.";
+    public TypeNotDefinedxception(string filePath, int blockIndex, int lineNumber, string nodeType)
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, nodeType)) { }
+  }
+  #endregion
+
+
+  #region Sections
   public abstract class LoreSectionParsingException : LoreParsingException
   {
     public LoreSectionParsingException(string filePath, int blockIndex, int lineNumber, string msg)
@@ -91,6 +101,14 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     static string msgBase = "Section without definiton found. Section title: {0}; Line number {1}";
     public UnexpectedSectionNameException(string filePath, int blockIndex, int lineNumber, string headingTitle, string subHeadingTitle)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, subHeadingTitle, lineNumber)) { }
+  }
+
+  public class UnexpectedTagTypeException : LoreSectionParsingException
+  {
+    static string msgBase = "Section had a subheading with tag type {2}, but only <section> tags are allowed. Section Title: {0}; Line number {1}";
+    public UnexpectedTagTypeException(string filePath, int blockIndex, int lineNumber, string tagType)
+      : base(filePath, blockIndex, lineNumber, String.Format(msgBase, Path.GetFileName(filePath), lineNumber, tagType))
+    { }
   }
   #endregion
 
@@ -190,5 +208,16 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, newNodeType, newNodeType.name, parentNode.Name, parentNode.Definition.name)) { }
   }
 
+  #endregion
+
+  #region Tags
+
+  public class LoreTagParsingException : LoreParsingException
+  {
+    static string msgBase = "There was an issue trying to parse the HTML tag {0}. Please check that the HTML is formatted correctly. Parsing exception: {1}";
+
+    public LoreTagParsingException(string filePath, int blockIndex, int lineNumber, string htmlTag, Exception e)
+    : base(filePath, blockIndex, lineNumber, string.Format(msgBase, htmlTag, e.Message)) { }
+}
   #endregion
 }

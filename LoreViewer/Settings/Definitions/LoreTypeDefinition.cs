@@ -31,8 +31,8 @@ namespace LoreViewer.Settings
     [YamlMember(2)]
     public List<LoreSectionDefinition> sections { get; set; } = new List<LoreSectionDefinition>();
     public bool HasSections => sections != null && sections.Count > 0;
-    public bool HasSectionDefinition(string sectionName) => sections?.Any(sec => sectionName.Contains(sec.name)) ?? false;
-    public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections?.FirstOrDefault(s => s.name == sectionName) ?? null;
+    public bool HasSectionDefinition(string sectionName) => sections?.Any(sec => sectionName.TrimEmoji().Equals(sec.name)) ?? false;
+    public LoreSectionDefinition? GetSectionDefinition(string sectionName) => sections?.FirstOrDefault(s => s.name == sectionName.TrimEmoji()) ?? null;
     public bool ShouldSerializesections() { return sections != null && sections.Count > 0; }
     #endregion ISectionDefinitionContainer implementation
 
