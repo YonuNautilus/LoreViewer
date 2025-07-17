@@ -15,7 +15,11 @@ namespace LoreViewer.LoreElements
 
     public virtual T DefinitionAs<T>() where T : LoreDefinitionBase => Definition as T;
 
-    public Guid Id { get; set; }
+    public string ID
+    { 
+      get;
+      set; 
+    }
     public LoreEntity(string name, LoreDefinitionBase definition) { Name = name; Definition = definition; }
 
     public virtual string ErrMsg => $"{Name}";

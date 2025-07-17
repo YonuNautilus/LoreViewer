@@ -6,7 +6,13 @@
              xmlns:vmle="using:LoreViewer.ViewModels.LoreEntities"
              x:Class="LoreViewer.Views.LoreNodeView"
              x:DataType="vmle:LoreNodeViewModel">
-  <ScrollViewer>
-    <TextBox AcceptsReturn="True" Text="{Binding FileContent}" ></TextBox>
-  </ScrollViewer>
+  <Grid RowDefinitions="30,Auto">
+    <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+      <Label>ID: </Label>
+      <Label Content="{Binding ID}" />
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" VerticalAlignment="Stretch">
+      <TextBox AcceptsReturn="True" Text="{Binding FileContent}" ></TextBox>
+    </ScrollViewer>
+  </Grid>
 </UserControl>

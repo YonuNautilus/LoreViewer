@@ -13,6 +13,7 @@ namespace v0_4.NegativeTests
     #region Lore Parsing Tests
 
     [Test]
+    [TestOf(typeof(EmbeddedNodeTypeNotAllowedException))]
     public void InvalidEmbeddedNodeType()
     {
       _parser = new LoreParser();
@@ -25,6 +26,7 @@ namespace v0_4.NegativeTests
     }
 
     [Test]
+    [TestOf(typeof(EmbeddedNodeInvalidNameException))]
     public void InvalidEmbeddedNodeTitle()
     {
       _parser = new LoreParser();
@@ -37,6 +39,7 @@ namespace v0_4.NegativeTests
     }
 
     [Test]
+    [TestOf(typeof(EmbeddedNodeAlreadyAddedException))]
     public void EmbeddedAlreadyAddedSameType()
     {
       _parser = new LoreParser();
@@ -52,6 +55,7 @@ namespace v0_4.NegativeTests
     #region Settings Parsing Tests
 
     [Test]
+    [TestOf(typeof(EmbeddedNodesWithSameTitleException))]
     public void ParsingEmbeddedDefsWithSameTitle()
     {
       _parser = new LoreParser();
@@ -60,6 +64,7 @@ namespace v0_4.NegativeTests
     }
 
     [Test]
+    [TestOf(typeof(EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException))]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle1()
     {
       _parser = new LoreParser();
@@ -69,6 +74,7 @@ namespace v0_4.NegativeTests
 
 
     [Test]
+    [TestOf(typeof(EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException))]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle2()
     {
       _parser = new LoreParser();
@@ -77,6 +83,7 @@ namespace v0_4.NegativeTests
     }
 
     [Test]
+    [TestOf(typeof(EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException))]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle3()
     {
       _parser = new LoreParser();
@@ -85,6 +92,7 @@ namespace v0_4.NegativeTests
     }
 
     [Test]
+    [TestOf(typeof(EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException))]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle4()
     {
       _parser = new LoreParser();

@@ -15,6 +15,7 @@ namespace v0_7.NegativeReflistTests
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "NegativeReflistSettings");
 
     [Test]
+    [TestOf(typeof(FieldRefListNameNotGivenException))]
     public void MissingRefTypeName()
     {
       _parser = new LoreParser();
@@ -23,6 +24,7 @@ namespace v0_7.NegativeReflistTests
     }
 
     [Test]
+    [TestOf(typeof(ReferenceListTypeNotFoundException))]
     public void InvalidRefTypeName()
     {
       _parser = new LoreParser();

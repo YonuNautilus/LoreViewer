@@ -19,6 +19,7 @@ namespace v0_4.NegativeTests
     }
 
     [Test]
+    [TestOf(typeof(CyclicalInheritanceException))]
     public void CyclicInheritance()
     {
       Assert.Throws<CyclicalInheritanceException>(
@@ -26,6 +27,7 @@ namespace v0_4.NegativeTests
     }
 
     [Test]
+    [TestOf(typeof(InheritingMissingTypeDefinitionException))]
     public void MissingInheritanceType()
     {
       Assert.Throws<InheritingMissingTypeDefinitionException>(
@@ -33,6 +35,7 @@ namespace v0_4.NegativeTests
     }
 
     [Test]
+    [TestOf(typeof(EmbeddedTypeUnknownException))]
     public void MissingEmbeddedType()
     {
       Assert.Throws<EmbeddedTypeUnknownException>(

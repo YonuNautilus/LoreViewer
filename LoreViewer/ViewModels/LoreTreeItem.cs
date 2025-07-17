@@ -32,6 +32,8 @@ namespace LoreViewer.ViewModels
       }
     }
 
+    public string ID { get => element?.ID ?? string.Empty; set { if (element != null) element.ID = value; } }
+
     public LoreEntity element { get; set; }
 
     public ObservableCollection<LoreTreeItem> Children { get; set; } = new();

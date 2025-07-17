@@ -59,13 +59,21 @@
             <local:EntityListView LabelText="Collections" TreeItems="{Binding Collections}"/>
           </Border>
 
-          <DockPanel Grid.Column="1" Margin="5" Grid.Row="0" Grid.RowSpan="2">
+          <DockPanel Grid.Column="1" Margin="5,0" Grid.Row="0" Grid.RowSpan="2">
             <Grid>
               <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
               </Grid.RowDefinitions>
-              <Label BorderBrush="Black" BorderThickness="1" Content="Node Info" />
+              <Border BorderBrush="Black" BorderThickness="1">
+                <DockPanel VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                  <DockPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Right">
+                    <TextBox Text="{Binding CurrentlySelectedTreeNode.ID}" DockPanel.Dock="Right" Width="200"/>
+                    <Label Content="ID:" DockPanel.Dock="Left"/>
+                  </DockPanel>
+                  <Label Content="Node Info" DockPanel.Dock="Left" />
+                </DockPanel>
+              </Border>
               <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" >
                 <Grid>
                   <Grid.RowDefinitions>

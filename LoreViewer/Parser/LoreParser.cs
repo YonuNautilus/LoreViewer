@@ -35,6 +35,10 @@ namespace LoreViewer.Parser
     public bool IsCollection => tagType == ETagType.collection;
     public bool IsNestedCollection => TypeName.Contains("collection") && TypeName.Split(":").Length > 1 && TypeName.Split(":")[0].Equals("collection");
 
+    public bool HasID => m_dAttributes != null && m_dAttributes.ContainsKey("ID");
+
+    public string ID => HasID ? m_dAttributes["ID"] : string.Empty;
+
     public string TypeName => m_dAttributes != null ? m_dAttributes.ContainsKey("type") ? m_dAttributes["type"] : string.Empty : string.Empty;
 
     public string CollectionName => "collection:" + TypeName;
@@ -364,8 +368,9 @@ namespace LoreViewer.Parser
             }
             else if (tag.IsNode && _settings.HasTypeDefinition(tag.TypeName))
             {
-              //Nodes.AddNode(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag)));
-              _parsedNodes.Add(ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag.TypeName), ctx));
+              LoreNode newNode = ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag.TypeName), ctx);
+              newNode.ID = tag.ID;
+              _parsedNodes.Add(newNode);
             }
             else if (tag.IsSection)
             {

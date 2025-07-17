@@ -222,6 +222,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="v0.7\TestData\NewExceptionsParsingData\" />
     <Folder Include="v0.7\TestData\PositiveReflistData\" />
     <Folder Include="v0.7\TestData\PositivePickListData\" />
   </ItemGroup>

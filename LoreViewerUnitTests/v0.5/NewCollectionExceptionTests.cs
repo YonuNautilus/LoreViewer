@@ -20,6 +20,7 @@ namespace v0_5.NewCollectionExceptions
     }
 
     [Test]
+    [TestOf(typeof(InvalidTypeInCollectionException))]
     public void BadType()
     {
       Assert.Throws<InvalidTypeInCollectionException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "CollectionExceptionBadType.md")));
@@ -27,6 +28,7 @@ namespace v0_5.NewCollectionExceptions
 
 
     [Test]
+    [TestOf(typeof(UnknownTypeInCollectionException))]
     public void UnknownType()
     {
       Assert.Throws<UnknownTypeInCollectionException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "CollectionExceptionUnknownType.md")));

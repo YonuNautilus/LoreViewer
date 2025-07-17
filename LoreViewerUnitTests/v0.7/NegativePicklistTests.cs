@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+using LoreViewer.Validation;
 using ReactiveUI;
 using SharpYaml;
 using System;
@@ -17,6 +18,7 @@ namespace v0_7.NegativePicklistTests
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "NegativePicklistSettings");
 
     [Test]
+    [TestOf(typeof(DuplicatePicklistEntryNameException))]
     public void DuplicateNameInPicklist()
     {
       _parser = new LoreParser();
@@ -25,6 +27,7 @@ namespace v0_7.NegativePicklistTests
     }
 
     [Test]
+    [TestOf(typeof(DuplicatePicklistNameException))]
     public void DuplicateNameOfPicklists()
     {
       _parser = new LoreParser();
@@ -33,6 +36,7 @@ namespace v0_7.NegativePicklistTests
     }
 
     [Test]
+    [TestOf(typeof(PicklistsDefinitionNotFoundException))]
     public void UnknownPicklistName()
     {
       _parser = new LoreParser();
@@ -61,6 +65,7 @@ namespace v0_7.NegativePicklistTests
     }
 
     [Test]
+    [TestOf(typeof(LoreValidator))]
     public void InvalidChoiceOnConstrainedField()
     {
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));

@@ -1,6 +1,7 @@
 ﻿using LoreViewer.LoreElements;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace LoreViewer.ViewModels.LoreEntities
 {
@@ -10,6 +11,9 @@ namespace LoreViewer.ViewModels.LoreEntities
     public bool IsDirty { get; set; } = false;
 
     internal LoreEntity entity;
+
+
+    public string ID { get => entity.ID; set => entity.ID = value; }
 
     public static LoreEntityViewModel CreateViewModel(LoreEntity e)
     {

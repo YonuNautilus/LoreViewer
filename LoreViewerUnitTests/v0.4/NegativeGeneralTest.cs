@@ -7,6 +7,7 @@ namespace v0_4.NegativeTests
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.4", "TestData", "NegativeTestData");
 
     [Test]
+    [TestOf(typeof(DuplicateDefinitionNamesException))]
     public void DuplicateNameTest()
     {
       LoreParser _parser = new LoreParser();

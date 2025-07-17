@@ -23,6 +23,7 @@ namespace v0_1.NegativeTests
 
     [Test]
     [TestOf(typeof(LoreParser))]
+    [TestOf(typeof(NoTagParsingException))]
     public void UntaggedFirstHeadingTest()
     {
       string fileToTest = Path.Combine(ErrorFilesFolder, "TopHeadingUntagged.md");
@@ -35,6 +36,7 @@ namespace v0_1.NegativeTests
 
     [Test]
     [TestOf(typeof(LoreParser))]
+    [TestOf(typeof(FirstHeadingTagException))]
     public void FirstHeadingIsSectionTest()
     {
       string fileToTest = Path.Combine(ErrorFilesFolder, "FirstHeadingIsSection.md");
@@ -67,6 +69,7 @@ namespace v0_1.NegativeTests
 
 
     [Test]
+    [TestOf(typeof(DefinitionNotFoundException))]
     public void ParseFile_ThrowsOn_UnknownSectionName()
     {
       Assert.Throws<DefinitionNotFoundException>(() => _parser.ParseSingleFile(Path.Combine(ErrorFilesFolder, "UnknownSectionName.md")));
