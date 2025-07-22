@@ -1,4 +1,6 @@
-﻿using LoreViewer.LoreElements.Interfaces;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.Parser;
 using LoreViewer.Settings;
 using System;
 
@@ -15,14 +17,23 @@ namespace LoreViewer.LoreElements
 
     public virtual T DefinitionAs<T>() where T : LoreDefinitionBase => Definition as T;
 
+    protected LoreTagInfo? tag;
+
+    internal LoreTagInfo? CurrentTag => tag;
+
     public string ID
-    { 
-      get;
-      set; 
+    {
+      get => tag?.ID ?? $"_{Name}_";
     }
+
     public LoreEntity(string name, LoreDefinitionBase definition) { Name = name; Definition = definition; }
 
+    public LoreEntity(string name, LoreDefinitionBase definition, LoreTagInfo? tagInfo) : this(name, definition) { tag = tagInfo;}
+
     public virtual string ErrMsg => $"{Name}";
+    public void SetTag(LoreTagInfo? tagInfo) => tag = tagInfo;
+
+    public void SetID(string newID) => tag?.SetID(newID);
   }
 
   /// <summary>

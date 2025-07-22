@@ -1,4 +1,5 @@
-﻿using DynamicData;
+﻿using DocumentFormat.OpenXml.Math;
+using DynamicData;
 using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
@@ -16,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,6 +59,97 @@ namespace LoreViewer.Parser
     }
 
     public LoreTagInfo(HtmlInline html) => ParseHTML(html);
+
+    public void SetID(string newID) => m_dAttributes["ID"] = newID;
+
+    public static bool operator ==(LoreTagInfo left, LoreTagInfo right)
+    {
+      // If no ID defined, NO MERGING is allowed
+      if (!left.HasID || !right.HasID) return false;
+
+      // First see if either has missing info while the other does not
+      if ((left.Attributes == null && right.Attributes != null) || (left.Attributes != null && right.Attributes == null)) return false;
+      if ((left.HasID && !right.HasID) || (!left.HasID && right.HasID)) return false;
+      if ((left.Attributes == null && right.Attributes != null) || (left.Attributes != null && right.Attributes == null)) return false;
+
+      //If both actually have an ID, check that they match
+      if (left.HasID && right.HasID && left.ID != right.ID) return false;
+
+      // Then check their tagType matches
+      if (left.tagType != right.tagType) return false;
+
+      // Then check for attribute matching (this will cover type attribute)
+      if (left.Attributes != null && right.Attributes != null)
+      {
+        // If different amounts, they are not equivalent.
+        if (left.Attributes.Count != right.Attributes.Count) return false;
+
+        // If attribute dictiontionaries have the same amount, go through and check that each have the same keys with the same values.
+        foreach (var kvp in left.Attributes)
+        {
+          if (right.Attributes.ContainsKey(kvp.Key))
+          {
+            if (right.Attributes[kvp.Key] != kvp.Value) return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
+    public static bool operator != (LoreTagInfo left, LoreTagInfo right)
+    {
+      // First see if either has missing info while the other does not
+      if ((left.Attributes == null && right.Attributes != null) || (left.Attributes != null && right.Attributes == null)) return true;
+      if ((left.HasID && !right.HasID) || (!left.HasID && right.HasID)) return true;
+      if ((left.Attributes == null && right.Attributes != null) || (left.Attributes != null && right.Attributes == null)) return true;
+
+      //If both actually have an ID, check that they differ
+      if (left.HasID && right.HasID && left.ID != right.ID) return true;
+
+      // Then check their tagType differ
+      if (left.tagType != right.tagType) return true;
+
+      // Then check for attribute differences (this will cover type attribute)
+      if (left.Attributes != null && right.Attributes != null)
+      {
+        // If different amounts, they are not equivalent.
+        if (left.Attributes.Count != right.Attributes.Count) return true;
+
+        // If attribute dictiontionaries have the same amount, go through and check that each have the same keys with the same values.
+        foreach (var kvp in left.Attributes)
+        {
+          if (right.Attributes.ContainsKey(kvp.Key))
+          {
+            if (right.Attributes[kvp.Key] != kvp.Value) return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    public bool CanMergeWith(LoreTagInfo incoming)
+    {
+      if (!this.HasID || !incoming.HasID) return false;
+      if (this.tagType != incoming.tagType) return false;
+      if (string.IsNullOrEmpty(this.TypeName) || string.IsNullOrEmpty(incoming.TypeName)) return false;
+      if (this.TypeName != incoming.TypeName) return false;
+      return true;
+    }
+
+    internal LoreTagInfo? CreateCompositeNodeTag(LoreTagInfo value)
+    {
+      LoreTagInfo ret = new LoreTagInfo();
+      ret.m_dAttributes = new Dictionary<string, string>();
+
+      ret.SetID(this.ID);
+
+      ret.Attributes["type"] = this.TypeName;
+      ret.tagType = this.tagType;
+
+      return ret;
+    }
   }
 
   public class LoreParser
@@ -173,23 +266,26 @@ namespace LoreViewer.Parser
       });
 
 
-      // Now, all elements have been collected.
+      // Now, all elements have been collected, we can start the merge process.
       PerformMergeFromParsed();
 
 
       Validate();
     }
 
+    /// <summary>
+    /// Merge all mergeable parsed lore elements (nodes). Elements are mergeable when they have a matching ID and TypeDefinition.
+    /// </summary>
     public void PerformMergeFromParsed()
     {
       foreach (LoreEntity e in _parsedNodes)
       {
         if (e is LoreNode node)
         {
-          ILoreNode nodeWithSameName = _nodes.FirstOrDefault(existingNode => node.Name == existingNode.Name && node.Definition == existingNode.Definition);
+          ILoreNode nodeWithSameIDAndType = _nodes.FirstOrDefault(existingNode => existingNode.CanMergeWith(node));
 
-          if (nodeWithSameName != null)
-            _nodes.Replace(nodeWithSameName, nodeWithSameName.MergeWith(node));
+          if (nodeWithSameIDAndType != null)
+            _nodes.Replace(nodeWithSameIDAndType, nodeWithSameIDAndType.MergeWith(node));
           else
             _nodes.Add(node);
         }
@@ -343,7 +439,7 @@ namespace LoreViewer.Parser
           string title = ExtractTitle(block);
 
           // if a type was given
-          if (uTag != null)
+          if (uTag.HasValue)
           {
             LoreTagInfo tag = uTag.Value;
             // Parse collection based on {collection:...} tag, which is not even locally defined, it is MARKDOWN defined at the TOP LEVEL of a file.
@@ -368,8 +464,8 @@ namespace LoreViewer.Parser
             }
             else if (tag.IsNode && _settings.HasTypeDefinition(tag.TypeName))
             {
-              LoreNode newNode = ParseType(document, ref currentIndex, block, _settings.GetTypeDefinition(tag.TypeName), ctx);
-              newNode.ID = tag.ID;
+              LoreNode newNode = ParseNode(document, ref currentIndex, block, _settings.GetTypeDefinition(tag.TypeName), ctx);
+              newNode.SetTag(tag);
               _parsedNodes.Add(newNode);
             }
             else if (tag.IsSection)
@@ -418,7 +514,7 @@ namespace LoreViewer.Parser
     /// <param name="heading"></param>
     /// <param name="typeDef"></param>
     /// <returns></returns>
-    private LoreNode ParseType(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef, LoreParsingContext ctx)
+    private LoreNode ParseNode(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreTypeDefinition typeDef, LoreParsingContext ctx)
     {
       bool parsingFields = true;
 
@@ -530,7 +626,8 @@ namespace LoreViewer.Parser
                         if (!newNode.ContainsEmbeddedNode(newTypeDef, newTitle))
                         {
                           LoreTypeDefinition newNodeType = _settings.GetTypeDefinition(newTag.TypeName);
-                          LoreNode newNodeNode = ParseType(doc, ref currentIndex, hb, newNodeType, ctx);
+                          LoreNode newNodeNode = ParseNode(doc, ref currentIndex, hb, newNodeType, ctx);
+                          newNodeNode.SetTag(newTag);
                           newNode.Nodes.Add(newNodeNode);
                           continue;
                         }
@@ -712,7 +809,9 @@ namespace LoreViewer.Parser
                 else
                   nodeType = _settings.GetTypeDefinition(colType.entryTypeName);
 
-                newCollection.Nodes.Add(ParseType(doc, ref currentIndex, hb, nodeType, ctx));
+                LoreNode newNodeToAdd = ParseNode(doc, ref currentIndex, hb, nodeType, ctx);
+                newNodeToAdd.SetTag(uTag);
+                newCollection.Nodes.Add(newNodeToAdd );
               }
               continue;
             }

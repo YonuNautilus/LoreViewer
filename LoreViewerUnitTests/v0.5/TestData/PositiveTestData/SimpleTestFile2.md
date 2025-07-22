@@ -1,4 +1,4 @@
-﻿# First Simple Node<node type="MainNodeType"/>
+﻿# First Simple Node <node type="MainNodeType" ID="main"/>
 
 - required field: attribute
 

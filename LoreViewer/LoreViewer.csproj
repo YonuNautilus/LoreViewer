@@ -7,9 +7,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>True</AvaloniaUseCompiledBindingsByDefault>
     <NeutralLanguage>en</NeutralLanguage>
-    <Version>0.4.0-alpha</Version>
+    <Version>0.7.0-alpha</Version>
     <AssemblyVersion>0.4.0</AssemblyVersion>
     <ApplicationIcon>Resources\LoreViewer.ico</ApplicationIcon>
+    <StartupObject>LoreViewer.Program</StartupObject>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Resources\**" />
@@ -41,6 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\PrimaryViews\StartWindow.axaml.cs">
+      <DependentUpon>StartWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\LoreEditView.axaml.cs">
       <DependentUpon>LoreEditView.axaml</DependentUpon>
     </Compile>

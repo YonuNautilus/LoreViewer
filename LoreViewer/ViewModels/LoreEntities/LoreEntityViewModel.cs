@@ -13,7 +13,7 @@ namespace LoreViewer.ViewModels.LoreEntities
     internal LoreEntity entity;
 
 
-    public string ID { get => entity.ID; set => entity.ID = value; }
+    public string ID { get => entity.ID; set => entity.SetID(value); }
 
     public static LoreEntityViewModel CreateViewModel(LoreEntity e)
     {

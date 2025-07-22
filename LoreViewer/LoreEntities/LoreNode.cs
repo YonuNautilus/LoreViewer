@@ -137,5 +137,11 @@ namespace LoreViewer.LoreElements
     }
 
     public ILoreNode MergeWith(LoreNode node) => new LoreCompositeNode(this, node);
+
+    public bool CanMergeWith(LoreNode newNode)
+    {
+      if (!tag.HasValue || !newNode.CurrentTag.HasValue) return false;
+      else return tag.Value.CanMergeWith(newNode.CurrentTag.Value);
+    }
   }
 }

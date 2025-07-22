@@ -1,9 +1,12 @@
-﻿using LoreViewer.LoreElements.Interfaces;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.Parser;
 using LoreViewer.Settings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace LoreViewer.LoreElements
 {
@@ -123,12 +126,27 @@ namespace LoreViewer.LoreElements
 
     public LoreCompositeNode(LoreNode newNode) : base(newNode.Name, newNode.Definition) { _internalNodes.Add(newNode); }
 
-    public LoreCompositeNode(LoreNode original, LoreNode newNode) : this(original) { _internalNodes.Add(newNode); }
+    /// <summary>
+    /// The Merging constructor. Merged two LoreNodes into a new LoreCompositeNode. This assumes that the two nodes have equivalent LoreTagInfo.
+    /// </summary>
+    /// <param name="original"></param>
+    /// <param name="newNode"></param>
+    public LoreCompositeNode(LoreNode original, LoreNode newNode) : this(original)
+    {
+      _internalNodes.Add(newNode);
+      SetTag(original.CurrentTag.Value.CreateCompositeNodeTag(newNode.CurrentTag.Value));
+    }
 
     public ILoreNode MergeWith(LoreNode newNode)
     {
       _internalNodes.Add(newNode);
       return this;
+    }
+
+    public bool CanMergeWith(LoreNode newNode)
+    {
+      if (!tag.HasValue || !newNode.CurrentTag.HasValue) return false;
+      else return tag.Value.CanMergeWith(newNode.CurrentTag.Value);
     }
   }
 }

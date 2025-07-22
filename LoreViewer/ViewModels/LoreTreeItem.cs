@@ -32,7 +32,7 @@ namespace LoreViewer.ViewModels
       }
     }
 
-    public string ID { get => element?.ID ?? string.Empty; set { if (element != null) element.ID = value; } }
+    public string ID { get => element?.ID ?? string.Empty; set { if (element != null) element.SetID(value); } }
 
     public LoreEntity element { get; set; }
 

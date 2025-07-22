@@ -1,6 +1,9 @@
 {
   "profiles": {
     "LoreViewer": {
+      "commandName": "Project"
+    },
+    "LoreViewer With Slime Lore": {
       "commandName": "Project",
       "commandLineArgs": "\"C:\\Users\\jacob\\OneDrive\\Slime_Lore\""
     }

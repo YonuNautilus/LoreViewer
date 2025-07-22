@@ -69,6 +69,7 @@ namespace LoreViewer.LoreElements.Interfaces
   public interface ILoreNode : ILoreEntity, ISectionContainer, IAttributeContainer, IEmbeddedNodeContainer, ICollectionContainer
   {
     ILoreNode MergeWith(LoreNode node);
+    bool CanMergeWith(LoreNode node);
   }
 
   /// <summary>
