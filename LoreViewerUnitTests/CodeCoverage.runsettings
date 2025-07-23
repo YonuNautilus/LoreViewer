@@ -5,7 +5,7 @@
       <DataCollector friendlyName="LoreViewer Code Coverage">
         <Configuration>
           <Exclude>
-            <Assembly>CompiledAvaloniaXaml*</Assembly>
+            <Assembly>*Avalonia*</Assembly>
           </Exclude>
         </Configuration>
       </DataCollector>

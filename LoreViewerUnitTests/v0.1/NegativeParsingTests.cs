@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+using Newtonsoft.Json.Bson;
 
 namespace v0_1.NegativeTests
 {
@@ -74,6 +75,6 @@ namespace v0_1.NegativeTests
     {
       Assert.Throws<DefinitionNotFoundException>(() => _parser.ParseSingleFile(Path.Combine(ErrorFilesFolder, "UnknownSectionName.md")));
     }
-
   }
+
 }

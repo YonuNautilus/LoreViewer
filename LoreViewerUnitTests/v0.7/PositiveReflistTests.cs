@@ -64,9 +64,9 @@ namespace v0_7.PositiveReflistTests
     {
       Assert.That(_parser.Nodes, Has.Count.EqualTo(3));
 
-      ILoreNode firstNode  = _parser.GetNode("First Node");
-      ILoreNode secondNode = _parser.GetNode("Second Node");
-      ILoreNode thirdNode  = _parser.GetNode("Third Node");
+      ILoreNode firstNode  = _parser.GetNodeByName("First Node");
+      ILoreNode secondNode = _parser.GetNodeByName("Second Node");
+      ILoreNode thirdNode  = _parser.GetNodeByName("Third Node");
 
       Assert.That(firstNode.Attributes, Has.Count.EqualTo(1));
       Assert.That(thirdNode.Attributes, Has.Count.EqualTo(2));
@@ -80,7 +80,9 @@ namespace v0_7.PositiveReflistTests
       Assert.That(thirdNode.Attributes[1].Values[0], Is.TypeOf(typeof(ReferenceAttributeValue)));
       Assert.That(thirdNode.Attributes[1].Values[1], Is.TypeOf(typeof(ReferenceAttributeValue)));
 
-      // TODO: Make sure when Reference resolution is added, that we make sure these values go to the NODES
+      Assert.That((thirdNode.Attributes[0].Value as ReferenceAttributeValue).Value, Is.SameAs(secondNode));
+      Assert.That((thirdNode.Attributes[1].Values[0] as ReferenceAttributeValue).Value, Is.SameAs(firstNode));
+      Assert.That((thirdNode.Attributes[1].Values[1] as ReferenceAttributeValue).Value, Is.SameAs(thirdNode));
     }
   }
 }

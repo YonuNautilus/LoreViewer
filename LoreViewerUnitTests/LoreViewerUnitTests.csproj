@@ -30,6 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="v0.1\TestData\NegativeTestData\Collection\InvalidTypeInCollection.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.1\TestData\NegativeTestData\Collection\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v0.1\TestData\NegativeTestData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -162,6 +168,9 @@
     <None Update="v0.5\TestData\NewExceptionsTest\CollectionExceptionUnknownType.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.5\TestData\NewExceptionsTest\CollectionWithUnknownType.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v0.5\TestData\NewExceptionsTest\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -178,6 +187,42 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.6\TestData\PositiveTestData\SettingsWithNewInheritance.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\CollectionWithMultipleEntriesDefined.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\EmbeddedTypeNodeGiven.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\HeadingLevelErrorException.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\ImproperlyFormattedHTMLTag.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\NestedBulletsOnSingle.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\PicklistNameNotGiven.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\TypeNotDefined.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\MiscExceptions.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\UnexpectedField.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\UnexpectedSectionName.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\UnexpectedTagType.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\MiscExceptionsParsingData\UnexpectedTypeName.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.7\TestData\NegativePicklistParsingData\Crayons.md">
@@ -222,7 +267,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="v0.7\TestData\NewExceptionsParsingData\" />
     <Folder Include="v0.7\TestData\PositiveReflistData\" />
     <Folder Include="v0.7\TestData\PositivePickListData\" />
   </ItemGroup>

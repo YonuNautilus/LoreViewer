@@ -1,0 +1,8 @@
+types:
+  - name: DefinedType
+    fields:
+      - name: Field with name
+    sections:
+      - name: A Section
+        sections:
+          - name: A Subsection

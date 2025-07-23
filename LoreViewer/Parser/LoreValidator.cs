@@ -1,5 +1,6 @@
 ﻿using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.Parser;
 using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using System;
@@ -11,25 +12,43 @@ namespace LoreViewer.Validation
   public enum EValidationState
   {
     Passed,
+    Warning,
+    ChildWarning,
     ChildFailed,
     Failed,
   }
 
+  public enum EValidationMessageStatus { Passed, Warning, Failed }
+
   public class LoreValidationResult
   {
+    public Dictionary<LoreEntity, List<LoreValidationMessage>> LoreEntityValidationMessages { get; set; } = new();
+    public Dictionary<LoreEntity, List<LoreValidationMessage>> Errors { get; set; } = new();
     public Dictionary<LoreEntity, EValidationState> LoreEntityValidationStates { get; set; } = new Dictionary<LoreEntity, EValidationState>();
-    public Dictionary<LoreEntity, List<LoreValidationError>> Errors { get; set; } = new();
+
+    private void AddMessage(LoreEntity entity, LoreValidationMessage message)
+    {
+      if (LoreEntityValidationMessages.ContainsKey(entity))
+      {
+        if (LoreEntityValidationMessages[entity] == null) LoreEntityValidationMessages[entity] = new();
+        
+        LoreEntityValidationMessages[entity].Add(message);
+      }
+      else
+      {
+        LoreEntityValidationMessages.Add(entity, new List<LoreValidationMessage>(new LoreValidationMessage[] { message }));
+      }
+    }
 
     public void LogError(LoreEntity entity, string message)
     {
-      LoreValidationError newErr = new LoreValidationError
-      {
-        Entity = entity,
-        Message = message
-      };
+      LoreValidationMessage newErr = new LoreValidationMessage(EValidationMessageStatus.Failed, message);
+
+      AddMessage(entity, newErr);
+
 
       if (Errors.ContainsKey(entity)) Errors[entity].Add(newErr);
-      else Errors.Add(entity, [.. new LoreValidationError[] { newErr }]);
+      else Errors.Add(entity, [.. new LoreValidationMessage[] { newErr }]);
 
       if (LoreEntityValidationStates.ContainsKey(entity))
       {
@@ -40,7 +59,14 @@ namespace LoreViewer.Validation
         LoreEntityValidationStates.Add(entity, EValidationState.Failed);
     }
 
-    public void PropagateDescendentError(LoreEntity parent, LoreEntity child)
+    public void LogWarning(LoreEntity entity, string message)
+    {
+      LoreValidationMessage newWarning = new LoreValidationMessage(EValidationMessageStatus.Warning, message);
+
+      AddMessage(entity, newWarning);
+    }
+
+    public void PropagateDescendentState(LoreEntity parent, LoreEntity child)
     {
       if (LoreEntityValidationStates.TryGetValue(parent, out var validationState) && LoreEntityValidationStates.TryGetValue(child, out var childValidationState))
       {
@@ -50,11 +76,13 @@ namespace LoreViewer.Validation
     }
   }
 
-  public class LoreValidationError
+  public struct LoreValidationMessage
   {
-    public LoreEntity Entity;
+    public EValidationMessageStatus Status;
     public string Message { get; set; } = string.Empty;
     public override string ToString() => Message;
+
+    public LoreValidationMessage(EValidationMessageStatus status, string message) { Status = status; Message = message; }
   }
 
   public class LoreValidator
@@ -96,7 +124,7 @@ namespace LoreViewer.Validation
 
         if (result.LoreEntityValidationStates.TryGetValue(child, out var state) && state != EValidationState.Passed)
         {
-          result.PropagateDescendentError(entity, child);
+          result.PropagateDescendentState(entity, child);
         }
       }
 
@@ -133,7 +161,7 @@ namespace LoreViewer.Validation
 
           if (result.LoreEntityValidationStates.TryGetValue(child, out var state) && state != EValidationState.Passed)
           {
-            result.PropagateDescendentError(entity, child);
+            result.PropagateDescendentState(entity, child);
           }
         }
 
@@ -153,6 +181,13 @@ namespace LoreViewer.Validation
       }
     }
 
+    /// <summary>
+    /// Validates attributes contained within this IAttributeContainer.
+    /// </summary>
+    /// <param name="container"></param>
+    /// <param name="entity"></param>
+    /// <param name="result"></param>
+    /// <exception cref="Exception"></exception>
     internal void ValidateAttributes(IAttributeContainer container, LoreEntity entity, LoreValidationResult result)
     {
       if (entity != container) throw new Exception($"PARSING ERROR ON ENTITY {entity.Name}");
@@ -164,14 +199,29 @@ namespace LoreViewer.Validation
         // Validate nested fields recursively
         foreach (var child in container.Attributes)
         {
+          // Run this container's children though the validation process to catch basic things like missing required subattributes, etc
           ValidateEntity(child, result);
+
+
+          // Validate the attributes by content type
+          switch (child.DefinitionAs<LoreFieldDefinition>().contentType)
+          {
+            case EFieldContentType.ReferenceList:
+              ValidateReferenceAttribute(entity, child, result);
+              break;
+            case EFieldContentType.Picklist:
+              ValidatePicklistAttribute(entity, child, result);
+              break;
+          }
+
 
           if (result.LoreEntityValidationStates.TryGetValue(child, out var state) && state != EValidationState.Passed)
           {
-            result.PropagateDescendentError(entity, child);
+            result.PropagateDescendentState(entity, child);
           }
         }
 
+        // Check for missing required fields
         if (defs != null)
         {
           foreach (var def in defs)
@@ -183,24 +233,67 @@ namespace LoreViewer.Validation
               result.LogError(entity, $"Missing required attribute '{def.name}'");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
             }
-
-            // Check if an attribute follows its options if field is picklist structure
-            if(contains && def.contentType == EFieldContentType.Picklist)
-            {
-              LoreAttribute attr = container.GetAttribute(def.name);
-              string attrVal = attr.Value.ValueString;
-              var options = def.GetPicklistOptions();
-              if (!options.Contains(attrVal))
-              {
-                result.LogError(attr, $"Attribute {def.name} of style Picklist has invalid value {attrVal}. Valid Values are {string.Join(", ", options)}");
-                result.LoreEntityValidationStates[attr] = EValidationState.Failed;
-                result.PropagateDescendentError(entity, attr);
-              }
-            }
           }
         }
       }
     }
+
+    internal void ValidatePicklistAttribute(LoreEntity parent, LoreAttribute attr, LoreValidationResult result)
+    {
+      LoreFieldDefinition def = attr.DefinitionAs<LoreFieldDefinition>();
+      string[] valuesToCheck;
+
+      if (attr.HasValue) valuesToCheck = new string[] { attr.Value.ValueString };
+      else valuesToCheck = attr.Values.Select(v => v.ValueString).ToArray();
+
+      var options = def.GetPicklistOptions();
+      foreach (string valueToCheck in valuesToCheck)
+      {
+        if (!options.Contains(valueToCheck))
+        {
+          result.LogError(attr, $"Attribute {def.name} of style Picklist has invalid value {valueToCheck}. Valid Values are {string.Join(", ", options)}");
+          result.LoreEntityValidationStates[attr] = EValidationState.Failed;
+          result.PropagateDescendentState(parent, attr);
+        }
+      }
+    }
+
+    internal void ValidateReferenceAttribute(LoreEntity parent, LoreAttribute attr, LoreValidationResult result)
+    {
+      ReferenceAttributeValue[] refsToCheck;
+      if (attr.HasValue) refsToCheck = new ReferenceAttributeValue[] { (attr.Value as ReferenceAttributeValue) };
+      else refsToCheck = attr.Values.Cast<ReferenceAttributeValue>().ToArray();
+
+      // Check if the reference was resolved by ID or by name. If by name, create a warning.
+      foreach(ReferenceAttributeValue refToCheck in refsToCheck)
+      {
+        // refToCheck.ValueString should be the value written in markdown that was used to resolve the reference.
+        if(refToCheck.Value != null)
+        {
+          LoreTagInfo? valsTag = (refToCheck.Value as LoreEntity).CurrentTag;
+          // If the tag was defined, has an ID, and the string of the ReferenceAttributeValue matches the ID, that's good.
+          if (valsTag.HasValue && valsTag.Value.HasID && refToCheck.ValueString == valsTag.Value.ID)
+          {
+
+          }
+          // If the attribute ValueString matches the nodes name, give a warning (two cases, different message for each)
+          else if(refToCheck.ValueString == refToCheck.Value.Name)
+          {
+            string msg = string.Empty;
+            if (!valsTag.HasValue)
+              msg = "Node referenced by this attribute does not have a tag and should be given one";
+            else
+              msg = "Node referenced by this attribute has a tag, but the attribute references it by name";
+
+            result.LogWarning(attr, msg);
+
+            if (result.LoreEntityValidationStates.TryGetValue(attr, out var state) && state == EValidationState.Passed)
+              result.LoreEntityValidationStates[attr] = EValidationState.Warning;
+          }
+        }
+      }
+    }
+
 
     internal void ValidateSections(ISectionContainer container, LoreEntity entity, LoreValidationResult result)
     {
@@ -213,7 +306,7 @@ namespace LoreViewer.Validation
 
         if (result.LoreEntityValidationStates.TryGetValue(child, out var state) && state != EValidationState.Passed)
         {
-          result.PropagateDescendentError(entity, child);
+          result.PropagateDescendentState(entity, child);
         }
       }
 

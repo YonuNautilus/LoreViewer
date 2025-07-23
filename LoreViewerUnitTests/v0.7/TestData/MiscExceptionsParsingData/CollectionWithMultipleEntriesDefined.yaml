@@ -1,0 +1,9 @@
+types:
+  - name: TheOneType
+
+collections:
+  - name: Bad Collection
+    entryTypeName: TheOneType
+    entryCollectionName: Good Collection
+  - name: Good Collection
+    entryTypeName: TheOneType

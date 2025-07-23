@@ -29,9 +29,16 @@ namespace v0_5.NewCollectionExceptions
 
     [Test]
     [TestOf(typeof(UnknownTypeInCollectionException))]
-    public void UnknownType()
+    public void UnknownTypeInCollection()
     {
       Assert.Throws<UnknownTypeInCollectionException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "CollectionExceptionUnknownType.md")));
+    }
+
+    [Test]
+    [TestOf(typeof(CollectionWithUnknownTypeException))]
+    public void CollectionOfUnknownType()
+    {
+      Assert.Throws<CollectionWithUnknownTypeException>(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "CollectionWithUnknownType.md")));
     }
   }
 }

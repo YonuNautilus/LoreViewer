@@ -258,7 +258,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_InheritanceTest()
     {
-      ILoreNode grandmaINode = _parser.GetNode("Grandparent");
+      ILoreNode grandmaINode = _parser.GetNodeByName("Grandparent");
       Assert.NotNull(grandmaINode);
       Assert.That(grandmaINode, Is.TypeOf<LoreNode>());
       LoreNode grandma = grandmaINode as LoreNode;
@@ -266,7 +266,7 @@ namespace v0_4.PositiveTests
       Assert.That(grandma.DefinitionAs<LoreTypeDefinition>().name, Is.EqualTo("TypeBase"));
       Assert.That(grandma.DefinitionAs<LoreTypeDefinition>().ParentType, Is.Null);
 
-      ILoreNode parentINode = _parser.GetNode("Parent");
+      ILoreNode parentINode = _parser.GetNodeByName("Parent");
       Assert.NotNull(parentINode);
       Assert.That(parentINode, Is.TypeOf<LoreNode>());
       LoreNode parent = parentINode as LoreNode;
@@ -275,7 +275,7 @@ namespace v0_4.PositiveTests
       Assert.That(parent.DefinitionAs<LoreTypeDefinition>().ParentType, Is.Not.Null);
       Assert.That(parent.DefinitionAs<LoreTypeDefinition>().ParentType, Is.EqualTo(grandma.DefinitionAs<LoreTypeDefinition>()));
 
-      ILoreNode childINode = _parser.GetNode("Daughter");
+      ILoreNode childINode = _parser.GetNodeByName("Daughter");
       Assert.NotNull(childINode);
       Assert.That(childINode, Is.TypeOf<LoreNode>());
       LoreNode child = childINode as LoreNode;
@@ -285,7 +285,7 @@ namespace v0_4.PositiveTests
       Assert.That(child.DefinitionAs<LoreTypeDefinition>().ParentType, Is.EqualTo(parent.DefinitionAs<LoreTypeDefinition>()));
       Assert.That(child.DefinitionAs<LoreTypeDefinition>().ParentType.ParentType, Is.EqualTo(parent.DefinitionAs<LoreTypeDefinition>().ParentType));
 
-      ILoreNode uncleINode = _parser.GetNode("Uncle");
+      ILoreNode uncleINode = _parser.GetNodeByName("Uncle");
       Assert.NotNull(uncleINode);
       Assert.That(uncleINode, Is.TypeOf<LoreNode>());
       LoreNode uncle = uncleINode as LoreNode;
@@ -298,7 +298,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_FieldsTest_Grandparent()
     {
-      LoreNode grandmaNode = _parser.GetNode("Grandparent") as LoreNode;
+      LoreNode grandmaNode = _parser.GetNodeByName("Grandparent") as LoreNode;
 
       Assert.That(grandmaNode.Attributes, Has.Count.EqualTo(3));
       Assert.NotNull(grandmaNode.GetAttribute("Awards"));
@@ -314,7 +314,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_SectionsTest_Grandparent()
     {
-      LoreNode grandmaNode = _parser.GetNode("Grandparent") as LoreNode;
+      LoreNode grandmaNode = _parser.GetNodeByName("Grandparent") as LoreNode;
 
       Assert.That(grandmaNode.Sections, Has.Count.EqualTo(1));
       Assert.NotNull(grandmaNode.GetSection("First Section"));
@@ -324,7 +324,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_CollectionsTest_Grandparent()
     {
-      LoreNode grandmaNode = _parser.GetNode("Grandparent") as LoreNode;
+      LoreNode grandmaNode = _parser.GetNodeByName("Grandparent") as LoreNode;
 
       Assert.That(grandmaNode.Collections, Has.Count.EqualTo(1));
       Assert.NotNull(grandmaNode.GetCollection("First Collection"));
@@ -363,7 +363,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_FieldsTest_Parent()
     {
-      LoreNode parentNode = _parser.GetNode("Parent") as LoreNode;
+      LoreNode parentNode = _parser.GetNodeByName("Parent") as LoreNode;
 
       Assert.That(parentNode.Attributes, Has.Count.EqualTo(5));
       Assert.NotNull(parentNode.GetAttribute("Awards"));
@@ -382,7 +382,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_SectionsTest_Parent()
     {
-      LoreNode parentNode = _parser.GetNode("Parent") as LoreNode;
+      LoreNode parentNode = _parser.GetNodeByName("Parent") as LoreNode;
 
       Assert.That(parentNode.Sections, Has.Count.EqualTo(2));
       Assert.NotNull(parentNode.GetSection("First Section"));
@@ -394,7 +394,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_CollectionsTest_Parent()
     {
-      LoreNode parentNode = _parser.GetNode("Parent") as LoreNode;
+      LoreNode parentNode = _parser.GetNodeByName("Parent") as LoreNode;
 
       Assert.That(parentNode.Collections, Has.Count.EqualTo(2));
       Assert.NotNull(parentNode.GetCollection("First Collection"));
@@ -498,7 +498,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_FieldsTest_Child()
     {
-      LoreNode childNode = _parser.GetNode("Daughter") as LoreNode;
+      LoreNode childNode = _parser.GetNodeByName("Daughter") as LoreNode;
 
       Assert.That(childNode.Attributes, Has.Count.EqualTo(6));
       Assert.NotNull(childNode.GetAttribute("Awards"));
@@ -518,7 +518,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_SectionsTest_Child()
     {
-      LoreNode childNode = _parser.GetNode("Daughter") as LoreNode;
+      LoreNode childNode = _parser.GetNodeByName("Daughter") as LoreNode;
 
       Assert.That(childNode.Sections, Has.Count.EqualTo(3));
       Assert.NotNull(childNode.GetSection("First Section"));
@@ -533,7 +533,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_CollectionsTest_Child()
     {
-      LoreNode childNode = _parser.GetNode("Daughter") as LoreNode;
+      LoreNode childNode = _parser.GetNodeByName("Daughter") as LoreNode;
 
       Assert.That(childNode.Collections, Has.Count.EqualTo(3));
       Assert.NotNull(childNode.GetCollection("First Collection"));
@@ -677,7 +677,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_FieldsTest_Uncle()
     {
-      LoreNode UncleNode = _parser.GetNode("Uncle") as LoreNode;
+      LoreNode UncleNode = _parser.GetNodeByName("Uncle") as LoreNode;
 
       Assert.That(UncleNode.Attributes, Has.Count.EqualTo(4));
       Assert.NotNull(UncleNode.GetAttribute("Awards"));
@@ -695,7 +695,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_SectionsTest_Uncle()
     {
-      LoreNode UncleNode = _parser.GetNode("Uncle") as LoreNode;
+      LoreNode UncleNode = _parser.GetNodeByName("Uncle") as LoreNode;
 
       Assert.That(UncleNode.Sections, Has.Count.EqualTo(2));
       Assert.NotNull(UncleNode.GetSection("First Section"));
@@ -708,7 +708,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_CollectionsTest_Uncle()
     {
-      LoreNode UncleNode = _parser.GetNode("Uncle") as LoreNode;
+      LoreNode UncleNode = _parser.GetNodeByName("Uncle") as LoreNode;
 
       Assert.That(UncleNode.Collections, Has.Count.EqualTo(2));
       Assert.NotNull(UncleNode.GetCollection("First Collection"));
@@ -828,10 +828,10 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_Inher_And_Embed()
     {
-      Assert.That(_parser.GetNode("Test Node"), Is.Not.Null);
-      Assert.That(_parser.GetNode("Test Node").Nodes, Has.Count.EqualTo(2));
+      Assert.That(_parser.GetNodeByName("Test Node"), Is.Not.Null);
+      Assert.That(_parser.GetNodeByName("Test Node").Nodes, Has.Count.EqualTo(2));
 
-      LoreNode node = (LoreNode)_parser.GetNode("Test Node");
+      LoreNode node = (LoreNode)_parser.GetNodeByName("Test Node");
 
       Assert.NotNull(node.GetNode("First Embedded Node"));
       Assert.That(node.GetNode("First Embedded Node").Nodes, Has.Count.EqualTo(0));

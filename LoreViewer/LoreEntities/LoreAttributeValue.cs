@@ -1,6 +1,7 @@
 ﻿using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Parser;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using UnitsNet;
 
@@ -144,11 +145,18 @@ namespace LoreViewer.LoreElements
 
     public void ResolveReferenceToNode(LoreParser parser)
     {
-      // Look for the node by name
-      ILoreNode foundNode = parser.GetNode(ValueString);
+      // First, look for the node by ID
+      ILoreNode foundNode = parser.GetNodeByID(ValueString);
+      // If not found by ID...
+      if(foundNode == null)
+      {
+        Trace.WriteLine($"ReferenceAttributeValue could not find node with ID {ValueString}");
+        // Try to look for the node by name
+        foundNode = parser.GetNodeByName(ValueString);
+      }
 
       if (foundNode == null)
-        throw new Exception($"NODE {ValueString} NOT FOUND");
+        throw new Exception($"NODE WITH NAME OR ID {ValueString} NOT FOUND");
       else
         m_oNodeValue = foundNode;
     }

@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
 using LoreViewer.LoreElements;
 using LoreViewer.Settings;
+using Markdig.Syntax;
 using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
@@ -58,19 +59,10 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     }
   }
 
-  public class UnexpectedTypeNameException : LoreNodeParsingException
-  {
-    public UnexpectedTypeNameException(string filePath, int blockIndex, int lineNumber, string typeName)
-      : base(filePath, blockIndex, lineNumber, $"Found reference to a node type that was not defined: {typeName}") { }
-  }
-
   public class HeadingLevelErrorException : LoreNodeParsingException
   {
-    public HeadingLevelErrorException(string filePath, int blockIndex, int lineNumber, string msg)
-      : base(filePath, blockIndex, lineNumber, msg)
-    {
-
-    }
+    public HeadingLevelErrorException(string filePath, int blockIndex, int lineNumber, HeadingBlock hb)
+      : base(filePath, blockIndex, lineNumber, $"First heading of markdown file {filePath} must be level 1, but it was level {hb.Level}") { }
   }
 
   public class EmbeddedNodeTypeNotAllowedException : LoreNodeParsingException
@@ -140,14 +132,6 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     public NestedBulletsOnSingleValueChildlessAttributeException(string filePath, int blockIndex, int lineNumber, LoreFieldDefinition field)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, field.name, field.structure)) { }
   }
-
-  public class AttributeNotValidPicklistOptionException : LoreAttributeParsingException
-  {
-    static string msgBase = "Attribute '{0}' is defined by a Picklist-type field using picklist '{2}'. The attribute's value {1} was not found in picklist '{2}'";
-    public AttributeNotValidPicklistOptionException(string filePath, int blockIndex, int lineNumber, LoreAttribute attribute, LoreFieldDefinition field, string badValue) :
-      base(filePath, blockIndex, lineNumber, string.Format(msgBase, attribute.Name, badValue, field.PicklistBranchConstraint?.name ?? field.Picklist.name))
-    { }
-  }
   #endregion
 
   #region Collections
@@ -155,13 +139,6 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   {
     public LoreCollectionParsingException(string filePath, int blockIndex, int lineNumber, string msg)
       : base(filePath, blockIndex, lineNumber, msg) { }
-  }
-
-  public class InvalidContainedTypeDefinitionException : LoreCollectionParsingException
-  {
-    static string msgBase = "Tried to parse a collection with an invalid type {0}. Type can only be Type (node) or Collection";
-    public InvalidContainedTypeDefinitionException(string filePath, int blockIndex, int lineNumber, LoreDefinitionBase containedType)
-      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, containedType)) { }
   }
 
   public class UnknownTypeInCollectionException : LoreCollectionParsingException
@@ -173,7 +150,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
 
   public class InvalidTypeInCollectionException : LoreCollectionParsingException
   {
-    static string msgBase = "Tried to parse a node of type {0} int a collection of type {1}. Should only add nodes of the defined type {1} or derived types!";
+    static string msgBase = "Tried to parse a node of type {0} into a collection of type {1}. Should only add nodes of the defined type {1} or derived types!";
     public InvalidTypeInCollectionException(string filePath, int blockIndex, int lineNumber, string invalidTypeTag, LoreDefinitionBase containedType)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, invalidTypeTag, containedType)) { }
   }
@@ -218,6 +195,6 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
 
     public LoreTagParsingException(string filePath, int blockIndex, int lineNumber, string htmlTag, Exception e)
     : base(filePath, blockIndex, lineNumber, string.Format(msgBase, htmlTag, e.Message)) { }
-}
+  }
   #endregion
 }

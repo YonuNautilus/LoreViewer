@@ -1,0 +1,4 @@
+types:
+  - name: NodeWithEmbedded
+    embeddedNodeDefs:
+      - name: Jimmy

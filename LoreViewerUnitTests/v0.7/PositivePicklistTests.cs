@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace v0_7.PositiveTests
+namespace v0_7.PositivePicklistTests
 {
   public class PositivePicklistTests
   {

@@ -41,7 +41,7 @@ namespace v0_3.PositiveTests
       ILoreNode inodeToTest = _parser.Nodes[0] as LoreCompositeNode;
       LoreCompositeNode nodeToTest = _parser.Nodes[0] as LoreCompositeNode;
       Assert.NotNull(nodeToTest);
-      Assert.That(nodeToTest, Is.SameAs(_parser.GetNode("Node To Merge")));
+      Assert.That(nodeToTest, Is.SameAs(_parser.GetNodeByName("Node To Merge")));
       Assert.IsTrue(nodeToTest.InternalNodes[0].HasNarrativeText);
       Assert.That(nodeToTest.Sections, Has.Count.EqualTo(2));
     }

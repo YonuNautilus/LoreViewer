@@ -1,12 +1,6 @@
-﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.Validation;
-using ReactiveUI;
-using SharpYaml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace v0_7.NegativePicklistTests
 {
@@ -59,8 +53,6 @@ namespace v0_7.NegativePicklistTests
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
-      _parser.BeginParsingFromFolder(ValidFilesFolder);
-
       _settings = _parser.Settings;
     }
 
@@ -68,6 +60,9 @@ namespace v0_7.NegativePicklistTests
     [TestOf(typeof(LoreValidator))]
     public void InvalidChoiceOnConstrainedField()
     {
+      // This should parse, but there should be validation errors
+      Assert.DoesNotThrow(() => _parser.ParseSingleFile(Path.Combine(ValidFilesFolder, "Crayons.md")));
+      _parser.Validate();
       Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(1));
       Assert.That(_parser.validator.ValidationResult.Errors.First().Value[0].Message, Contains.Substring("Attribute Mystery field of style Picklist has invalid value 1-3. Valid Values are 1-3-1, 1-3-2"));
     }

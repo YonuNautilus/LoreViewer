@@ -1,9 +1,7 @@
-﻿using DocumentFormat.OpenXml.Math;
-using DynamicData;
+﻿using DynamicData;
 using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
-using LoreViewer.Parser;
 using LoreViewer.Settings;
 using LoreViewer.Validation;
 using Markdig;
@@ -17,7 +15,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +22,7 @@ using System.Xml.Linq;
 
 namespace LoreViewer.Parser
 {
-  public enum ETagType { Unknown, node, collection, section}
+  public enum ETagType { Unknown, node, collection, section }
 
   public struct LoreTagInfo
   {
@@ -38,9 +35,9 @@ namespace LoreViewer.Parser
     public bool IsNestedCollection => TypeName.Contains("collection") && TypeName.Split(":").Length > 1 && TypeName.Split(":")[0].Equals("collection");
 
     public bool HasID => m_dAttributes != null && m_dAttributes.ContainsKey("ID");
-
     public string ID => HasID ? m_dAttributes["ID"] : string.Empty;
 
+    public bool HasType => m_dAttributes != null && m_dAttributes.ContainsKey("type");
     public string TypeName => m_dAttributes != null ? m_dAttributes.ContainsKey("type") ? m_dAttributes["type"] : string.Empty : string.Empty;
 
     public string CollectionName => "collection:" + TypeName;
@@ -97,7 +94,7 @@ namespace LoreViewer.Parser
       return true;
     }
 
-    public static bool operator != (LoreTagInfo left, LoreTagInfo right)
+    public static bool operator !=(LoreTagInfo left, LoreTagInfo right)
     {
       // First see if either has missing info while the other does not
       if ((left.Attributes == null && right.Attributes != null) || (left.Attributes != null && right.Attributes == null)) return true;
@@ -203,7 +200,8 @@ namespace LoreViewer.Parser
       _settings = settings;
     }
 
-    public ILoreNode? GetNode(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName));
+    public ILoreNode? GetNodeByName(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName));
+    public ILoreNode? GetNodeByID(string id) => _nodes.Cast<LoreEntity>().FirstOrDefault(node => node.ID.Equals(id)) as ILoreNode;
     public bool HasNode(string nodeName) => _nodes.Any(node => node.Name.Equals(nodeName));
 
 
@@ -268,6 +266,10 @@ namespace LoreViewer.Parser
 
       // Now, all elements have been collected, we can start the merge process.
       PerformMergeFromParsed();
+
+
+      // Now that all have been merged, we can resolve references (like the reflist field/attribute).
+      PerformReferenceResolution();
 
 
       Validate();
@@ -360,16 +362,16 @@ namespace LoreViewer.Parser
     }
 
 
-    private static LoreTagInfo? GetTagInfo(HeadingBlock hb, LoreParsingContext ctx, int blockIndex, int lineNumber)
+    private static LoreTagInfo? GetTagInfo(HeadingBlock hb, LoreParsingContext ctx, int blockIndex)
     {
       if (hb.Inline is ContainerInline ci && ci.LastChild is HtmlInline html)
         try
         {
           return new LoreTagInfo(html);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-          throw new LoreTagParsingException(ctx.FilePath, blockIndex, lineNumber, html.Tag, ex);
+          throw new LoreTagParsingException(ctx.FilePath, blockIndex, hb.Line + 1, html.Tag, ex);
         }
       else return null;
     }
@@ -434,7 +436,9 @@ namespace LoreViewer.Parser
         // Start with the top level, get its type
         if (document[currentIndex] is HeadingBlock block)
         {
-          LoreTagInfo? uTag = GetTagInfo(block, ctx, currentIndex, block.Line + 1);
+          if (block.Level != 1) throw new HeadingLevelErrorException(filePath, currentIndex, block.Line + 1, block);
+
+          LoreTagInfo? uTag = GetTagInfo(block, ctx, currentIndex);
 
           string title = ExtractTitle(block);
 
@@ -442,7 +446,7 @@ namespace LoreViewer.Parser
           if (uTag.HasValue)
           {
             LoreTagInfo tag = uTag.Value;
-            // Parse collection based on {collection:...} tag, which is not even locally defined, it is MARKDOWN defined at the TOP LEVEL of a file.
+            // Parse collection based on <collection ... /> tag, which is not even locally defined (in schema), it is MARKDOWN defined at the TOP LEVEL of a file.
             // It should not be treated as a locally (YAML) defined collection (ie no OwningDefinition needed to be set)
             if (tag.IsCollection)
             {
@@ -453,7 +457,11 @@ namespace LoreViewer.Parser
               else
               {
                 LoreCollectionDefinition lcd = new LoreCollectionDefinition();
-                lcd.SetContainedType(_settings.GetTypeDefinition(GetCollectionType(tag.TypeName)));
+
+                if (_settings.GetTypeDefinition(tag.TypeName) == null)
+                  throw new CollectionWithUnknownTypeException(filePath, currentIndex, block.Line + 1, tag.TypeName);
+
+                lcd.SetContainedType(_settings.GetTypeDefinition(tag.TypeName));
                 _parsedCollections.Add(ParseCollection(document, ref currentIndex, block, lcd, ctx));
               }
             }
@@ -522,6 +530,10 @@ namespace LoreViewer.Parser
       LoreNode newNode = new LoreNode(title, typeDef, ctx.FilePath, currentIndex, doc[currentIndex].Line + 1);
       newNode.BlockIndex = currentIndex;
 
+      // Even though we have the typeDef parameter, if this method is called from ParseCollection, the type of this node may not be typeDef,
+      // it may actually be tagged with a derived type, so we need to check that.
+      LoreTagInfo? lti = GetTagInfo(heading, ctx, currentIndex);
+
       currentIndex++;
 
       while (currentIndex < doc.Count)
@@ -552,7 +564,7 @@ namespace LoreViewer.Parser
               if (heading.Level >= hb.Level)
                 return newNode;
 
-              LoreTagInfo? newUTag = GetTagInfo(hb, ctx, currentIndex, currentBlock.Line + 1);
+              LoreTagInfo? newUTag = GetTagInfo(hb, ctx, currentIndex);
               string newTitle = ExtractTitle(hb);
 
 
@@ -666,9 +678,6 @@ namespace LoreViewer.Parser
                 {
                   LoreCollectionDefinition lcd = typeDef.GetCollectionDefinition(newTitle);
 
-                  if (!_settings.HasTypeDefinition(lcd.entryTypeName) && lcd == null)
-                    throw new UnexpectedTypeNameException(ctx.FilePath, currentIndex, hb.Line + 1, newTitle);
-
                   if (lcd.IsCollectionOfCollections)
                     newNode.Collections.Add(ParseCollection(doc, ref currentIndex, hb, lcd, ctx));
                   else
@@ -739,7 +748,7 @@ namespace LoreViewer.Parser
 
     /// <summary>
     /// Creates a LoreCollection of LoreElements. Starts from a heading block.
-    /// If heading had tag (example {collection:type}), a LoreCollectionDefinition object with ContainedType set
+    /// If heading had tag (example &lt;collection type="name" /&gt;), a LoreCollectionDefinition object with ContainedType set
     /// to the LoreTypeDefinition of the 'type' in the tag should be created from the calling method.
     /// <para />
     /// RULES/PROCESS:
@@ -765,6 +774,7 @@ namespace LoreViewer.Parser
     private LoreCollection ParseCollection(MarkdownDocument doc, ref int currentIndex, HeadingBlock heading, LoreCollectionDefinition colType, LoreParsingContext ctx)
     {
       string title = ExtractTitle(heading);
+      LoreTagInfo? lti = GetTagInfo(heading, ctx, currentIndex);
 
       LoreCollection newCollection = new LoreCollection(title, colType, ctx.FilePath, currentIndex, doc[currentIndex].Line + 1);
 
@@ -790,15 +800,31 @@ namespace LoreViewer.Parser
                 // but the node must be tagged with that derived type!
                 // Otherwise it is assUmed to be the base type
                 LoreTypeDefinition nodeType = colType.ContainedType as LoreTypeDefinition;
-                LoreTagInfo? uTag = GetTagInfo(hb, ctx, currentIndex, currentBlock.Line + 1);
+                LoreTagInfo? uTag = GetTagInfo(hb, ctx, currentIndex);
 
                 // If the subheading was tagged as a particular type
                 if (uTag.HasValue)
                 {
+                  /* This case:
+                    * # Departments of the FBSA <collection type="Organization" />
+                    * 
+                    * ## Department of Containment (DOC) <node ID="FBSA.DOC />
+                    * 
+                    * The above IS VALID. The tag on the level 2 heading is tricky because it has no type attribute, but we can infer that it is
+                    * of type Organization because the owning collection contains nodes of type Organization
+                    */
+
                   LoreTagInfo tag = uTag.Value;
-                  nodeType = _settings.GetTypeDefinition(tag.TypeName);
-                  if (nodeType == null)
-                    throw new UnknownTypeInCollectionException(ctx.FilePath, currentIndex, hb.Line + 1, tag.TypeName, colType.ContainedType);
+                  if (!tag.HasType)
+                  {
+                    nodeType = colType.ContainedType as LoreTypeDefinition;
+                  }
+                  else
+                  {
+                    nodeType = _settings.GetTypeDefinition(tag.TypeName);
+                    if (nodeType == null)
+                      throw new UnknownTypeInCollectionException(ctx.FilePath, currentIndex, hb.Line + 1, tag.TypeName, colType.ContainedType);
+                  }
 
                   if (!nodeType.IsATypeOf(colType.ContainedType as LoreTypeDefinition))
                     throw new InvalidTypeInCollectionException(ctx.FilePath, currentIndex, hb.Line + 1, tag.TypeName, colType.ContainedType);
@@ -811,7 +837,7 @@ namespace LoreViewer.Parser
 
                 LoreNode newNodeToAdd = ParseNode(doc, ref currentIndex, hb, nodeType, ctx);
                 newNodeToAdd.SetTag(uTag);
-                newCollection.Nodes.Add(newNodeToAdd );
+                newCollection.Nodes.Add(newNodeToAdd);
               }
               continue;
             }
@@ -860,7 +886,7 @@ namespace LoreViewer.Parser
         {
           case HeadingBlock hb:
 
-            LoreTagInfo? uTag = GetTagInfo(hb, ctx, currentIndex, currentBlock.Line + 1);
+            LoreTagInfo? uTag = GetTagInfo(hb, ctx, currentIndex);
 
             // If the heading we're iterating over is subheader to the section's heading,
             // it *must* be a subsection (by rules: sections can only contain sections as subheadings)
@@ -874,7 +900,7 @@ namespace LoreViewer.Parser
               LoreSectionDefinition subSecDef = secDef.sections?.FirstOrDefault(sd => sd.name.Equals(headingTitle));
 
               // 'if we did not find a match for the section definition...'
-              if(subSecDef == null)
+              if (subSecDef == null)
               {
                 if (!uTag.HasValue)
                   throw new UnexpectedSectionNameException(ctx.FilePath, currentIndex, hb.Line, newSection.Name, headingTitle);

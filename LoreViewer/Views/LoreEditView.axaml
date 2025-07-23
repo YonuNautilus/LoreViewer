@@ -98,7 +98,7 @@
                         <DataGrid.Columns>
                           <DataGridTemplateColumn Header="Error" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
-                              <DataTemplate DataType="val:LoreValidationError">
+                              <DataTemplate DataType="val:LoreValidationMessage">
                                 <TextBlock Text="{Binding Message}" />
                               </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

@@ -319,7 +319,7 @@ namespace LoreViewer.ViewModels
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
       if (value is LoreEntity e)
-        return LoreViewModel._parser.validator.ValidationResult.Errors.ContainsKey(e) ? new ObservableCollection<LoreValidationError>(LoreViewModel._parser.validator.ValidationResult.Errors[e]) : null;
+        return LoreViewModel._parser.validator.ValidationResult.Errors.ContainsKey(e) ? new ObservableCollection<LoreValidationMessage>(LoreViewModel._parser.validator.ValidationResult.Errors[e]) : null;
       return null;
     }
 

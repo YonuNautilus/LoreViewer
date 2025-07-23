@@ -1,0 +1,8 @@
+types:
+  - name: Main Type
+    collections:
+      - name: Main Collection
+        entryTypeName: Type2
+
+  - name: Type1
+  - name: Type2

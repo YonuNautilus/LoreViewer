@@ -1,0 +1,11 @@
+types:
+  - name: A type
+    fields:
+      - name: Option Chosen
+        contentType: PickList
+
+picklists:
+  - name: Colors
+    entries:
+      - name: Blue
+      - name: Red
