@@ -5,6 +5,7 @@ using LoreViewer.Settings;
 using LoreViewer.Settings.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace LoreViewer.Validation
@@ -245,6 +246,9 @@ namespace LoreViewer.Validation
             case EFieldContentType.Picklist:
               ValidatePicklistAttribute(entity, child, result);
               break;
+            case EFieldContentType.Color:
+              ValidateColorAttribute(entity, child, result);
+              break;
           }
 
 
@@ -320,9 +324,28 @@ namespace LoreViewer.Validation
 
             result.LogWarning(attr, msg);
 
-            if (result.LoreEntityValidationStates.TryGetValue(attr, out var state) && state == EValidationState.Passed)
+            if (result.LoreEntityValidationStates.TryGetValue(attr, out var state) && state <= EValidationState.ChildWarning)
               result.LoreEntityValidationStates[attr] = EValidationState.Warning;
           }
+        }
+      }
+    }
+
+    internal void ValidateColorAttribute(LoreEntity parent, LoreAttribute attr, LoreValidationResult result)
+    {
+      ColorAttributeValue[] valsToCheck;
+      if (attr.HasValue) valsToCheck = new ColorAttributeValue[] { (attr.Value as ColorAttributeValue) };
+      else valsToCheck = attr.Values.Cast<ColorAttributeValue>().ToArray();
+
+      foreach(ColorAttributeValue cav in valsToCheck)
+      {
+        // If no value was given, just a name, give warning
+        if (!cav.Value.DefinedColor.HasValue)
+        {
+          result.LogWarning(attr, $"Color value {cav.ValueString} of attribute {attr.Name} did not have a hex code defined");
+
+          if (result.LoreEntityValidationStates.TryGetValue(attr, out var state) && state <= EValidationState.ChildWarning)
+            result.LoreEntityValidationStates[attr] = EValidationState.Warning;
         }
       }
     }

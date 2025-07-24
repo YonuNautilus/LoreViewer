@@ -132,6 +132,27 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     public NestedBulletsOnSingleValueChildlessAttributeException(string filePath, int blockIndex, int lineNumber, LoreFieldDefinition field)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, field.name, field.structure)) { }
   }
+
+  public class ReflistCannotResovleException : LoreAttributeParsingException
+  {
+    static string msgBase = "Reflist Attribute '{0}' cannot find a node of type {1} with name or ID equal to '{2}'";
+
+    public ReflistCannotResovleException(string filePath, int blockIndex, int lineNumber, ReferenceAttributeValue attrVal)
+      : base(filePath, blockIndex, lineNumber,
+          string.Format(msgBase,
+            attrVal.OwningAttribute.Name,
+            attrVal.OwningAttribute.DefinitionAs<LoreFieldDefinition>().RefListType.name,
+            attrVal.ValueString))
+    { }
+  }
+
+  public class ColorCannotParseException : LoreAttributeParsingException
+  {
+    static string msgBase = "Color attribute '{0}' cannot parse string \"{1}\" into a color, it must start with the '#' character followed by 6 or 8 hexadecimal digits";
+
+    public ColorCannotParseException(string filePath, int blockIndex, int lineNumber, ColorAttributeValue attrVal) 
+      : base(filePath, blockIndex, lineNumber, string.Format(msgBase, attrVal.OwningAttribute.Name, attrVal.ValueString)) { }
+  }
   #endregion
 
   #region Collections
@@ -184,6 +205,8 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     public EmbeddedNodeAlreadyAddedException(string filePath, int blockIndex, int lineNumber, LoreNode parentNode, LoreTypeDefinition newNodeType, string newNodeTitle)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, newNodeType, newNodeType.name, parentNode.Name, parentNode.Definition.name)) { }
   }
+
+
 
   #endregion
 

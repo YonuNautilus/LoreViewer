@@ -246,6 +246,12 @@
     <None Update="v0.7\TestData\NegativePicklistSettings\MissingPicklist.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.7\TestData\NegativeReflistParsingData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\NegativeReflistParsingData\TestData.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v0.7\TestData\NegativeReflistSettings\InvalidTypeName.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

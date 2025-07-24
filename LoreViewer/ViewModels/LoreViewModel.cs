@@ -283,34 +283,77 @@ namespace LoreViewer.ViewModels
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-      if (value is LoreEntity e)
+      // Value will be the datagrid node (LoreTreeItem)
+
+      // if there is a LoreEntity associated with the selected DataGrid node...
+      if (value is LoreTreeItem lti)
       {
-        LoreValidationResult valRes = LoreViewModel._parser.validator.ValidationResult;
-
-        string image = string.Empty;
-        EValidationState elementState = valRes.LoreEntityValidationStates.ContainsKey(e) ?
-          valRes.LoreEntityValidationStates[e] : EValidationState.Passed;
-        
-        EValidationMessageStatus cumulativeMessageStatus = EValidationMessageStatus.Passed;
-        if (valRes.LoreEntityValidationMessages.ContainsKey(e) && valRes.LoreEntityValidationMessages[e].Count > 0)
-          cumulativeMessageStatus = valRes.LoreEntityValidationMessages[e].Select(m => m.Status).Distinct().Max();
-
-        if (elementState == EValidationState.Failed)
-         image = "avares://LoreViewer/Resources/close.png";
-        else if (elementState == EValidationState.Warning)
-          image = "avares://LoreViewer/Resources/warning.png";
-        else if (elementState == EValidationState.ChildWarning)
+        if (lti.element is LoreEntity e)
         {
-          if (cumulativeMessageStatus == EValidationMessageStatus.Failed)
-            image = "avares://LoreViewer/Resources/failedChildWarning.png";
-          else if (cumulativeMessageStatus == EValidationMessageStatus.Passed)
-            image = "avares://LoreViewer/Resources/childWarning.png";
+          LoreValidationResult valRes = LoreViewModel._parser.validator.ValidationResult;
+
+          string image = string.Empty;
+          EValidationState elementState = valRes.LoreEntityValidationStates.ContainsKey(e) ?
+            valRes.LoreEntityValidationStates[e] : EValidationState.Passed;
+
+          EValidationMessageStatus cumulativeMessageStatus = EValidationMessageStatus.Passed;
+          if (valRes.LoreEntityValidationMessages.ContainsKey(e) && valRes.LoreEntityValidationMessages[e].Count > 0)
+            cumulativeMessageStatus = valRes.LoreEntityValidationMessages[e].Select(m => m.Status).Distinct().Max();
+
+          if (elementState == EValidationState.Failed || elementState == EValidationState.ChildFailed)
+            image = "avares://LoreViewer/Resources/close.png";
+          else if (elementState == EValidationState.Warning)
+            image = "avares://LoreViewer/Resources/warning.png";
+          else if (elementState == EValidationState.ChildWarning)
+          {
+            if (cumulativeMessageStatus == EValidationMessageStatus.Failed)
+              image = "avares://LoreViewer/Resources/failedChildWarning.png";
+            else if (cumulativeMessageStatus == EValidationMessageStatus.Passed)
+              image = "avares://LoreViewer/Resources/childWarning.png";
+          }
+          else if (elementState == EValidationState.Passed)
+            image = "avares://LoreViewer/Resources/valid.png";
+          else
+            return null;
+          return new Bitmap(AssetLoader.Open(new Uri(image)));
         }
-        else if (elementState == EValidationState.Passed)
-          image = "avares://LoreViewer/Resources/valid.png";
+        // If there isn't a LoreEntity associated with the selected DataGrid node
+        // (ie, a node that contains all the attributes or sections of a node),
+        // get a cummulative validation state to display
         else
-          return null;
-        return new Bitmap(AssetLoader.Open(new Uri(image)));
+        {
+          if(lti.Children != null)
+          {
+            string image = string.Empty;
+
+            EValidationState containerItemState = EValidationState.Passed;
+            EValidationState maxChildItemState = lti.Children.Select(
+              childLti =>
+              childLti.element != null ?
+                  LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(childLti.element) ?
+                  LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates[childLti.element] : EValidationState.Passed : EValidationState.Passed)
+              .Distinct().Max();
+
+            switch (maxChildItemState)
+            {
+              case EValidationState.ChildFailed:
+              case EValidationState.Failed:
+                image = "avares://LoreViewer/Resources/close.png";
+                break;
+              case EValidationState.ChildWarning:
+              case EValidationState.Warning:
+                image = "avares://LoreViewer/Resources/childWarning.png";
+                break;
+              default:
+                image = "avares://LoreViewer/Resources/valid.png";
+                break;
+            }
+
+            if (!string.IsNullOrEmpty(image))
+              return new Bitmap(AssetLoader.Open(new Uri(image)));
+            else return null;
+          }
+        }
       }
       return null;
     }

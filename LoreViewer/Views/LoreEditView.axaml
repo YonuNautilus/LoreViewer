@@ -99,7 +99,7 @@
                           <DataGridTemplateColumn Header="Validation Message" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                               <DataTemplate DataType="val:LoreValidationMessage">
-                                <TextBlock Text="{Binding Message}" />
+                                <TextBlock Text="{Binding Message}" ToolTip.Tip="{Binding Message}"/>
                               </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                           </DataGridTemplateColumn>

@@ -1,9 +1,5 @@
-﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 
 namespace v0_7.NegativeReflistTests
 {
@@ -30,6 +26,26 @@ namespace v0_7.NegativeReflistTests
       _parser = new LoreParser();
 
       Assert.Throws<ReferenceListTypeNotFoundException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "InvalidTypeName.yaml")));
+    }
+  }
+
+  [TestFixture]
+  internal class NegativeReflistParsingTests
+  {
+    public static LoreSettings _settings;
+    public static LoreParser _parser;
+    static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "NegativeReflistParsingData");
+
+    [Test]
+    [TestOf(typeof(ReflistCannotResovleException))]
+    public void ReflistCannotResolve()
+    {
+      Assert.Throws<ReflistCannotResovleException>(() =>
+      {
+        LoreParser _parser = new LoreParser();
+        _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
+        _parser.BeginParsingFromFolder(ValidFilesFolder);
+      });
     }
   }
 }
