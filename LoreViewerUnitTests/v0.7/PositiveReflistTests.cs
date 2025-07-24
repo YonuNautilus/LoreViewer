@@ -1,5 +1,6 @@
 ﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
 using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,6 +84,20 @@ namespace v0_7.PositiveReflistTests
       Assert.That((thirdNode.Attributes[0].Value as ReferenceAttributeValue).Value, Is.SameAs(secondNode));
       Assert.That((thirdNode.Attributes[1].Values[0] as ReferenceAttributeValue).Value, Is.SameAs(firstNode));
       Assert.That((thirdNode.Attributes[1].Values[1] as ReferenceAttributeValue).Value, Is.SameAs(thirdNode));
+
+      // Check that referencing a node by name rather than ID results in a warning.
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages.ContainsKey(thirdNode.Attributes[1]), Is.True);
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(thirdNode.Attributes[1]), Is.True);
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[thirdNode.Attributes[1]], Is.EqualTo(EValidationState.Warning));
+
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages.ContainsKey(thirdNode.Attributes[0]), Is.True);
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages[thirdNode.Attributes[0]], Has.Count.EqualTo(1));
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages[thirdNode.Attributes[0]][0].Status, Is.EqualTo(EValidationMessageStatus.Warning));
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(thirdNode.Attributes[0]), Is.True);
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[thirdNode.Attributes[0]], Is.EqualTo(EValidationState.Warning));
+
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(thirdNode as LoreEntity), Is.True);
+      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[thirdNode as LoreEntity], Is.EqualTo(EValidationState.ChildWarning));
     }
   }
 }

@@ -1,4 +1,4 @@
-# First Node <node type="Type 1"/>
+# First Node <node type="Type 1" ID="N1"/>
 
 - Reference List Field: Second Node
 
@@ -13,5 +13,5 @@ just to be safe
 
 - Reference List Field: Second Node
 - RefListField 2:
-  - First Node
+  - N1
   - Third Node
