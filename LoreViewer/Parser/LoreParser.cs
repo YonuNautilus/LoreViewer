@@ -303,10 +303,16 @@ namespace LoreViewer.Parser
     public void PerformReferenceResolution()
     {
       foreach (ILoreNode n in _nodes)
-      {
         foreach (LoreAttribute la in n.Attributes)
-        {
           la.ResolveNodeRefs(this);
+
+      foreach(LoreCollection c in _collections)
+      {
+        if (c.ContainsNodes)
+        {
+          foreach (ILoreNode n in c.Nodes)
+            foreach (LoreAttribute la in n.Attributes)
+              la.ResolveNodeRefs(this);
         }
       }
     }

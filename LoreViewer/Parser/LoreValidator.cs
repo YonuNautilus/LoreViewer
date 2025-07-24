@@ -11,9 +11,13 @@ namespace LoreViewer.Validation
 {
   public enum EValidationState
   {
+    /* IN ORDER OF PRECEDENCE
+     * Meaning, if an element has a warning status but its child element failed, the element's warning status gets changed to ChildFailed.
+     */
+
     Passed,
-    Warning,
     ChildWarning,
+    Warning,
     ChildFailed,
     Failed,
   }
@@ -70,8 +74,22 @@ namespace LoreViewer.Validation
     {
       if (LoreEntityValidationStates.TryGetValue(parent, out var validationState) && LoreEntityValidationStates.TryGetValue(child, out var childValidationState))
       {
+        // If the child did anything but pass, and the current element has anything but failed, we *may* need to update this element's status
+        // But if the child passed, the parent won't need to be updated, and if the parent failed, well, failed takes precedence over all other statuses
         if (childValidationState > EValidationState.Passed && validationState < EValidationState.Failed)
-          LoreEntityValidationStates[parent] = EValidationState.ChildFailed;
+        {
+          // the EValidationState enum is in order of precendence, so if any children have a status greater than Passed, the parent CANNOT have Passed status
+          
+          // Based on this child element, determine what this parent would become (assuming the parent has Passed status)
+          EValidationState suggestedNewState;
+
+          if (childValidationState == EValidationState.Warning || childValidationState == EValidationState.ChildWarning) suggestedNewState = EValidationState.ChildWarning;
+          else if (childValidationState == EValidationState.Failed || childValidationState == EValidationState.ChildFailed) suggestedNewState = EValidationState.ChildFailed;
+          else return;
+
+          // Now take that suggestion and see if it can be applied to the parent or not.
+          if(suggestedNewState > validationState) LoreEntityValidationStates[parent] = suggestedNewState;
+        }
       }
     }
   }
@@ -103,14 +121,29 @@ namespace LoreViewer.Validation
     {
       result.LoreEntityValidationStates[entity] = EValidationState.Passed;
 
-      if (entity is IEmbeddedNodeContainer nodeCont)
-        ValidateEmbeddedNodes(nodeCont, entity, result);
+      if (entity is IEmbeddedNodeContainer embNodeCont)
+        ValidateEmbeddedNodes(embNodeCont, entity, result);
       if (entity is IAttributeContainer attrCont)
         ValidateAttributes(attrCont, entity, result);
       if (entity is ISectionContainer secCont)
         ValidateSections(secCont, entity, result);
       if (entity is ICollectionContainer colCont)
         ValidateCollections(colCont, entity, result);
+      if (entity is INodeContainer nodeCont)
+        ValidateNodes(nodeCont, entity, result);
+    }
+
+    private void ValidateNodes(INodeContainer container, LoreEntity entity, LoreValidationResult result)
+    {
+      if (entity != container) throw new Exception($"PARSING ERROR ON ENTITY {entity.Name}");
+      
+      foreach(LoreNode node in container.Nodes)
+      {
+        ValidateEntity(node, result);
+
+        if (result.LoreEntityValidationStates.TryGetValue(node, out var state) && state != EValidationState.Passed)
+          result.PropagateDescendentState(entity, node);
+      }
     }
 
     private void ValidateEmbeddedNodes(IEmbeddedNodeContainer container, LoreEntity entity, LoreValidationResult result)

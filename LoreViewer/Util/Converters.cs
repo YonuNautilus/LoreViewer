@@ -68,7 +68,6 @@ namespace LoreViewer.Converters
     }
   }
 
-
   public class AllowedStyleConverter : IMultiValueConverter
   {
     public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)

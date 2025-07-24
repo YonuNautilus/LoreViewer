@@ -287,23 +287,31 @@ namespace LoreViewer.ViewModels
     {
       if (value is LoreEntity e)
       {
+        LoreValidationResult valRes = LoreViewModel._parser.validator.ValidationResult;
+
         string image = string.Empty;
-        EValidationState elementState = LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(e) ?
-          LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates[e] : EValidationState.Passed;
-        switch (elementState)
+        EValidationState elementState = valRes.LoreEntityValidationStates.ContainsKey(e) ?
+          valRes.LoreEntityValidationStates[e] : EValidationState.Passed;
+        
+        EValidationMessageStatus cumulativeMessageStatus = EValidationMessageStatus.Passed;
+        if (valRes.LoreEntityValidationMessages.ContainsKey(e) && valRes.LoreEntityValidationMessages[e].Count > 0)
+          cumulativeMessageStatus = valRes.LoreEntityValidationMessages[e].Select(m => m.Status).Distinct().Max();
+
+        if (elementState == EValidationState.Failed)
+         image = "avares://LoreViewer/Resources/close.png";
+        else if (elementState == EValidationState.Warning)
+          image = "avares://LoreViewer/Resources/warning.png";
+        else if (elementState == EValidationState.ChildWarning)
         {
-          case EValidationState.Failed:
-            image = "avares://LoreViewer/Resources/close.png";
-            break;
-          case EValidationState.ChildFailed:
-            image = "avares://LoreViewer/Resources/warning.png";
-            break;
-          case EValidationState.Passed:
-            image = "avares://LoreViewer/Resources/valid.png";
-            break;
-          default:
-            return null;
+          if (cumulativeMessageStatus == EValidationMessageStatus.Failed)
+            image = "avares://LoreViewer/Resources/failedChildWarning.png";
+          else if (cumulativeMessageStatus == EValidationMessageStatus.Passed)
+            image = "avares://LoreViewer/Resources/childWarning.png";
         }
+        else if (elementState == EValidationState.Passed)
+          image = "avares://LoreViewer/Resources/valid.png";
+        else
+          return null;
         return new Bitmap(AssetLoader.Open(new Uri(image)));
       }
       return null;
