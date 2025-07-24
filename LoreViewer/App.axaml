@@ -32,7 +32,7 @@
 
 
       <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"/>
-      <vm:LoreEntityToErrorListConverter x:Key="ValidationErrorListConverter" />
+      <vm:LoreEntityToValidationMessageListConverter x:Key="ValidationErrorListConverter" />
 
       <conv:EnumDescriptionConverter x:Key="EnumConverter" />
       <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />

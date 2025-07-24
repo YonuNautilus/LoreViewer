@@ -23,6 +23,8 @@ namespace LoreViewer.ViewModels.LoreEntities
           return new LoreNodeViewModel(node);
         case LoreCompositeNode compositeNode:
           return new LoreCompositeNodeViewModel(compositeNode);
+        case LoreAttribute attr:
+          //return new LoreAttributeViewModel(attr);
         default:
           return null;
       }

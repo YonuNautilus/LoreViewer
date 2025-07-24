@@ -91,12 +91,12 @@
                     <StackPanel Orientation="Vertical">
                       <DockPanel>
                         <ToggleSwitch DockPanel.Dock="Right" Margin="10,0,0,0" OnContent="NotePad++" OffContent="In-App Editor" IsChecked="{Binding UseNPpp}" IsEnabled="{Binding NotepadPPIsInstalled, Mode=OneWay}"/>
-                        <Label DockPanel.Dock="Left">Validation Errors</Label>
+                        <Label DockPanel.Dock="Left">Validation Messages</Label>
                       </DockPanel>
                       <Button Classes="rounded" IsVisible="{Binding ActualNodeIsSelected}" Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}" Command="{Binding OpenFileToLine}" CommandParameter="{Binding CurrentlySelectedTreeNode.element}"/>
                       <DataGrid ItemsSource="{Binding CurrentlySelectedTreeNode.element, Converter={StaticResource ValidationErrorListConverter}}">
                         <DataGrid.Columns>
-                          <DataGridTemplateColumn Header="Error" Width="*">
+                          <DataGridTemplateColumn Header="Validation Message" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                               <DataTemplate DataType="val:LoreValidationMessage">
                                 <TextBlock Text="{Binding Message}" />

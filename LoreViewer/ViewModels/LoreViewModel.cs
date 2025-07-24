@@ -149,12 +149,10 @@ namespace LoreViewer.ViewModels
           var dialog = new EntityEditDialog(LoreEntityViewModel.CreateViewModel(e));
           Dictionary<string, string>? result = await dialog.ShowDialog<Dictionary<string, string>?>(TopLevel.GetTopLevel(m_oView) as Window);
 
-
           if (result != null && result.Count > 0)
           {
             DoFileSaves(result);
             ReloadLoreFolder();
-
           }
         }
       }
@@ -322,12 +320,12 @@ namespace LoreViewer.ViewModels
       throw new NotSupportedException();
     }
   }
-  public class LoreEntityToErrorListConverter : IValueConverter
+  public class LoreEntityToValidationMessageListConverter : IValueConverter
   {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
       if (value is LoreEntity e)
-        return LoreViewModel._parser.validator.ValidationResult.Errors.ContainsKey(e) ? new ObservableCollection<LoreValidationMessage>(LoreViewModel._parser.validator.ValidationResult.Errors[e]) : null;
+        return LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationMessages.ContainsKey(e) ? new ObservableCollection<LoreValidationMessage>(LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationMessages[e]) : null;
       return null;
     }
 
