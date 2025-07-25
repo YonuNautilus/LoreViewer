@@ -38,40 +38,26 @@ namespace LoreViewer.LoreElements
 
   public class ColorAttributeValue : LoreAttributeValue
   {
-    const string HEX_COLOR_PATTERN = "(#[0-9A-Fa-f]{8})|(#[0-9A-Fa-f]{6})";
-    const string HEX_COLOR_PATTERN_W_NAME = "((#[0-9A-Fa-f]{8}$)|(#[0-9A-Fa-f]{6}$)) (.+)";
-    const string HEX_COLOR_PATTERN_NO_ALPHA = "#[0-9A-Fa-f]{6}$";
-    const string HEX_COLOR_PATTERN_ALPHA = "#[0-9A-Fa-f]{8}$";
+    private const string VERIFICATION_PATTERN = @"^(((#[0-9A-Fa-f]{8})|(#[0-9A-Fa-f]{6})) )(.*)";
+
+    const string HEX_COLOR_PATTERN = @"^((#[0-9A-Fa-f]{8})|(#[0-9A-Fa-f]{6}))(?= )";
+    const string NAME_PATTERN = @"(?<=(^((#[0-9A-Fa-f]{8})|(#[0-9A-Fa-f]{6}))) )(.*)";
     static ColorConverter conv = new ColorConverter();
     public ColorAttributeValue(string valueToParse, LoreAttribute owningAttribute) : base(valueToParse, owningAttribute)
     {
       // If there is a match in the string for a hex color code, grab it, parse it.
-      if (Regex.IsMatch(valueToParse, HEX_COLOR_PATTERN))
+      if (Regex.IsMatch(valueToParse, VERIFICATION_PATTERN))
       {
-        string colorHexString = string.Empty;
-        string colorName = string.Empty;
+        string colorHexString = Regex.Match(valueToParse, HEX_COLOR_PATTERN).Value;
+        string colorName = Regex.Match(valueToParse, NAME_PATTERN).Value;
 
-        // If the value to parse has a hex code and a name given
-        if (Regex.IsMatch(valueToParse, HEX_COLOR_PATTERN_W_NAME))
-        {
-          // For HEX_COLOR_PATTERN_W_NAME, group 0 is the 4 byte hex code, group 1 is the 3 byte hex code, group 3 should be the name
-          Match m = Regex.Match(valueToParse, HEX_COLOR_PATTERN_W_NAME);
-          colorHexString = m.Groups[0].Success ? m.Groups[0].Value : m.Groups[1].Value;
-          colorName = m.Groups[3].Value;
-        }
-        // Otherwise there is no name given, just a color code
-        else
-        {
-          Match m = Regex.Match(valueToParse, HEX_COLOR_PATTERN);
-          colorHexString = m.Groups[0].Success ? m.Groups[0].Value : m.Groups[1].Value;
-        }
-        
-        Value = new ColorValue(conv.ConvertFromString(colorHexString) as Color?, colorName);
+        Color? c = conv.ConvertFromString(colorHexString) as Color?;
+        if (!c.HasValue) throw new Exception($"COULD NOT PARSE \"{colorHexString}\" INTO A COLOR");
+        Value = new ColorValue(c.Value, colorName);
       }
       else
       {
-        Value = new ColorValue(null, valueToParse);
-        //throw new ColorCannotParseException(owningAttribute.SourcePath, owningAttribute.BlockIndex, owningAttribute.LineNumber, this);
+        throw new ColorCannotParseException(owningAttribute.SourcePath, owningAttribute.BlockIndex, owningAttribute.LineNumber, this);
       }
     }
 
@@ -84,9 +70,9 @@ namespace LoreViewer.LoreElements
     {
       public string Name { get; set; }
 
-      public Color? DefinedColor { get; set; }
+      public Color DefinedColor { get; set; }
 
-      public ColorValue(Color? color, string name)
+      public ColorValue(Color color, string name)
       {
         DefinedColor = color;
         Name = name;

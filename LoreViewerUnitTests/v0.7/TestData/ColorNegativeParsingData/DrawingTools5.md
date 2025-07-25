@@ -1,0 +1,15 @@
+# Fake Crayon 5 <node type="Crayon" />
+
+- Color: Invisible: #00000000
+
+# Fake Crayon 6 <node type="Crayon" />
+
+- Color: Invisible
+
+# Fake Crayon 7 <node type="Crayon" />
+
+- Color: #000000
+
+# Fake Crayon 8 <node type="Crayon" />
+
+- Color: #00000088

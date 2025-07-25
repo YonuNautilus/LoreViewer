@@ -1,0 +1,10 @@
+types:
+  - name: Crayon
+    fields:
+      - name: Color
+        contentType: Color
+  - name: Box of colored pencils
+    fields:
+      - name: Available Colors
+        cardinality: MultiValue
+        contentType: Color
