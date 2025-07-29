@@ -306,7 +306,7 @@ namespace LoreViewer.Parser
         foreach (LoreAttribute la in n.Attributes)
           la.ResolveNodeRefs(this);
 
-      foreach(LoreCollection c in _collections)
+      foreach (LoreCollection c in _collections)
       {
         if (c.ContainsNodes)
         {
@@ -1070,7 +1070,22 @@ namespace LoreViewer.Parser
         {
           // Need to get the ListBlock for the indented ListItemBlocks
           // This ListBlock contains ListItemBlocks that are either nested fields multiple values, NEVER BOTH
-          ListBlock lb = (item as ListItemBlock)[1] as ListBlock;
+
+
+          // in case there's an HTML comment block in some fields list.
+          // Example:
+          /*
+           * 
+          - **Appearance:**
+          <!-- - Color Palette:
+              - Signal Vesicle: Translucent gold 
+              - Pigment Vesicle: Pale, lighter green-->
+            - Degree of human presentation: near-full
+            - **Height:** 5'4"
+          */
+          ListBlock lb = null;
+          int ind = 1;
+          while (lb == null && ind < (item as ListItemBlock).Count) { lb = (item as ListItemBlock)[ind] as ListBlock; ind++; }
 
           // if it has nested fields
           if (newDef.HasFields)

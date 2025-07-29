@@ -1,0 +1,8 @@
+types:
+  - name: DateRangeTester
+    fields:
+      - name: Active Duration
+        contentType: DateRange
+      - name: Multiple Ranges
+        contentType: DateRange
+        cardinality: MultiValue

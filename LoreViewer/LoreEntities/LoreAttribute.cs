@@ -93,10 +93,10 @@ namespace LoreViewer.LoreElements
         case EFieldContentType.Quantity:
           return new QuantityAttributeValue(valueToParse, this);
         case EFieldContentType.Date:
-          return new DateAttributeValue(valueToParse, this);
-        case EFieldContentType.Timespan:
-          return new TimeSpanAttributeValue(valueToParse, this);
-        case EFieldContentType.Picklist:
+          return new DateTimeAttributeValue(valueToParse, this);
+        case EFieldContentType.DateRange:
+          return new DateRangeAttributeValue(valueToParse, this);
+        case EFieldContentType.PickList:
           return new PicklistAttributeValue(valueToParse, this);
         case EFieldContentType.ReferenceList:
           return new ReferenceAttributeValue(valueToParse, this);

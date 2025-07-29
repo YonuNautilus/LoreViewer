@@ -45,7 +45,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public bool IsNestedFieldsStructure { get => fieldDef.structure == EFieldInputStructure.NestedValues; }
 
-    public bool IsPicklistContentType { get => fieldDef.contentType == EFieldContentType.Picklist; }
+    public bool IsPicklistContentType { get => fieldDef.contentType == EFieldContentType.PickList; }
     public bool IsReferencelistContentType { get => fieldDef.contentType == EFieldContentType.ReferenceList; }
 
     public bool HasPicklistSelected { get => Picklist != null; }

@@ -22,17 +22,17 @@ namespace LoreViewer.Settings
     String = 0,
     [Description("Color (hex code)")]
     Color = 1,
-    [Description("Number value (integer or floating point)")]
+    [Description("Number value")]
     Number = 2,
-    [Description("Number with units")]
+    [Description("Number value with units")]
     Quantity = 3,
     [Description("Date")]
     Date = 4,
-    [Description("Span of time")]
-    Timespan = 5,
-    [Description("List of Values")]
-    Picklist = 6,
-    [Description("List of objects")]
+    [Description("Range of Dates/Times")]
+    DateRange = 5,
+    [Description("List of Preset Values")]
+    PickList = 6,
+    [Description("List of Objects")]
     ReferenceList = 7,
   }
 
@@ -44,6 +44,17 @@ namespace LoreViewer.Settings
     Textual = 1,
     [Description("Nested Fields")]
     NestedValues = 2,
+  }
+
+  public enum EQuantityUnitTypes
+  {
+    Distance,
+    [Description("Mass/Weight")]
+    Mass,
+    Velocity,
+    [Description("Time duration")]
+    TimeDuration,
+    Angle,
   }
 
   public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreFieldDefinition>
@@ -244,7 +255,7 @@ namespace LoreViewer.Settings
 
     public override void PostProcess(LoreSettings settings)
     {
-      if (contentType == EFieldContentType.Picklist)
+      if (contentType == EFieldContentType.PickList)
       {
         if (string.IsNullOrWhiteSpace(picklistName)) throw new FieldPicklistNameNotGivenException(this);
 
@@ -300,7 +311,7 @@ namespace LoreViewer.Settings
         if (this.HasFields)
           if (this.fields.Any(f => f.IsModifiedFromBase)) return true;
 
-        if (this.contentType == EFieldContentType.Picklist)
+        if (this.contentType == EFieldContentType.PickList)
           if (this.picklistBranchRestriction != (Base as LoreFieldDefinition).picklistBranchRestriction) return true;
 
         return false;
@@ -365,7 +376,7 @@ namespace LoreViewer.Settings
 
     public List<string> GetPicklistOptions()
     {
-      if (contentType != EFieldContentType.Picklist) return new List<string>();
+      if (contentType != EFieldContentType.PickList) return new List<string>();
 
       List<string> ret = new();
 

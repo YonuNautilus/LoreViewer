@@ -69,6 +69,10 @@ namespace LoreViewer.Validation
       LoreValidationMessage newWarning = new LoreValidationMessage(EValidationMessageStatus.Warning, message);
 
       AddMessage(entity, newWarning);
+
+      if (LoreEntityValidationStates.ContainsKey(entity))
+        if (LoreEntityValidationStates[entity] <= EValidationState.ChildWarning)
+          LoreEntityValidationStates[entity] = EValidationState.Warning;
     }
 
     public void PropagateDescendentState(LoreEntity parent, LoreEntity child)
@@ -243,11 +247,14 @@ namespace LoreViewer.Validation
             case EFieldContentType.ReferenceList:
               ValidateReferenceAttribute(entity, child, result);
               break;
-            case EFieldContentType.Picklist:
+            case EFieldContentType.PickList:
               ValidatePicklistAttribute(entity, child, result);
               break;
             case EFieldContentType.Color:
               ValidateColorAttribute(entity, child, result);
+              break;
+            case EFieldContentType.DateRange:
+              ValidateDateRangeAttribute(entity, child, result);
               break;
           }
 
@@ -347,6 +354,32 @@ namespace LoreViewer.Validation
           if (result.LoreEntityValidationStates.TryGetValue(attr, out var state) && state <= EValidationState.ChildWarning)
             result.LoreEntityValidationStates[attr] = EValidationState.Warning;
         }
+      }
+    }
+
+    internal void ValidateDateRangeAttribute(LoreEntity parent, LoreAttribute attr, LoreValidationResult result)
+    {
+      DateRangeAttributeValue[] valsToCheck;
+      if (attr.HasValue)
+        valsToCheck = new DateRangeAttributeValue[] { attr.Value as DateRangeAttributeValue };
+      else valsToCheck = attr.Values.Cast<DateRangeAttributeValue>().ToArray();
+
+      foreach(DateRangeAttributeValue drav in valsToCheck)
+      {
+        // if using TBD at all, give warning.
+        if (drav.Value.StartDateStatus == DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD || drav.Value.EndDateStatus == DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD)
+          result.LogWarning(attr, $"Using 'TBD' date/time(s), consider defining dates");
+
+        // If we have two defined dates, give a warning if start date comes AFTER the end date (may be valid in a user's lore, who knows)
+        if(drav.Value.StartDateStatus == DateRangeAttributeValue.DateRangeValue.EDateValueStatus.Date && drav.Value.EndDateStatus == DateRangeAttributeValue.DateRangeValue.EDateValueStatus.Date)
+        {
+          if (drav.Value.StartDateTime > drav.Value.EndDateTime)
+            result.LogWarning(attr, "Start date comes AFTER end date. Ignore if valid in lore");
+        }
+
+
+        if (result.LoreEntityValidationStates.TryGetValue(attr, out var state) && state >= EValidationState.ChildWarning)
+          result.LoreEntityValidationStates[attr] = EValidationState.Warning;
       }
     }
 
