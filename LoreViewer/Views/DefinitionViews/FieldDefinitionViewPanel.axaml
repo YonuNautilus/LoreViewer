@@ -14,8 +14,10 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
       <RowDefinition Height="30"/>
-      <RowDefinition Height="30"/>
-      <RowDefinition Height="30"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
@@ -41,8 +43,9 @@
       </ComboBox>
     </Panel>
 
-    <Label Grid.Row="2" Grid.Column="0" Content="Cardinality" ToolTip.Tip="Determined if a field has a single value or multiple values"/>
-    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding FieldCardinalities}" SelectedItem="{Binding Cardinality}">
+    <Label Grid.Row="2" Grid.Column="0" Content="Cardinality" ToolTip.Tip="Determined if a field has a single value or multiple values"
+           VerticalAlignment="Center" IsVisible="{Binding IsNotNestedFieldsStructure}"/>
+    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding FieldCardinalities}" SelectedItem="{Binding Cardinality}" IsVisible="{Binding IsNotNestedFieldsStructure}">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
@@ -50,8 +53,8 @@
       </ComboBox.ItemTemplate>
     </ComboBox>
     
-    <Label Grid.Row="3" Grid.Column="0" Content="Content Type" VerticalAlignment="Center"/>
-    <Panel Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" >
+    <Label Grid.Row="3" Grid.Column="0" Content="Content Type" VerticalAlignment="Center" IsVisible="{Binding IsNotNestedFieldsStructure}"/>
+    <Panel Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" IsVisible="{Binding IsNotNestedFieldsStructure}">
       <ComboBox IsEnabled="{Binding IsNotInherited}" ItemsSource="{Binding ContentTypes}" SelectedItem="{Binding ContentType}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
@@ -96,9 +99,19 @@
       </ComboBox.ItemTemplate>
     </ComboBox>
     
+    <Label Grid.Row="7" Content="Numeric Type" IsVisible="{Binding IsNumericContentType}" VerticalAlignment="Center" />
+    <ComboBox Grid.Row="7" Grid.Column="1" IsVisible="{Binding IsNumericContentType}" VerticalAlignment="Center"
+              SelectedItem="{Binding NumericType}" ItemsSource="{Binding NumericTypes}">
+      <ComboBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
     
-    <Label Grid.Row="7" Grid.Column="0" Content="Required" VerticalAlignment="Center" />
-    <CheckBox Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}"  VerticalAlignment="Center"/>
+    
+    <Label Grid.Row="9" Grid.Column="0" Content="Required" VerticalAlignment="Center" />
+    <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding IsRequired}" IsEnabled="{Binding CanEditRequired}" VerticalAlignment="Center"/>
 
   </Grid>
 </UserControl>

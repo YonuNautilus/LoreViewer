@@ -22,9 +22,9 @@ namespace LoreViewer.Settings
     String = 0,
     [Description("Color (hex code)")]
     Color = 1,
-    [Description("Number value")]
+    [Description("Numeric value")]
     Number = 2,
-    [Description("Number value with units")]
+    [Description("Numeric value with units")]
     Quantity = 3,
     [Description("Date/Time")]
     Date = 4,
@@ -46,15 +46,29 @@ namespace LoreViewer.Settings
     NestedValues = 2,
   }
 
-  public enum EQuantityUnitTypes
+  public enum ENumericType
+  {
+    [Description("Natural (positive integer)")]
+    Natural,
+    [Description("Integer")]
+    Integer,
+    [Description("Fractional")]
+    Float,
+  }
+
+  public enum EQuantityUnitType
   {
     Distance,
     [Description("Mass/Weight")]
     Mass,
     Velocity,
+    Acceleration,
     [Description("Time duration")]
     TimeDuration,
     Angle,
+    Coordinates,
+    Temperature,
+    Pressure,
   }
 
   public class LoreFieldDefinition : LoreDefinitionBase, IFieldDefinitionContainer, IRequirable, IDeepCopyable<LoreFieldDefinition>
@@ -207,6 +221,15 @@ namespace LoreViewer.Settings
       }
     }
 
+
+    private ENumericType m_eNumericType = ENumericType.Natural;
+    [YamlMember(6)]
+    [DefaultValue(ENumericType.Natural)]
+    public ENumericType numericType
+    {
+      get { return m_eNumericType; }
+      set { m_eNumericType = value; }
+    }
 
 
 

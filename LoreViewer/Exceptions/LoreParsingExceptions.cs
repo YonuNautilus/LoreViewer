@@ -6,6 +6,7 @@ using Markdig.Syntax;
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace LoreViewer.Exceptions.LoreParsingExceptions
 {
@@ -198,6 +199,15 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     public DateTimeCannotParseException(DateTimeAttributeValue attrVal)
       : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
           $"Could not parse date or keyword: {attrVal.ValueString}") { }
+  }
+
+  public class NumberCannotParseException : LoreAttributeParsingException
+  {
+    private static string msgBase = "Could not parse {0} into a numeric";
+    public NumberCannotParseException(NumberAttributeValue attrVal)
+      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
+          string.Format(msgBase, attrVal.ValueString)) 
+    { }
   }
   #endregion
 

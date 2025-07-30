@@ -27,6 +27,8 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public List<EFieldContentType> ContentTypes { get => Enum.GetValues(typeof(EFieldContentType)).Cast<EFieldContentType>().ToList(); }
     public List<EFieldCardinality> FieldCardinalities { get => Enum.GetValues(typeof(EFieldCardinality)).Cast<EFieldCardinality>().ToList(); }
     public List<EFieldInputStructure> InputStructures { get => Enum.GetValues(typeof(EFieldInputStructure)).Cast<EFieldInputStructure>().ToList(); }
+    public List<ENumericType> NumericTypes { get => Enum.GetValues(typeof(ENumericType)).Cast<ENumericType>().ToList(); }
+    public List<EQuantityUnitType> QuantityTypes { get => Enum.GetValues(typeof(EQuantityUnitType)).Cast<EQuantityUnitType>().ToList(); }
 
     public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => CurrentSettingsViewModel.Picklists; }
 
@@ -44,9 +46,12 @@ namespace LoreViewer.ViewModels.SettingsVMs
     }
 
     public bool IsNestedFieldsStructure { get => fieldDef.structure == EFieldInputStructure.NestedValues; }
+    public bool IsNotNestedFieldsStructure { get => !IsNestedFieldsStructure; }
 
     public bool IsPicklistContentType { get => fieldDef.contentType == EFieldContentType.PickList; }
     public bool IsReferencelistContentType { get => fieldDef.contentType == EFieldContentType.ReferenceList; }
+
+    public bool IsNumericContentType { get => fieldDef.contentType == EFieldContentType.Number; }
 
     public bool HasPicklistSelected { get => Picklist != null; }
     public bool HasRestrictionSelected { get => PicklistBranchRestriction != null; }
@@ -101,6 +106,18 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
     }
 
+    public ENumericType NumericType
+    {
+      get { return fieldDef.numericType; }
+      set
+      {
+        if(fieldDef.numericType != value)
+        {
+          fieldDef.numericType = value;
+          SettingsRefresher.Apply(CurrentSettingsViewModel) ;
+        }
+      }
+    }
 
     private TypeDefinitionViewModel m_oRefListType;
     public TypeDefinitionViewModel RefListType
@@ -159,6 +176,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
         return true;
       }
     }
+
 
     public override void RefreshUI()
     {
