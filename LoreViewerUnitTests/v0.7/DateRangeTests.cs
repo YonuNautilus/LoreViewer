@@ -56,6 +56,8 @@ namespace v0_7.DateRangeTests
 
       Assert.That((multiValueRanges[1] as DateRangeAttributeValue).Value.Duration, Is.EqualTo("Indeterminate"));
       Assert.Null((multiValueRanges[1] as DateRangeAttributeValue).Value.TimeSpan);
+      Assert.That((multiValueRanges[1] as DateRangeAttributeValue).Value.IsStartUnknown);
+      Assert.That((multiValueRanges[1] as DateRangeAttributeValue).Value.IsEndPresent);
 
       Assert.NotNull((multiValueRanges[2] as DateRangeAttributeValue).Value.TimeSpan);
       Assert.That((multiValueRanges[2] as DateRangeAttributeValue).Value.TimeSpan, Is.EqualTo(new TimeSpan(days: 4820, hours: 0, minutes: 0, seconds: 0)));
@@ -85,6 +87,10 @@ namespace v0_7.DateRangeTests
       Assert.That((multiValueRanges[7] as DateRangeAttributeValue).Value.Duration, Contains.Substring("-"));
       Assert.That((multiValueRanges[7] as DateRangeAttributeValue).Value.IsStartDate);
       Assert.That((multiValueRanges[7] as DateRangeAttributeValue).Value.IsEndDate);
+
+      Assert.Null((multiValueRanges[8] as DateRangeAttributeValue).Value.TimeSpan);
+      Assert.That((multiValueRanges[8] as DateRangeAttributeValue).Value.IsStartDate);
+      Assert.That((multiValueRanges[8] as DateRangeAttributeValue).Value.IsEndUnknown);
     }
 
     [Test]
@@ -138,6 +144,9 @@ namespace v0_7.DateRangeTests
 
       Assert.Throws<DateRangeTooManyPipeCharactersException>(() => { _parser.ParseFile(Path.Combine(ValidFilesFolder, "DateRangeTooMuchPipe1.md")); });
       Assert.Throws<DateRangeTooManyPipeCharactersException>(() => { _parser.ParseFile(Path.Combine(ValidFilesFolder, "DateRangeTooMuchPipe2.md")); });
+     
+      Assert.Throws<DateRangeCannotParseStartDateException>(() => { _parser.ParseFile(Path.Combine(ValidFilesFolder, "DateRangeUnknownStartKeyword.md")); });
+      Assert.Throws<DateRangeCannotParseEndDateException>(() => { _parser.ParseFile(Path.Combine(ValidFilesFolder, "DateRangeUnknownEndKeyword.md")); });
     }
   }
 }

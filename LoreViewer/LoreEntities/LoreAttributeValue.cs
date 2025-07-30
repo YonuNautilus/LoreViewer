@@ -290,7 +290,7 @@ namespace LoreViewer.LoreElements
           else if (Regex.IsMatch(separatedElements[0], TBD_PATTERN, RegexOptions.IgnoreCase))
             m_eStartDateStatus = EDateValueStatus.TBD;
           else
-            Trace.WriteLine($"Could not parse start Date Range keyword? {separatedElements[0]}");
+            throw new DateRangeCannotParseStartDateException(owner);
         }
         else
         {
@@ -312,7 +312,7 @@ namespace LoreViewer.LoreElements
             m_oEndDateTime = DateTime.Now;
           }
           else
-            Trace.WriteLine($"Could not parse end Date Range keyword? {separatedElements[1]}");
+            throw new DateRangeCannotParseEndDateException(owner);
         }
         else
         {

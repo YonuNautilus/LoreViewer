@@ -222,6 +222,12 @@
     <None Update="v0.7\TestData\ColorPositiveParsingData\DrawingTools.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeUnknownEndKeyword.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeUnknownStartKeyword.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeEndError.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
