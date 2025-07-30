@@ -1,0 +1,8 @@
+types:
+  - name: DateTimeTester
+    fields:
+      - name: Appearance Date
+        contentType: Date
+      - name: Multiple Dates
+        contentType: Date
+        cardinality: MultiValue

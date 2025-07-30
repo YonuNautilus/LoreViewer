@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Presentation;
 using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Parser;
@@ -34,7 +35,7 @@ namespace LoreViewer.LoreElements
     {
     }
 
-    public override string Value { get; }
+    public override string Value { get => ValueString; }
   }
 
   public class ColorAttributeValue : LoreAttributeValue
@@ -116,25 +117,68 @@ namespace LoreViewer.LoreElements
     }
   }
 
+
+  public enum EDateValueStatus
+  {
+    Unknown, Date, Present, TBD
+  }
+
   public class DateTimeAttributeValue : LoreAttributeValue
   {
     public override DateValue Value { get; }
 
     public DateTimeAttributeValue(string dateToParse, LoreAttribute owningAttribute) : base(dateToParse, owningAttribute)
     {
-
+      Value = new DateValue(dateToParse, this);
     }
 
     /// <summary>
     /// Class wrapper for DateTime struct. Allows DateTimeAttributeValue to use covariant return on the Value property.
+    /// Only allows Present, TBD, and Unknown as keywords
     /// </summary>
     public class DateValue
     {
-      private DateTime m_oDateTime;
+      private const string VALID_KEYWORDS_PATTERN = @"(unknown)|(tbd)|(present)";
+      private const string PRESENT_PATTERN = @"present";
+      private const string UNKNOWN_PATTERN = @"unknown";
+      private const string TBD_PATTERN = @"tbd";
 
-      public DateValue(string dateToParse)
+      private DateTime m_oDateTime;
+      private EDateValueStatus m_eDateStatus = EDateValueStatus.Unknown;
+
+      public DateTime? Date
       {
-        m_oDateTime = DateTime.Parse(dateToParse);
+        get
+        {
+          if (IsDateValid) return m_oDateTime;
+          else if (IsPresent) return DateTime.Today;
+          else return null;
+        }
+      }
+
+      public bool IsTBD => m_eDateStatus == EDateValueStatus.TBD;
+      public bool IsUnknown => m_eDateStatus == EDateValueStatus.Unknown;
+      public bool IsPresent => m_eDateStatus == EDateValueStatus.Present;
+      public bool IsDateValid => m_eDateStatus == EDateValueStatus.Date;
+
+      public DateValue(string dateToParse, DateTimeAttributeValue attrVal)
+      {
+        if (!DateTime.TryParse(dateToParse.Trim(), out var outDate))
+        {
+          if (!Regex.IsMatch(dateToParse.Trim(), VALID_KEYWORDS_PATTERN, RegexOptions.IgnoreCase))
+            throw new DateTimeCannotParseException(attrVal);
+          else if (Regex.IsMatch(dateToParse.Trim(), UNKNOWN_PATTERN, RegexOptions.IgnoreCase))
+            m_eDateStatus = EDateValueStatus.Unknown;
+          else if (Regex.IsMatch(dateToParse.Trim(), TBD_PATTERN, RegexOptions.IgnoreCase))
+            m_eDateStatus = EDateValueStatus.TBD;
+          else if (Regex.IsMatch(dateToParse.Trim(), PRESENT_PATTERN, RegexOptions.IgnoreCase))
+            m_eDateStatus = EDateValueStatus.Present;
+        }
+        else
+        {
+          m_oDateTime = outDate;
+          m_eDateStatus = EDateValueStatus.Date;
+        }
       }
     }
   }
@@ -169,8 +213,13 @@ namespace LoreViewer.LoreElements
       private EDateValueStatus m_eStartDateStatus = EDateValueStatus.Unknown;
       private EDateValueStatus m_eEndDateStatus   = EDateValueStatus.Unknown;
 
-      public EDateValueStatus StartDateStatus => m_eStartDateStatus;
-      public EDateValueStatus EndDateStatus => m_eEndDateStatus;
+      public bool IsStartUnknown => m_eStartDateStatus == EDateValueStatus.Unknown;
+      public bool IsStartTBD => m_eStartDateStatus == EDateValueStatus.TBD;
+      public bool IsStartDate => m_eStartDateStatus == EDateValueStatus.Date;
+      public bool IsEndUnknown => m_eEndDateStatus == EDateValueStatus.Unknown;
+      public bool IsEndTBD => m_eEndDateStatus == EDateValueStatus.TBD;
+      public bool IsEndPresent => m_eEndDateStatus == EDateValueStatus.Present;
+      public bool IsEndDate => m_eEndDateStatus == EDateValueStatus.Date;
 
       private DateTime m_oStartDateTime;
       private DateTime m_oEndDateTime;
@@ -270,29 +319,6 @@ namespace LoreViewer.LoreElements
           m_oEndDateTime = parsedEndDate;
           m_eEndDateStatus = EDateValueStatus.Date;
         }
-
-      }
-    }
-  }
-
-  public class TimeSpanAttributeValue : LoreAttributeValue
-  {
-    public override TimeSpanValue Value { get; }
-
-    public TimeSpanAttributeValue(string timespanToParse, LoreAttribute owningAttribute) : base(timespanToParse, owningAttribute)
-    {
-
-    }
-
-    /// <summary>
-    /// Wrapper class for the TimeSpan struct. Allows TimeSpanAttributeValue to use covariant return on its Value property.
-    /// </summary>
-    public class TimeSpanValue
-    {
-      public TimeSpan m_oTimeSpanValue;
-
-      public TimeSpanValue(string timespanToParse)
-      {
 
       }
     }

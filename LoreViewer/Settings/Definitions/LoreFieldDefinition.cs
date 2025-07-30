@@ -26,7 +26,7 @@ namespace LoreViewer.Settings
     Number = 2,
     [Description("Number value with units")]
     Quantity = 3,
-    [Description("Date")]
+    [Description("Date/Time")]
     Date = 4,
     [Description("Range of Dates/Times")]
     DateRange = 5,

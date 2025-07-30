@@ -222,34 +222,55 @@
     <None Update="v0.7\TestData\ColorPositiveParsingData\DrawingTools.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeTooMuchPipe2.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeTooMuchPipe1.md">
+    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeEndError.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeNoPipe.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangePresentStart.md">
+    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeOngoingStart.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeOngoingStart.md">
+    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangePresentStart.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeStartError.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeEndError.md">
+    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeTooMuchPipe1.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateRangeNegativeParsingData\DateRangeTooMuchPipe2.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.7\TestData\DateRangeNegativeParsingData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateTimeNegativeParsingData\DateTimeBC.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateTimeNegativeParsingData\DateTimeInvalidKeyword.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateTimeNegativeParsingData\DateTimeTimeOnly.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateTimeNegativeParsingData\DateTimeBadFormat.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateTimeNegativeParsingData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.7\TestData\DateRangePositiveParsingData\DateRanges.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.7\TestData\DateRangePositiveParsingData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateTimePositiveParsingData\DateTimes.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\DateTimePositiveParsingData\Lore_Settings.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="v0.7\TestData\MiscExceptionsParsingData\CollectionWithMultipleEntriesDefined.yaml">

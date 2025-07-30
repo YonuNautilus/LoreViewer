@@ -1,4 +1,5 @@
-﻿using LoreViewer.LoreElements;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using LoreViewer.LoreElements;
 using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Parser;
 using LoreViewer.Settings;
@@ -256,6 +257,9 @@ namespace LoreViewer.Validation
             case EFieldContentType.DateRange:
               ValidateDateRangeAttribute(entity, child, result);
               break;
+            case EFieldContentType.Date:
+              ValidateDateTimeAttribute(entity, child, result);
+              break;
           }
 
 
@@ -357,6 +361,23 @@ namespace LoreViewer.Validation
       }
     }
 
+    internal void ValidateDateTimeAttribute(LoreEntity parent, LoreAttribute attr, LoreValidationResult result)
+    {
+      DateTimeAttributeValue[] valsToCheck;
+      if (attr.HasValue) valsToCheck = new DateTimeAttributeValue[] { attr.Value as DateTimeAttributeValue };
+      else valsToCheck = attr.Values.Cast<DateTimeAttributeValue>().ToArray();
+
+      foreach(DateTimeAttributeValue dtav in valsToCheck)
+      {
+        // If using TBD at all, give a warning
+        if (dtav.Value.IsTBD) result.LogWarning(attr, $"Using 'TBD' for date/time, consider defining date");
+
+
+        if (result.LoreEntityValidationStates.TryGetValue(attr, out var state) && state >= EValidationState.ChildWarning)
+          result.LoreEntityValidationStates[attr] = EValidationState.Warning;
+      }
+    }
+
     internal void ValidateDateRangeAttribute(LoreEntity parent, LoreAttribute attr, LoreValidationResult result)
     {
       DateRangeAttributeValue[] valsToCheck;
@@ -367,11 +388,11 @@ namespace LoreViewer.Validation
       foreach(DateRangeAttributeValue drav in valsToCheck)
       {
         // if using TBD at all, give warning.
-        if (drav.Value.StartDateStatus == DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD || drav.Value.EndDateStatus == DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD)
+        if (drav.Value.IsStartTBD || drav.Value.IsEndTBD)
           result.LogWarning(attr, $"Using 'TBD' date/time(s), consider defining dates");
 
         // If we have two defined dates, give a warning if start date comes AFTER the end date (may be valid in a user's lore, who knows)
-        if(drav.Value.StartDateStatus == DateRangeAttributeValue.DateRangeValue.EDateValueStatus.Date && drav.Value.EndDateStatus == DateRangeAttributeValue.DateRangeValue.EDateValueStatus.Date)
+        if(drav.Value.IsStartDate && drav.Value.IsEndDate)
         {
           if (drav.Value.StartDateTime > drav.Value.EndDateTime)
             result.LogWarning(attr, "Start date comes AFTER end date. Ignore if valid in lore");

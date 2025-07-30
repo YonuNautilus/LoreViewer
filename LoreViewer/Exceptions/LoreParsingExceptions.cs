@@ -192,6 +192,13 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
       : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
           attrVal, string.Format(msgBase, attrVal.ValueString, attrVal.ValueString.Count(p => p == '|'))) { }
   }
+
+  public class DateTimeCannotParseException : LoreAttributeParsingException
+  {
+    public DateTimeCannotParseException(DateTimeAttributeValue attrVal)
+      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
+          $"Could not parse date or keyword: {attrVal.ValueString}") { }
+  }
   #endregion
 
   #region Collections

@@ -1,19 +1,12 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using LoreViewer.Exceptions.LoreParsingExceptions;
+﻿using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Validation;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace v0_7.ColorsTests
+namespace v0_7.DateRangeTests
 {
   [TestFixture]
   [TestOf(typeof(DateRangeAttributeValue))]
+  [TestOf(typeof(DateRangeAttributeValue.DateRangeValue))]
   public class PositiveDateRangeTests
   {
     public static LoreSettings _settings;
@@ -74,24 +67,24 @@ namespace v0_7.ColorsTests
 
       Assert.Null((multiValueRanges[4] as DateRangeAttributeValue).Value.TimeSpan);
       Assert.That((multiValueRanges[4] as DateRangeAttributeValue).Value.Duration, Is.EqualTo("Indeterminate"));
-      Assert.That((multiValueRanges[4] as DateRangeAttributeValue).Value.StartDateStatus, Is.EqualTo(DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD));
-      Assert.That((multiValueRanges[4] as DateRangeAttributeValue).Value.EndDateStatus, Is.EqualTo(DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD));
+      Assert.That((multiValueRanges[4] as DateRangeAttributeValue).Value.IsStartTBD);
+      Assert.That((multiValueRanges[4] as DateRangeAttributeValue).Value.IsEndTBD);
 
       Assert.Null((multiValueRanges[5] as DateRangeAttributeValue).Value.TimeSpan);
       Assert.That((multiValueRanges[5] as DateRangeAttributeValue).Value.Duration, Is.EqualTo("Indeterminate"));
-      Assert.That((multiValueRanges[5] as DateRangeAttributeValue).Value.StartDateStatus, Is.EqualTo(DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD));
-      Assert.That((multiValueRanges[5] as DateRangeAttributeValue).Value.EndDateStatus, Is.EqualTo(DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD));
+      Assert.That((multiValueRanges[5] as DateRangeAttributeValue).Value.IsStartTBD);
+      Assert.That((multiValueRanges[5] as DateRangeAttributeValue).Value.IsEndTBD);
 
       Assert.Null((multiValueRanges[6] as DateRangeAttributeValue).Value.TimeSpan);
       Assert.That((multiValueRanges[6] as DateRangeAttributeValue).Value.Duration, Is.EqualTo("Indeterminate"));
-      Assert.That((multiValueRanges[6] as DateRangeAttributeValue).Value.StartDateStatus, Is.EqualTo(DateRangeAttributeValue.DateRangeValue.EDateValueStatus.Date));
+      Assert.That((multiValueRanges[6] as DateRangeAttributeValue).Value.IsStartDate);
       Assert.That((multiValueRanges[6] as DateRangeAttributeValue).Value.StartDateTime, Is.EqualTo(new DateTime(2018, 3, 16)));
-      Assert.That((multiValueRanges[6] as DateRangeAttributeValue).Value.EndDateStatus, Is.EqualTo(DateRangeAttributeValue.DateRangeValue.EDateValueStatus.TBD));
+      Assert.That((multiValueRanges[6] as DateRangeAttributeValue).Value.IsEndTBD);
 
       Assert.NotNull((multiValueRanges[7] as DateRangeAttributeValue).Value.TimeSpan);
       Assert.That((multiValueRanges[7] as DateRangeAttributeValue).Value.Duration, Contains.Substring("-"));
-      Assert.That((multiValueRanges[7] as DateRangeAttributeValue).Value.StartDateStatus, Is.EqualTo(DateRangeAttributeValue.DateRangeValue.EDateValueStatus.Date));
-      Assert.That((multiValueRanges[7] as DateRangeAttributeValue).Value.EndDateStatus, Is.EqualTo(DateRangeAttributeValue.DateRangeValue.EDateValueStatus.Date));
+      Assert.That((multiValueRanges[7] as DateRangeAttributeValue).Value.IsStartDate);
+      Assert.That((multiValueRanges[7] as DateRangeAttributeValue).Value.IsEndDate);
     }
 
     [Test]
@@ -133,7 +126,7 @@ namespace v0_7.ColorsTests
     }
 
     [Test]
-    public void DateRangeParsingEXceptions()
+    public void DateRangeParsingExceptions()
     {
       Assert.Throws<DateRangeCannotParseStartDateException>(() => { _parser.ParseFile(Path.Combine(ValidFilesFolder, "DateRangeStartError.md")); });
       Assert.Throws<DateRangeCannotParseEndDateException>(() => { _parser.ParseFile(Path.Combine(ValidFilesFolder, "DateRangeEndError.md")); });

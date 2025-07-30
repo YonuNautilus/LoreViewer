@@ -9,8 +9,8 @@ This tool will allow users to define their own schema for different types of lor
 ## Core Values of LoreViewer
 1. Human-Readable Markdown First
     - Markdown files must remain human-readable. They should be intuitive to read and write without this software.
-    - Heading structure and tags are designed to be out-of-the-way but easily written by hand.
-    - The schema (YAML) enforces **structure** but never obfuscates it.
+    - Heading structure and tags are designed to be out-of-the-way but (relatively) easily written by hand.
+    - The schema (YAML) enforces structure but never obfuscates it.
 2. Precision in Exception Handling
     - Errors are **contextual**: they include file name and line number, or block index.
     - Exceptions are meaningful: no vague stack traces.
