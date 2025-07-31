@@ -45,7 +45,7 @@
 
     <Label Grid.Row="2" Grid.Column="0" Content="Cardinality" ToolTip.Tip="Determined if a field has a single value or multiple values"
            VerticalAlignment="Center" IsVisible="{Binding IsNotNestedFieldsStructure}"/>
-    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding FieldCardinalities}" SelectedItem="{Binding Cardinality}" IsVisible="{Binding IsNotNestedFieldsStructure}">
+    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding FieldCardinalities}" SelectedValue="{Binding Cardinality}" IsVisible="{Binding IsNotNestedFieldsStructure}">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
@@ -55,7 +55,7 @@
     
     <Label Grid.Row="3" Grid.Column="0" Content="Content Type" VerticalAlignment="Center" IsVisible="{Binding IsNotNestedFieldsStructure}"/>
     <Panel Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" IsVisible="{Binding IsNotNestedFieldsStructure}">
-      <ComboBox IsEnabled="{Binding IsNotInherited}" ItemsSource="{Binding ContentTypes}" SelectedItem="{Binding ContentType}">
+      <ComboBox IsEnabled="{Binding IsNotInherited}" ItemsSource="{Binding ContentTypes}" SelectedValue="{Binding ContentType}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Converter={StaticResource EnumConverter}}" />
@@ -66,7 +66,7 @@
     
     <Label Grid.Row="4" Content="Picklist"  IsVisible="{Binding IsPicklistContentType}" VerticalAlignment="Center"/>
     <Panel Grid.Row="4" Grid.Column="1" IsVisible="{Binding IsPicklistContentType}" VerticalAlignment="Center">
-      <ComboBox IsEnabled="{Binding IsNotInherited}" ItemsSource="{Binding Picklists}" SelectedItem="{Binding Picklist}">
+      <ComboBox IsEnabled="{Binding IsNotInherited}" ItemsSource="{Binding Picklists}" SelectedValue="{Binding Picklist}">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Name}" />

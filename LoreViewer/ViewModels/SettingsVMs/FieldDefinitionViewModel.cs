@@ -24,11 +24,11 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public ObservableCollection<TypeDefinitionViewModel> TypesInSettings { get => CurrentSettingsViewModel.Types; }
 
-    public List<EFieldContentType> ContentTypes { get => Enum.GetValues(typeof(EFieldContentType)).Cast<EFieldContentType>().ToList(); }
-    public List<EFieldCardinality> FieldCardinalities { get => Enum.GetValues(typeof(EFieldCardinality)).Cast<EFieldCardinality>().ToList(); }
-    public List<EFieldInputStructure> InputStructures { get => Enum.GetValues(typeof(EFieldInputStructure)).Cast<EFieldInputStructure>().ToList(); }
-    public List<ENumericType> NumericTypes { get => Enum.GetValues(typeof(ENumericType)).Cast<ENumericType>().ToList(); }
-    public List<EQuantityUnitType> QuantityTypes { get => Enum.GetValues(typeof(EQuantityUnitType)).Cast<EQuantityUnitType>().ToList(); }
+    public static List<EFieldContentType> ContentTypes { get => Enum.GetValues(typeof(EFieldContentType)).Cast<EFieldContentType>().ToList(); }
+    public static List<EFieldCardinality> FieldCardinalities { get => Enum.GetValues(typeof(EFieldCardinality)).Cast<EFieldCardinality>().ToList(); }
+    public static List<EFieldInputStructure> InputStructures { get => Enum.GetValues(typeof(EFieldInputStructure)).Cast<EFieldInputStructure>().ToList(); }
+    public static List<ENumericType> NumericTypes { get => Enum.GetValues(typeof(ENumericType)).Cast<ENumericType>().ToList(); }
+    public static List<EQuantityUnitType> QuantityTypes { get => Enum.GetValues(typeof(EQuantityUnitType)).Cast<EQuantityUnitType>().ToList(); }
 
     public override ObservableCollection<PicklistDefinitionViewModel> Picklists { get => CurrentSettingsViewModel.Picklists; }
 
@@ -53,7 +53,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public bool IsNumericContentType { get => fieldDef.contentType == EFieldContentType.Number; }
 
-    public bool HasPicklistSelected { get => Picklist != null; }
+    public bool HasPicklistSelected { get => IsPicklistContentType && Picklist != null; }
     public bool HasRestrictionSelected { get => PicklistBranchRestriction != null; }
 
     public bool HasRefListTypeSelected { get => RefListType != null; }

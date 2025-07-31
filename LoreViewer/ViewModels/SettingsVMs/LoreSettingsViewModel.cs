@@ -132,6 +132,8 @@ public class LoreSettingsViewModel : ViewModelBase
     get => _selectedDef;
     set
     {
+      _selectedDef = null;
+      this.RaisePropertyChanged(nameof(SelectedDefinition));
       _selectedDef = value;
       this.RaisePropertyChanged(nameof(SelectedDefinition));
     }
