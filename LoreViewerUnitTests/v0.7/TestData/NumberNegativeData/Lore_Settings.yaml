@@ -1,0 +1,26 @@
+types:
+  - name: NumberTester
+    fields:
+      - name: Natural Number
+        contentType: Number
+        numericType: natural
+      - name: Integer Number
+        contentType: Number
+        numericType: integer
+      - name: Fractional Number
+        contentType: number
+        numericType: float
+  - name: OmniTester
+    fields:
+      - name: All Naturals
+        contentType: Number
+        numericType: natural
+        cardinality: multivalue
+      - name: All Integers
+        contentType: Number
+        numericType: integer
+        cardinality: multivalue
+      - name: All Fractionals
+        contentType: Number
+        numericType: float
+        cardinality: multivalue

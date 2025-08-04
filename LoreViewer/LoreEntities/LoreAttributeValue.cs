@@ -91,7 +91,7 @@ namespace LoreViewer.LoreElements
 
     public NumberAttributeValue(string numberToParse, LoreAttribute owningAttribute) : base(numberToParse, owningAttribute)
     {
-      DefinedNumber = new NumberValue(numberToParse, owningAttribute.DefinitionAs<LoreFieldDefinition>());
+      DefinedNumber = new NumberValue(numberToParse, owningAttribute.DefinitionAs<LoreFieldDefinition>(), this);
     }
 
     public class NumberValue
@@ -112,7 +112,7 @@ namespace LoreViewer.LoreElements
 
       private LoreFieldDefinition owningFieldDef;
 
-      public NumberValue(string numberToParse, LoreFieldDefinition fieldDefToRef)
+      public NumberValue(string numberToParse, LoreFieldDefinition fieldDefToRef, NumberAttributeValue owner)
       {
         owningFieldDef = fieldDefToRef;
         if (Regex.IsMatch(numberToParse.Trim(), NUMBER_FORMAT_PATTERN, RegexOptions.IgnoreCase))
@@ -120,7 +120,7 @@ namespace LoreViewer.LoreElements
           Match m = Regex.Match(numberToParse.Trim(), NUMBER_FORMAT_PATTERN);
 
           if (!string.IsNullOrWhiteSpace(m.Groups[1].Value) && !string.IsNullOrWhiteSpace(m.Groups[3].Value))
-            throw new Exception($"CANNOT USE {m.Groups[1].Value} AND {m.Groups[3].Value} AT THE SAME TIME");
+            throw new NumberInvalidModifiersException(owner, m.Groups[1].Value, m.Groups[3].Value);
 
           else if (!string.IsNullOrWhiteSpace(m.Groups[1].Value))
           {
@@ -139,18 +139,18 @@ namespace LoreViewer.LoreElements
 
           if (owningFieldDef.numericType == ENumericType.Natural)
           {
-            if (!ulong.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out natural) && !ulong.TryParse(num, out natural)) throw new Exception($"COULD NOT PARSE NATURAL NUMBER {num}");
+            if (!ulong.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out natural) && !ulong.TryParse(num, out natural)) throw new NumberCannotParseIntoNumericException(owner);
           }
           else if (owningFieldDef.numericType == ENumericType.Float)
           {
-            if (!double.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out fractional) && !double.TryParse(num, out fractional)) throw new Exception($"COULD NOT PARSE FRACTIONAL NUMBER {num}");
+            if (!double.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out fractional) && !double.TryParse(num, out fractional)) throw new NumberCannotParseIntoNumericException(owner);
           }
           else if (owningFieldDef.numericType == ENumericType.Integer)
           {
-            if (!long.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out integer) && !long.TryParse(num, out integer)) throw new Exception($"COULD NOT PARSE INTEGER {num}");
+            if (!long.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out integer) && !long.TryParse(num, out integer)) throw new NumberCannotParseIntoNumericException(owner);
           }
         }
-        else throw new Exception($"COULD NOT PARSE NUMBER FROM {numberToParse}");
+        else throw new NumberCannotParseIntoNumericException(owner);
       }
 
       public override string ToString()

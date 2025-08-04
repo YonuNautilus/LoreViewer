@@ -201,12 +201,26 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
           $"Could not parse date or keyword: {attrVal.ValueString}") { }
   }
 
+
   public class NumberCannotParseException : LoreAttributeParsingException
+  {    public NumberCannotParseException(NumberAttributeValue attrVal, string msg)
+      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber, msg) 
+    { }
+  }
+
+  public class NumberCannotParseIntoNumericException : NumberCannotParseException
   {
     private static string msgBase = "Could not parse {0} into a numeric";
-    public NumberCannotParseException(NumberAttributeValue attrVal)
-      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
-          string.Format(msgBase, attrVal.ValueString)) 
+    public NumberCannotParseIntoNumericException(NumberAttributeValue attrVal)
+      : base(attrVal, string.Format(msgBase, attrVal.ValueString)) 
+    { }
+  }
+
+  public class NumberInvalidModifiersException : NumberCannotParseException
+  {
+    private static string msgBase = "Number attribute value {0}: cannot use number modifiers '{1}' and '{2}' at the same time";
+    public NumberInvalidModifiersException(NumberAttributeValue attrVal, string m1, string m2)
+      : base(attrVal, string.Format(msgBase, attrVal.ValueString, m1, m2))
     { }
   }
   #endregion

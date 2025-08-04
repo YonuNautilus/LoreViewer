@@ -1,13 +1,14 @@
-﻿using System;
+﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace v0_7.PositiveNumbersTests
+namespace v0_7.NumbersTests
 {
   [TestFixture]
-  public class NumbersTests
+  public class PositiveNumbersTests
   {
     public static LoreSettings _settings;
     public static LoreParser _parser;
@@ -29,6 +30,38 @@ namespace v0_7.PositiveNumbersTests
     public void NoParsingExceptions()
     {
       Assert.DoesNotThrow(() => _parser.BeginParsingFromFolder(ValidFilesFolder));
+    }
+  }
+
+  [TestFixture]
+  public class NegativeNumbersTests
+  {
+    public static LoreSettings _settings;
+    public static LoreParser _parser;
+    static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "NumberNegativeData");
+
+    [OneTimeSetUp]
+    public void Setup()
+    {
+      _parser = new LoreParser();
+
+      _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
+
+      //_parser.BeginParsingFromFolder(ValidFilesFolder);
+
+      //_settings = _parser.Settings;
+    }
+
+    [Test]
+    public void ParsingException1()
+    {
+      Assert.Throws<NumberCannotParseIntoNumericException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "NonparsableNumbers.md")));
+    }
+
+    [Test]
+    public void ParsingException2()
+    {
+      Assert.Throws<NumberInvalidModifiersException>(() => _parser.ParseFile(Path.Combine(ValidFilesFolder, "NonparsableNumbers2.md")));
     }
   }
 }
