@@ -194,6 +194,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       this.RaisePropertyChanged(nameof(FieldCardinalities));
       this.RaisePropertyChanged(nameof(IsNestedFieldsStructure));
       this.RaisePropertyChanged(nameof(IsPicklistContentType));
+      this.RaisePropertyChanged(nameof(IsNumericContentType));
       this.RaisePropertyChanged(nameof(IsReferencelistContentType));
       this.RaisePropertyChanged(nameof(HasSubFields));
       this.RaisePropertyChanged(nameof(NoSubFields));

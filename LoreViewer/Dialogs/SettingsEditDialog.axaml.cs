@@ -209,7 +209,7 @@ public static class DefinitionTreeDataGridBuilder
 
                 if(node.DefinitionVM is FieldDefinitionViewModel fdvm)
                 {
-                  addButton.Bind(Button.IsEnabledProperty, new Binding("IsNestedFieldsStyle"));
+                  addButton.Bind(Button.IsEnabledProperty, new Binding("IsNestedFieldsStructure"));
                 }
 
                 ToolTip.SetTip(addButton, "Add a new definition within this definition/group");

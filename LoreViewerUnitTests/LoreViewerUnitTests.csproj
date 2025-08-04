@@ -348,6 +348,12 @@
     <None Update="v0.7\TestData\NegativeReflistSettings\MissingTypeName.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="v0.7\TestData\NumberPositiveData\Lore_Settings.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="v0.7\TestData\NumberPositiveData\ParsableNumbers.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="v0.7\TestData\PositivePickListData\Crayons.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

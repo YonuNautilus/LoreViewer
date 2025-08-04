@@ -1,17 +1,17 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Presentation;
-using LoreViewer.Exceptions.LoreParsingExceptions;
+﻿using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Parser;
+using LoreViewer.Settings;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using UnitsNet;
 
 namespace LoreViewer.LoreElements
 {
-  public abstract class LoreAttributeValue 
+  public abstract class LoreAttributeValue
   {
     public LoreAttribute OwningAttribute { get; }
 
@@ -85,14 +85,94 @@ namespace LoreViewer.LoreElements
 
   public class NumberAttributeValue : LoreAttributeValue
   {
-    public double DefinedNumber { get; set; }
+    private NumberValue DefinedNumber { get; set; }
 
-    public override object Value => DefinedNumber;
+    public override NumberValue Value => DefinedNumber;
 
     public NumberAttributeValue(string numberToParse, LoreAttribute owningAttribute) : base(numberToParse, owningAttribute)
     {
-      if(double.TryParse(numberToParse, out double num))
-        DefinedNumber = num; 
+      DefinedNumber = new NumberValue(numberToParse, owningAttribute.DefinitionAs<LoreFieldDefinition>());
+    }
+
+    public class NumberValue
+    {
+      private ulong natural;
+      private long integer;
+      private double fractional;
+      private ENumberModifier m_eNumMod = ENumberModifier.None;
+
+      private const string NUMBER_FORMAT_PATTERN = @"^([~<>]{0,1})([-.,\d]+)+(\+|)$";
+
+      public ENumberModifier NumMod { get => m_eNumMod; }
+
+      public enum ENumberModifier
+      {
+        None, Approx, LessThan, GreaterThan, Plus
+      }
+
+      private LoreFieldDefinition owningFieldDef;
+
+      public NumberValue(string numberToParse, LoreFieldDefinition fieldDefToRef)
+      {
+        owningFieldDef = fieldDefToRef;
+        if (Regex.IsMatch(numberToParse.Trim(), NUMBER_FORMAT_PATTERN, RegexOptions.IgnoreCase))
+        {
+          Match m = Regex.Match(numberToParse.Trim(), NUMBER_FORMAT_PATTERN);
+
+          if (!string.IsNullOrWhiteSpace(m.Groups[1].Value) && !string.IsNullOrWhiteSpace(m.Groups[3].Value))
+            throw new Exception($"CANNOT USE {m.Groups[1].Value} AND {m.Groups[3].Value} AT THE SAME TIME");
+
+          else if (!string.IsNullOrWhiteSpace(m.Groups[1].Value))
+          {
+            if (m.Groups[1].Value == "~") m_eNumMod = ENumberModifier.Approx;
+            else if (m.Groups[1].Value == "~") m_eNumMod = ENumberModifier.Approx;
+            else if (m.Groups[1].Value == "<") m_eNumMod = ENumberModifier.LessThan;
+            else if (m.Groups[1].Value == ">") m_eNumMod = ENumberModifier.LessThan;
+          }
+
+          else if (!string.IsNullOrWhiteSpace(m.Groups[3].Value))
+          {
+            if (m.Groups[3].Value == "+") m_eNumMod = ENumberModifier.Plus;
+          }
+
+          string num = m.Groups[2].Value;
+
+          if (owningFieldDef.numericType == ENumericType.Natural)
+          {
+            if (!ulong.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out natural) && !ulong.TryParse(num, out natural)) throw new Exception($"COULD NOT PARSE NATURAL NUMBER {num}");
+          }
+          else if (owningFieldDef.numericType == ENumericType.Float)
+          {
+            if (!double.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out fractional) && !double.TryParse(num, out fractional)) throw new Exception($"COULD NOT PARSE FRACTIONAL NUMBER {num}");
+          }
+          else if (owningFieldDef.numericType == ENumericType.Integer)
+          {
+            if (!long.TryParse(num, NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out integer) && !long.TryParse(num, out integer)) throw new Exception($"COULD NOT PARSE INTEGER {num}");
+          }
+        }
+        else throw new Exception($"COULD NOT PARSE NUMBER FROM {numberToParse}");
+      }
+
+      public override string ToString()
+      {
+        string ret = string.Empty;
+        switch (owningFieldDef.numericType)
+        {
+          case ENumericType.Natural: ret = natural.ToString(); break;
+          case ENumericType.Float: ret = fractional.ToString(); break;
+          case ENumericType.Integer: ret = integer.ToString(); break;
+        }
+
+        switch (m_eNumMod)
+        {
+          case ENumberModifier.Approx: ret = "~" + ret; break;
+          case ENumberModifier.GreaterThan: ret = ">" + ret; break;
+          case ENumberModifier.LessThan: ret = "<" + ret; break;
+          case ENumberModifier.Plus: ret = ret + "+"; break;
+          default: break;
+        }
+        return ret;
+      }
     }
   }
 
@@ -205,13 +285,13 @@ namespace LoreViewer.LoreElements
       private const string PRESENT_PATTERN = @"present";
       private const string ONGOING_PATTERN = @"ongoing";
       private const string UNKNOWN_PATTERN = @"unknown";
-      private const string TBD_PATTERN     = @"tbd";
+      private const string TBD_PATTERN = @"tbd";
 
       private const string VALID_END_KEYWORDS_PATTERN = @"(present)|(ongoing)|(unknown)|(tbd)";
       private const string VALID_START_KEYWORDS_PATTERN = @"(unknown)|(tbd)";
 
       private EDateValueStatus m_eStartDateStatus = EDateValueStatus.Unknown;
-      private EDateValueStatus m_eEndDateStatus   = EDateValueStatus.Unknown;
+      private EDateValueStatus m_eEndDateStatus = EDateValueStatus.Unknown;
 
       public bool IsStartUnknown => m_eStartDateStatus == EDateValueStatus.Unknown;
       public bool IsStartTBD => m_eStartDateStatus == EDateValueStatus.TBD;
@@ -343,7 +423,7 @@ namespace LoreViewer.LoreElements
       // First, look for the node by ID
       ILoreNode foundNode = parser.GetNodeByID(ValueString);
       // If not found by ID...
-      if(foundNode == null)
+      if (foundNode == null)
       {
         Trace.WriteLine($"ReferenceAttributeValue could not find node with ID {ValueString}");
         // Try to look for the node by name
