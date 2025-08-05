@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using LoreViewer.LoreElements;
 using LoreViewer.Settings;
 using Markdig.Syntax;
+using ReactiveUI;
 using System;
 using System.IO;
 using System.Linq;
@@ -221,6 +222,24 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     private static string msgBase = "Number attribute value {0}: cannot use number modifiers '{1}' and '{2}' at the same time";
     public NumberInvalidModifiersException(NumberAttributeValue attrVal, string m1, string m2)
       : base(attrVal, string.Format(msgBase, attrVal.ValueString, m1, m2))
+    { }
+  }
+
+  
+  public class QuantityCannotParseException : LoreAttributeParsingException
+  {
+    public QuantityCannotParseException(QuantityAttributeValue attributeValue, string msg)
+      : base(attributeValue.OwningAttribute.SourcePath, attributeValue.OwningAttribute.BlockIndex, attributeValue.OwningAttribute.LineNumber, msg)
+    { }
+  }
+
+  public class QuantityUnknownUnitException : QuantityCannotParseException
+  {
+    private static string msgBase = "Could not find valid unit of {1} with abbreviation {0}. Please check your lore schema.";
+
+    public QuantityUnknownUnitException(QuantityAttributeValue attributeValue, string unitText, Exception e = null)
+      : base(attributeValue, string.Format(msgBase, unitText,
+        attributeValue.OwningAttribute.DefinitionAs<LoreFieldDefinition>().quantityUnitType))
     { }
   }
   #endregion

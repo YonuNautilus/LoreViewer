@@ -3,11 +3,14 @@ using LoreViewer.LoreElements.Interfaces;
 using LoreViewer.Parser;
 using LoreViewer.Settings;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using UnitsNet;
+using UnitsNet.Units;
 
 namespace LoreViewer.LoreElements
 {
@@ -189,14 +192,137 @@ namespace LoreViewer.LoreElements
   /// </summary>
   public class QuantityAttributeValue : LoreAttributeValue
   {
-    public override Quantity Value { get; }
+    public override QuantityAttributeValue.QuantityValue Value { get; }
 
     public QuantityAttributeValue(string quantityToParse, LoreAttribute owningAttribute) : base(quantityToParse, owningAttribute)
     {
-      //Value = UnitsNet.Uni
+      Value = new QuantityValue(this, quantityToParse);
+    }
+
+    public override string ToString() => Value.ToString();
+
+    /// <summary>
+    /// Holds a UnitsNet UnitInfo, and a magnitude as a double.
+    /// </summary>
+    public class QuantityValue
+    {
+      private const string REGULAR_MAGNITUDE_PATTERN = @"^((-){0,1}[\d\.]+)";
+      //private const string REGULAR_UNIT_PATTERN = @"(?<=^((-){0,1}[\d\.]+) ).+$";
+      //private const string REGULAR_UNIT_PATTERN = @"(?<=^((-){0,1}(\S.)+) ).+$";
+      private const string REGULAR_UNIT_PATTERN = @"(?<=^((-){0,1}[\d\.]+)\w).+$";
+
+      private const string FEET_INCHES_PATTERN = @"^((\d+) {0,1}('|foot|feet|ft) {0,1}){0,1}((\d{1,2}) {0,1}(""|inches|inch|in)){0,1}$";
+
+
+      private UnitInfo m_oUnit;
+      private double m_dMagnitude;
+      private QuantityInfo m_oQuantityInfo;
+      private object m_oQuantity;
+
+      public UnitInfo Unit => m_oUnit;
+      public string unitText = "";
+      public double Magnitude => m_dMagnitude;
+
+      public QuantityValue(QuantityAttributeValue owner, string quantityToParse)
+      {
+
+        // First check the field's quantity unit type, and see if we can parse a segment with units from the string (and verify it is valid
+        // for the specified unit quantity type).
+
+        // First parse the magnitude, which should be the easiest part.
+
+
+        // Handle the special case of feet-inches format.
+        if (owner.OwningAttribute.DefinitionAs<LoreFieldDefinition>().quantityUnitType == EQuantityUnitType.Length &&
+          Regex.IsMatch(quantityToParse, FEET_INCHES_PATTERN, RegexOptions.IgnoreCase))
+        {
+          Match feetAndInchesMatch = Regex.Match(quantityToParse, FEET_INCHES_PATTERN);
+          var feet = feetAndInchesMatch.Groups[2].Value;
+          var inches = feetAndInchesMatch.Groups[5].Value;
+
+          double.TryParse(feet, out double dFeet);
+          double.TryParse(inches, out double dInches);
+
+          m_oQuantity = Length.FromFeetInches(dFeet, dInches);
+          m_dMagnitude = Length.FromFeetInches(dFeet, dInches).Value;
+
+          m_oUnit = Quantity.GetUnitInfo(LengthUnit.Inch);
+        }
+
+        else
+        {
+          var magnitude = Regex.Match(quantityToParse, REGULAR_MAGNITUDE_PATTERN).Value;
+          var units = Regex.Match(quantityToParse, REGULAR_UNIT_PATTERN).Value;
+
+          units = quantityToParse.Substring(magnitude.Length).Trim();
+          unitText = units;
+
+          try
+          {
+#if USE_QUANTITY_REFLECTION
+            Type unitType = Type.GetType($"UnitsNet.{owner.OwningAttribute.DefinitionAs<LoreFieldDefinition>().quantityUnitType}, UnitsNet");
+
+            MethodInfo parseMethod = unitType.GetMethod("Parse", new[] {typeof(string)});
+
+            object parsed = parseMethod.Invoke(null, new object[] { quantityToParse.Trim() });
+
+            m_oQuantity = parsed;
+#else
+
+            switch (owner.OwningAttribute.DefinitionAs<LoreFieldDefinition>().quantityUnitType)
+            {
+              case EQuantityUnitType.Length:
+                LengthUnit lu = UnitParser.Default.Parse<LengthUnit>(units);
+                Length l = Length.Parse(quantityToParse);
+                m_oQuantity = l;
+                m_dMagnitude = l.Value;
+                m_oUnit = Quantity.GetUnitInfo(lu);
+                break;
+              case EQuantityUnitType.Mass:
+                MassUnit mu = UnitParser.Default.Parse<MassUnit>(units);
+                Mass m = Mass.Parse(quantityToParse);
+                m_oQuantity = m;
+                m_dMagnitude = m.Value;
+                m_oUnit = Quantity.GetUnitInfo(mu);
+                break;
+              case EQuantityUnitType.Angle:
+                AngleUnit au = UnitParser.Default.Parse<AngleUnit>(units);
+                Angle a = Angle.Parse(quantityToParse);
+                m_oQuantity = a;
+                m_dMagnitude = a.Value;
+                m_oUnit = Quantity.GetUnitInfo(au);
+                break;
+            }
+#endif
+          }
+          catch (UnitsNet.UnitNotFoundException e)
+          {
+            throw new QuantityUnknownUnitException(owner, unitText, e);
+          }
+          catch (Exception ex)
+          {
+            throw new QuantityCannotParseException(owner, $"Could not parse {quantityToParse} into a quantity");
+          }
+        }
+      }
+
+      //private Enum GetUnitInfo(string unitString, EQuantityUnitType eDefinedType)
+      //{
+      //  switch (eDefinedType)
+      //  {
+      //    case EQuantityUnitType.Length:
+            
+      //      break;
+      //  }
+      //}
+
+      //private Dictionary<string, Enum> UnitStringToEnum = new Dictionary<string, Enum>
+      //{
+      //}
+
+      public override string ToString() => m_oQuantityInfo?.ToString();
     }
   }
-
 
   public enum EDateValueStatus
   {

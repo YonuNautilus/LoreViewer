@@ -1,0 +1,12 @@
+types:
+  - name: QuantityTester
+    fields:
+      - name: Distance
+        contentType: Quantity
+        quantityUnitType: length
+      - name: Mass
+        contentType: Quantity
+        quantityUnitType: mass
+      - name: Angle
+        contentType: Quantity
+        quantityUnitType: angle

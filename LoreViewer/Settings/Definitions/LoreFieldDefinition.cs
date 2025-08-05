@@ -58,7 +58,7 @@ namespace LoreViewer.Settings
 
   public enum EQuantityUnitType
   {
-    Distance,
+    Length,
     [Description("Mass/Weight")]
     Mass,
     Velocity,
@@ -229,6 +229,14 @@ namespace LoreViewer.Settings
     {
       get { return m_eNumericType; }
       set { m_eNumericType = value; }
+    }
+
+    private EQuantityUnitType m_eQuantityType = EQuantityUnitType.Length;
+    [YamlMember(7)]
+    public EQuantityUnitType quantityUnitType
+    {
+      get { return m_eQuantityType; }
+      set { m_eQuantityType = value; }
     }
 
 

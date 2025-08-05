@@ -1,10 +1,11 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using UnitsNet.Units;
 
 namespace LoreViewer
 {
-  internal class Program
+  public class Program
   {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -22,5 +23,16 @@ namespace LoreViewer
             .LogToTrace()
             .UseReactiveUI();
 
+    public static void AddCustomAbbreviations()
+    {
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<AngleUnit>(AngleUnit.Degree, "°");
+      
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<MassUnit>(MassUnit.Ounce, "ounces");
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<MassUnit>(MassUnit.Ounce, "ounce");
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<MassUnit>(MassUnit.Tonne, "tonnes");
+
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<TemperatureUnit>(TemperatureUnit.DegreeFahrenheit, "°F");
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<TemperatureUnit>(TemperatureUnit.DegreeCelsius, "°C");
+    }
   }
 }
