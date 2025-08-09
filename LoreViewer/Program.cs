@@ -31,8 +31,11 @@ namespace LoreViewer
       UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<MassUnit>(MassUnit.Ounce, "ounce");
       UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<MassUnit>(MassUnit.Tonne, "tonnes");
 
-      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<TemperatureUnit>(TemperatureUnit.DegreeFahrenheit, "°F");
-      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<TemperatureUnit>(TemperatureUnit.DegreeCelsius, "°C");
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<TemperatureUnit>(TemperatureUnit.DegreeFahrenheit, "F");
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<TemperatureUnit>(TemperatureUnit.DegreeCelsius, "C");
+
+      UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<SpeedUnit>(SpeedUnit.KilometerPerHour, "kmph");
+
     }
   }
 }

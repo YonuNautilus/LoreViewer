@@ -66,7 +66,7 @@ namespace LoreViewer.Settings
     [Description("Time duration")]
     TimeDuration,
     Angle,
-    Coordinates,
+    //Coordinates,
     Temperature,
     Pressure,
   }

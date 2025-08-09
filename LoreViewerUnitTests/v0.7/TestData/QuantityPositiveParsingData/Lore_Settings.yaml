@@ -10,3 +10,15 @@ types:
       - name: Angle
         contentType: Quantity
         quantityUnitType: angle
+      - name: Velocity
+        contentType: Quantity
+        quantityUnitType: velocity
+      - name: Pressure
+        contentType: Quantity
+        quantityUnitType: pressure
+      - name: Temperature
+        contentType: Quantity
+        quantityUnitType: temperature
+      - name: Duration
+        contentType: Quantity
+        quantityUnitType: TimeDuration

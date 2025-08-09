@@ -242,6 +242,14 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
         attributeValue.OwningAttribute.DefinitionAs<LoreFieldDefinition>().quantityUnitType))
     { }
   }
+
+  public class QuantityUnitTypeUnsupportException : QuantityCannotParseException
+  {
+    private static string msgBase = "Attempted to use unit of type {0}, but it is not yet supported!";
+
+    public QuantityUnitTypeUnsupportException(QuantityAttributeValue attributeValue, EQuantityUnitType eType)
+      : base(attributeValue, string.Format(msgBase, eType.ToString())) { }
+  }
   #endregion
 
   #region Collections

@@ -206,22 +206,22 @@ namespace LoreViewer.LoreElements
     /// </summary>
     public class QuantityValue
     {
-      private const string REGULAR_MAGNITUDE_PATTERN = @"^((-){0,1}[\d\.]+)";
-      //private const string REGULAR_UNIT_PATTERN = @"(?<=^((-){0,1}[\d\.]+) ).+$";
-      //private const string REGULAR_UNIT_PATTERN = @"(?<=^((-){0,1}(\S.)+) ).+$";
+      private const string REGULAR_MAGNITUDE_PATTERN = @"^((-){0,1}[\d,\.]+)";
       private const string REGULAR_UNIT_PATTERN = @"(?<=^((-){0,1}[\d\.]+)\w).+$";
 
       private const string FEET_INCHES_PATTERN = @"^((\d+) {0,1}('|foot|feet|ft) {0,1}){0,1}((\d{1,2}) {0,1}(""|inches|inch|in)){0,1}$";
+      private const string YEARS_DAYS_HOURS_MINUTES_SECONDS_PATTERN = @"(?:(\d+)\s*y(?:ears?)?)?\s*(?:(\d+)\s*d(?:ays?)?)?\s*(?:(\d+)\s*h(?:ours?)?)?\s*(?:(\d+)\s*m(?:in(?:uts?)?)?)?\s*(?:(\d+)\s*s(?:ec(?:onds?)?)?)?\s*";
 
 
       private UnitInfo m_oUnit;
       private double m_dMagnitude;
       private QuantityInfo m_oQuantityInfo;
-      private object m_oQuantity;
+      private IQuantity m_oQuantity;
+      private IQuantity m_oIQuantity;
 
       public UnitInfo Unit => m_oUnit;
       public string unitText = "";
-      public double Magnitude => m_dMagnitude;
+      public double Magnitude => m_oQuantity.As(m_oQuantity.Unit);
 
       public QuantityValue(QuantityAttributeValue owner, string quantityToParse)
       {
@@ -247,6 +247,28 @@ namespace LoreViewer.LoreElements
           m_dMagnitude = Length.FromFeetInches(dFeet, dInches).Value;
 
           m_oUnit = Quantity.GetUnitInfo(LengthUnit.Inch);
+        }
+
+        else if(owner.OwningAttribute.DefinitionAs<LoreFieldDefinition>().quantityUnitType == EQuantityUnitType.TimeDuration &&
+          Regex.IsMatch(quantityToParse, YEARS_DAYS_HOURS_MINUTES_SECONDS_PATTERN, RegexOptions.IgnoreCase))
+        {
+          Match m = Regex.Match(quantityToParse, YEARS_DAYS_HOURS_MINUTES_SECONDS_PATTERN, RegexOptions.IgnoreCase);
+          int years, days, hours, minutes, seconds;
+          int.TryParse(m.Groups[1].Value, out years);
+          int.TryParse(m.Groups[2].Value, out days);
+          int.TryParse(m.Groups[3].Value, out hours);
+          int.TryParse(m.Groups[4].Value, out minutes);
+          int.TryParse(m.Groups[5].Value, out seconds);
+
+          Duration d = Duration.From(seconds, DurationUnit.Second);
+          d += Duration.From(minutes, DurationUnit.Minute);
+          d += Duration.From(hours, DurationUnit.Hour);
+          d += Duration.From(days, DurationUnit.Day);
+          d += Duration.From(years, DurationUnit.JulianYear);
+
+          m_oQuantity = d;
+          m_dMagnitude = d.Value;
+          m_oUnit = Quantity.GetUnitInfo(d.Unit);
         }
 
         else
@@ -292,12 +314,53 @@ namespace LoreViewer.LoreElements
                 m_dMagnitude = a.Value;
                 m_oUnit = Quantity.GetUnitInfo(au);
                 break;
+              case EQuantityUnitType.Velocity:
+                SpeedUnit su = UnitParser.Default.Parse<SpeedUnit>(units);
+                Speed s = Speed.Parse(quantityToParse);
+                m_oQuantity = s;
+                m_dMagnitude = s.Value;
+                m_oUnit = Quantity.GetUnitInfo(su);
+                break;
+              case EQuantityUnitType.Acceleration:
+                AccelerationUnit acu = UnitParser.Default.Parse<AccelerationUnit>(units);
+                Acceleration ac = Acceleration.Parse(quantityToParse);
+                m_oQuantity = ac;
+                m_dMagnitude = ac.Value;
+                m_oUnit = Quantity.GetUnitInfo(acu);
+                break;
+              case EQuantityUnitType.TimeDuration:
+                DurationUnit du = UnitParser.Default.Parse<DurationUnit>(units);
+                Duration d = Duration.Parse(quantityToParse);
+                m_oQuantity = d;
+                m_dMagnitude = d.Value;
+                m_oUnit = Quantity.GetUnitInfo(du);
+                break;
+              case EQuantityUnitType.Temperature:
+                TemperatureUnit tu = UnitParser.Default.Parse<TemperatureUnit>(units);
+                Temperature t = Temperature.Parse(quantityToParse);
+                m_oQuantity = t;
+                m_dMagnitude = t.Value;
+                m_oUnit = Quantity.GetUnitInfo(tu);
+                break;
+              case EQuantityUnitType.Pressure:
+                PressureUnit pu = UnitParser.Default.Parse<PressureUnit>(units);
+                Pressure p = Pressure.Parse(quantityToParse);
+                m_oQuantity = p;
+                m_dMagnitude = p.Value;
+                m_oUnit = Quantity.GetUnitInfo(pu);
+                break;
+              default:
+                throw new QuantityUnitTypeUnsupportException(owner, owner.OwningAttribute.DefinitionAs<LoreFieldDefinition>().quantityUnitType);
             }
 #endif
           }
           catch (UnitsNet.UnitNotFoundException e)
           {
             throw new QuantityUnknownUnitException(owner, unitText, e);
+          }
+          catch (QuantityCannotParseException qe)
+          {
+            throw qe;
           }
           catch (Exception ex)
           {
