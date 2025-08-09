@@ -233,6 +233,7 @@ namespace LoreViewer.Settings
 
     private EQuantityUnitType m_eQuantityType = EQuantityUnitType.Length;
     [YamlMember(7)]
+    [DefaultValue(EQuantityUnitType.Length)]
     public EQuantityUnitType quantityUnitType
     {
       get { return m_eQuantityType; }

@@ -217,7 +217,6 @@ namespace LoreViewer.LoreElements
       private double m_dMagnitude;
       private QuantityInfo m_oQuantityInfo;
       private IQuantity m_oQuantity;
-      private IQuantity m_oIQuantity;
 
       public UnitInfo Unit => m_oUnit;
       public string unitText = "";
@@ -368,20 +367,6 @@ namespace LoreViewer.LoreElements
           }
         }
       }
-
-      //private Enum GetUnitInfo(string unitString, EQuantityUnitType eDefinedType)
-      //{
-      //  switch (eDefinedType)
-      //  {
-      //    case EQuantityUnitType.Length:
-            
-      //      break;
-      //  }
-      //}
-
-      //private Dictionary<string, Enum> UnitStringToEnum = new Dictionary<string, Enum>
-      //{
-      //}
 
       public override string ToString() => m_oQuantityInfo?.ToString();
     }

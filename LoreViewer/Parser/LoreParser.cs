@@ -132,7 +132,7 @@ namespace LoreViewer.Parser
       if (this.tagType != incoming.tagType) return false;
       if (string.IsNullOrEmpty(this.TypeName) || string.IsNullOrEmpty(incoming.TypeName)) return false;
       if (this.TypeName != incoming.TypeName) return false;
-      return true;
+      return this.ID == incoming.ID;
     }
 
     internal LoreTagInfo? CreateCompositeNodeTag(LoreTagInfo value)
