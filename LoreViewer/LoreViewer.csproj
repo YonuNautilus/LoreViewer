@@ -46,8 +46,8 @@
     <Compile Update="Views\PrimaryViews\StartWindow.axaml.cs">
       <DependentUpon>StartWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\LoreEditView.axaml.cs">
-      <DependentUpon>LoreEditView.axaml</DependentUpon>
+    <Compile Update="Views\LoreEditLegacyView.axaml.cs">
+      <DependentUpon>LoreEditLegacyView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\LoreReadonlyView.axaml.cs">
       <DependentUpon>LoreReadonlyView.axaml</DependentUpon>

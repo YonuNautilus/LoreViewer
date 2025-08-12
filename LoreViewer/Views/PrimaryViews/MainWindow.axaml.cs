@@ -11,7 +11,7 @@ namespace LoreViewer
 
     public void AddControl(Control control)
     {
-      MainGrid.Children.Add(control);
+      //MainGrid.Children.Add(control);
     }
   }
 }

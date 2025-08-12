@@ -10,6 +10,7 @@ using LoreViewer.Parser;
 using LoreViewer.Settings;
 using LoreViewer.Validation;
 using LoreViewer.ViewModels.LoreEntities;
+using LoreViewer.ViewModels.PrimaryViewModels;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,8 @@ namespace LoreViewer.ViewModels
     public ObservableCollection<LoreTreeItem> Collections { get; } = new();
     public ObservableCollection<Tuple<string, int, int, Exception>> Errors { get; } = new();
     public ObservableCollection<string> Warnings { get; } = new();
+
+    public EStartupMode ViewMode { get; set; }
 
 
     private int m_iFilesParsed;

@@ -7,7 +7,7 @@
              xmlns:val="using:LoreViewer.Validation"
              xmlns:local="using:LoreViewer.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="LoreViewer.Views.LoreEditView"
+             x:Class="LoreViewer.Views.LoreEditLegacyView"
              x:DataType="vm:LoreViewModel">
   
   <Grid>
@@ -21,7 +21,7 @@
       <ColumnDefinition />
     </Grid.ColumnDefinitions>
 
-    <StackPanel Grid.Row="0" Grid.Column="0" FlowDirection="LeftToRight" Orientation="Horizontal">
+    <StackPanel x:Name="TopBarLeft" Grid.Row="0" Grid.Column="0" FlowDirection="LeftToRight" Orientation="Horizontal">
       <TextBox Text="{Binding LoreLibraryFolderPath}" IsReadOnly="True" Width="250"></TextBox>
       <Button Name="BtnOpenFolder" Command="{Binding OpenLibraryFolderCommand}" DockPanel.Dock="Right" ToolTip.Tip="Select Lore Library Folder">
         <Image Source="avares://LoreViewer/Resources/file.png" />
@@ -31,7 +31,7 @@
       </Button>
     </StackPanel>
 
-    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
+    <StackPanel x:Name="TopBarRight" Orientation="Horizontal" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
       <Button IsEnabled="{Binding NoSettingsParsingError}" ToolTip.Tip="Open Lore Settings Editor" DockPanel.Dock="Right" Command="{Binding OpenLoreSettingsEditor}">
         <Image Source="avares://LoreViewer/Resources/gear.png" />
       </Button>

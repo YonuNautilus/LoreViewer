@@ -3,16 +3,58 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="using:LoreViewer.ViewModels"
+        xmlns:le="using:LoreViewer.LoreElements"
+        xmlns:val="using:LoreViewer.Validation"
+        xmlns:local="using:LoreViewer.Views"
         x:Class="LoreViewer.MainWindow"
+        x:DataType="vm:LoreViewModel"
         Title="LoreViewer">
+  
   <Grid Name="MainLayout">
     <Grid.RowDefinitions>
-      <RowDefinition Height="30"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition />
     </Grid.RowDefinitions>
-    <Menu Background="AliceBlue" Grid.Row="0">
-    </Menu>
+    
+    <Border BorderBrush="Black" BorderThickness="0 0 0 1">
+      <Menu Background="{StaticResource ThemeControlHighlightMidBrush}" Grid.Row="0">
+        <MenuItem Header="File">
+          <MenuItem Header="Reload Lore Library"/>
+          <Separator/>
+          <MenuItem Header="Open"></MenuItem>
+          <MenuItem Header="Close Current Lore Library"/>
+          <Separator/>
+          <MenuItem Header="Save Lore"></MenuItem>
+          <MenuItem Header="Save Lore As..."></MenuItem>
+          <MenuItem Header="Export Lore As...">
+            <MenuItem Header=".zip File"/>
+          </MenuItem>
+        </MenuItem>
 
-    <Grid Grid.Row="1" Name="MainGrid"></Grid>
+        <MenuItem Header="Lore Element">
+          <MenuItem Header="Create New Node"></MenuItem>
+          <MenuItem Header="Duplicate Current Node"></MenuItem>
+        </MenuItem>
+
+        <MenuItem Header="Find">
+        </MenuItem>
+
+        <MenuItem Header="Validation">
+          <MenuItem Header="Run Validation"/>
+        </MenuItem>
+
+        <MenuItem Header="Tools">
+          <MenuItem Header="Edit Lore Schema" Command="{Binding OpenLoreSettingsEditor}"/>
+          <MenuItem Header="Compare With Latest Save"/>
+        </MenuItem>
+
+        <MenuItem Header="Help">
+          <MenuItem Header="About LoreViewer"/>
+        </MenuItem>
+      </Menu>
+    </Border>
+
+    <ContentControl Grid.Row="1" Content="{Binding ., Converter={StaticResource ViewModeToViewConverter}}"></ContentControl>
   </Grid>
 </Window>

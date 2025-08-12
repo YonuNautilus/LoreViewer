@@ -62,7 +62,7 @@ namespace LoreViewer
           switch (startupMode)
           {
             case EStartupMode.Edit:
-              curView = new LoreEditView();
+              curView = new LoreEditLegacyView();
               curVM = new LoreViewModel(curView);
               curView.DataContext = curVM;
               break;
@@ -74,7 +74,8 @@ namespace LoreViewer
               break;
           }
 
-          ((MainWindow)desktop.MainWindow).AddControl(curView);
+          curVM.ViewMode = startupMode;
+          desktop.MainWindow.DataContext = curVM;
 
           curVM.LoreLibraryFolderPath = lorePath;
           curVM.ReloadLoreFolder();

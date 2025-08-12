@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace LoreViewer.Views;
 
-public partial class LoreEditView : UserControl
+public partial class LoreEditLegacyView : UserControl
 {
-  public LoreEditView()
+  public LoreEditLegacyView()
   {
     InitializeComponent();
   }

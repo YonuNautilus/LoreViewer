@@ -1,6 +1,8 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using LoreViewer.Settings;
+using LoreViewer.ViewModels;
+using LoreViewer.Views;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -88,6 +90,29 @@ namespace LoreViewer.Converters
     }
 
     public object ConvertBack(IList values, Type targetType, object parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+
+  public class ViewModeToViewConverter : IValueConverter
+  {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+      if(value is LoreViewModel lvm)
+      {
+        switch (lvm.ViewMode)
+        {
+          case ViewModels.PrimaryViewModels.EStartupMode.Readonly:
+            return new LoreReadonlyView();
+          case ViewModels.PrimaryViewModels.EStartupMode.Edit:
+            return new LoreEditView();
+        }
+      }
+      return null;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
       throw new NotSupportedException();
     }
