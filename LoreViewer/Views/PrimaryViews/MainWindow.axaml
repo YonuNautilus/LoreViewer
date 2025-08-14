@@ -15,28 +15,29 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition />
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
     
     <Border BorderBrush="Black" BorderThickness="0 0 0 1">
-      <Menu Background="{StaticResource ThemeControlHighlightMidBrush}" Grid.Row="0">
-        <MenuItem Header="File">
-          <MenuItem Header="Reload Lore Library"/>
+      <Menu Background="{StaticResource ThemeControlHighlightMidBrush}" Grid.Row="0" >
+        <MenuItem Header="_File">
+          <MenuItem Header="_Reload Lore Library" Command="{Binding ReloadLibraryCommand}" HotKey="Ctrl+R" />
           <Separator/>
-          <MenuItem Header="Open"></MenuItem>
+          <MenuItem Header="Open" Command="{Binding OpenLibraryFolderCommand}" />
           <MenuItem Header="Close Current Lore Library"/>
           <Separator/>
-          <MenuItem Header="Save Lore"></MenuItem>
-          <MenuItem Header="Save Lore As..."></MenuItem>
-          <MenuItem Header="Export Lore As...">
+          <MenuItem Header="Save Lore" IsEnabled="{Binding IsEditMode}" HotKey="Ctrl+S" />
+          <MenuItem Header="Save Lore As..." IsEnabled="{Binding IsEditMode}" HotKey="Ctrl+Shift+S"/>
+          <MenuItem Header="Export Lore As..." >
             <MenuItem Header=".zip File"/>
           </MenuItem>
         </MenuItem>
 
-        <MenuItem Header="Lore Element">
-          <MenuItem Header="Create New Node"></MenuItem>
-          <MenuItem Header="Duplicate Current Node"></MenuItem>
+        <MenuItem Header="Lore Element" >
+          <MenuItem Header="Create New Node" IsEnabled="{Binding IsEditMode}"/>
+          <MenuItem Header="Duplicate Current Node" IsEnabled="{Binding IsEditMode}"/>
         </MenuItem>
-
+        
         <MenuItem Header="Find">
         </MenuItem>
 
@@ -45,8 +46,8 @@
         </MenuItem>
 
         <MenuItem Header="Tools">
-          <MenuItem Header="Edit Lore Schema" Command="{Binding OpenLoreSettingsEditor}"/>
-          <MenuItem Header="Compare With Latest Save"/>
+          <MenuItem Header="Edit Lore Schema" Command="{Binding OpenLoreSettingsEditor}" IsEnabled="{Binding IsEditMode}"/>
+          <MenuItem Header="Compare With Latest Save" IsEnabled="{Binding IsEditMode}"/>
         </MenuItem>
 
         <MenuItem Header="Help">
@@ -56,5 +57,7 @@
     </Border>
 
     <ContentControl Grid.Row="1" Content="{Binding ., Converter={StaticResource ViewModeToViewConverter}}"></ContentControl>
+
+    <ProgressBar Grid.Row="2" Grid.ColumnSpan="2" IsVisible="{Binding IsParsing}" Maximum="{Binding FileCount}" Value="{Binding ParsingProgress}"></ProgressBar>
   </Grid>
 </Window>

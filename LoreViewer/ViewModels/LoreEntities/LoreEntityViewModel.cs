@@ -5,13 +5,11 @@ using System.Xml.Linq;
 
 namespace LoreViewer.ViewModels.LoreEntities
 {
-
   public class LoreEntityViewModel : ViewModelBase
   {
     public bool IsDirty { get; set; } = false;
 
     internal LoreEntity entity;
-
 
     public string ID { get => entity.ID; set => entity.SetID(value); }
 

@@ -407,6 +407,7 @@ public class AppSettingsViewModel : ViewModelBase
 {
   private AppSettings m_oAppSettings;
 
+  public string LoreName { get => m_oAppSettings.loreName; set => m_oAppSettings.loreName = value; }
   public bool IgnoreCase { get => m_oAppSettings.ignoreCase; set => m_oAppSettings.ignoreCase = value; }
   public bool SoftLinking { get => m_oAppSettings.softLinking; set => m_oAppSettings.softLinking = value; }
   public bool EnablePruningForSerialization { get => m_oAppSettings.EnableSerializationPruning; set => m_oAppSettings.EnableSerializationPruning = value; }

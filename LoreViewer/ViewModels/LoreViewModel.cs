@@ -4,6 +4,7 @@ using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using DynamicData.Binding;
 using LoreViewer.Dialogs;
 using LoreViewer.LoreElements;
 using LoreViewer.Parser;
@@ -36,10 +37,13 @@ namespace LoreViewer.ViewModels
     public ObservableCollection<LoreTreeItem> Nodes { get; } = new();
 
     public ObservableCollection<LoreTreeItem> Collections { get; } = new();
-    public ObservableCollection<Tuple<string, int, int, Exception>> Errors { get; } = new();
+    public ObservableCollection<ParseErrorViewModel> Errors { get; } = new();
     public ObservableCollection<string> Warnings { get; } = new();
 
     public EStartupMode ViewMode { get; set; }
+
+    public bool IsEditMode { get => ViewMode == EStartupMode.Edit; }
+    public bool IsReadOnlyMode { get => ViewMode == EStartupMode.Readonly; }
 
 
     private int m_iFilesParsed;
@@ -103,6 +107,7 @@ namespace LoreViewer.ViewModels
 
     public LoreViewModel(Visual view)
     {
+
       if (Path.Exists(m_sPathToNPppx86))
       {
         m_bNPppExists = true;
@@ -237,7 +242,7 @@ namespace LoreViewer.ViewModels
       }
       catch (Exception e)
       {
-        Errors.Add(new Tuple<string, int, int, Exception>(e.Message, -1, -1, e));
+        Errors.Add(new ParseErrorViewModel(new ParseError(e.Message, -1, -1, e)));
         HadSettingsParsingError = true;
         IsParsing = false;
         return;
@@ -275,7 +280,7 @@ namespace LoreViewer.ViewModels
 
     private void RefreshCollectionsFromParser() { foreach (LoreEntity e in _parser.Collections) Collections.Add(new LoreTreeItem(e)); }
 
-    private void RefreshErrorsFromParser() { foreach (Tuple<string, int, int, Exception> e in _parser.Errors) Errors.Add(e); }
+    private void RefreshErrorsFromParser() { foreach (ParseError pe in _parser.Errors) Errors.Add(new ParseErrorViewModel(pe)); }
 
     private void RefreshWarningsFromParser() { foreach (string e in _parser.Warnings) Warnings.Add(e); }
     #endregion 

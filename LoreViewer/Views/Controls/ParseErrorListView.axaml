@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:LoreViewer.ViewModels"
+             xmlns:p="using:LoreViewer.Parser"
+             x:Class="LoreViewer.Views.ParseErrorListView"
+             x:Name="root">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="25" />
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <DockPanel Grid.Row="0">
+      <Button x:Name="OpenCloseButton" DockPanel.Dock="Right" Tapped="Button_Tapped">
+        <Image Source="{Binding #ErrorsList.IsVisible, Mode=OneWay, Converter={StaticResource CollapseExpandIconConverter}}" />
+      </Button>
+      <Label Content="Errors" DockPanel.Dock="Left"/>
+    </DockPanel>
+
+    <DataGrid x:Name="ErrorsList" x:DataType="vm:ParseErrorViewModel" Grid.Row="1" HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding #root.ParseErrors}" Name="ErrorsListView" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" CanUserResizeColumns="True">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="File" Width="Auto" Binding="{Binding FilePath}" CanUserResize="True"/>
+        <DataGridTextColumn Header="BlockIndex" Binding="{Binding BlockIndex}"/>
+        <DataGridTextColumn Header="Line No." Binding="{Binding LineNumber}"/>
+        <DataGridTextColumn Header="Exception Message" Binding="{Binding ParseException.Message}" Width="*"/>
+        <DataGridTemplateColumn Header="Actions" Width="70">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Button Content="Open File" Command="{Binding #ErrorsList.((vm:LoreViewModel)DataContext).OpenErrorFileToLine}" CommandParameter="{Binding }" />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>

@@ -1,13 +1,19 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Data.Converters;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using LoreViewer.LoreElements;
 using LoreViewer.Settings;
+using LoreViewer.Validation;
 using LoreViewer.ViewModels;
 using LoreViewer.Views;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 
 namespace LoreViewer.Converters
@@ -113,6 +119,56 @@ namespace LoreViewer.Converters
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+
+  public class GreaterThanZero : IValueConverter
+  {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+      if (value is IList ie) return ie.Count > 0;
+      else if (value is int i) return i > 0;
+      else return false;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+
+  public class CollapseExpandIconConverter : IValueConverter
+  {
+    public object? Convert(object? value, Type targetType, object? isLeftRight, CultureInfo culture)
+    {
+      // Value will be a bool, true for 'is visible', false for 'is collapsed'
+      // If currently visible, show the 'collapse icon', if currently collapsed, show the 'expand icon'
+
+      // Parameter is a bool as well. True for left-right, false for up-down
+
+      if (value is bool bVisible)
+      {
+        string image = string.Empty;
+
+        if(isLeftRight is bool lr && lr)
+        {
+          if (bVisible) image = "avares://LoreViewer/Resources/ChevronRight24.png";
+          else image = "avares://LoreViewer/Resources/ChevronLeft24.png";
+        }
+        else
+        {
+          if (bVisible) image = "avares://LoreViewer/Resources/ChevronDown24.png";
+          else image = "avares://LoreViewer/Resources/ChevronUp24.png";
+        }
+        return new Bitmap(AssetLoader.Open(new Uri(image)));
+        
+      }
+      return null;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
       throw new NotSupportedException();
     }

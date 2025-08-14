@@ -1,13 +1,9 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using LoreViewer.LoreElements;
+﻿using LoreViewer.LoreElements;
 using LoreViewer.Settings;
 using Markdig.Syntax;
-using ReactiveUI;
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace LoreViewer.Exceptions.LoreParsingExceptions
 {

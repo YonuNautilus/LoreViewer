@@ -46,10 +46,10 @@
     <Compile Update="Views\PrimaryViews\StartWindow.axaml.cs">
       <DependentUpon>StartWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\LoreEditLegacyView.axaml.cs">
+    <Compile Update="Views\LoreViews\LoreEditLegacyView.axaml.cs">
       <DependentUpon>LoreEditLegacyView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\LoreReadonlyView.axaml.cs">
+    <Compile Update="Views\LoreViews\LoreReadonlyView.axaml.cs">
       <DependentUpon>LoreReadonlyView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>

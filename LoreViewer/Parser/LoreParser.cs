@@ -163,12 +163,12 @@ namespace LoreViewer.Parser
 
     private List<LoreCollection> _collections = new List<LoreCollection>();
     private List<ILoreNode> _nodes = new List<ILoreNode>();
-    private List<Tuple<string, int, int, Exception>> _errors = new();
+    private List<ParseError> _errors = new();
     private List<string> _warnings = new List<string>();
 
     public IReadOnlyList<ILoreNode> Nodes => _nodes.ToList();
     public IReadOnlyList<LoreCollection> Collections => _collections.ToList();
-    public IReadOnlyList<Tuple<string, int, int, Exception>> Errors => _errors.ToList();
+    public IReadOnlyList<ParseError> Errors => _errors.ToList();
     public IReadOnlyList<string> Warnings => _warnings.ToList();
 
 
@@ -178,7 +178,7 @@ namespace LoreViewer.Parser
 
     private readonly ConcurrentBag<ILoreNode> _parsedNodes = new();
     private readonly ConcurrentBag<LoreCollection> _parsedCollections = new();
-    private readonly ConcurrentBag<Tuple<string, int, int, Exception>> _parsedErrors = new();
+    private readonly ConcurrentBag<ParseError> _parsedErrors = new();
     private readonly ConcurrentBag<string> _parsedWarnings = new();
 
     public IEnumerable<LoreEntity> AllEntities => _nodes.Cast<LoreEntity>().Concat<LoreEntity>(_collections);
@@ -251,12 +251,12 @@ namespace LoreViewer.Parser
         catch (LoreParsingException lpe)
         {
           string pathForException = string.IsNullOrEmpty(_folderPath) ? file : Path.GetRelativePath(folderPath, file);
-          _parsedErrors.Add(new Tuple<string, int, int, Exception>(pathForException, lpe.BlockIndex, lpe.LineNumber, lpe));
+          _parsedErrors.Add(new ParseError(pathForException, lpe.BlockIndex, lpe.LineNumber, lpe));
         }
         catch (Exception ex)
         {
           string pathForException = string.IsNullOrEmpty(_folderPath) ? file : Path.GetRelativePath(folderPath, file);
-          _parsedErrors.Add(new Tuple<string, int, int, Exception>(pathForException, -1, -1, ex));
+          _parsedErrors.Add(new ParseError(pathForException, -1, -1, ex));
         }
 
         Interlocked.Increment(ref count);
@@ -350,12 +350,12 @@ namespace LoreViewer.Parser
         catch (LoreParsingException lpe)
         {
           string pathForException = string.IsNullOrEmpty(_folderPath) ? filePath : Path.GetRelativePath(_folderPath, filePath);
-          _parsedErrors.Add(new Tuple<string, int, int, Exception>(pathForException, lpe.BlockIndex, lpe.LineNumber, lpe));
+          _parsedErrors.Add(new ParseError(pathForException, lpe.BlockIndex, lpe.LineNumber, lpe));
         }
         catch (Exception ex)
         {
           string pathForException = string.IsNullOrEmpty(_folderPath) ? filePath : Path.GetRelativePath(_folderPath, filePath);
-          _parsedErrors.Add(new Tuple<string, int, int, Exception>(pathForException, -1, -1, ex));
+          _parsedErrors.Add(new ParseError(pathForException, -1, -1, ex));
           throw;
         }
       }

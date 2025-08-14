@@ -1,10 +1,14 @@
 ﻿using LoreViewer.LoreElements;
+using LoreViewer.LoreElements.Interfaces;
+using LoreViewer.ViewModels.LoreEntities;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace LoreViewer.ViewModels
 {
-  internal class LoreNodeViewModel
+  internal class LoreNodeViewModel : LoreEntityViewModel
   {
-    private LoreNode Node;
+    private ILoreNode Node => entity as ILoreNode;
 
     private string m_sModifiedContent;
 
@@ -12,7 +16,8 @@ namespace LoreViewer.ViewModels
     {
       get
       {
-        return string.IsNullOrWhiteSpace(m_sModifiedContent) ? Node.FileContent : m_sModifiedContent;
+        if (Node is LoreNode n) return string.IsNullOrWhiteSpace(m_sModifiedContent) ? n.FileContent : m_sModifiedContent;
+        else return "MULITPLE FILES";
       }
       set
       {
@@ -20,15 +25,26 @@ namespace LoreViewer.ViewModels
       }
     }
 
+    private ObservableCollection<AttributeViewModel> m_oAttributes;
+    public ObservableCollection<AttributeViewModel> Attributes { get => m_oAttributes; }
+
     private int m_iCursorIndex;
 
     public int CursorIndex
     {
-      get => Node.LineNumber;
+      get
+      {
+        if (Node is LoreNode n) return n.LineNumber;
+        else return 0;
+      }
     }
 
     public void ClearModifications() => m_sModifiedContent = string.Empty;
 
-    public LoreNodeViewModel(LoreNode node) { Node = node; }
+    public LoreNodeViewModel(ILoreNode node) 
+    { 
+      entity = node as LoreEntity;
+      m_oAttributes = new ObservableCollection<AttributeViewModel>(node.Attributes.Select(s => new AttributeViewModel(s)));
+    }
   }
 }

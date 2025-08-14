@@ -123,30 +123,7 @@
             <RowDefinition />
           </Grid.RowDefinitions>
           <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1">
-            <Grid >
-              <Grid.RowDefinitions>
-                <RowDefinition Height="25" />
-                <RowDefinition/>
-              </Grid.RowDefinitions>
-
-              <Label Content="Errors" Grid.Row="0" />
-
-              <DataGrid x:Name="ErrorsList" Grid.Row="1" HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding Errors}" Name="ErrorsListView" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" CanUserResizeColumns="True">
-                <DataGrid.Columns>
-                  <DataGridTextColumn Header="File" Width="Auto" Binding="{Binding Item1}" CanUserResize="True"/>
-                  <DataGridTextColumn Header="BlockIndex" Binding="{Binding Item2}"/>
-                  <DataGridTextColumn Header="Line No." Binding="{Binding Item3}"/>
-                  <DataGridTextColumn Header="Exception Message" Binding="{Binding Item4.Message}" Width="*"/>
-                  <DataGridTemplateColumn Header="Actions" Width="70">
-                    <DataGridTemplateColumn.CellTemplate>
-                      <DataTemplate>
-                        <Button Content="Open File" Command="{Binding #ErrorsList.((vm:LoreViewModel)DataContext).OpenErrorFileToLine}" CommandParameter="{Binding }" />
-                      </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                  </DataGridTemplateColumn>
-                </DataGrid.Columns>
-              </DataGrid>
-            </Grid>
+            <local:ParseErrorListView ParseErrors="{Binding Errors}" />
           </Border>
 
           <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1">

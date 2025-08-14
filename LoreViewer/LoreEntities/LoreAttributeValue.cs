@@ -77,9 +77,12 @@ namespace LoreViewer.LoreElements
 
       public Color DefinedColor { get; set; }
 
+      public Avalonia.Media.Color BrushColor { get; set; }
+
       public ColorValue(Color color, string name)
       {
         DefinedColor = color;
+        BrushColor = new Avalonia.Media.Color(color.A, color.R, color.G, color.B);
         Name = name;
       }
 
@@ -434,6 +437,15 @@ namespace LoreViewer.LoreElements
           m_eDateStatus = EDateValueStatus.Date;
         }
       }
+
+      public override string ToString()
+      {
+        if (m_eDateStatus == EDateValueStatus.Unknown) return "Unknown";
+        if (m_eDateStatus == EDateValueStatus.TBD) return "[TBD]";
+        if (m_eDateStatus == EDateValueStatus.Present) return "[Present]";
+
+        return m_oDateTime.ToString("MMMM d, yyyy");
+      }
     }
   }
 
@@ -480,6 +492,24 @@ namespace LoreViewer.LoreElements
 
       public DateTime StartDateTime => m_oStartDateTime;
       public DateTime EndDateTime => m_oEndDateTime;
+
+      public string StartString
+      {
+        get
+        {
+          if (IsStartDate) return m_oStartDateTime.ToString("MMMM d, yyyy");
+          else return m_eStartDateStatus.ToString();
+        }
+      }
+
+      public string EndString
+      {
+        get
+        {
+          if (IsEndDate) return m_oEndDateTime.ToString("MMMM d, yyyy");
+          else return m_eEndDateStatus.ToString();
+        }
+      }
 
 
       public TimeSpan? TimeSpan

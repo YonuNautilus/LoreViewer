@@ -4,6 +4,7 @@
              xmlns:vm="using:LoreViewer.ViewModels"
              xmlns:svm="using:LoreViewer.ViewModels.SettingsVMs"
              xmlns:conv="using:LoreViewer.Converters"
+             xmlns:avconv="using:Avalonia.Markup.Xaml.Converters"
              RequestedThemeVariant="Default">
   <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -38,6 +39,11 @@
       <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
 
       <conv:ViewModeToViewConverter x:Key="ViewModeToViewConverter" />
+      
+      <conv:GreaterThanZero x:Key="GreaterThanZero" />
+      <conv:CollapseExpandIconConverter x:Key="CollapseExpandIconConverter" />
+      
+      <avconv:ColorToBrushConverter x:Key="ColorToBrushConverter" />
 
     </ResourceDictionary>
   </Application.Resources>

@@ -3,6 +3,7 @@ using LoreViewer.Settings.Interfaces;
 using SharpYaml.Serialization;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -247,6 +248,9 @@ namespace LoreViewer.Settings
   }
   public class AppSettings : IDeepCopyable<AppSettings>
   {
+    [YamlMember(-1)]
+    [DefaultValue("")]
+    public string loreName { get; set; }
     [YamlMember(0)]
     public bool ignoreCase { get; set; }
     [YamlMember(1)]
