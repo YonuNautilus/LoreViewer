@@ -32,8 +32,8 @@
       </ResourceDictionary.MergedDictionaries>
 
 
-      <vm:ValidationErrorToImagePathConverter x:Key="ValidationImageConverter"/>
-      <vm:LoreEntityToValidationMessageListConverter x:Key="ValidationErrorListConverter" />
+      <conv:ValidationStateToImagePathConverter x:Key="ValidationImageConverter"/>
+      <conv:LoreEntityToValidationMessageListConverter x:Key="ValidationErrorListConverter" />
 
       <conv:EnumDescriptionConverter x:Key="EnumConverter" />
       <conv:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />

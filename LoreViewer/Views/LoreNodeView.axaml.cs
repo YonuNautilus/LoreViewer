@@ -4,8 +4,8 @@ namespace LoreViewer.Views;
 
 public partial class LoreNodeView : UserControl
 {
-    public LoreNodeView()
-    {
-        InitializeComponent();
-    }
+  public LoreNodeView()
+  {
+    InitializeComponent();
+  }
 }

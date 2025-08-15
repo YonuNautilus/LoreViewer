@@ -1,6 +1,7 @@
-﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Settings;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
-using LoreViewer.Validation;
 
 namespace v0_7.NegativePicklistTests
 {
@@ -8,14 +9,14 @@ namespace v0_7.NegativePicklistTests
   public class NegativePicklistSettingsTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "NegativePicklistSettings");
 
     [Test]
     [TestOf(typeof(DuplicatePicklistEntryNameException))]
     public void DuplicateNameInPicklist()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       Assert.Throws<DuplicatePicklistEntryNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "DuplicateListItemNames.yaml")));
     }
@@ -24,7 +25,7 @@ namespace v0_7.NegativePicklistTests
     [TestOf(typeof(DuplicatePicklistNameException))]
     public void DuplicateNameOfPicklists()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       Assert.Throws<DuplicatePicklistNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "DuplicateListName.yaml")));
     }
@@ -33,7 +34,7 @@ namespace v0_7.NegativePicklistTests
     [TestOf(typeof(PicklistsDefinitionNotFoundException))]
     public void UnknownPicklistName()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
       Assert.Throws<PicklistsDefinitionNotFoundException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "MissingPicklist.yaml")));
     }
   }
@@ -43,13 +44,13 @@ namespace v0_7.NegativePicklistTests
   {
 
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "NegativePicklistParsingData");
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
@@ -57,7 +58,7 @@ namespace v0_7.NegativePicklistTests
     }
 
     [Test]
-    [TestOf(typeof(LoreValidator))]
+    [TestOf(typeof(ValidationService))]
     public void InvalidChoiceOnConstrainedField()
     {
       // This should parse, but there should be validation errors

@@ -26,7 +26,7 @@ namespace LoreViewer
     public static void AddCustomAbbreviations()
     {
       UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<AngleUnit>(AngleUnit.Degree, "°");
-      
+
       UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<MassUnit>(MassUnit.Ounce, "ounces");
       UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<MassUnit>(MassUnit.Ounce, "ounce");
       UnitsNet.UnitAbbreviationsCache.Default.MapUnitToAbbreviation<MassUnit>(MassUnit.Tonne, "tonnes");

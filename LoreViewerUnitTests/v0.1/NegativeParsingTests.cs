@@ -1,21 +1,22 @@
-﻿using LoreViewer.Exceptions.LoreParsingExceptions;
-using Newtonsoft.Json.Bson;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Exceptions.LoreParsingExceptions;
 
 namespace v0_1.NegativeTests
 {
   [TestFixture]
-  [TestOf(typeof(LoreParser))]
+  [TestOf(typeof(ParserService))]
   public class NegativeFieldParsingTests
   {
     LoreSettings _settings;
-    LoreParser _parser;
+    ParserService _parser;
 
     string ErrorFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "v0.1", "TestData", "NegativeTestData");
 
     [SetUp]
     public void SetupLoreSettings()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ErrorFilesFolder, "Lore_Settings.yaml"));
 
@@ -23,7 +24,7 @@ namespace v0_1.NegativeTests
     }
 
     [Test]
-    [TestOf(typeof(LoreParser))]
+    [TestOf(typeof(ParserService))]
     [TestOf(typeof(NoTagParsingException))]
     public void UntaggedFirstHeadingTest()
     {
@@ -36,7 +37,7 @@ namespace v0_1.NegativeTests
     }
 
     [Test]
-    [TestOf(typeof(LoreParser))]
+    [TestOf(typeof(ParserService))]
     [TestOf(typeof(FirstHeadingTagException))]
     public void FirstHeadingIsSectionTest()
     {
@@ -50,18 +51,18 @@ namespace v0_1.NegativeTests
   }
 
   [TestFixture]
-  [TestOf(typeof(LoreParser))]
+  [TestOf(typeof(ParserService))]
   public class NegativeSectionParsingTests
   {
     LoreSettings _settings;
-    LoreParser _parser;
+    ParserService _parser;
 
     string ErrorFilesFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "v0.1", "TestData", "NegativeTestData", "Section");
 
     [SetUp]
     public void SetupLoreSettings()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ErrorFilesFolder, "Lore_Settings.yaml"));
 

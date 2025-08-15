@@ -1,7 +1,4 @@
-﻿using LoreViewer.LoreElements;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Xml.Linq;
+﻿using LoreViewer.Domain.Entities;
 
 namespace LoreViewer.ViewModels.LoreEntities
 {
@@ -22,7 +19,7 @@ namespace LoreViewer.ViewModels.LoreEntities
         case LoreCompositeNode compositeNode:
           return new LoreCompositeNodeViewModel(compositeNode);
         case LoreAttribute attr:
-          //return new LoreAttributeViewModel(attr);
+        //return new LoreAttributeViewModel(attr);
         default:
           return null;
       }
@@ -30,33 +27,33 @@ namespace LoreViewer.ViewModels.LoreEntities
 
     public string Name { get => $"Editing: {entity.Name}"; }
 
-    public Dictionary<string, string> GetSaveContent()
-    {
-      Dictionary<string, string> saveContent = new();
-      switch (this)
-      {
-        case LoreNodeViewModel node:
-          if (node.IsDirty)
-          {
-            Trace.WriteLine($"STAGING FILE FOR SAVE: {node.SourcePath}");
-            saveContent[node.SourcePath] = node.FileContent;
-          }
+    //public Dictionary<string, string> GetSaveContent()
+    //{
+    //  Dictionary<string, string> saveContent = new();
+    //  switch (this)
+    //  {
+    //    case LoreNodeViewModel node:
+    //      if (node.IsDirty)
+    //      {
+    //        Trace.WriteLine($"STAGING FILE FOR SAVE: {node.SourcePath}");
+    //        saveContent[node.SourcePath] = node.FileContent;
+    //      }
 
-          break;
-        case LoreCompositeNodeViewModel compNode:
-          foreach (LoreNodeViewModel node in compNode.InternalNodes)
-          {
-            if (node.IsDirty)
-            {
-              saveContent[node.SourcePath] = node.FileContent;
-              Trace.WriteLine($"FROM COMPOSITE NODE, STAGING FILE FOR SAVE: {node.SourcePath}");
-            }
-          }
-          break;
-        default:
-          break;
-      }
-      return saveContent;
-    }
+    //      break;
+    //    case LoreCompositeNodeViewModel compNode:
+    //      foreach (LoreNodeViewModel node in compNode.InternalNodes)
+    //      {
+    //        if (node.IsDirty)
+    //        {
+    //          saveContent[node.SourcePath] = node.FileContent;
+    //          Trace.WriteLine($"FROM COMPOSITE NODE, STAGING FILE FOR SAVE: {node.SourcePath}");
+    //        }
+    //      }
+    //      break;
+    //    default:
+    //      break;
+    //  }
+    //  return saveContent;
+    //}
   }
 }

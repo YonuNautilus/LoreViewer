@@ -2,16 +2,16 @@
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using LoreViewer.LoreElements;
-using LoreViewer.Settings;
-using LoreViewer.Validation;
+using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Entities;
+using LoreViewer.Domain.Settings.Definitions;
 using LoreViewer.ViewModels;
 using LoreViewer.Views;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -76,36 +76,12 @@ namespace LoreViewer.Converters
     }
   }
 
-  public class AllowedStyleConverter : IMultiValueConverter
-  {
-    public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
-    {
-      if (values.Count < 2)
-        return false;
-
-      if (values[0] is EFieldContentType style && values[1] is IEnumerable allowedStyles)
-      {
-        foreach (var allowed in allowedStyles)
-        {
-          if (allowed is EFieldContentType allowedStyle && allowedStyle == style)
-            return true;
-        }
-      }
-
-      return false;
-    }
-
-    public object ConvertBack(IList values, Type targetType, object parameter, CultureInfo culture)
-    {
-      throw new NotSupportedException();
-    }
-  }
 
   public class ViewModeToViewConverter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-      if(value is LoreViewModel lvm)
+      if (value is LoreViewModel lvm)
       {
         switch (lvm.ViewMode)
         {
@@ -152,7 +128,7 @@ namespace LoreViewer.Converters
       {
         string image = string.Empty;
 
-        if(isLeftRight is bool lr && lr)
+        if (isLeftRight is bool lr && lr)
         {
           if (bVisible) image = "avares://LoreViewer/Resources/ChevronRight24.png";
           else image = "avares://LoreViewer/Resources/ChevronLeft24.png";
@@ -163,8 +139,91 @@ namespace LoreViewer.Converters
           else image = "avares://LoreViewer/Resources/ChevronUp24.png";
         }
         return new Bitmap(AssetLoader.Open(new Uri(image)));
-        
+
       }
+      return null;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+
+  public class AllowedStyleConverter : IMultiValueConverter
+  {
+    public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
+    {
+      if (values.Count < 2)
+        return false;
+
+      if (values[0] is EFieldContentType style && values[1] is IEnumerable allowedStyles)
+      {
+        foreach (var allowed in allowedStyles)
+        {
+          if (allowed is EFieldContentType allowedStyle && allowedStyle == style)
+            return true;
+        }
+      }
+
+      return false;
+    }
+
+    public object ConvertBack(IList values, Type targetType, object parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+
+  public class ValidationStateToImagePathConverter : IValueConverter
+  {
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+      // Value will be the datagrid node (LoreTreeItem)
+
+      // if there is a LoreEntity associated with the selected DataGrid node...
+      if (value != null && value is EValidationState vs)
+      {
+        string image = string.Empty;
+        //EValidationState elementState = lvr.LoreEntityValidationStates.ContainsKey(e) ?
+        //  lvr.LoreEntityValidationStates[e] : EValidationState.Passed;
+
+        //EValidationMessageStatus cumulativeMessageStatus = EValidationMessageStatus.Passed;
+        //if (lvr.LoreEntityValidationMessages.ContainsKey(e) && lvr.LoreEntityValidationMessages[e].Count > 0)
+        //  cumulativeMessageStatus = lvr.LoreEntityValidationMessages[e].Select(m => m.Status).Distinct().Max();
+
+        if (vs == EValidationState.Failed || vs == EValidationState.ChildFailed)
+          image = "avares://LoreViewer/Resources/close.png";
+        else if (vs == EValidationState.Warning)
+          image = "avares://LoreViewer/Resources/warning.png";
+        //else if (vs == EValidationState.ChildWarning)
+        //{
+        //  if (cumulativeMessageStatus == EValidationMessageStatus.Failed)
+        //    image = "avares://LoreViewer/Resources/failedChildWarning.png";
+        //  else if (cumulativeMessageStatus == EValidationMessageStatus.Passed)
+        //    image = "avares://LoreViewer/Resources/childWarning.png";
+        //}
+        else if (vs == EValidationState.Passed)
+          image = "avares://LoreViewer/Resources/valid.png";
+        else
+          return null;
+        return new Bitmap(AssetLoader.Open(new Uri(image)));
+      }
+      return null;
+    }
+
+    public object? ConvertBack(object? values, Type targetType, object? parameter, CultureInfo culture)
+    {
+      throw new NotSupportedException();
+    }
+  }
+  public class LoreEntityToValidationMessageListConverter : IMultiValueConverter
+  {
+    public object? Convert(IList<object>? values, Type targetType, object? parameter, CultureInfo culture)
+    {
+      if (values[0] is LoreEntity e && values[1] is LoreValidationResult lvr)
+        return lvr.LoreEntityValidationMessages.ContainsKey(e) ? new ObservableCollection<LoreValidationMessage>(lvr.LoreEntityValidationMessages[e]) : null;
       return null;
     }
 

@@ -1,5 +1,4 @@
-﻿using LoreViewer.LoreElements;
-using LoreViewer.LoreElements.Interfaces;
+﻿using LoreViewer.Domain.Entities;
 using LoreViewer.ViewModels.LoreEntities;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -41,8 +40,8 @@ namespace LoreViewer.ViewModels
 
     public void ClearModifications() => m_sModifiedContent = string.Empty;
 
-    public LoreNodeViewModel(ILoreNode node) 
-    { 
+    public LoreNodeViewModel(ILoreNode node)
+    {
       entity = node as LoreEntity;
       m_oAttributes = new ObservableCollection<AttributeViewModel>(node.Attributes.Select(s => new AttributeViewModel(s)));
     }

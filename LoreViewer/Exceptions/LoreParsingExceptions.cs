@@ -1,5 +1,5 @@
-﻿using LoreViewer.LoreElements;
-using LoreViewer.Settings;
+﻿using LoreViewer.Domain.Entities;
+using LoreViewer.Domain.Settings.Definitions;
 using Markdig.Syntax;
 using System;
 using System.IO;
@@ -149,7 +149,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   {
     static string msgBase = "Color attribute '{0}' cannot parse string \"{1}\" into a color, it must start with the '#' character followed by 6 or 8 hexadecimal digits";
 
-    public ColorCannotParseException(string filePath, int blockIndex, int lineNumber, ColorAttributeValue attrVal) 
+    public ColorCannotParseException(string filePath, int blockIndex, int lineNumber, ColorAttributeValue attrVal)
       : base(filePath, blockIndex, lineNumber, string.Format(msgBase, attrVal.OwningAttribute.Name, attrVal.ValueString)) { }
   }
 
@@ -164,7 +164,8 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     static string msgBase = "Invalid date format or keyword on Start Date of DateRange attribute: '{0}'";
     public DateRangeCannotParseStartDateException(DateRangeAttributeValue attrVal)
       : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
-          attrVal, string.Format(msgBase, attrVal.ValueString)) { }
+          attrVal, string.Format(msgBase, attrVal.ValueString))
+    { }
   }
 
   public class DateRangeCannotParseEndDateException : DateRangeCannotParseException
@@ -172,7 +173,8 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     static string msgBase = "Invalid date format or keyword on End Date of DateRange attribute: '{0}'";
     public DateRangeCannotParseEndDateException(DateRangeAttributeValue attrVal)
       : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
-          attrVal, string.Format(msgBase, attrVal.ValueString)) { }
+          attrVal, string.Format(msgBase, attrVal.ValueString))
+    { }
   }
 
   public class DateRangeNoPipeCharacterException : DateRangeCannotParseException
@@ -180,7 +182,8 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     static string msgBase = "No pipe character '|' found in value {0} - Need a pipe to separate start and end date!";
     public DateRangeNoPipeCharacterException(DateRangeAttributeValue attrVal)
       : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
-          attrVal, string.Format(msgBase, attrVal.ValueString)){ }
+          attrVal, string.Format(msgBase, attrVal.ValueString))
+    { }
   }
 
   public class DateRangeTooManyPipeCharactersException : DateRangeCannotParseException
@@ -188,20 +191,23 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     static string msgBase = "Too many pipe characters '|' fonud in value {0} - Only use ONE to separate start date from end date, couted {1}";
     public DateRangeTooManyPipeCharactersException(DateRangeAttributeValue attrVal)
       : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
-          attrVal, string.Format(msgBase, attrVal.ValueString, attrVal.ValueString.Count(p => p == '|'))) { }
+          attrVal, string.Format(msgBase, attrVal.ValueString, attrVal.ValueString.Count(p => p == '|')))
+    { }
   }
 
   public class DateTimeCannotParseException : LoreAttributeParsingException
   {
     public DateTimeCannotParseException(DateTimeAttributeValue attrVal)
       : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
-          $"Could not parse date or keyword: {attrVal.ValueString}") { }
+          $"Could not parse date or keyword: {attrVal.ValueString}")
+    { }
   }
 
 
   public class NumberCannotParseException : LoreAttributeParsingException
-  {    public NumberCannotParseException(NumberAttributeValue attrVal, string msg)
-      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber, msg) 
+  {
+    public NumberCannotParseException(NumberAttributeValue attrVal, string msg)
+      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber, msg)
     { }
   }
 
@@ -209,7 +215,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   {
     private static string msgBase = "Could not parse {0} into a numeric";
     public NumberCannotParseIntoNumericException(NumberAttributeValue attrVal)
-      : base(attrVal, string.Format(msgBase, attrVal.ValueString)) 
+      : base(attrVal, string.Format(msgBase, attrVal.ValueString))
     { }
   }
 
@@ -221,7 +227,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
     { }
   }
 
-  
+
   public class QuantityCannotParseException : LoreAttributeParsingException
   {
     public QuantityCannotParseException(QuantityAttributeValue attributeValue, string msg)

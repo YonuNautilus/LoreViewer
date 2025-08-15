@@ -1,4 +1,7 @@
-﻿using LoreViewer.LoreElements.Interfaces;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Domain.Settings.Definitions;
+using LoreViewer.LoreElements.Interfaces;
 
 namespace v0_4.PositiveTests
 {
@@ -7,7 +10,7 @@ namespace v0_4.PositiveTests
   internal class PositiveInheritanceTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
 
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.4", "TestData", "PositiveTestData");
 
@@ -16,7 +19,7 @@ namespace v0_4.PositiveTests
     [OneTimeSetUp]
     public static void SetupLoreSettings()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 

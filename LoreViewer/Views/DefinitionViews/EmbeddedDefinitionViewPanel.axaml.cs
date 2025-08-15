@@ -4,8 +4,8 @@ namespace LoreViewer.Views.DefinitionViews;
 
 public partial class EmbeddedDefinitionViewPanel : UserControl
 {
-    public EmbeddedDefinitionViewPanel()
-    {
-        InitializeComponent();
-    }
+  public EmbeddedDefinitionViewPanel()
+  {
+    InitializeComponent();
+  }
 }

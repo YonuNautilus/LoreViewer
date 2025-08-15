@@ -5,11 +5,10 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using LoreViewer.Settings;
-using LoreViewer.Settings.Interfaces;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Domain.Settings.Definitions;
 using LoreViewer.ViewModels.SettingsVMs;
 using System.Collections.ObjectModel;
 
@@ -192,7 +191,7 @@ public static class DefinitionTreeDataGridBuilder
 
               if(node.IsGroupNode ||
                 (node.DefinitionVM != null && (
-                      (node.DefinitionVM is FieldDefinitionViewModel) || 
+                      (node.DefinitionVM is FieldDefinitionViewModel) ||
                       (node.DefinitionVM is PicklistDefinitionViewModel) ||
                       (node.DefinitionVM is PicklistEntryDefinitionViewModel))))
               {

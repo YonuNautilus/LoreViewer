@@ -1,9 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
+using LoreViewer.Core.Settings;
 using LoreViewer.Dialogs;
-using LoreViewer.Settings;
-using LoreViewer.Settings.Interfaces;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Domain.Settings.Definitions;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -57,7 +58,7 @@ public class LoreSettingsViewModel : ViewModelBase
   public bool IsComparisonOpen { get; set; } = false;
 
   public bool IgnoreCase
-  { 
+  {
     get => m_oLoreSettings.settings.ignoreCase;
     set
     {
@@ -66,7 +67,7 @@ public class LoreSettingsViewModel : ViewModelBase
     }
   }
   public bool SoftLinking
-  { 
+  {
     get => m_oLoreSettings.settings.softLinking;
     set
     {
@@ -75,7 +76,7 @@ public class LoreSettingsViewModel : ViewModelBase
     }
   }
   public bool EnablePruningForSerialization
-  { 
+  {
     get => m_oLoreSettings.settings.EnableSerializationPruning;
     set
     {
@@ -161,7 +162,7 @@ public class LoreSettingsViewModel : ViewModelBase
   {
     DefinitionTreeNodeViewModel dtvm;
 
-    foreach(DefinitionTreeNodeViewModel node in TreeRootNodes)
+    foreach (DefinitionTreeNodeViewModel node in TreeRootNodes)
     {
       dtvm = node.FindNodeOfDefinition(definition, out var resultingPath);
       if (dtvm != null)
@@ -381,12 +382,12 @@ public class LoreSettingsViewModel : ViewModelBase
         (treeVM.Parent.DefinitionVM.Definition as ISectionDefinitionContainer).sections.Remove(treeVM.DefinitionVM.Definition as LoreSectionDefinition);
         break;
       case ETreeNodeType.CollectionDefinitionNode:
-        if(treeVM.Parent.IsRootGroupNode)
+        if (treeVM.Parent.IsRootGroupNode)
           m_oLoreSettings.collections.Remove(treeVM.DefinitionVM.Definition as LoreCollectionDefinition);
         else
           (treeVM.Parent.DefinitionVM.Definition as ICollectionDefinitionContainer).collections.Remove(treeVM.DefinitionVM.Definition as LoreCollectionDefinition);
-          break;
-      case ETreeNodeType.EmbeddedNodeDefinitionNode: 
+        break;
+      case ETreeNodeType.EmbeddedNodeDefinitionNode:
         (treeVM.Parent.DefinitionVM.Definition as IEmbeddedNodeDefinitionContainer).embeddedNodeDefs.Remove(treeVM.DefinitionVM.Definition as LoreEmbeddedNodeDefinition);
         break;
       case ETreeNodeType.PicklistDefinitionNode:
@@ -444,7 +445,7 @@ public static class SettingsRefresher
       vm?.RefreshDefinitionVMs();
       vm?.RefreshTreeNodes();
     }
-    catch(Exception e)
+    catch (Exception e)
     {
       Trace.TraceError(e.Message);
       Trace.TraceError(e.StackTrace);

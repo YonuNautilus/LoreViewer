@@ -1,4 +1,6 @@
-﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
 
 namespace v0_4.NegativeTests
@@ -6,7 +8,7 @@ namespace v0_4.NegativeTests
   public class NegativeEmbeddedTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
 
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.4", "TestData", "NegativeTestData");
 
@@ -16,7 +18,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(EmbeddedNodeTypeNotAllowedException))]
     public void InvalidEmbeddedNodeType()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Invalid_Embedded_Type.yaml"));
 
@@ -29,7 +31,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(EmbeddedNodeInvalidNameException))]
     public void InvalidEmbeddedNodeTitle()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Wrong_Title.yaml"));
 
@@ -42,7 +44,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(EmbeddedNodeAlreadyAddedException))]
     public void EmbeddedAlreadyAddedSameType()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Embedded_Already_Added.yaml"));
 
@@ -58,7 +60,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(EmbeddedNodesWithSameTitleException))]
     public void ParsingEmbeddedDefsWithSameTitle()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       Assert.Throws<EmbeddedNodesWithSameTitleException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Emb_Defs_Same_Title.yaml")));
     }
@@ -67,7 +69,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException))]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle1()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title1.yaml")));
     }
@@ -77,7 +79,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException))]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle2()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title2.yaml")));
     }
@@ -86,7 +88,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException))]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle3()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title3.yaml")));
     }
@@ -95,7 +97,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException))]
     public void ParsingEmbeddedDefsWithSimilarTypeNoTitle4()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       Assert.Throws<EmbeddedNodeDefinitionWithAncestralTypeAndNoNameException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Embedded_Ancestral_No_Title4.yaml")));
     }

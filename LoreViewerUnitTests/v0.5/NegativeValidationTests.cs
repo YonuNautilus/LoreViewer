@@ -1,16 +1,19 @@
-﻿namespace v0_5.NegativeTests
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
+
+namespace v0_5.NegativeTests
 {
   public class NegativeValidationTests
   {
     public LoreSettings _settings;
-    public LoreParser _parser;
+    public ParserService _parser;
     string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.5", "TestData", "NegativeTestData");
     //static string[] testFiles => new string[] { "FieldsTest.md" }.Select(s => Path.Combine(ValidFilesFolder, s)).ToArray();
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 

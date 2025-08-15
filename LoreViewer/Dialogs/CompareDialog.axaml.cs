@@ -7,7 +7,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
-using LoreViewer.Settings;
+using LoreViewer.Core.Settings;
 using LoreViewer.ViewModels.SettingsVMs;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -46,7 +46,7 @@ public partial class CompareDialog : Window
 
 public static class SettingsDiffTreeDataGridBuilder
 {
-  public static int CurrentMaxWidthLeft  { get; private set; }
+  public static int CurrentMaxWidthLeft { get; private set; }
   public static int CurrentMaxWidthRight { get; private set; }
 
   public static FlatTreeDataGridSource<DiffRowVM> BuildTreeSource(ObservableCollection<DiffRowVM> rows)

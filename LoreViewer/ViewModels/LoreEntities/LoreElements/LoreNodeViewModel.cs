@@ -1,8 +1,8 @@
-﻿using LoreViewer.LoreElements;
+﻿using LoreViewer.Domain.Entities;
 
 namespace LoreViewer.ViewModels.LoreEntities
 {
-  internal class LoreNodeViewModel : LoreElementViewModel
+  internal class LoreNodeViewModel : ILoreNodeViewModel
   {
     internal LoreNode m_oNode => entity as LoreNode;
 
@@ -27,7 +27,7 @@ namespace LoreViewer.ViewModels.LoreEntities
         if (IsDirty) markdownText = value;
       }
     }
-    
-    public LoreNodeViewModel(LoreNode node) { entity = node; }
+
+    public LoreNodeViewModel(LoreNode node) : base(node) { }
   }
 }

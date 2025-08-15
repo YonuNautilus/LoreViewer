@@ -2,14 +2,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using DocumentFormat.OpenXml.Wordprocessing;
 using LoreViewer.ViewModels;
 using LoreViewer.ViewModels.PrimaryViewModels;
 using LoreViewer.Views;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace LoreViewer
 {
@@ -51,7 +49,7 @@ namespace LoreViewer
         }
 
 
-        if(Directory.Exists(lorePath))
+        if (Directory.Exists(lorePath))
         {
           desktop.MainWindow = new MainWindow();
 

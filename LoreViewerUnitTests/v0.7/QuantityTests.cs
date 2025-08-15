@@ -1,9 +1,5 @@
-﻿using NUnit.Framework.Constraints;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
 using UnitsNet.Units;
 
 namespace v0_7.QuantityTests
@@ -11,7 +7,7 @@ namespace v0_7.QuantityTests
   internal class PositiveQuantityTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "QuantityPositiveParsingData");
 
     [OneTimeSetUp]
@@ -19,7 +15,7 @@ namespace v0_7.QuantityTests
     {
       LoreViewer.Program.AddCustomAbbreviations();
 
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
@@ -46,11 +42,11 @@ namespace v0_7.QuantityTests
     [Test]
     [Order(2)]
     // Note that the order of node indices is different than what appears in the markdown file. That is just how it is, for now.
-    [TestCase(4, new object[] { 1, LengthUnit.Kilometer, 1 }, new object[] { 2.2, MassUnit.Pound, 2.2 }, new object[] { 3.3, AngleUnit.Radian, 3.3 }, new object[] { "1,000", SpeedUnit.MeterPerSecond, 1000}, new object[] { 34, PressureUnit.PoundForcePerSquareInch, 34 }, new object[] { 60, TemperatureUnit.DegreeFahrenheit, 60 }, new object[] {10, DurationUnit.Second, 864000} )]
-    [TestCase(3, new object[] {"5'6\"", LengthUnit.Inch, 66}, new object[] { 0.05, MassUnit.Gram, 0.05 }, new object[] { 32, AngleUnit.Degree, 32 }, new object[] { 66, SpeedUnit.KilometerPerHour, 66 }, new object[] { -6, PressureUnit.NewtonPerSquareMeter, -6 }, new object[] { -3, TemperatureUnit.Kelvin, -3 }, new object[] { 10, DurationUnit.Second, 315576000 })]
-    [TestCase(2, new object[] { 7, LengthUnit.Inch, 84 }, new object[] { 6, MassUnit.Ounce, 6 }, new object[] { -0.1, AngleUnit.Degree, -0.1}, new object[] { 12, SpeedUnit.InchPerSecond, 12 }, new object[] { 60.1, PressureUnit.Pascal, 60.1 }, new object[] { 20, TemperatureUnit.DegreeCelsius, 20 }, new object[] { "1y", DurationUnit.Second, 32853682 })]
+    [TestCase(4, new object[] { 1, LengthUnit.Kilometer, 1 }, new object[] { 2.2, MassUnit.Pound, 2.2 }, new object[] { 3.3, AngleUnit.Radian, 3.3 }, new object[] { "1,000", SpeedUnit.MeterPerSecond, 1000 }, new object[] { 34, PressureUnit.PoundForcePerSquareInch, 34 }, new object[] { 60, TemperatureUnit.DegreeFahrenheit, 60 }, new object[] { 10, DurationUnit.Second, 864000 })]
+    [TestCase(3, new object[] { "5'6\"", LengthUnit.Inch, 66 }, new object[] { 0.05, MassUnit.Gram, 0.05 }, new object[] { 32, AngleUnit.Degree, 32 }, new object[] { 66, SpeedUnit.KilometerPerHour, 66 }, new object[] { -6, PressureUnit.NewtonPerSquareMeter, -6 }, new object[] { -3, TemperatureUnit.Kelvin, -3 }, new object[] { 10, DurationUnit.Second, 315576000 })]
+    [TestCase(2, new object[] { 7, LengthUnit.Inch, 84 }, new object[] { 6, MassUnit.Ounce, 6 }, new object[] { -0.1, AngleUnit.Degree, -0.1 }, new object[] { 12, SpeedUnit.InchPerSecond, 12 }, new object[] { 60.1, PressureUnit.Pascal, 60.1 }, new object[] { 20, TemperatureUnit.DegreeCelsius, 20 }, new object[] { "1y", DurationUnit.Second, 32853682 })]
     [TestCase(1, new object[] { 2, LengthUnit.Inch, 2 }, new object[] { 99, MassUnit.Tonne, 99 }, new object[] { -22, AngleUnit.Radian, -22 }, new object[] { 100, SpeedUnit.FootPerMinute, 100 }, new object[] { "1,000,000", PressureUnit.Atmosphere, 1000000 }, new object[] { 0.001, TemperatureUnit.DegreeFahrenheit, 0.001 }, new object[] { 6, DurationUnit.Second, 6 })]
-    [TestCase(0, new object[] { 2, LengthUnit.Millimeter, 2 }, new object[] { 99, MassUnit.Ounce, 99 }, new object[] { -22, AngleUnit.Arcsecond, -22 }, new object[] { 22, SpeedUnit.MilePerHour, 22 }, new object[] { "-6,000", PressureUnit.NewtonPerSquareMeter, -6000 }, new object[] {"-1,100.22", TemperatureUnit.DegreeCelsius, -1100.22 }, new object[] { "4m", DurationUnit.Second, 250 })]
+    [TestCase(0, new object[] { 2, LengthUnit.Millimeter, 2 }, new object[] { 99, MassUnit.Ounce, 99 }, new object[] { -22, AngleUnit.Arcsecond, -22 }, new object[] { 22, SpeedUnit.MilePerHour, 22 }, new object[] { "-6,000", PressureUnit.NewtonPerSquareMeter, -6000 }, new object[] { "-1,100.22", TemperatureUnit.DegreeCelsius, -1100.22 }, new object[] { "4m", DurationUnit.Second, 250 })]
     public void CheckAttributeValues(int index, object[] lenAttr, object[] massAttr, object[] angleAttr, object[] speedAttr, object[] pressureAttr, object[] tempAttr, object[] durAttr)
     {
       LoreNode n = _parser.Nodes[index] as LoreNode;

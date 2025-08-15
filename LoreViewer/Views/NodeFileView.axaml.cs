@@ -4,8 +4,8 @@ namespace LoreViewer;
 
 public partial class NodeFileView : UserControl
 {
-    public NodeFileView()
-    {
-        InitializeComponent();
-    }
+  public NodeFileView()
+  {
+    InitializeComponent();
+  }
 }

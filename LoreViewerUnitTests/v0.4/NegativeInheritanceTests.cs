@@ -1,4 +1,6 @@
-﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 using NUnit.Framework.Internal;
 
 namespace v0_4.NegativeTests
@@ -8,14 +10,14 @@ namespace v0_4.NegativeTests
   public class NegativeInheritanceTets
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
 
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.4", "TestData", "NegativeTestData");
 
     [OneTimeSetUp]
     public static void SetupLoreSettings()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
     }
 
     [Test]

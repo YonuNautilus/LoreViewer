@@ -26,9 +26,9 @@
       <Label Content="{Binding LoreLibraryFolderPath}" BorderBrush="{StaticResource ThemeBorderMidBrush}" BorderThickness="1"/>
     </StackPanel>
     
-    <local:EntityListView Grid.Row="1" Grid.Column="0" TreeItems="{Binding Nodes}"/>
+    <local:TopLevelElementsListView Grid.Row="1" Grid.Column="0"/>
 
-    <evs:NodeViewBasic Grid.Row="1" Grid.Column="2"/>
+    <evs:NodeViewBasic Grid.Row="1" Grid.Column="2"/> <!--DataContext="{Binding CurrentlySelectedElement}"/>-->
     
     <local:ParseErrorListView Grid.Row="2" Grid.ColumnSpan="2" ParseErrors="{Binding Errors}" VerticalAlignment="Top"
                               IsVisible="{Binding Errors.Count, Converter={StaticResource GreaterThanZero}}"

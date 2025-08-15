@@ -1,6 +1,8 @@
-﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.LoreElements.Interfaces;
-using LoreViewer.Validation;
 
 namespace v0_7.DateTimeTests
 {
@@ -11,13 +13,13 @@ namespace v0_7.DateTimeTests
   public class PositiveDateTimeTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "DateTimePositiveParsingData");
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
@@ -98,13 +100,13 @@ namespace v0_7.DateTimeTests
   public class NegativeDateTimeTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "DateTimeNegativeParsingData");
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 

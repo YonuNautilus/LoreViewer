@@ -1,11 +1,8 @@
-﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Domain.Settings.Definitions;
 using LoreViewer.LoreElements.Interfaces;
-using LoreViewer.Validation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace v0_7.PositiveReflistTests
 {
@@ -13,14 +10,14 @@ namespace v0_7.PositiveReflistTests
   internal class PositiveReflistTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "PositiveReflistData");
 
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
@@ -33,7 +30,7 @@ namespace v0_7.PositiveReflistTests
     public void RefListSettings()
     {
       Assert.That(_parser.Settings.types, Has.Count.EqualTo(3));
-      
+
       LoreTypeDefinition type1 = _parser.Settings.types[0];
       LoreTypeDefinition type2 = _parser.Settings.types[1];
       LoreTypeDefinition type3 = _parser.Settings.types[2];
@@ -65,9 +62,9 @@ namespace v0_7.PositiveReflistTests
     {
       Assert.That(_parser.Nodes, Has.Count.EqualTo(3));
 
-      ILoreNode firstNode  = _parser.GetNodeByName("First Node");
+      ILoreNode firstNode = _parser.GetNodeByName("First Node");
       ILoreNode secondNode = _parser.GetNodeByName("Second Node");
-      ILoreNode thirdNode  = _parser.GetNodeByName("Third Node");
+      ILoreNode thirdNode = _parser.GetNodeByName("Third Node");
 
       Assert.That(firstNode.Attributes, Has.Count.EqualTo(1));
       Assert.That(thirdNode.Attributes, Has.Count.EqualTo(2));

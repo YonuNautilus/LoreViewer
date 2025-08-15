@@ -1,4 +1,4 @@
-﻿using LoreViewer.Settings;
+﻿using LoreViewer.Domain.Settings.Definitions;
 using System.Collections.ObjectModel;
 
 namespace LoreViewer.ViewModels.SettingsVMs

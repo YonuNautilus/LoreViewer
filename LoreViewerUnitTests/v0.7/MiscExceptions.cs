@@ -1,11 +1,6 @@
-﻿using LoreViewer.Exceptions.LoreParsingExceptions;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Exceptions.LoreParsingExceptions;
 using LoreViewer.Exceptions.SettingsParsingExceptions;
-using Newtonsoft.Json.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace v0_7.MiscExceptionTests
 {
@@ -13,13 +8,13 @@ namespace v0_7.MiscExceptionTests
   [TestFixture]
   internal class MiscExceptions
   {
-    static LoreParser _parser;
+    static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "MiscExceptionsParsingData");
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "MiscExceptions.yaml"));
     }
 
@@ -40,7 +35,7 @@ namespace v0_7.MiscExceptionTests
     {
       Assert.Throws<CollectionWithMultipleEntriesDefined>(() =>
       {
-        LoreParser tempParser = new LoreParser();
+        ParserService tempParser = new ParserService();
         tempParser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "CollectionWithMultipleEntriesDefined.yaml"));
       });
     }
@@ -74,7 +69,7 @@ namespace v0_7.MiscExceptionTests
     {
       Assert.Throws<FieldPicklistNameNotGivenException>(() =>
       {
-        LoreParser tempParser = new LoreParser();
+        ParserService tempParser = new ParserService();
         tempParser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "PicklistNameNotGiven.yaml"));
       });
     }
@@ -88,7 +83,7 @@ namespace v0_7.MiscExceptionTests
     [Test]
     public void EmbdNodeTypeNotGiven()
     {
-      LoreParser tempParser = new LoreParser();
+      ParserService tempParser = new ParserService();
       Assert.Throws<EmbeddedTypeNotGivenException>(() => tempParser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "EmbeddedTypeNodeGiven.yaml")));
     }
   }

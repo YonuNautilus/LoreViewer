@@ -1,11 +1,5 @@
-﻿using Avalonia;
-using LoreViewer.Settings;
-using LoreViewer.Settings.Interfaces;
-using ReactiveUI;
+﻿using LoreViewer.Domain.Settings;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reactive;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {

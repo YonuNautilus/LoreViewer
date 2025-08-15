@@ -1,4 +1,4 @@
-﻿using LoreViewer.LoreElements;
+﻿using LoreViewer.Domain.Entities;
 using System.Collections.ObjectModel;
 
 namespace LoreViewer.ViewModels.LoreEntities

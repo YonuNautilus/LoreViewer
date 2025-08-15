@@ -1,11 +1,6 @@
-﻿using LoreViewer.LoreElements;
-using LoreViewer.Settings;
-using System;
-using System.Collections.Generic;
+﻿using LoreViewer.Domain.Entities;
+using LoreViewer.Domain.Settings.Definitions;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.LoreEntities
 {

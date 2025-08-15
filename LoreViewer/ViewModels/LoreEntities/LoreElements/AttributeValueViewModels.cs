@@ -1,7 +1,6 @@
 ﻿using Avalonia.Media;
-using LoreViewer.LoreElements;
-using LoreViewer.Settings;
-using System;
+using LoreViewer.Domain.Entities;
+using LoreViewer.Domain.Settings.Definitions;
 
 namespace LoreViewer.ViewModels.LoreEntities
 {

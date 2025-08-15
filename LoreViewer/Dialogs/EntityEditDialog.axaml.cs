@@ -23,7 +23,7 @@ public partial class EntityEditDialog : Window
 
   private void SaveButtonClick(object sender, RoutedEventArgs e)
   {
-    if (Entity != null) Close(Entity.GetSaveContent());
+    //if (Entity != null) Close(Entity.GetSaveContent());
   }
 
   private void CancelButtonClick(object sender, RoutedEventArgs e)

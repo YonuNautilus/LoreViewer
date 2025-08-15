@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using LoreViewer.Settings;
-using LoreViewer.Settings.Interfaces;
+﻿using LoreViewer.Domain.Settings.Definitions;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -32,7 +30,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
-        if(Definition != null) return !Definition.IsInherited;
+        if (Definition != null) return !Definition.IsInherited;
         else return true;
       }
     }
@@ -136,7 +134,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
       Definition = definitionBase;
 
-      if(definitionBase != null)
+      if (definitionBase != null)
         BuildLists();
     }
 
@@ -150,10 +148,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public void RefreshChildren()
     {
       // Fields
-      if(Definition is IFieldDefinitionContainer ifdc && ifdc.HasFields)
+      if (Definition is IFieldDefinitionContainer ifdc && ifdc.HasFields)
       {
         // Check for deletions
-        for(int i = Fields.Count - 1; i >= 0; i--)
+        for (int i = Fields.Count - 1; i >= 0; i--)
         {
           FieldDefinitionViewModel lfd = Fields[i];
           if (lfd.Definition.WasDeleted) Fields.Remove(lfd);
@@ -174,10 +172,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
 
       // Sections
-      if(Definition is ISectionDefinitionContainer isdc && isdc.HasSections)
+      if (Definition is ISectionDefinitionContainer isdc && isdc.HasSections)
       {
         // Check for deletions
-        for(int i = Sections.Count - 1; i >= 0; i--)
+        for (int i = Sections.Count - 1; i >= 0; i--)
         {
           SectionDefinitionViewModel lsd = Sections[i];
           if (lsd.Definition.WasDeleted) Sections.Remove(lsd);
@@ -198,10 +196,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
 
       // Collections
-      if(Definition is ICollectionDefinitionContainer icdc && icdc.HasCollections)
+      if (Definition is ICollectionDefinitionContainer icdc && icdc.HasCollections)
       {
         // Check for deletions
-        for(int i = Collections.Count - 1; i >= 0; i--)
+        for (int i = Collections.Count - 1; i >= 0; i--)
         {
           CollectionDefinitionViewModel lcd = Collections[i];
           if (lcd.Definition.WasDeleted) Collections.Remove(lcd);
@@ -222,10 +220,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
 
       // EmbeddedNodes
-      if(Definition is IEmbeddedNodeDefinitionContainer iedc && iedc.HasNestedNodes)
+      if (Definition is IEmbeddedNodeDefinitionContainer iedc && iedc.HasNestedNodes)
       {
         // Check for deletions
-        for(int i = EmbeddedNodes.Count - 1; i >= 0; i--)
+        for (int i = EmbeddedNodes.Count - 1; i >= 0; i--)
         {
           EmbeddedNodeDefinitionViewModel led = EmbeddedNodes[i];
           if (led.Definition.WasDeleted) EmbeddedNodes.Remove(led);
@@ -245,10 +243,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
 
 
-      if(Definition is IPicklistEntryDefinitionContainer ipedc && ipedc.HasEntries)
+      if (Definition is IPicklistEntryDefinitionContainer ipedc && ipedc.HasEntries)
       {
         // Check for deletions
-        for(int i = PicklistEntries.Count - 1; i >= 0; i--)
+        for (int i = PicklistEntries.Count - 1; i >= 0; i--)
         {
           PicklistEntryDefinitionViewModel pledvm = PicklistEntries[i];
           if (pledvm.Definition.WasDeleted) PicklistEntries.Remove(pledvm);
@@ -258,7 +256,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
         for (int i = ipedc.entries.Count - 1; i >= 0; i--)
         {
           LorePicklistEntryDefinition ple = ipedc.entries[i];
-          if(!PicklistEntries.Any(plevm => plevm.Definition == ple))
+          if (!PicklistEntries.Any(plevm => plevm.Definition == ple))
             PicklistEntries.Insert(i, new PicklistEntryDefinitionViewModel(ple, CurrentSettingsViewModel));
         }
 

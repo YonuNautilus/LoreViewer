@@ -1,14 +1,16 @@
+using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
 using Markdig.Syntax;
 using NUnit.Framework.Internal;
 
 namespace v0_1.PositiveTests
 {
   [TestFixture]
-  [TestOf(typeof(LoreParser))]
+  [TestOf(typeof(ParserService))]
   public class PositiveFieldParsingTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
 
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.1", "TestData", "PositiveTestData");
 
@@ -17,7 +19,7 @@ namespace v0_1.PositiveTests
     [OneTimeSetUp]
     public static void SetupLoreSettings()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
@@ -141,11 +143,11 @@ namespace v0_1.PositiveTests
 
 
   [TestFixture]
-  [TestOf(typeof(LoreParser))]
+  [TestOf(typeof(ParserService))]
   public class PositiveSectionParsingTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
 
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.1", "TestData", "PositiveTestData");
 
@@ -154,7 +156,7 @@ namespace v0_1.PositiveTests
     [SetUp]
     public static void SetupLoreSettings()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:LoreViewer.ViewModels"
              xmlns:le="using:LoreViewer.LoreElements"
-             xmlns:val="using:LoreViewer.Validation"
+             xmlns:val="using:LoreViewer.Core.Validation"
              xmlns:local="using:LoreViewer.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Views.LoreElementViews.NodeViewBasic"
@@ -58,6 +58,7 @@
               <Label DockPanel.Dock="Left">Validation Messages</Label>
             </DockPanel>
             <Button Classes="rounded" IsVisible="{Binding ActualNodeIsSelected}" Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}" Command="{Binding OpenFileToLine}" CommandParameter="{Binding CurrentlySelectedTreeNode.element}"/>
+            <!--
             <DataGrid ItemsSource="{Binding CurrentlySelectedTreeNode.element, Converter={StaticResource ValidationErrorListConverter}}">
               <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Validation Message" Width="*">
@@ -69,6 +70,7 @@
                 </DataGridTemplateColumn>
               </DataGrid.Columns>
             </DataGrid>
+            -->
           </StackPanel>
         </Grid>
       </Border>

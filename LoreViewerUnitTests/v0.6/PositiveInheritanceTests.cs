@@ -1,18 +1,21 @@
-﻿using NUnit.Framework.Internal;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
+using LoreViewer.Domain.Settings.Definitions;
+using NUnit.Framework.Internal;
 
 namespace v0_6.PositiveTests
 {
   public class PositiveInheritanceTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.6", "TestData", "PositiveTestData");
     //static string[] testFiles => new string[] { "FieldsTest.md" }.Select(s => Path.Combine(ValidFilesFolder, s)).ToArray();
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "SettingsWithNewInheritance.yaml"));
 

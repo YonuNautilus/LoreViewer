@@ -1,13 +1,6 @@
-﻿using DynamicData;
-using LoreViewer.Settings;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
+﻿using LoreViewer.Domain.Settings.Definitions;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -56,7 +49,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
 
     public override void RefreshUI()
     {
-      
+
     }
 
     private void RefreshPicklists()

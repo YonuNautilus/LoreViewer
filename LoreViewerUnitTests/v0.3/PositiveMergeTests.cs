@@ -1,13 +1,15 @@
-﻿using LoreViewer.LoreElements.Interfaces;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
+using LoreViewer.LoreElements.Interfaces;
 
 namespace v0_3.PositiveTests
 {
   [TestFixture]
-  [TestOf(typeof(LoreParser))]
+  [TestOf(typeof(ParserService))]
   public class PositiveNarrativeParsingTets
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
 
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.3", "TestData", "PositiveTestData");
 
@@ -16,7 +18,7 @@ namespace v0_3.PositiveTests
     [OneTimeSetUp]
     public static void SetupLoreSettings()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 

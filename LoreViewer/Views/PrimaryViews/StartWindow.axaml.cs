@@ -1,6 +1,4 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using LoreViewer.ViewModels.PrimaryViewModels;
 using System.Diagnostics;
 using System.Threading.Tasks;

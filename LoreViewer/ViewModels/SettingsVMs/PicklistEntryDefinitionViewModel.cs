@@ -1,7 +1,5 @@
-﻿using DynamicData;
-using LoreViewer.Settings;
+﻿using LoreViewer.Domain.Settings.Definitions;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace LoreViewer.ViewModels.SettingsVMs
 {
@@ -34,10 +32,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
       if (pickEntryDef == branchDef) return this;
       else
       {
-        foreach(PicklistEntryDefinitionViewModel pledvm in PicklistEntries)
+        foreach (PicklistEntryDefinitionViewModel pledvm in PicklistEntries)
         {
           var ret = pledvm.GetBranch(branchDef);
-          if(ret != null) return ret;
+          if (ret != null) return ret;
         }
       }
       return null;

@@ -27,7 +27,8 @@ namespace LoreViewer.ViewModels.PrimaryViewModels
 
     public StartupAction(EStartupType startupType, EStartupMode startupMode, string path)
     {
-      StartupType = startupType; StartupMode = startupMode; Path = path; }
+      StartupType = startupType; StartupMode = startupMode; Path = path;
+    }
   }
 
   public class StartWindowViewModel : ViewModelBase

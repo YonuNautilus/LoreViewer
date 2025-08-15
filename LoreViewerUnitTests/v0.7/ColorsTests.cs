@@ -1,24 +1,21 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using LoreViewer.Validation;
-using System;
-using System.Collections.Generic;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Settings;
+using LoreViewer.ViewModels;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace v0_7.ColorsTests
 {
   public class PositiveColorsTests
   {
+    public static LoreViewModel _lore = new LoreViewModel(null);
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "ColorPositiveParsingData");
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Color_Settings.yaml"));
 
@@ -85,13 +82,13 @@ namespace v0_7.ColorsTests
   public class NegativeColorsTests
   {
     public static LoreSettings _settings;
-    public static LoreParser _parser;
+    public static ParserService _parser;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "ColorNegativeParsingData");
 
     [OneTimeSetUp]
     public void Setup()
     {
-      _parser = new LoreParser();
+      _parser = new ParserService();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Color_Settings.yaml"));
 

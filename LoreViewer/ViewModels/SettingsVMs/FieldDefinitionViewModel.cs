@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using DocumentFormat.OpenXml.Packaging;
-using LoreViewer.Settings;
+﻿using LoreViewer.Domain.Settings.Definitions;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -111,10 +109,10 @@ namespace LoreViewer.ViewModels.SettingsVMs
       get { return fieldDef.numericType; }
       set
       {
-        if(fieldDef.numericType != value)
+        if (fieldDef.numericType != value)
         {
           fieldDef.numericType = value;
-          SettingsRefresher.Apply(CurrentSettingsViewModel) ;
+          SettingsRefresher.Apply(CurrentSettingsViewModel);
         }
       }
     }
@@ -124,7 +122,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
-        if(IsReferencelistContentType && m_oRefListType == null)
+        if (IsReferencelistContentType && m_oRefListType == null)
           m_oRefListType = CurrentSettingsViewModel.Types.FirstOrDefault(tvm => tvm.typeDef == fieldDef.RefListType);
         return m_oRefListType;
       }

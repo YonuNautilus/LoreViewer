@@ -10,7 +10,7 @@ namespace v0_4.NegativeTests
     [TestOf(typeof(DuplicateDefinitionNamesException))]
     public void DuplicateNameTest()
     {
-      LoreParser _parser = new LoreParser();
+      ParserService _parser = new ParserService();
 
       Assert.Throws<DuplicateDefinitionNamesException>(() => _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings_Duplicate_Name.yaml")));
 

@@ -1,4 +1,4 @@
-﻿using LoreViewer.Settings;
+﻿using LoreViewer.Domain.Settings.Definitions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -49,7 +49,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
       set
       {
-        if(value != null)
+        if (value != null)
         {
           embDef.nodeType = value.Definition as LoreTypeDefinition;
           SettingsRefresher.Apply(CurrentSettingsViewModel);

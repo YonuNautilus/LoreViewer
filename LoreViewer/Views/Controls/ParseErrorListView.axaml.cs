@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using LoreViewer.Parser;
 using LoreViewer.ViewModels;
 using System.Collections.ObjectModel;
 

@@ -1,6 +1,4 @@
-﻿using LoreViewer.LoreElements;
-using LoreViewer.LoreElements.Interfaces;
-using ReactiveUI;
+﻿using LoreViewer.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

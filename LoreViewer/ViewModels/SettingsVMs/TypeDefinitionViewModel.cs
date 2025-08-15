@@ -1,8 +1,5 @@
-﻿using Avalonia.Animation.Easings;
-using LoreViewer.Settings;
+﻿using LoreViewer.Domain.Settings.Definitions;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -27,7 +24,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
           return new ObservableCollection<TypeDefinitionViewModel>(CurrentSettingsViewModel.Types.Except(CurrentSettingsViewModel.Types.Where(defVM => typeDef.IsParentOf(defVM.typeDef))).ToList());
       }
     }
-    
+
 
     public TypeDefinitionViewModel ExtendsTypeVM
     {

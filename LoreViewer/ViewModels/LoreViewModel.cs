@@ -4,12 +4,12 @@ using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
-using DynamicData.Binding;
+using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Stores;
+using LoreViewer.Core.Validation;
 using LoreViewer.Dialogs;
-using LoreViewer.LoreElements;
-using LoreViewer.Parser;
-using LoreViewer.Settings;
-using LoreViewer.Validation;
+using LoreViewer.Domain.Entities;
+using LoreViewer.Domain.Settings;
 using LoreViewer.ViewModels.LoreEntities;
 using LoreViewer.ViewModels.PrimaryViewModels;
 using ReactiveUI;
@@ -22,23 +22,53 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LoreViewer.ViewModels
 {
-  internal class LoreViewModel : ViewModelBase
+  public class LoreViewModel : ViewModelBase
   {
-    // Models for this ViewModel:
-    public static LoreSettings _settings;
-    public static LoreParser _parser;
+    private LoreRepository m_oLoreRepo = new LoreRepository();
+    private ValidationStore m_oValidationRepo = new ValidationStore();
+
+    public ValidationStore ValStore { get => m_oValidationRepo; }
+
+    private ParserService _parser = new ParserService();
+    private ValidationService _validator = new ValidationService();
+
+    private Dictionary<ILoreNode, ILoreNodeViewModel> m_cNodeVMCache = new Dictionary<ILoreNode, ILoreNodeViewModel>();
 
     private string m_sLoreLibraryFolderPath = string.Empty;
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
     public ObservableCollection<LoreTreeItem> Nodes { get; } = new();
-
     public ObservableCollection<LoreTreeItem> Collections { get; } = new();
     public ObservableCollection<ParseErrorViewModel> Errors { get; } = new();
     public ObservableCollection<string> Warnings { get; } = new();
+
+    public ObservableCollection<ItemOutlineViewModel> ItemOutlines { get; } = new();
+
+    private ItemOutlineViewModel m_oCurrentlySelectedOutline;
+    public ItemOutlineViewModel CurrentlySelectedOutline
+    {
+      get => m_oCurrentlySelectedOutline;
+      set
+      {
+        this.RaiseAndSetIfChanged(ref m_oCurrentlySelectedOutline, value);
+
+        ActualNodeIsSelected = m_oCurrentlySelectedOutline.IsElementANode;
+      }
+    }
+
+    private ILoreNodeViewModel m_oCurrentlySelectedLoreNode;
+    public ILoreNodeViewModel CurrentlySelectedLoreNode
+    {
+      get => m_oCurrentlySelectedLoreNode;
+      set
+      {
+        this.RaiseAndSetIfChanged(ref m_oCurrentlySelectedLoreNode, value);
+      }
+    }
 
     public EStartupMode ViewMode { get; set; }
 
@@ -125,9 +155,6 @@ namespace LoreViewer.ViewModels
       ReloadLibraryCommand = ReactiveCommand.Create(ReloadLoreFolder);
       OpenFileToLine = ReactiveCommand.CreateFromTask<LoreEntity>(GoToFileAtLine);
       OpenErrorFileToLine = ReactiveCommand.Create<Tuple<string, int, int, Exception>>(GoToFileAtLine);
-
-      _settings = new LoreSettings();
-      _parser = new LoreParser(_settings);
     }
 
     private async Task HandleOpenLibraryCommandAsync()
@@ -212,9 +239,9 @@ namespace LoreViewer.ViewModels
 
     private async Task OpenLoreSettingEditorDialog()
     {
-      if (_settings != null)
+      if (m_oLoreRepo?.Settings != null)
       {
-        var dialog = new SettingsEditDialog(_settings);
+        var dialog = new SettingsEditDialog(m_oLoreRepo.Settings);
         LoreSettings newSettings = await dialog.ShowDialog<LoreSettings>(TopLevel.GetTopLevel(m_oView) as Window);
 
         if (newSettings != null)
@@ -232,13 +259,28 @@ namespace LoreViewer.ViewModels
 
       Nodes.Clear();
       Collections.Clear();
+
+      ItemOutlines.Clear();
+
       Warnings.Clear();
       Errors.Clear();
 
+      ParseResult pr;
+
       try
       {
-        _settings = LoreSettings.ParseSettingsFromFolder(LoreLibraryFolderPath);
-        HadSettingsParsingError = false;
+        var _progress = new Progress<int>(i => ParsingProgress = i);
+        CancellationToken ct = new CancellationToken();
+        pr = await _parser.ParseFolderAsync(LoreLibraryFolderPath, _progress, ct);
+
+
+        if (pr.IsFatal)
+          return;
+        
+        
+        m_oLoreRepo.Set(pr);
+        LoreValidationResult v = _validator.Validate(m_oLoreRepo);
+        m_oValidationRepo.Set(v);
       }
       catch (Exception e)
       {
@@ -253,137 +295,36 @@ namespace LoreViewer.ViewModels
         this.RaisePropertyChanged(nameof(HadSettingsParsingError));
       }
 
-      _parser = new LoreParser(_settings);
-
-      FileCount = _parser.ParsableFiles(LoreLibraryFolderPath, _settings).Count();
-
-      var _progress = new Progress<int>(i => ParsingProgress = i);
-
-      await _parser.ParseFolderAsync(LoreLibraryFolderPath, _progress);
-
-      RefreshAllFromParser();
+      RefreshAllFromLoreRepo();
 
       FileCount = 0;
       IsParsing = false;
     }
 
     #region Refreshing
-    private void RefreshAllFromParser()
+    private void RefreshAllFromLoreRepo()
     {
-      RefreshNodesFromParser();
-      RefreshCollectionsFromParser();
-      RefreshErrorsFromParser();
-      RefreshWarningsFromParser();
+      RefreshNodesFromRepo();
+      RefreshCollectionsFromRepo();
+      RefreshOutlinesFromRepo();
+      RefreshErrorsFromRepo();
+      RefreshWarningsFromRepo();
     }
 
-    private void RefreshNodesFromParser() { foreach (LoreEntity e in _parser.Nodes) Nodes.Add(new LoreTreeItem(e)); }
+    private void RefreshOutlinesFromRepo()
+    {
+      foreach (LoreEntity e in _parser.Nodes) ItemOutlines.Add(new ItemOutlineViewModel(e));
+      foreach (LoreCollection c in _parser.Collections) ItemOutlines.Add(new ItemOutlineViewModel(c));
+    }
 
-    private void RefreshCollectionsFromParser() { foreach (LoreEntity e in _parser.Collections) Collections.Add(new LoreTreeItem(e)); }
+    private void RefreshNodesFromRepo() { foreach (LoreEntity e in _parser.Nodes) Nodes.Add(new LoreTreeItem(e)); }
 
-    private void RefreshErrorsFromParser() { foreach (ParseError pe in _parser.Errors) Errors.Add(new ParseErrorViewModel(pe)); }
+    private void RefreshCollectionsFromRepo() { foreach (LoreEntity e in _parser.Collections) Collections.Add(new LoreTreeItem(e)); }
 
-    private void RefreshWarningsFromParser() { foreach (string e in _parser.Warnings) Warnings.Add(e); }
+    private void RefreshErrorsFromRepo() { foreach (ParseError pe in _parser.Errors) Errors.Add(new ParseErrorViewModel(pe)); }
+
+    private void RefreshWarningsFromRepo() { foreach (string e in _parser.Warnings) Warnings.Add(e); }
     #endregion 
-  }
-
-  public class ValidationErrorToImagePathConverter : IValueConverter
-  {
-
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-      // Value will be the datagrid node (LoreTreeItem)
-
-      // if there is a LoreEntity associated with the selected DataGrid node...
-      if (value is LoreTreeItem lti)
-      {
-        if (lti.element is LoreEntity e)
-        {
-          LoreValidationResult valRes = LoreViewModel._parser.validator.ValidationResult;
-
-          string image = string.Empty;
-          EValidationState elementState = valRes.LoreEntityValidationStates.ContainsKey(e) ?
-            valRes.LoreEntityValidationStates[e] : EValidationState.Passed;
-
-          EValidationMessageStatus cumulativeMessageStatus = EValidationMessageStatus.Passed;
-          if (valRes.LoreEntityValidationMessages.ContainsKey(e) && valRes.LoreEntityValidationMessages[e].Count > 0)
-            cumulativeMessageStatus = valRes.LoreEntityValidationMessages[e].Select(m => m.Status).Distinct().Max();
-
-          if (elementState == EValidationState.Failed || elementState == EValidationState.ChildFailed)
-            image = "avares://LoreViewer/Resources/close.png";
-          else if (elementState == EValidationState.Warning)
-            image = "avares://LoreViewer/Resources/warning.png";
-          else if (elementState == EValidationState.ChildWarning)
-          {
-            if (cumulativeMessageStatus == EValidationMessageStatus.Failed)
-              image = "avares://LoreViewer/Resources/failedChildWarning.png";
-            else if (cumulativeMessageStatus == EValidationMessageStatus.Passed)
-              image = "avares://LoreViewer/Resources/childWarning.png";
-          }
-          else if (elementState == EValidationState.Passed)
-            image = "avares://LoreViewer/Resources/valid.png";
-          else
-            return null;
-          return new Bitmap(AssetLoader.Open(new Uri(image)));
-        }
-        // If there isn't a LoreEntity associated with the selected DataGrid node
-        // (ie, a node that contains all the attributes or sections of a node),
-        // get a cummulative validation state to display
-        else
-        {
-          if(lti.Children != null)
-          {
-            string image = string.Empty;
-
-            EValidationState containerItemState = EValidationState.Passed;
-            EValidationState maxChildItemState = lti.Children.Select(
-              childLti =>
-              childLti.element != null ?
-                  LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(childLti.element) ?
-                  LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationStates[childLti.element] : EValidationState.Passed : EValidationState.Passed)
-              .Distinct().Max();
-
-            switch (maxChildItemState)
-            {
-              case EValidationState.ChildFailed:
-              case EValidationState.Failed:
-                image = "avares://LoreViewer/Resources/close.png";
-                break;
-              case EValidationState.ChildWarning:
-              case EValidationState.Warning:
-                image = "avares://LoreViewer/Resources/childWarning.png";
-                break;
-              default:
-                image = "avares://LoreViewer/Resources/valid.png";
-                break;
-            }
-
-            if (!string.IsNullOrEmpty(image))
-              return new Bitmap(AssetLoader.Open(new Uri(image)));
-            else return null;
-          }
-        }
-      }
-      return null;
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-      throw new NotSupportedException();
-    }
-  }
-  public class LoreEntityToValidationMessageListConverter : IValueConverter
-  {
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-      if (value is LoreEntity e)
-        return LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationMessages.ContainsKey(e) ? new ObservableCollection<LoreValidationMessage>(LoreViewModel._parser.validator.ValidationResult.LoreEntityValidationMessages[e]) : null;
-      return null;
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-      throw new NotSupportedException();
-    }
   }
 
 }

@@ -23,7 +23,7 @@ namespace LoreViewer.Util
 
     public static void SaveRecentProject(string path)
     {
-      if(Registry.CurrentUser.OpenSubKey(REGPATH) == null)
+      if (Registry.CurrentUser.OpenSubKey(REGPATH) == null)
         Registry.CurrentUser.CreateSubKey(REGPATH);
 
       using var key = Registry.CurrentUser.OpenSubKey(REGPATH, true);

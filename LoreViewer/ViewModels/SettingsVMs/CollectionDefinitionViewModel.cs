@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Presentation;
-using DynamicData;
-using LoreViewer.Settings;
+﻿using LoreViewer.Domain.Settings.Definitions;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -30,7 +28,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     {
       get
       {
-        if(CurrentSettingsViewModel != null)
+        if (CurrentSettingsViewModel != null)
         {
           var ret = new ObservableCollection<CollectionDefinitionViewModel>(CurrentSettingsViewModel.Collections);
           if (locallyDefinedCollectionVM != null)
@@ -40,7 +38,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
         return new ObservableCollection<CollectionDefinitionViewModel>();
       }
     }
-    
+
     public ObservableCollection<TypeDefinitionViewModel> ValidTypeVMs
     {
       get
@@ -63,7 +61,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
     public bool IsCollectionOfNodes { get => !colDef.IsCollectionOfCollections; }
 
     public bool IsLocallyDefinedDef { get => colDef.IsLocallyDefined; }
-    
+
     public bool IsUsingLocalCollectionDef { get => colDef.IsUsingLocallyDefinedCollection; }
 
     public bool IsNotUsingLocalCollectionDef { get => !colDef.IsUsingLocallyDefinedCollection; }
@@ -127,7 +125,7 @@ namespace LoreViewer.ViewModels.SettingsVMs
       }
       set
       {
-        if(value != null)
+        if (value != null)
         {
           colDef.SetContainedType(value.Definition);
           SettingsRefresher.Apply(CurrentSettingsViewModel);
