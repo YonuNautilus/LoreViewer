@@ -1,8 +1,8 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="LoreViewer.App"
-             xmlns:vm="using:LoreViewer.ViewModels"
-             xmlns:svm="using:LoreViewer.ViewModels.SettingsVMs"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels"
+             xmlns:svm="using:LoreViewer.Presentation.ViewModels.SettingsVMs"
              xmlns:conv="using:LoreViewer.Converters"
              xmlns:avconv="using:Avalonia.Markup.Xaml.Converters"
              RequestedThemeVariant="Default">

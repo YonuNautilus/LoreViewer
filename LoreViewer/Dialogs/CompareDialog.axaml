@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" Width="300" Height="800"
         x:Class="LoreViewer.Dialogs.CompareDialog"
-        xmlns:set="using:LoreViewer.ViewModels.SettingsVMs"
+        xmlns:set="using:LoreViewer.Presentation.ViewModels.SettingsVMs"
         x:DataType="set:LoreSettingsViewModel"
         Title="Confirm Settings Save - Comparison">
 

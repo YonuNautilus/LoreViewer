@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="vm:LoreViewModel"
+             x:Class="LoreViewer.Views.TopLevelElementsListView">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="25" />
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+
+    <Label Content="Parsed Elements" Grid.Row="0"/>
+    <TreeView Grid.Row="1" ItemsSource="{Binding ItemOutlines}" SelectedItem="{Binding CurrentlySelectedOutline}" Grid.Column="0" Name="OutlinesList" >
+      <TreeView.ItemTemplate>
+        <TreeDataTemplate ItemsSource="{Binding Items}">
+          <StackPanel Orientation="Horizontal">
+            <Image Width="16" Margin="0,0,5,0" Source="{Binding Path=., Converter={StaticResource ValidationImageConverter}}"></Image>
+            <TextBlock Text="{Binding DisplayName}" />
+          </StackPanel>
+        </TreeDataTemplate>
+      </TreeView.ItemTemplate>
+    </TreeView>
+  </Grid>
+</UserControl>

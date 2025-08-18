@@ -9,7 +9,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using LoreViewer.Domain.Settings;
 using LoreViewer.Domain.Settings.Definitions;
-using LoreViewer.ViewModels.SettingsVMs;
+using LoreViewer.Presentation.ViewModels.SettingsVMs;
 using System.Collections.ObjectModel;
 
 namespace LoreViewer.Dialogs;

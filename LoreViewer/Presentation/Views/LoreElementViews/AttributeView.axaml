@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+             xmlns:local="using:LoreViewer.Views"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities"
+             x:Class="LoreViewer.Views.AttributeView"
+             x:DataType="vm:AttributeViewModel">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+      <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+
+    <Label VerticalAlignment="Top" Grid.Column="0" Content="{Binding FieldName}" ToolTip.Tip="{Binding FieldContentType, Converter={StaticResource EnumConverter}}"/>
+
+    <ListBox Grid.Column="1" ItemsSource="{Binding AttributeValues}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <local:AttributeValueView DataContext="{Binding .}"/>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </Grid>
+</UserControl>

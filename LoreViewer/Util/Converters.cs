@@ -5,7 +5,8 @@ using Avalonia.Platform;
 using LoreViewer.Core.Validation;
 using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings.Definitions;
-using LoreViewer.ViewModels;
+using LoreViewer.Presentation;
+using LoreViewer.Presentation.ViewModels.PrimaryViewModels;
 using LoreViewer.Views;
 using System;
 using System.Collections;
@@ -13,7 +14,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 
 namespace LoreViewer.Converters
@@ -85,9 +85,9 @@ namespace LoreViewer.Converters
       {
         switch (lvm.ViewMode)
         {
-          case ViewModels.PrimaryViewModels.EStartupMode.Readonly:
+          case EStartupMode.Readonly:
             return new LoreReadonlyView();
-          case ViewModels.PrimaryViewModels.EStartupMode.Edit:
+          case EStartupMode.Edit:
             return new LoreEditView();
         }
       }

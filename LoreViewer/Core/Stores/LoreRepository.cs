@@ -17,6 +17,7 @@ namespace LoreViewer.Core.Stores
     {
       Models = res.Models;
       Settings = res.Settings;
+      LoreRepoUpdated?.Invoke(this, EventArgs.Empty);
     }
 
 

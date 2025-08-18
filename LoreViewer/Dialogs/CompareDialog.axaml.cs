@@ -8,7 +8,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using LoreViewer.Core.Settings;
-using LoreViewer.ViewModels.SettingsVMs;
+using LoreViewer.Presentation.ViewModels.SettingsVMs;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;

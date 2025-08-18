@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using LoreViewer.ViewModels.LoreEntities;
+using LoreViewer.Presentation.ViewModels.LoreEntities;
 
 namespace LoreViewer;
 

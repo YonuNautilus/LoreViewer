@@ -5,7 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="LoreViewer.EntityEditDialog"
         xmlns:v="using:LoreViewer.Views"
-        xmlns:vmle="using:LoreViewer.ViewModels.LoreEntities"
+        xmlns:vmle="using:LoreViewer.Presentation.ViewModels.LoreEntities"
         x:DataType="vmle:LoreEntityViewModel"
         Title="{Binding Name}">
 

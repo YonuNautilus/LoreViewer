@@ -1,13 +1,18 @@
 ﻿using LoreViewer.Core.Validation;
+using System;
 
 namespace LoreViewer.Core.Stores
 {
   public class ValidationStore
   {
-    private LoreValidationResult m_oResult;
+    public event EventHandler? ValidationUpdated;
 
     public LoreValidationResult Result;
 
-    public void Set(LoreValidationResult res) { m_oResult = res; }
+    public void Set(LoreValidationResult res)
+    {
+      Result = res;
+      ValidationUpdated?.Invoke(this, EventArgs.Empty);
+    }
   }
 }

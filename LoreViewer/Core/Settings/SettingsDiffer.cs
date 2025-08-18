@@ -4,7 +4,7 @@ using Avalonia.Media;
 using DiffPlex;
 using DiffPlex.DiffBuilder;
 using DiffPlex.DiffBuilder.Model;
-using LoreViewer.ViewModels;
+using LoreViewer.Presentation.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 

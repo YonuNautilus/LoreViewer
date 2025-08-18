@@ -43,13 +43,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\PrimaryViews\StartWindow.axaml.cs">
+    <Compile Update="Presentation\Views\PrimaryViews\StartWindow.axaml.cs">
       <DependentUpon>StartWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\LoreViews\LoreEditLegacyView.axaml.cs">
+    <Compile Update="Presentation\Views\LoreViews\LoreEditLegacyView.axaml.cs">
       <DependentUpon>LoreEditLegacyView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\LoreViews\LoreReadonlyView.axaml.cs">
+    <Compile Update="Presentation\Views\LoreViews\LoreReadonlyView.axaml.cs">
       <DependentUpon>LoreReadonlyView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -61,9 +61,5 @@
     <AvaloniaResource Update="Resources\Themes\TreeDataGridTheme.axaml">
       <SubType>Designer</SubType>
     </AvaloniaResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Presentation\" />
   </ItemGroup>
 </Project>
