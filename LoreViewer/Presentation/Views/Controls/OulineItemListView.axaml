@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LoreViewer.Presentation.Views.Controls.OulineItemListView"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels.Modes"
+             x:DataType="vm:LoreReadonlyViewModel">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="30"/> 
+      <RowDefinition /> 
+    </Grid.RowDefinitions>
+    <TreeView VerticalAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding OutlineItems}" Background="AliceBlue">
+      <TreeView.ItemTemplate>
+        <TreeDataTemplate ItemsSource="{Binding Children}">
+          <Border Background="Green">
+            <TextBlock Text="{Binding DisplayName}"/>
+          </Border>
+        </TreeDataTemplate>
+      </TreeView.ItemTemplate>
+    </TreeView>
+  </Grid>
+</UserControl>

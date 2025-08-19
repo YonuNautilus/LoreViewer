@@ -3,9 +3,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        xmlns:views="using:LoreViewer.Views"
+        xmlns:views="using:LoreViewer.Presentation.Views"
         xmlns:vm="using:LoreViewer.Presentation.ViewModels.SettingsVMs"
-        xmlns:defViews="using:LoreViewer.Views.DefinitionViews"
+        xmlns:defViews="using:LoreViewer.Presentation.Views.DefinitionViews"
         x:Class="LoreViewer.Dialogs.SettingsEditDialog"
         x:DataType="vm:LoreSettingsViewModel"
         Title="SettingsEditDialog">

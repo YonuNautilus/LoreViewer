@@ -28,17 +28,17 @@ namespace LoreViewer.Domain.Entities
     private LoreTypeDefinition _definition;
 
     #region IFieldContainer Implementation
-    public ObservableCollection<LoreAttribute> Attributes { get; set; } = new ObservableCollection<LoreAttribute>();
+    public List<LoreAttribute> Attributes { get; set; } = new List<LoreAttribute>();
     public LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
     public bool HasAttribute(string name) => Attributes.Any(a => a.Name == name);
     #endregion
     #region ISectionContainer Implementation
-    public ObservableCollection<LoreSection> Sections { get; set; } = new ObservableCollection<LoreSection>();
+    public List<LoreSection> Sections { get; set; } = new List<LoreSection>();
     public LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
     public bool HasSection(string name) => Sections.Any(s => s.Name == name);
     #endregion
     #region INodeContainer Implementation
-    public ObservableCollection<LoreNode> Nodes { get; } = new ObservableCollection<LoreNode>();
+    public List<LoreNode> Nodes { get; } = new List<LoreNode>();
 
     public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
 
@@ -99,7 +99,7 @@ namespace LoreViewer.Domain.Entities
 
     #endregion
     #region ICollectionContainer Implementation
-    public ObservableCollection<LoreCollection> Collections { get; } = new ObservableCollection<LoreCollection>();
+    public List<LoreCollection> Collections { get; } = new List<LoreCollection>();
     public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
     public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
     public bool HasCollections => Collections.Any();

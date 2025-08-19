@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="LoreViewer.Views.AttributeValueView"
+             x:Class="LoreViewer.Presentation.Views.AttributeValueView"
              x:DataType="vm:AttributeValueViewModel">
   <ContentControl>
     <ContentControl.DataTemplates>

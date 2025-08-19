@@ -3,13 +3,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels"
+             xmlns:vmmodes="using:LoreViewer.Presentation.ViewModels.Modes"
              xmlns:le="using:LoreViewer.LoreElements"
              xmlns:val="using:LoreViewer.Validation"
-             xmlns:local="using:LoreViewer.Views"
-             xmlns:evs="using:LoreViewer.Views.LoreElementViews"
+             xmlns:local="using:LoreViewer.Presentation.Views"
+             xmlns:evs="using:LoreViewer.Presentation.Views.LoreElementViews"
+             xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="LoreViewer.Views.LoreReadonlyView"
-             x:DataType="vm:LoreViewModel">
+             x:Class="LoreViewer.Presentation.Views.LoreReadonlyView"
+             x:DataType="vmmodes:LoreReadonlyViewModel">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="26"/>
@@ -23,16 +25,18 @@
 
     <StackPanel x:Name="LibraryInfoBar" Grid.Row="0" FlowDirection="LeftToRight" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Stretch">
       <Label Content="Lore Library Directory:"/>
-      <Label Content="{Binding LoreLibraryFolderPath}" BorderBrush="{StaticResource ThemeBorderMidBrush}" BorderThickness="1"/>
+      <!--Label Content="{Binding LoreLibraryFolderPath}" BorderBrush="{StaticResource ThemeBorderMidBrush}" BorderThickness="1"/-->
     </StackPanel>
     
-    <local:TopLevelElementsListView Grid.Row="1" Grid.Column="0"/>
+    <controls:OulineItemListView Grid.Row="1" Grid.Column="0"/>
 
     <evs:NodeViewBasic Grid.Row="1" Grid.Column="2"/> <!--DataContext="{Binding CurrentlySelectedElement}"/>-->
-    
+
+    <!--
     <local:ParseErrorListView Grid.Row="2" Grid.ColumnSpan="2" ParseErrors="{Binding Errors}" VerticalAlignment="Top"
                               IsVisible="{Binding Errors.Count, Converter={StaticResource GreaterThanZero}}"
                               BorderBrush="{StaticResource ThemeBorderHighBrush}" BorderThickness="0,1.5,0,1.5"/>
+    -->
     
   </Grid>
 </UserControl>

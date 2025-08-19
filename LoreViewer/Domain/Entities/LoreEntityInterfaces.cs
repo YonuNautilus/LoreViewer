@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Domain.Settings.Definitions;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -9,7 +10,7 @@ namespace LoreViewer.Domain.Entities
   /// </summary>
   public interface IAttributeContainer
   {
-    ObservableCollection<LoreAttribute> Attributes { get; }
+    List<LoreAttribute> Attributes { get; }
     public bool HasAttribute(string attrName) => Attributes.Any(a => a.Name == attrName);
     public LoreAttribute? GetAttribute(string attrName) => Attributes.FirstOrDefault(a => a.Name == attrName);
     public bool HasAttributes => Attributes.Any();
@@ -21,7 +22,7 @@ namespace LoreViewer.Domain.Entities
   /// </summary>
   public interface ISectionContainer
   {
-    ObservableCollection<LoreSection> Sections { get; }
+    List<LoreSection> Sections { get; }
     public bool HasSection(string sectionName) => Sections.Any(s => s.Name == sectionName);
     public LoreSection? GetSection(string sectionName) => Sections.FirstOrDefault(s => s.Name == sectionName);
     public bool HasSections => Sections.Any();
@@ -33,7 +34,7 @@ namespace LoreViewer.Domain.Entities
   /// </summary>
   public interface ICollectionContainer
   {
-    ObservableCollection<LoreCollection> Collections { get; }
+    List<LoreCollection> Collections { get; }
     public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
     public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
     public bool HasCollections => Collections.Any();
@@ -49,7 +50,7 @@ namespace LoreViewer.Domain.Entities
   /// </summary>
   public interface INodeContainer
   {
-    ObservableCollection<LoreNode> Nodes { get; }
+    List<LoreNode> Nodes { get; }
     public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
     public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
     public bool HasNodes => Nodes.Any();

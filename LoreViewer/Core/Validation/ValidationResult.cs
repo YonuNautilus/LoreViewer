@@ -1,14 +1,35 @@
-﻿using LoreViewer.Domain.Entities;
+﻿using LoreViewer.Core.Outline;
+using LoreViewer.Domain.Entities;
 using System.Collections.Generic;
 
 namespace LoreViewer.Core.Validation
 {
   public class LoreValidationResult
   {
+
     public Dictionary<LoreEntity, List<LoreValidationMessage>> LoreEntityValidationMessages { get; set; } = new();
     public Dictionary<LoreEntity, List<LoreValidationMessage>> Errors { get; set; } = new();
     public Dictionary<LoreEntity, EValidationState> LoreEntityValidationStates { get; set; } = new Dictionary<LoreEntity, EValidationState>();
 
+    
+    public IReadOnlyList<LoreValidationMessage> GetMessagesForElement(LoreElement element)
+    {
+      return LoreEntityValidationMessages[element] as IReadOnlyList<LoreValidationMessage>;
+    }
+
+    public EValidationState GetValidationStateForElement(LoreEntity element)
+    {
+      if (LoreEntityValidationStates.ContainsKey(element))
+        return LoreEntityValidationStates[element];
+      else return EValidationState.None;
+    }
+
+    public EValidationState GetValidationStateForOutline(OutlineItem item)
+    {
+      return GetValidationStateForElement(item.entity);
+    }
+
+    
     private void AddMessage(LoreEntity entity, LoreValidationMessage message)
     {
       if (LoreEntityValidationMessages.ContainsKey(entity))

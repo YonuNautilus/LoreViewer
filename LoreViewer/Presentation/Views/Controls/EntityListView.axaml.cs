@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using LoreViewer.Presentation.ViewModels;
 using System.Collections.ObjectModel;
 
-namespace LoreViewer.Views;
+namespace LoreViewer.Presentation.Views;
 
 public partial class EntityListView : UserControl
 {

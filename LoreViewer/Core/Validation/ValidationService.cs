@@ -13,7 +13,7 @@ namespace LoreViewer.Core.Validation
     /* IN ORDER OF PRECEDENCE
      * Meaning, if an element has a warning status but its child element failed, the element's warning status gets changed to ChildFailed.
      */
-
+    None,
     Passed,
     ChildWarning,
     Warning,

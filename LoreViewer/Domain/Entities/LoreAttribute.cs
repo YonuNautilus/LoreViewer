@@ -24,7 +24,7 @@ namespace LoreViewer.Domain.Entities
     private LoreFieldDefinition _definition;
 
     #region IFieldContainer Implementation
-    public ObservableCollection<LoreAttribute> Attributes { get; } = new ObservableCollection<LoreAttribute>();
+    public List<LoreAttribute> Attributes { get; } = new List<LoreAttribute>();
     public bool HasAttribute(string attrName) => Attributes.Any(a => a.Name == attrName);
     public LoreAttribute? GetAttribute(string attrName) => Attributes.FirstOrDefault(a => a.Name == attrName);
     public bool HasAttributes => Attributes.Any();

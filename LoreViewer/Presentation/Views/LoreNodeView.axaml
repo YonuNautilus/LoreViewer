@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             xmlns:vmle="using:LoreViewer.ViewModels.LoreEntities"
-             x:Class="LoreViewer.Views.LoreNodeView"
+             xmlns:vmle="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
+             x:Class="LoreViewer.Presentation.Views.LoreNodeView"
              x:DataType="vmle:LoreNodeViewModel">
   <Grid RowDefinitions="30,Auto">
     <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">

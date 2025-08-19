@@ -5,9 +5,9 @@
              xmlns:vm="using:LoreViewer.Presentation.ViewModels"
              xmlns:le="using:LoreViewer.LoreElements"
              xmlns:val="using:LoreViewer.Validation"
-             xmlns:local="using:LoreViewer.Views"
+             xmlns:local="using:LoreViewer.Presentation.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="LoreViewer.Views.LoreEditView"
+             x:Class="LoreViewer.Presentation.Views.LoreEditView"
              x:DataType="vm:LoreViewModel">
   <Grid>
     <Grid.RowDefinitions>

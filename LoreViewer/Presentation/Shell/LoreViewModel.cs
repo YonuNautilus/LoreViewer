@@ -10,7 +10,9 @@ using LoreViewer.Domain.Settings;
 using LoreViewer.Presentation.ViewModels;
 using LoreViewer.Presentation.ViewModels.LoreEntities;
 using LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements;
+using LoreViewer.Presentation.ViewModels.Modes;
 using LoreViewer.Presentation.ViewModels.PrimaryViewModels;
+using LoreViewer.Presentation.Views;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -22,13 +24,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LoreViewer.Presentation
+namespace LoreViewer.Presentation.ViewModels
 {
   public class LoreViewModel : ViewModelBase
   {
     private LoreRepository m_oLoreRepo = new LoreRepository();
     private ValidationStore m_oValidationRepo = new ValidationStore();
-
+    private LoreReadonlyViewModel m_oReadonlyVM;
     public ValidationStore ValStore { get => m_oValidationRepo; }
 
     private ParserService _parser = new ParserService();
@@ -42,6 +44,8 @@ namespace LoreViewer.Presentation
     public ObservableCollection<LoreTreeItem> Collections { get; } = new();
     public ObservableCollection<ParseErrorViewModel> Errors { get; } = new();
     public ObservableCollection<string> Warnings { get; } = new();
+
+    public LoreModeViewModel CurrentModeVM { get; set; }
 
     public ObservableCollection<ItemOutlineViewModel> ItemOutlines { get; } = new();
 
@@ -153,8 +157,11 @@ namespace LoreViewer.Presentation
       OpenFileToLine = ReactiveCommand.CreateFromTask<LoreEntity>(GoToFileAtLine);
       OpenErrorFileToLine = ReactiveCommand.Create<Tuple<string, int, int, Exception>>(GoToFileAtLine);
 
-      m_oLoreRepo.LoreRepoUpdated += RefreshAllFromLoreRepo();
-      m_oValidationRepo.ValidationUpdated += RefreshAllFromValidationRepo();
+      if (IsReadOnlyMode)
+        CurrentModeVM = new LoreReadonlyViewModel(m_oLoreRepo, m_oValidationRepo);
+      
+      //m_oLoreRepo.LoreRepoUpdated += RefreshAllFromLoreRepo();
+      //m_oValidationRepo.ValidationUpdated += RefreshAllFromValidationRepo();
     }
 
     public EventHandler RefreshAllFromLoreRepo()

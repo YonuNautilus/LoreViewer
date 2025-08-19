@@ -4,9 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="LoreViewer.EntityEditDialog"
-        xmlns:v="using:LoreViewer.Views"
-        xmlns:vmle="using:LoreViewer.Presentation.ViewModels.LoreEntities"
-        x:DataType="vmle:LoreEntityViewModel"
+        xmlns:v="using:LoreViewer.Presentation.Views"
+        xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities"
+        xmlns:vmle="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
+        x:DataType="vm:LoreEntityViewModel"
         Title="{Binding Name}">
 
   <Grid>
@@ -21,7 +22,7 @@
           <v:LoreNodeView />
         </DataTemplate>
 
-        <DataTemplate DataType="vmle:LoreCompositeNodeViewModel">
+        <DataTemplate DataType="vm:LoreCompositeNodeViewModel">
           <TabControl ItemsSource="{Binding InternalNodes}">
             <TabControl.ItemTemplate>
               <DataTemplate>

@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace LoreViewer.Views;
+namespace LoreViewer.Presentation.Views;
 
 public partial class LoreNodeView : UserControl
 {

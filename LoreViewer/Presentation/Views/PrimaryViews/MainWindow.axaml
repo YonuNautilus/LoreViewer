@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         xmlns:vm="using:LoreViewer.Presentation.ViewModels"
+        xmlns:modevms="using:LoreViewer.Presentation.ViewModels.Modes"
         xmlns:le="using:LoreViewer.LoreElements"
         xmlns:val="using:LoreViewer.Validation"
         xmlns:local="using:LoreViewer.Presentation.Views"
@@ -19,7 +20,12 @@
     </Grid.RowDefinitions>
     
     <Border BorderBrush="Black" BorderThickness="0 0 0 1">
-      <Menu Background="{StaticResource ThemeControlHighlightMidBrush}" Grid.Row="0" >
+      <Menu Background="{StaticResource ThemeControlHighlightMidBrush}" Grid.Row="0">
+        <Menu.ItemsPanel>
+          <ItemsPanelTemplate>
+            <DockPanel HorizontalAlignment="Stretch"/>
+          </ItemsPanelTemplate>
+        </Menu.ItemsPanel>
         <MenuItem Header="_File">
           <MenuItem Header="_Reload Lore Library" Command="{Binding ReloadLibraryCommand}" HotKey="Ctrl+R" />
           <Separator/>
@@ -53,10 +59,25 @@
         <MenuItem Header="Help">
           <MenuItem Header="About LoreViewer"/>
         </MenuItem>
+
+        <MenuItem HorizontalAlignment="Right">
+          <MenuItem.Header>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Current Lore Library:"/>
+              <Label Content="{Binding LoreLibraryFolderPath}"/>
+            </StackPanel>
+          </MenuItem.Header>
+        </MenuItem>
       </Menu>
     </Border>
 
-    <ContentControl Grid.Row="1" Content="{Binding ., Converter={StaticResource ViewModeToViewConverter}}"></ContentControl>
+    <ContentControl Grid.Row="1" Content="{Binding CurrentModeVM}">
+      <ContentControl.DataTemplates>
+        <DataTemplate DataType="modevms:LoreReadonlyViewModel">
+          <local:LoreReadonlyView />
+        </DataTemplate>
+      </ContentControl.DataTemplates>
+    </ContentControl>
 
     <ProgressBar Grid.Row="2" Grid.ColumnSpan="2" IsVisible="{Binding IsParsing}" Maximum="{Binding FileCount}" Value="{Binding ParsingProgress}"></ProgressBar>
   </Grid>

@@ -24,12 +24,12 @@ namespace LoreViewer.Domain.Entities
   {
     public override LoreDefinitionBase Definition { get; set; }
     #region INodeContainer Implementation
-    public ObservableCollection<LoreNode> Nodes { get; set; } = new ObservableCollection<LoreNode>();
+    public List<LoreNode> Nodes { get; set; } = new List<LoreNode>();
     public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
     public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
     #endregion
     #region INodeCollectionContainer Implementation
-    public ObservableCollection<LoreCollection> Collections { get; }
+    public List<LoreCollection> Collections { get; }
     public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
     public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
     public bool HasCollections => Collections.Any();
@@ -44,10 +44,10 @@ namespace LoreViewer.Domain.Entities
       switch (colType)
       {
         case LoreTypeDefinition ltd:
-          Nodes = new ObservableCollection<LoreNode>();
+          Nodes = new List<LoreNode>();
           break;
         case LoreCollectionDefinition lcd:
-          Collections = new ObservableCollection<LoreCollection>();
+          Collections = new List<LoreCollection>();
           break;
         default:
           break;
@@ -59,10 +59,10 @@ namespace LoreViewer.Domain.Entities
       switch (colType)
       {
         case LoreTypeDefinition ltd:
-          Nodes = new ObservableCollection<LoreNode>();
+          Nodes = new List<LoreNode>();
           break;
         case LoreCollectionDefinition lcd:
-          Collections = new ObservableCollection<LoreCollection>();
+          Collections = new List<LoreCollection>();
           break;
         default:
           break;

@@ -570,7 +570,7 @@ namespace LoreViewer.Core.Parsing
           if (currentBlock is ListBlock)
           {
             ListBlock lb = currentBlock as ListBlock;
-            ObservableCollection<LoreAttribute> attributes = ParseListAttributes(doc, currentIndex, lb, typeDef.fields, ctx);
+            List<LoreAttribute> attributes = ParseListAttributes(doc, currentIndex, lb, typeDef.fields, ctx);
             newNode.Attributes.AddRange(attributes);
           }
           else
@@ -1016,10 +1016,10 @@ namespace LoreViewer.Core.Parsing
 
     private bool IsFlatAttributeDeclaration(string flatInlineText) => flatInlineText.Contains(":") && !flatInlineText.EndsWith(":");
 
-    private ObservableCollection<LoreAttribute> ParseListAttributes(MarkdownDocument doc, int currentIndex, ListBlock listBlock, List<LoreFieldDefinition> attributeDefinitions, LoreParsingContext ctx)
+    private List<LoreAttribute> ParseListAttributes(MarkdownDocument doc, int currentIndex, ListBlock listBlock, List<LoreFieldDefinition> attributeDefinitions, LoreParsingContext ctx)
     {
       string fieldValue = string.Empty;
-      ObservableCollection<LoreAttribute> attributeList = new ObservableCollection<LoreAttribute>();
+      List<LoreAttribute> attributeList = new List<LoreAttribute>();
 
       //listBlock = (ListBlock)doc[currentIndex];
 

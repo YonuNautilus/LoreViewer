@@ -4,7 +4,7 @@ using Avalonia.Input;
 using LoreViewer.Presentation.ViewModels;
 using System.Collections.ObjectModel;
 
-namespace LoreViewer.Views;
+namespace LoreViewer.Presentation.Views;
 
 public partial class ParseErrorListView : UserControl
 {

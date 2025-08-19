@@ -26,12 +26,12 @@ namespace LoreViewer.Domain.Entities
     private LoreSectionDefinition _definition;
 
     #region IFieldContainer Implementation
-    public ObservableCollection<LoreAttribute> Attributes { get; set; } = new ObservableCollection<LoreAttribute>();
+    public List<LoreAttribute> Attributes { get; set; } = new List<LoreAttribute>();
     public LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
     public bool HasAttribute(string name) => Attributes.Any(a => a.Name == name);
     #endregion
     #region ISectionContainer Implementation
-    public ObservableCollection<LoreSection> Sections { get; set; } = new ObservableCollection<LoreSection>();
+    public List<LoreSection> Sections { get; set; } = new List<LoreSection>();
     public LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
     public bool HasSection(string name) => Sections.Any(s => s.Name == name);
     #endregion
