@@ -9,6 +9,9 @@ namespace LoreViewer.Core.Stores
   public sealed class LoreRepository
   {
     public IEnumerable<LoreEntity> Models;
+
+    public IEnumerable<ParseError> Errors;
+
     public LoreSettings Settings { get; private set; }
 
     public event EventHandler? LoreRepoUpdated;
@@ -16,6 +19,7 @@ namespace LoreViewer.Core.Stores
     public void Set(ParseResult res)
     {
       Models = res.Models;
+      Errors = res.Errors;
       Settings = res.Settings;
       LoreRepoUpdated?.Invoke(this, EventArgs.Empty);
     }

@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels.Modes"
+             xmlns:val="using:LoreViewer.Core.Validation"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LoreViewer.Presentation.Views.Controls.ValidationMessageListView"
+             x:DataType="vm:LoreModeViewModel"
+             x:Name="root">
+  <Grid x:Name="ValidationInfoGrid" >
+    <Grid.RowDefinitions>
+      <RowDefinition Height="40"/>
+      <RowDefinition Height="100"/>
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Vertical" Grid.Row="0">
+      <DockPanel>
+        <!--<ToggleSwitch DockPanel.Dock="Right" Margin="10,0,0,0" OnContent="NotePad++" OffContent="In-App Editor" IsChecked="{Binding UseNPpp}" IsEnabled="{Binding NotepadPPIsInstalled, Mode=OneWay}"/>-->
+        <Button DockPanel.Dock="Right">
+          <Image/>
+        </Button>
+        <Label DockPanel.Dock="Left">Validation Messages</Label>
+      </DockPanel>
+      <!--<Button Classes="rounded"
+              
+        Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}"/>-->
+      <DataGrid ItemsSource="{Binding #root.Items}">
+        <DataGrid.Columns>
+          <DataGridTemplateColumn Header="Validation Message" Width="*">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate DataType="val:LoreValidationMessage">
+                <TextBlock Text="{Binding Message}" ToolTip.Tip="{Binding Message}"/>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+        </DataGrid.Columns>
+      </DataGrid>
+    </StackPanel>
+  </Grid>
+</UserControl>

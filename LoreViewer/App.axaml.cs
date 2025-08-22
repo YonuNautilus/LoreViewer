@@ -62,13 +62,13 @@ namespace LoreViewer
           {
             case EStartupMode.Edit:
               curView = new LoreEditLegacyView();
-              curVM = new LoreViewModel(curView);
+              curVM = new LoreViewModel(desktop.MainWindow);
               curView.DataContext = curVM;
               break;
             case EStartupMode.Readonly:
             default:
               curView = new LoreReadonlyView();
-              curVM = new LoreViewModel(curView);
+              curVM = new LoreViewModel(desktop.MainWindow);
               curView.DataContext = curVM;
               break;
           }

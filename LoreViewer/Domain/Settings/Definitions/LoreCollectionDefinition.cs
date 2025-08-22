@@ -63,11 +63,13 @@ namespace LoreViewer.Domain.Settings.Definitions
 
 
     /// <summary>
-    /// Locally defined collection definitions need to have a reference to their parent, ie the owning definition, be it a type definition or another collection definition.
-    /// Globally defined collection definition will not have OwningDefinition set.
+    /// Originally returned true if OwningDefinition was set -- Collections definitions could only be local if owned by some other definition
+    /// (ie a type, or other collection). But locally defined collections at the level 1 heading would end up not being considered 'locally defined'
+    /// because they had no owning definition set.
+    /// Now this is manually set when creating locally defined collection definitions of any kind.
     /// </summary>
     [YamlIgnore]
-    public bool IsLocallyDefined { get => OwningDefinition != null; }
+    public bool IsLocallyDefined { get; set; } = false;
 
     [YamlIgnore]
     public LoreDefinitionBase? OwningDefinition { get; set; }

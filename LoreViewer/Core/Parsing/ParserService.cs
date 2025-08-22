@@ -766,6 +766,7 @@ namespace LoreViewer.Core.Parsing
         throw new CollectionWithUnknownTypeException(ctx.FilePath, -1, -1, innerTag);
       }
 
+      lcd.IsLocallyDefined = true;
       return lcd;
     }
 

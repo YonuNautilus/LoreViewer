@@ -127,6 +127,9 @@ namespace LoreViewer.Presentation.ViewModels
     public ReactiveCommand<Unit, Unit> OpenLibraryFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> ReloadLibraryCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenLoreSettingsEditor { get; }
+    public ReactiveCommand<Unit, Unit> RunValidationCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> CopyLorePathToClipboardCommand { get; }
     public ReactiveCommand<LoreEntity, Unit> OpenFileToLine { get; }
     public ReactiveCommand<Tuple<string, int, int, Exception>, Unit> OpenErrorFileToLine { get; }
 
@@ -153,6 +156,8 @@ namespace LoreViewer.Presentation.ViewModels
       m_oView = view;
       OpenLibraryFolderCommand = ReactiveCommand.CreateFromTask(HandleOpenLibraryCommandAsync);
       OpenLoreSettingsEditor = ReactiveCommand.CreateFromTask(OpenLoreSettingEditorDialog);
+      RunValidationCommand = ReactiveCommand.Create(RunValidation);
+      CopyLorePathToClipboardCommand = ReactiveCommand.CreateFromTask(CopyLorePathToClipboardAsync);
       ReloadLibraryCommand = ReactiveCommand.Create(ReloadLoreFolder);
       OpenFileToLine = ReactiveCommand.CreateFromTask<LoreEntity>(GoToFileAtLine);
       OpenErrorFileToLine = ReactiveCommand.Create<Tuple<string, int, int, Exception>>(GoToFileAtLine);
@@ -164,14 +169,11 @@ namespace LoreViewer.Presentation.ViewModels
       //m_oValidationRepo.ValidationUpdated += RefreshAllFromValidationRepo();
     }
 
-    public EventHandler RefreshAllFromLoreRepo()
+    private async Task CopyLorePathToClipboardAsync()
     {
-      return null;
-    }
-
-    public EventHandler RefreshAllFromValidationRepo()
-    {
-      return null;
+      var clipboard = (TopLevel.GetTopLevel(m_oView) as Window).Clipboard;
+      if(clipboard != null && !string.IsNullOrWhiteSpace(m_sLoreLibraryFolderPath))
+        await clipboard.SetTextAsync(m_sLoreLibraryFolderPath);
     }
 
     private async Task HandleOpenLibraryCommandAsync()
@@ -272,6 +274,17 @@ namespace LoreViewer.Presentation.ViewModels
     {
       IsParsing = true;
 
+      await RunParse();
+
+      RunValidation();
+
+
+      FileCount = 0;
+      IsParsing = false;
+    }
+
+    private async Task RunParse()
+    {
       ParsingProgress = 0;
 
       Nodes.Clear();
@@ -298,18 +311,16 @@ namespace LoreViewer.Presentation.ViewModels
 
       m_oLoreRepo.Set(pr);
 
+      this.RaisePropertyChanged(nameof(NoSettingsParsingError));
+      this.RaisePropertyChanged(nameof(HadSettingsParsingError));
+      RefreshAllFromLoreRepo_Old();
+    }
 
+    private void RunValidation()
+    {
       LoreValidationResult v = _validator.Validate(m_oLoreRepo);
       m_oValidationRepo.Set(v);
 
-
-      this.RaisePropertyChanged(nameof(NoSettingsParsingError));
-      this.RaisePropertyChanged(nameof(HadSettingsParsingError));
-
-      RefreshAllFromLoreRepo_Old();
-
-      FileCount = 0;
-      IsParsing = false;
     }
 
     #region Refreshing

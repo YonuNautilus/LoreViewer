@@ -14,29 +14,26 @@
              x:DataType="vmmodes:LoreReadonlyViewModel">
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="26"/>
       <RowDefinition Height="*"/>
+      <RowDefinition Height="150"/>
       <RowDefinition Height="Auto" MaxHeight="300"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="250"/>
       <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-
-    <StackPanel x:Name="LibraryInfoBar" Grid.Row="0" FlowDirection="LeftToRight" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Stretch">
-      <Label Content="Lore Library Directory:"/>
-      <!--Label Content="{Binding LoreLibraryFolderPath}" BorderBrush="{StaticResource ThemeBorderMidBrush}" BorderThickness="1"/-->
-    </StackPanel>
     
-    <controls:OulineItemListView Grid.Row="1" Grid.Column="0"/>
+    <controls:OulineItemListView x:Name="OutlineList" Grid.Row="0" Grid.Column="0" />
 
-    <evs:NodeViewBasic Grid.Row="1" Grid.Column="2"/> <!--DataContext="{Binding CurrentlySelectedElement}"/>-->
+    <evs:NodeViewBasic Grid.Row="0" Grid.Column="2" DataContext="{Binding CurrentEntityVM}"/>
+    
+    <controls:ValidationMessageListView Grid.Row="1" Grid.Column="2" Items="{Binding ValidationMessagesForCurrentOutline}"/>
 
-    <!--
-    <local:ParseErrorListView Grid.Row="2" Grid.ColumnSpan="2" ParseErrors="{Binding Errors}" VerticalAlignment="Top"
-                              IsVisible="{Binding Errors.Count, Converter={StaticResource GreaterThanZero}}"
+    
+    <local:ParseErrorListView Grid.Row="2" Grid.ColumnSpan="2" ParseErrors="{Binding ParseErrors}" VerticalAlignment="Top"
+                              IsVisible="{Binding HasErrors}"
                               BorderBrush="{StaticResource ThemeBorderHighBrush}" BorderThickness="0,1.5,0,1.5"/>
-    -->
+    
     
   </Grid>
 </UserControl>

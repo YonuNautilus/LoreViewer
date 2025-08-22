@@ -48,7 +48,7 @@
         </MenuItem>
 
         <MenuItem Header="Validation">
-          <MenuItem Header="Run Validation"/>
+          <MenuItem Header="Run Validation" Command="{Binding RunValidationCommand}"/>
         </MenuItem>
 
         <MenuItem Header="Tools">
@@ -60,11 +60,11 @@
           <MenuItem Header="About LoreViewer"/>
         </MenuItem>
 
-        <MenuItem HorizontalAlignment="Right">
+        <MenuItem HorizontalAlignment="Right" Command="{Binding CopyLorePathToClipboardCommand}">
           <MenuItem.Header>
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="Current Lore Library:"/>
-              <Label Content="{Binding LoreLibraryFolderPath}"/>
+              <TextBlock Text="Current Lore Library:" VerticalAlignment="Center"/>
+              <Label Content="{Binding LoreLibraryFolderPath}" VerticalAlignment="Center"/>
             </StackPanel>
           </MenuItem.Header>
         </MenuItem>

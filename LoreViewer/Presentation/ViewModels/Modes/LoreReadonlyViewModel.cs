@@ -1,6 +1,7 @@
 ﻿using LoreViewer.Core.Outline;
 using LoreViewer.Core.Stores;
 using LoreViewer.Domain.Entities;
+using LoreViewer.Presentation.Views.Controls;
 using ReactiveUI;
 using System;
 using System.Collections;
@@ -37,6 +38,21 @@ namespace LoreViewer.Presentation.ViewModels.Modes
       {
         OutlineItems.Add(new OutlineItemViewModel(outlineItem));
       }
+
+      var newSrc = OutlineTreeDataGridSourceBuilder.BuildShallowTreeSource(OutlineItems);
+      RowSelection = new Avalonia.Controls.Selection.TreeDataGridRowSelectionModel<OutlineItemViewModel>(newSrc);
+
+      RowSelection.SelectionChanged += (e, _) =>
+      {
+        SelectedOutlineItem = RowSelection.SelectedItem;
+      };
+
+      newSrc.Selection = RowSelection;
+
+      OutlineTreeData = newSrc;
+
+      if (m_oLoreRepo.Errors != null && m_oLoreRepo.Errors.Any())
+        ParseErrors = new ObservableCollection<ParseErrorViewModel>(m_oLoreRepo.Errors.Select(pe => new ParseErrorViewModel(pe)));
     }
 
     private void UpdateValidationStateOnItem(OutlineItemViewModel vm)

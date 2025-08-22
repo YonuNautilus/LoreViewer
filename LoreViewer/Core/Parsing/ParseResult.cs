@@ -14,6 +14,8 @@ namespace LoreViewer.Core.Parsing
     public List<LoreEntity> Models { get; set; }
     public LoreSettings Settings { get; set; }
 
+    public List<ParseError> Errors { get; set; }
+
 
     public bool IsFatal = false;
     public string ErrorText;

@@ -11,7 +11,7 @@
       <RowDefinition Height="30"/> 
       <RowDefinition /> 
     </Grid.RowDefinitions>
-    <TreeView VerticalAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding OutlineItems}" Background="AliceBlue">
+    <!--TreeView VerticalAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding OutlineItems}" Background="AliceBlue">
       <TreeView.ItemTemplate>
         <TreeDataTemplate ItemsSource="{Binding Children}">
           <Border Background="Green">
@@ -19,6 +19,8 @@
           </Border>
         </TreeDataTemplate>
       </TreeView.ItemTemplate>
-    </TreeView>
+    </TreeView-->
+    <TreeDataGrid Grid.Row="1" x:Name="OutlineList" Source="{Binding OutlineTreeData}">
+    </TreeDataGrid>
   </Grid>
 </UserControl>

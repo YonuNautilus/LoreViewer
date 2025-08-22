@@ -114,6 +114,8 @@ namespace LoreViewer.Core.Validation
     {
       if (entity != container) throw new Exception($"PARSING ERROR ON ENTITY {entity.Name}");
 
+
+      // For entities that can contain defined collections (like a Type)
       if (entity.Definition is ICollectionDefinitionContainer defWithFields)
       {
         var defs = ((ICollectionDefinitionContainer)entity.Definition).collections;
@@ -141,6 +143,17 @@ namespace LoreViewer.Core.Validation
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
             }
           }
+        }
+      }
+
+      // For collections that contain collections
+      else if(entity is LoreCollection lc && (entity as LoreCollection).HasCollections)
+      {
+        foreach(var childCol in container.Collections)
+        {
+          ValidateEntity(childCol, result);
+          if (result.LoreEntityValidationStates.TryGetValue(childCol, out var state) && state != EValidationState.Passed)
+            result.PropagateDescendentState(entity, childCol);
         }
       }
     }

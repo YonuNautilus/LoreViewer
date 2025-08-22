@@ -1,5 +1,6 @@
 ﻿using LoreViewer.Core.Outline;
 using LoreViewer.Domain.Entities;
+using LoreViewer.Domain.Settings.Definitions;
 using System.Collections.Generic;
 
 namespace LoreViewer.Core.Validation
@@ -12,12 +13,49 @@ namespace LoreViewer.Core.Validation
     public Dictionary<LoreEntity, EValidationState> LoreEntityValidationStates { get; set; } = new Dictionary<LoreEntity, EValidationState>();
 
     
-    public IReadOnlyList<LoreValidationMessage> GetMessagesForElement(LoreElement element)
+    private IReadOnlyList<LoreValidationMessage> GetMessagesForElement(LoreEntity element)
     {
-      return LoreEntityValidationMessages[element] as IReadOnlyList<LoreValidationMessage>;
+      if (LoreEntityValidationMessages.ContainsKey(element))
+        return LoreEntityValidationMessages[element] as IReadOnlyList<LoreValidationMessage>;
+      else
+        return new List<LoreValidationMessage>();
     }
 
-    public EValidationState GetValidationStateForElement(LoreEntity element)
+    private IReadOnlyList<LoreValidationMessage> GetMessagesForElementAndChildren(LoreEntity element)
+    {
+      var retList = new List<LoreValidationMessage>();
+
+      retList.AddRange(GetMessagesForElement(element));
+
+      // This should also handle embedded nodes
+      if (element is INodeContainer nc)
+        foreach (LoreNode node in nc.Nodes)
+          retList.AddRange(GetMessagesForElementAndChildren(node));
+
+      if (element is IAttributeContainer ac)
+        foreach (LoreAttribute la in ac.Attributes)
+          retList.AddRange(GetMessagesForElementAndChildren(la));
+
+      if (element is ICollectionContainer cc)
+        foreach (LoreCollection lc in cc.Collections)
+          retList.AddRange(GetMessagesForElementAndChildren(lc));
+
+      if (element is ISectionContainer sc)
+        foreach (LoreSection ls in sc.Sections)
+          retList.AddRange(GetMessagesForElementAndChildren(ls));
+
+      return retList;
+    }
+
+    public IReadOnlyList<LoreValidationMessage> GetValidationMessagesForOutline(OutlineItem item, bool bIncludeChildren = false)
+    {
+      if (!bIncludeChildren)
+        return GetMessagesForElement(item.entity);
+      else
+        return GetMessagesForElementAndChildren(item.entity);
+    }
+
+    private EValidationState GetValidationStateForElement(LoreEntity element)
     {
       if (LoreEntityValidationStates.ContainsKey(element))
         return LoreEntityValidationStates[element];
@@ -28,6 +66,7 @@ namespace LoreViewer.Core.Validation
     {
       return GetValidationStateForElement(item.entity);
     }
+
 
     
     private void AddMessage(LoreEntity entity, LoreValidationMessage message)

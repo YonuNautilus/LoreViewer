@@ -2,13 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:LoreViewer.Presentation.ViewModels"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels.Modes"
              xmlns:le="using:LoreViewer.LoreElements"
              xmlns:val="using:LoreViewer.Core.Validation"
              xmlns:local="using:LoreViewer.Presentation.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Presentation.Views.LoreElementViews.NodeViewBasic"
-             x:DataType="vm:LoreViewModel">
+             x:DataType="vm:LoreModeViewModel">
   <DockPanel>
     <Grid>
       <Grid.RowDefinitions>
@@ -23,12 +23,12 @@
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
           <DockPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Right">
-            <TextBox Text="{Binding CurrentlySelectedTreeNode.ID}" DockPanel.Dock="Right" Width="200"/>
+            <TextBox Text="{Binding CurrentEntityVM.ID}" DockPanel.Dock="Right" Width="200"/>
             <Label Content="ID:" DockPanel.Dock="Left"/>
           </DockPanel>
           <Label Content="Node Info" DockPanel.Dock="Left" />
         </DockPanel>
-        <ListBox Grid.Row="1" BorderBrush="{StaticResource ThemeBorderMidBrush}" BorderThickness="1" DataContext="{Binding CurrentlySelectedTreeNode}">
+        <ListBox Grid.Row="1" BorderBrush="{StaticResource ThemeBorderMidBrush}" BorderThickness="1" DataContext="{Binding CurrentEntityVM}">
           <!--TextBlock Margin="5" Name="CurrentNodeInfoTextBlock" Text="{Binding CurrentlySelectedTreeNode.CurrentNodeInfoText, Mode=OneWay}" TextWrapping="Wrap"/-->
           <ListBoxItem>
             <StackPanel Orientation="Vertical">
@@ -44,7 +44,7 @@
 
       <Border Grid.Row="1" BorderBrush="{StaticResource ThemeBorderHighBrush}" BorderThickness="0 1 0 0">
 
-        <Grid x:Name="ValidationInfoGrid" >
+        <!--<Grid x:Name="ValidationInfoGrid" >
           <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="100"/>
@@ -57,8 +57,8 @@
               </Button>
               <Label DockPanel.Dock="Left">Validation Messages</Label>
             </DockPanel>
-            <Button Classes="rounded" IsVisible="{Binding ActualNodeIsSelected}" Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}" Command="{Binding OpenFileToLine}" CommandParameter="{Binding CurrentlySelectedTreeNode.element}"/>
-            <!--
+            <Button Classes="rounded" IsVisible="{Binding ActualNodeIsSelected}" Content="{Binding CurrentEntityVM.element.ErrMsg}" Command="{Binding OpenFileToLine}" CommandParameter="{Binding CurrentlySelectedTreeNode.element}"/>
+            --><!--
             <DataGrid ItemsSource="{Binding CurrentlySelectedTreeNode.element, Converter={StaticResource ValidationErrorListConverter}}">
               <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Validation Message" Width="*">
@@ -70,9 +70,9 @@
                 </DataGridTemplateColumn>
               </DataGrid.Columns>
             </DataGrid>
-            -->
+            --><!--
           </StackPanel>
-        </Grid>
+        </Grid>-->
       </Border>
     </Grid>
   </DockPanel>
