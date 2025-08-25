@@ -8,13 +8,12 @@
              x:Class="LoreViewer.Presentation.Views.Controls.ValidationMessageListView"
              x:DataType="vm:LoreModeViewModel"
              x:Name="root">
-  <Grid x:Name="ValidationInfoGrid" >
+  <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="40"/>
-      <RowDefinition Height="100"/>
+      <RowDefinition Height="30"/>
+      <RowDefinition/>
     </Grid.RowDefinitions>
-    <StackPanel Orientation="Vertical" Grid.Row="0">
-      <DockPanel>
+      <DockPanel Grid.Row="0">
         <!--<ToggleSwitch DockPanel.Dock="Right" Margin="10,0,0,0" OnContent="NotePad++" OffContent="In-App Editor" IsChecked="{Binding UseNPpp}" IsEnabled="{Binding NotepadPPIsInstalled, Mode=OneWay}"/>-->
         <Button DockPanel.Dock="Right">
           <Image/>
@@ -24,7 +23,7 @@
       <!--<Button Classes="rounded"
               
         Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}"/>-->
-      <DataGrid ItemsSource="{Binding #root.Items}">
+      <DataGrid ItemsSource="{Binding #root.Items}" Grid.Row="1">
         <DataGrid.Columns>
           <DataGridTemplateColumn Header="Validation Message" Width="*">
             <DataGridTemplateColumn.CellTemplate>
@@ -35,6 +34,5 @@
           </DataGridTemplateColumn>
         </DataGrid.Columns>
       </DataGrid>
-    </StackPanel>
   </Grid>
 </UserControl>

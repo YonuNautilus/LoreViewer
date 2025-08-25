@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Core.Outline;
+using LoreViewer.Core.Parsing;
 using LoreViewer.Core.Stores;
 using LoreViewer.Domain.Entities;
 using LoreViewer.Presentation.Views.Controls;
@@ -19,7 +20,6 @@ namespace LoreViewer.Presentation.ViewModels.Modes
     {
       m_oOutlineProvider = new ShallowOutlineProvider();
     }
-
     
 
     protected override void ValidationRepoUpdated(object? sender, EventArgs e)
@@ -51,8 +51,16 @@ namespace LoreViewer.Presentation.ViewModels.Modes
 
       OutlineTreeData = newSrc;
 
+      ParseErrors.Clear();
+
       if (m_oLoreRepo.Errors != null && m_oLoreRepo.Errors.Any())
-        ParseErrors = new ObservableCollection<ParseErrorViewModel>(m_oLoreRepo.Errors.Select(pe => new ParseErrorViewModel(pe)));
+      {
+        foreach(ParseError pe in m_oLoreRepo.Errors)
+          ParseErrors.Add(new ParseErrorViewModel(pe));
+
+      }
+
+      this.RaisePropertyChanged(nameof(HasErrors));
     }
 
     private void UpdateValidationStateOnItem(OutlineItemViewModel vm)

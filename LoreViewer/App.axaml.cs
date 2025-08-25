@@ -62,24 +62,25 @@ namespace LoreViewer
           {
             case EStartupMode.Edit:
               curView = new LoreEditLegacyView();
-              curVM = new LoreViewModel(desktop.MainWindow);
-              curView.DataContext = curVM;
               break;
             case EStartupMode.Readonly:
             default:
               curView = new LoreReadonlyView();
-              curVM = new LoreViewModel(desktop.MainWindow);
-              curView.DataContext = curVM;
               break;
           }
-
-          curVM.ViewMode = startupMode;
+          curVM = new LoreViewModel(desktop.MainWindow);
           desktop.MainWindow.DataContext = curVM;
 
-          curVM.LoreLibraryFolderPath = lorePath;
-          curVM.ReloadLoreFolder();
+          curView.DataContext = curVM.CurrentModeVM;
+
+          curVM.ViewMode = startupMode;
+
 
           desktop.MainWindow.Show();
+
+          curVM.LoreLibraryFolderPath = lorePath;
+
+          curVM.ReloadLoreFolder();
         }
       }
       base.OnFrameworkInitializationCompleted();

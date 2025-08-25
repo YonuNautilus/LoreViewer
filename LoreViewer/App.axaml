@@ -42,6 +42,8 @@
       
       <conv:GreaterThanZero x:Key="GreaterThanZero" />
       <conv:CollapseExpandIconConverter x:Key="CollapseExpandIconConverter" />
+
+      <conv:HasErrorsToHiddenGridLengthConverter x:Key="HasErrorsCollapseConverter"/>
       
       <avconv:ColorToBrushConverter x:Key="ColorToBrushConverter" />
 

@@ -13,6 +13,11 @@ namespace LoreViewer.Presentation.ViewModels
     public Exception ParseException { get => m_oError.ParseException; }
     public string Message { get => m_oError.ParseException.Message; }
 
+    public Tuple<string, int, int, Exception> OpenAtParam
+    {
+      get => new Tuple<string, int, int, Exception>(FilePath, BlockIndex, LineNumber, ParseException);
+    }
+
     public ParseErrorViewModel(ParseError pe) { m_oError = pe; }
   }
 }

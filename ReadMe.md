@@ -280,3 +280,42 @@ To get started, prepare:
 
 * A consistent folder of `.md` files
 * A clean `Lore_Settings.yaml` defining all types and structure
+
+
+# IMPORTANT NOTE ON THE USE OF AI
+
+I do not like the use of AI. I don't think people should be using AI to do work. However, AI was used in part during the creation of this project, and I wish to be clear about that.
+
+## A note on what I discovered about AI
+
+It *sucks*. At first, GPT-4o was okay. I could talk through Avalonia issues, parsing issues, help to consolidate and reorganize markdown parsing code. And when I realized that headings tagged with curly brackets was in conflict with an existing markdown format for custom heading IDs, it suggested using HTML tags: they often don't appear in rendered markdown *and* are parsable using markdig.
+
+GPT-5 came out around the time v0.7 was tagged. The difference in help was noticeable. v0.8 needed some significant refactoring. UIs and VMs had to be generalized to allow for a ReadOnly view and an Edit view to exist while reusing models and user controls. But what it suggested creating was services and stores. While I have encountered these concepts in the professional world, it felt way too out-of-proportion for this project. In the end I think it worked out luckily, and I of course had to make some adjustments.
+
+But the key thing I noticed was that the AI was more adament about these design changes. Despite having read my codebase, it was not understanding how the app was supposed to 'feel' for lack of a better word I can't think of. It was taking it in a direction that was too 'professional', its training had driven it to suggest patterns that did not feel right.
+
+And I'm the fool for listening to it.
+
+Perhaps I will revert some implementations of the 'service and store' pattern, but we will see as this project gets further along...
+
+## How AI was used
+
+- Determining free packages and libraries I could use for features I wished to implement (Markdig, UnitsNet)
+- Debugging UI issues (problems with bindings, etc).
+- Getting an understanding of Avalonia components lacking good or comprehensive documentation (TreeDataGrid especially)
+- Thinking of layouts for UI (for v0.8)
+- Helping develop file structure and namespace organization (v0.8)
+- Helping lay out code patterns (v0.8, in regards to the parsing service/repo and validation service/store).
+
+## How AI was NOT used
+
+- Writing code directly for copy-paste
+- Coming up with features
+
+## Final Notes
+
+Honestly it's not *all* bad, you just have to use it for certain purposes.
+The key is, the user MUST have the vision, must make the final calls, and must understand what is going on.
+It's actually pretty good for debugging and for getting explanations of concepts that aren't easy to google. If I had a specific question on why one thing works but something else doesn't, and googling yields nothing, I found that AI was able to explain why in words I actually understand based on my current level of understanding. Further, I can verify what it says by testing it out myself.
+
+But beyond debugging and explaining opaque concepts, AI is not great. It made learning the tools for this project easier for me, but that's about it. Now that I have the knowledge to use these tools on my own, I can leave GPT behind.

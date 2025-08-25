@@ -2,25 +2,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+             xmlns:mvm="using:LoreViewer.Presentation.ViewModels.Modes"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels"
              xmlns:p="using:LoreViewer.Parser"
+             xmlns:win="using:LoreViewer"
              x:Class="LoreViewer.Presentation.Views.ParseErrorListView"
-             x:Name="root">
+             x:Name="root"
+             x:DataType="mvm:LoreModeViewModel">
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="25" />
-      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="30" />
+      <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
     <DockPanel Grid.Row="0">
-      <Button x:Name="OpenCloseButton" DockPanel.Dock="Right" Tapped="Button_Tapped">
-        <Image Source="{Binding #ErrorsList.IsVisible, Mode=OneWay, Converter={StaticResource CollapseExpandIconConverter}}" />
-      </Button>
-      <Label Content="Errors" DockPanel.Dock="Left"/>
+      <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+        <ToggleSwitch x:DataType="vm:LoreViewModel" DataContext="{Binding Path=((vm:LoreViewModel)DataContext), RelativeSource={RelativeSource AncestorType=win:MainWindow}}" VerticalAlignment="Center" DockPanel.Dock="Right" Margin="10,0,0,0" OnContent="NotePad++" OffContent="In-App Editor" IsChecked="{Binding UseNPpp}" IsEnabled="{Binding NotepadPPIsInstalled, Mode=OneWay}"/>
+        <Button x:Name="OpenCloseButton" Tapped="Button_Tapped">
+          <Image Source="{Binding IsErrorListExpanded, Converter={StaticResource CollapseExpandIconConverter}}" VerticalAlignment="Center" />
+        </Button>
+      </StackPanel>
+      <Label Content="Errors" DockPanel.Dock="Left" VerticalAlignment="Center"/>
     </DockPanel>
 
-    <DataGrid x:Name="ErrorsList" x:DataType="vm:ParseErrorViewModel" Grid.Row="1" HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding #root.ParseErrors}" Name="ErrorsListView" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" CanUserResizeColumns="True">
+    <DataGrid x:Name="ErrorsList" Grid.Row="1" IsVisible="{Binding IsErrorListExpanded}"
+              HorizontalScrollBarVisibility="Visible" ItemsSource="{Binding ParseErrors}"
+              Name="ErrorsListView" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" CanUserResizeColumns="True"
+              VerticalAlignment="Stretch">
       <DataGrid.Columns>
         <DataGridTextColumn Header="File" Width="Auto" Binding="{Binding FilePath}" CanUserResize="True"/>
         <DataGridTextColumn Header="BlockIndex" Binding="{Binding BlockIndex}"/>
@@ -29,7 +38,7 @@
         <DataGridTemplateColumn Header="Actions" Width="70">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <Button Content="Open File" Command="{Binding #ErrorsList.((vm:LoreViewModel)DataContext).OpenErrorFileToLine}" CommandParameter="{Binding }" />
+              <Button Content="Open File" Command="{Binding Path=((vm:LoreViewModel)DataContext).OpenErrorFileToLine, RelativeSource={RelativeSource AncestorType=win:MainWindow}}" CommandParameter="{Binding OpenAtParam}" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

@@ -244,7 +244,7 @@ namespace LoreViewer.Presentation.ViewModels
       if (Path.Exists(fullPathToFile))
       {
         if (m_bNPppExists)
-          Process.Start(m_sPathToNPpp, $"{fullPathToFile} -n{dat.Item3}");
+          Process.Start(m_sPathToNPpp, $"\"{fullPathToFile}\" -n{dat.Item3}");
         else
           Trace.WriteLine("NO IN-APP EDITOR AVAILABLE");
       }

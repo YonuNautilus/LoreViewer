@@ -298,6 +298,7 @@ namespace LoreViewer.Core.Parsing
 
       res.Settings = _settings;
       res.Models = AllEntities.ToList();
+      res.Errors = Errors.ToList();
 
       return res;
     }

@@ -28,7 +28,21 @@ namespace LoreViewer.Presentation.ViewModels.Modes
 
     public bool HasErrors { get => m_oLoreRepo?.Errors != null && m_oLoreRepo.Errors.Any(); }
 
+    private bool m_bIsErrorListExpanded = true;
+    public bool IsErrorListExpanded
+    {
+      get
+      {
+        return m_bIsErrorListExpanded;
+      }
+      set
+      {
+        this.RaiseAndSetIfChanged(ref m_bIsErrorListExpanded, value, nameof(IsErrorListExpanded));
+      }
+    }
 
+    public GridLength RowHeight3 { get; } = new GridLength(3);
+    public GridLength RowHeight1Star { get; } = new GridLength(200);
 
 
     private HierarchicalTreeDataGridSource<OutlineItemViewModel> m_oOutlineTreeData;
@@ -45,7 +59,6 @@ namespace LoreViewer.Presentation.ViewModels.Modes
     }
 
     public TreeDataGridRowSelectionModel<OutlineItemViewModel> RowSelection { get; protected set; }
-
     public IEnumerable<LoreValidationMessage> ValidationMessagesForCurrentOutline
     {
       get

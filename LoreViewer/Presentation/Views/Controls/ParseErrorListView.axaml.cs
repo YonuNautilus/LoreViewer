@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using LoreViewer.Presentation.ViewModels;
+using LoreViewer.Presentation.ViewModels.Modes;
 using System.Collections.ObjectModel;
 
 namespace LoreViewer.Presentation.Views;
@@ -17,10 +18,12 @@ public partial class ParseErrorListView : UserControl
     set => SetValue(ParseErrorsProperty, value);
   }
 
+  public bool ListIsCollapsed { get => !ErrorsList.IsVisible; }
+
   public ParseErrorListView()
   {
     InitializeComponent();
   }
 
-  private void Button_Tapped(object? sender, TappedEventArgs args) { ErrorsList.IsVisible = !ErrorsList.IsVisible; }
+  private void Button_Tapped(object? sender, TappedEventArgs args) { (DataContext as LoreModeViewModel).IsErrorListExpanded = !(DataContext as LoreModeViewModel).IsErrorListExpanded; }
 }

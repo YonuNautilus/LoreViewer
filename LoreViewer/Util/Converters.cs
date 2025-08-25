@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
+using Avalonia.OpenGL;
 using Avalonia.Platform;
 using LoreViewer.Core.Validation;
 using LoreViewer.Domain.Entities;
@@ -231,6 +232,28 @@ namespace LoreViewer.Converters
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
       throw new NotSupportedException();
+    }
+  }
+
+  public class HasErrorsToHiddenGridLengthConverter : IMultiValueConverter
+  {
+    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+    {
+      if (values[0] is bool bHasErrors && values[1] is bool bIsShown && values[2] is GridLength g && bool.TryParse(parameter as string, out var bHideOnCollapse))
+      {
+        if(bHasErrors && bIsShown)
+          return g;
+        else if (bHasErrors && !bIsShown)
+        {
+          if (bHideOnCollapse)
+            return new GridLength(0);
+          else 
+            return new GridLength(1, GridUnitType.Auto);
+        }
+        else if (!bHasErrors)
+          return new GridLength(0);
+      }
+      return new GridLength(1, GridUnitType.Star);
     }
   }
 }

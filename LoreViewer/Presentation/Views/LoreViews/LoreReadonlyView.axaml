@@ -9,29 +9,58 @@
              xmlns:local="using:LoreViewer.Presentation.Views"
              xmlns:evs="using:LoreViewer.Presentation.Views.LoreElementViews"
              xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
+             xmlns:conv="using:LoreViewer.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Presentation.Views.LoreReadonlyView"
-             x:DataType="vmmodes:LoreReadonlyViewModel">
+             x:DataType="vmmodes:LoreReadonlyViewModel"
+             x:Name="ReadonlyView">
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="150"/>
-      <RowDefinition Height="Auto" MaxHeight="300"/>
+      <RowDefinition Height="2*"/>
+      <RowDefinition Height="3">
+        <RowDefinition.Height>
+          <MultiBinding Converter="{StaticResource HasErrorsCollapseConverter}" ConverterParameter="true" FallbackValue="3">
+            <Binding Path="HasErrors"/>
+            <Binding Path="IsErrorListExpanded"/>
+            <Binding Path="RowHeight3"/>
+          </MultiBinding>
+        </RowDefinition.Height>
+      </RowDefinition>
+      <RowDefinition>
+        <RowDefinition.Height>
+          <MultiBinding Converter="{StaticResource HasErrorsCollapseConverter}" ConverterParameter="false" FallbackValue="1*" >
+            <Binding Path="HasErrors"/>
+            <Binding Path="IsErrorListExpanded"/>
+            <Binding Path="RowHeight1Star"/>
+          </MultiBinding>
+        </RowDefinition.Height>
+      </RowDefinition>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="250"/>
       <ColumnDefinition/>
     </Grid.ColumnDefinitions>
     
-    <controls:OulineItemListView x:Name="OutlineList" Grid.Row="0" Grid.Column="0" />
+    <controls:OulineItemListView x:Name="OutlineList" Grid.Row="0" Grid.Column="0"/>
 
-    <evs:NodeViewBasic Grid.Row="0" Grid.Column="2" DataContext="{Binding CurrentEntityVM}"/>
+    <Grid Grid.Row="0" Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="2*"/>
+        <RowDefinition Height="3"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
+      <evs:NodeViewBasic Grid.Row="0" />
+      <GridSplitter Grid.Row="1" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows" />
+      <controls:ValidationMessageListView Grid.Row="2" Items="{Binding ValidationMessagesForCurrentOutline}"/>
+    </Grid>
     
-    <controls:ValidationMessageListView Grid.Row="1" Grid.Column="2" Items="{Binding ValidationMessagesForCurrentOutline}"/>
+    
+    <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows"
+                  Background="{StaticResource ThemeBorderLowBrush}"/>
 
     
-    <local:ParseErrorListView Grid.Row="2" Grid.ColumnSpan="2" ParseErrors="{Binding ParseErrors}" VerticalAlignment="Top"
-                              IsVisible="{Binding HasErrors}"
+    <local:ParseErrorListView Grid.Row="2" Grid.ColumnSpan="2" ParseErrors="{Binding ParseErrors}" VerticalAlignment="Stretch"
+                              IsVisible="{Binding HasErrors}" x:Name="ErrorsList"
                               BorderBrush="{StaticResource ThemeBorderHighBrush}" BorderThickness="0,1.5,0,1.5"/>
     
     

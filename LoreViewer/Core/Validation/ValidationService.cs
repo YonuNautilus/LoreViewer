@@ -1,4 +1,5 @@
-﻿using LoreViewer.Core.Parsing;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using LoreViewer.Core.Parsing;
 using LoreViewer.Core.Stores;
 using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings.Definitions;
@@ -103,7 +104,7 @@ namespace LoreViewer.Core.Validation
 
           if ((def.required) && !contains)
           {
-            result.LogError(entity, $"Missing required embedded node '{def.name ?? def.nodeType.name}'");
+            result.LogError(entity, $"[{EntityToType(entity)} '{entity.Name}'] Missing required embedded node '{def.name ?? def.nodeType.name}'");
             result.LoreEntityValidationStates[entity] = EValidationState.Failed;
           }
         }
@@ -139,7 +140,7 @@ namespace LoreViewer.Core.Validation
 
             if ((def.required) && !contains)
             {
-              result.LogError(entity, $"Missing required collection '{def.name}'");
+              result.LogError(entity, $"[{EntityToType(entity)} '{entity.Name}'] Missing required collection '{def.name}'");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
             }
           }
@@ -216,7 +217,7 @@ namespace LoreViewer.Core.Validation
 
             if ((def.required) && !contains)
             {
-              result.LogError(entity, $"Missing required attribute '{def.name}'");
+              result.LogError(entity, $"[{EntityToType(entity)} '{entity.Name}'] Missing required attribute '{def.name}'");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
             }
           }
@@ -369,11 +370,29 @@ namespace LoreViewer.Core.Validation
 
             if ((def.required) && !contains)
             {
-              result.LogError(entity, $"Missing required attribute '{def.name}'");
+              result.LogError(entity, $"[{EntityToType(entity)} '{entity.Name}'] Missing required section '{def.name}'");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
             }
           }
         }
+      }
+    }
+
+    private static string EntityToType(LoreEntity entity)
+    {
+      switch (entity)
+      {
+        case LoreNode:
+        case LoreCompositeNode:
+          return "Node";
+        case LoreCollection:
+          return "Collection";
+        case LoreAttribute:
+          return "Attribute";
+        case LoreSection:
+          return "Section";
+        default:
+          return "UNHANDLED TYPE";
       }
     }
   }
