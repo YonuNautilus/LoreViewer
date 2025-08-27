@@ -2,37 +2,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:LoreViewer.Presentation.ViewModels.Modes"
+             xmlns:mvm="using:LoreViewer.Presentation.ViewModels.Modes"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels"
              xmlns:val="using:LoreViewer.Core.Validation"
+             xmlns:win="using:LoreViewer"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Presentation.Views.Controls.ValidationMessageListView"
-             x:DataType="vm:LoreModeViewModel"
+             x:DataType="mvm:LoreModeViewModel"
              x:Name="root">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
-      <RowDefinition/>
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-      <DockPanel Grid.Row="0">
-        <!--<ToggleSwitch DockPanel.Dock="Right" Margin="10,0,0,0" OnContent="NotePad++" OffContent="In-App Editor" IsChecked="{Binding UseNPpp}" IsEnabled="{Binding NotepadPPIsInstalled, Mode=OneWay}"/>-->
-        <Button DockPanel.Dock="Right">
-          <Image/>
+    <DockPanel Grid.Row="0">
+      <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+        <ToggleSwitch x:DataType="vm:LoreViewModel" DataContext="{Binding Path=((vm:LoreViewModel)DataContext), RelativeSource={RelativeSource AncestorType=win:MainWindow}}" VerticalAlignment="Center" DockPanel.Dock="Right" Margin="10,0,0,0" OnContent="NotePad++" OffContent="In-App Editor" IsChecked="{Binding UseNPpp}" IsEnabled="{Binding NotepadPPIsInstalled, Mode=OneWay}"/>
+        <Button x:Name="OpenCloseButton" Tapped="Button_Tapped" IsVisible="False">
+          <Image Source="{Binding IsErrorListExpanded, Converter={StaticResource CollapseExpandIconConverter}}" VerticalAlignment="Center" />
         </Button>
-        <Label DockPanel.Dock="Left">Validation Messages</Label>
-      </DockPanel>
-      <!--<Button Classes="rounded"
-              
-        Content="{Binding CurrentlySelectedTreeNode.element.ErrMsg}"/>-->
-      <DataGrid ItemsSource="{Binding #root.Items}" Grid.Row="1">
-        <DataGrid.Columns>
-          <DataGridTemplateColumn Header="Validation Message" Width="*">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate DataType="val:LoreValidationMessage">
-                <TextBlock Text="{Binding Message}" ToolTip.Tip="{Binding Message}"/>
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-        </DataGrid.Columns>
-      </DataGrid>
+      </StackPanel>
+      <Label Content="Validation Messages" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+    </DockPanel>
+    <DataGrid ItemsSource="{Binding #root.Items}" Grid.Row="1" x:Name="ValidationList" VerticalAlignment="Stretch">
+      <DataGrid.Columns>
+        <DataGridTemplateColumn Header="Message" Width="*">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate DataType="val:LoreValidationMessage">
+              <TextBlock Text="{Binding Message}" ToolTip.Tip="{Binding Message}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+      </DataGrid.Columns>
+    </DataGrid>
   </Grid>
 </UserControl>

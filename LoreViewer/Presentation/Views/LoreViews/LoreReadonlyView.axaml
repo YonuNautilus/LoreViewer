@@ -47,11 +47,11 @@
       <Grid.RowDefinitions>
         <RowDefinition Height="2*"/>
         <RowDefinition Height="3"/>
-        <RowDefinition Height="1*"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
       <evs:NodeViewBasic Grid.Row="0" DataContext="{Binding SelectedElement}"/>
       <GridSplitter Grid.Row="1" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows" />
-      <controls:ValidationMessageListView Grid.Row="2" Items="{Binding ValidationMessagesForCurrentElement}"/>
+      <controls:ValidationMessageListView Grid.Row="2" Items="{Binding ValidationMessagesForCurrentElement}" x:Name="ValidationList"/>
     </Grid>
     
     

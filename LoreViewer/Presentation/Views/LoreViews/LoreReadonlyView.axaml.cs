@@ -11,5 +11,7 @@ public partial class LoreReadonlyView : UserControl
     InitializeComponent();
   }
 
+  private bool ShowValidationSplitter { get => !ValidationList.ListIsCollapsed; }
+
   private bool ShowErrorSplitter { get => !ErrorsList.ListIsCollapsed && (DataContext as LoreModeViewModel).HasErrors; }
 }

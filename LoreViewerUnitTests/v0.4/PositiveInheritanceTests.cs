@@ -1,7 +1,7 @@
 ﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
 using LoreViewer.Domain.Settings.Definitions;
-using LoreViewer.LoreElements.Interfaces;
 
 namespace v0_4.PositiveTests
 {

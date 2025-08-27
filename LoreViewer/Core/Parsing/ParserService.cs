@@ -1,5 +1,4 @@
 ﻿using DynamicData;
-using LoreViewer.Core.Validation;
 using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
 using LoreViewer.Domain.Settings.Definitions;
@@ -11,7 +10,6 @@ using SharpYaml.Serialization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -296,6 +294,16 @@ namespace LoreViewer.Core.Parsing
       // Now that all have been merged, we can resolve references (like the reflist field/attribute).
       PerformReferenceResolution();
 
+      res.Settings = _settings;
+      res.Models = AllEntities.ToList();
+      res.Errors = Errors.ToList();
+
+      return res;
+    }
+
+    public ParseResult GetParseResult()
+    {
+      ParseResult res = new ParseResult();
       res.Settings = _settings;
       res.Models = AllEntities.ToList();
       res.Errors = Errors.ToList();

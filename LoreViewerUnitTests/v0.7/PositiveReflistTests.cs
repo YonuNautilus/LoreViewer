@@ -1,8 +1,10 @@
 ﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Stores;
 using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
 using LoreViewer.Domain.Settings.Definitions;
-using LoreViewer.LoreElements.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace v0_7.PositiveReflistTests
 {
@@ -11,6 +13,9 @@ namespace v0_7.PositiveReflistTests
   {
     public static LoreSettings _settings;
     public static ParserService _parser;
+    public static LoreRepository _repository;
+    public static ValidationService _validator;
+    public static ValidationStore _valStore;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "PositiveReflistData");
 
 
@@ -18,12 +23,19 @@ namespace v0_7.PositiveReflistTests
     public void Setup()
     {
       _parser = new ParserService();
+      _validator = new ValidationService();
+      _valStore = new ValidationStore();
+      _repository = new LoreRepository();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
       _parser.BeginParsingFromFolder(ValidFilesFolder);
 
       _settings = _parser.Settings;
+
+      _repository.Set(_parser.GetParseResult());
+
+      _valStore.Set(_validator.Validate(_repository));
     }
 
     [Test]
@@ -83,18 +95,18 @@ namespace v0_7.PositiveReflistTests
       Assert.That((thirdNode.Attributes[1].Values[1] as ReferenceAttributeValue).Value, Is.SameAs(thirdNode));
 
       // Check that referencing a node by name rather than ID results in a warning.
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages.ContainsKey(thirdNode.Attributes[1]), Is.True);
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(thirdNode.Attributes[1]), Is.True);
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[thirdNode.Attributes[1]], Is.EqualTo(EValidationState.Warning));
+      Assert.That(_valStore.Result.LoreEntityValidationMessages.ContainsKey(thirdNode.Attributes[1]), Is.True);
+      Assert.That(_valStore.Result.LoreEntityValidationStates.ContainsKey(thirdNode.Attributes[1]), Is.True);
+      Assert.That(_valStore.Result.LoreEntityValidationStates[thirdNode.Attributes[1]], Is.EqualTo(EValidationState.Warning));
 
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages.ContainsKey(thirdNode.Attributes[0]), Is.True);
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages[thirdNode.Attributes[0]], Has.Count.EqualTo(1));
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages[thirdNode.Attributes[0]][0].Status, Is.EqualTo(EValidationMessageStatus.Warning));
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(thirdNode.Attributes[0]), Is.True);
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[thirdNode.Attributes[0]], Is.EqualTo(EValidationState.Warning));
+      Assert.That(_valStore.Result.LoreEntityValidationMessages.ContainsKey(thirdNode.Attributes[0]), Is.True);
+      Assert.That(_valStore.Result.LoreEntityValidationMessages[thirdNode.Attributes[0]], Has.Count.EqualTo(1));
+      Assert.That(_valStore.Result.LoreEntityValidationMessages[thirdNode.Attributes[0]][0].Status, Is.EqualTo(EValidationMessageStatus.Warning));
+      Assert.That(_valStore.Result.LoreEntityValidationStates.ContainsKey(thirdNode.Attributes[0]), Is.True);
+      Assert.That(_valStore.Result.LoreEntityValidationStates[thirdNode.Attributes[0]], Is.EqualTo(EValidationState.Warning));
 
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(thirdNode as LoreEntity), Is.True);
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[thirdNode as LoreEntity], Is.EqualTo(EValidationState.ChildWarning));
+      Assert.That(_valStore.Result.LoreEntityValidationStates.ContainsKey(thirdNode as LoreEntity), Is.True);
+      Assert.That(_valStore.Result.LoreEntityValidationStates[thirdNode as LoreEntity], Is.EqualTo(EValidationState.ChildWarning));
     }
   }
 }

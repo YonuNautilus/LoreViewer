@@ -1,6 +1,6 @@
 ﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
-using LoreViewer.LoreElements.Interfaces;
 
 namespace v0_3.PositiveTests
 {

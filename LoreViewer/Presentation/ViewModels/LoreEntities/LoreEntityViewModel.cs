@@ -28,7 +28,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities
         case LoreNode node:
           return new LoreNodeViewModel(node);
         case LoreCompositeNode compositeNode:
-          return new LoreCompositeNodeViewModel(compositeNode);
+          return new LoreNodeViewModel(compositeNode);
         case LoreCollection col:
           return new LoreCollectionViewModel(col);
         case LoreAttribute attr:

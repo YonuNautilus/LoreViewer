@@ -1,6 +1,9 @@
 ﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Stores;
+using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
-using LoreViewer.ViewModels;
+using LoreViewer.Presentation.ViewModels;
 using System.Drawing;
 
 namespace v0_7.ColorsTests
@@ -10,18 +13,29 @@ namespace v0_7.ColorsTests
     public static LoreViewModel _lore = new LoreViewModel(null);
     public static LoreSettings _settings;
     public static ParserService _parser;
+    public static LoreRepository _loreRepo;
+    public static ValidationService _validator;
+    public static ValidationStore _valStore;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "ColorPositiveParsingData");
 
     [OneTimeSetUp]
     public void Setup()
     {
       _parser = new ParserService();
+      _validator = new ValidationService();
+      _loreRepo = new LoreRepository();
+      _valStore = new ValidationStore();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Color_Settings.yaml"));
 
       _parser.BeginParsingFromFolder(ValidFilesFolder);
 
       _settings = _parser.Settings;
+
+      _loreRepo.Set(_parser.GetParseResult());
+
+      _valStore.Set(_validator.Validate(_loreRepo));
+
     }
 
     [Test]
@@ -41,11 +55,11 @@ namespace v0_7.ColorsTests
       Assert.That((RedCrayon.Attributes[0].Value as ColorAttributeValue).Value.DefinedColor, Is.EqualTo(Color.Red));
       Assert.That((RedCrayon.Attributes[0].Value as ColorAttributeValue).Value.Name, Is.EqualTo("Plain Ol' Red"));
 
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(RedCrayon));
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[RedCrayon], Is.EqualTo(EValidationState.Passed));
+      Assert.That(_valStore.Result.LoreEntityValidationStates.ContainsKey(RedCrayon));
+      Assert.That(_valStore.Result.LoreEntityValidationStates[RedCrayon], Is.EqualTo(EValidationState.Passed));
 
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(RedCrayon.Attributes[0]));
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[RedCrayon.Attributes[0]], Is.EqualTo(EValidationState.Passed));
+      Assert.That(_valStore.Result.LoreEntityValidationStates.ContainsKey(RedCrayon.Attributes[0]));
+      Assert.That(_valStore.Result.LoreEntityValidationStates[RedCrayon.Attributes[0]], Is.EqualTo(EValidationState.Passed));
 
 
       LoreNode UnknownCrayon = _parser.GetNodeByName("Unknown Crayon") as LoreNode;
@@ -56,11 +70,11 @@ namespace v0_7.ColorsTests
       Assert.That(UnknownCrayon.Attributes[0].HasValues, Is.False);
       Assert.That(UnknownCrayon.Attributes[0].Value, Is.TypeOf(typeof(ColorAttributeValue)));
 
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(UnknownCrayon));
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[UnknownCrayon], Is.EqualTo(EValidationState.Passed));
+      Assert.That(_valStore.Result.LoreEntityValidationStates.ContainsKey(UnknownCrayon));
+      Assert.That(_valStore.Result.LoreEntityValidationStates[UnknownCrayon], Is.EqualTo(EValidationState.Passed));
 
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates.ContainsKey(UnknownCrayon.Attributes[0]));
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationStates[UnknownCrayon.Attributes[0]], Is.EqualTo(EValidationState.Passed));
+      Assert.That(_valStore.Result.LoreEntityValidationStates.ContainsKey(UnknownCrayon.Attributes[0]));
+      Assert.That(_valStore.Result.LoreEntityValidationStates[UnknownCrayon.Attributes[0]], Is.EqualTo(EValidationState.Passed));
 
 
       LoreNode PencilBox = _parser.GetNodeByName("PencilBox") as LoreNode;

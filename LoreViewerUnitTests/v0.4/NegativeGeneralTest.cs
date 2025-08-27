@@ -1,4 +1,5 @@
-﻿using LoreViewer.Exceptions.SettingsParsingExceptions;
+﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Exceptions.SettingsParsingExceptions;
 
 namespace v0_4.NegativeTests
 {

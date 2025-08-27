@@ -1,5 +1,9 @@
 ﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Stores;
+using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
+using System.ComponentModel.DataAnnotations;
 using UnitsNet.Units;
 
 namespace v0_7.QuantityTests
@@ -8,6 +12,9 @@ namespace v0_7.QuantityTests
   {
     public static LoreSettings _settings;
     public static ParserService _parser;
+    public static LoreRepository _repository;
+    public static ValidationService _validator;
+    public static ValidationStore _valStore;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "QuantityPositiveParsingData");
 
     [OneTimeSetUp]
@@ -16,6 +23,10 @@ namespace v0_7.QuantityTests
       LoreViewer.Program.AddCustomAbbreviations();
 
       _parser = new ParserService();
+      _parser = new ParserService();
+      _validator = new ValidationService();
+      _valStore = new ValidationStore();
+      _repository = new LoreRepository();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
@@ -23,7 +34,9 @@ namespace v0_7.QuantityTests
 
       _settings = _parser.Settings;
 
-      _parser.Validate();
+      _repository.Set(_parser.GetParseResult());
+
+      _valStore.Set(_validator.Validate(_repository));
 
     }
 
@@ -36,7 +49,7 @@ namespace v0_7.QuantityTests
       Assert.That(_parser.HadFatalError, Is.False);
       Assert.That(_parser.Errors, Is.Empty);
 
-      Assert.That(_parser.validator.ValidationResult.Errors, Is.Empty);
+      Assert.That(_valStore.Result.Errors, Is.Empty);
     }
 
     [Test]

@@ -1,8 +1,10 @@
 ﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Stores;
 using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
 using LoreViewer.Exceptions.LoreParsingExceptions;
-using LoreViewer.LoreElements.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace v0_7.DateTimeTests
 {
@@ -14,18 +16,29 @@ namespace v0_7.DateTimeTests
   {
     public static LoreSettings _settings;
     public static ParserService _parser;
+    public static LoreRepository _repository;
+    public static ValidationService _validator;
+    public static ValidationStore _valStore;
+
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "DateTimePositiveParsingData");
 
     [OneTimeSetUp]
     public void Setup()
     {
       _parser = new ParserService();
+      _validator = new ValidationService();
+      _valStore = new ValidationStore();
+      _repository = new LoreRepository();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
       _parser.BeginParsingFromFolder(ValidFilesFolder);
 
       _settings = _parser.Settings;
+
+      _repository.Set(_parser.GetParseResult());
+
+      _valStore.Set(_validator.Validate(_repository));
     }
 
     [Test]
@@ -77,10 +90,10 @@ namespace v0_7.DateTimeTests
     [Order(2)]
     public void DateTimeValidations()
     {
-      LoreValidationResult result = _parser.validator.ValidationResult;
+      LoreValidationResult result = _valStore.Result;
 
-      Assert.That(_parser.validator.ValidationResult.Errors, Is.Empty);
-      Assert.That(_parser.validator.ValidationResult.LoreEntityValidationMessages, Is.Not.Empty);
+      Assert.That(_valStore.Result.Errors, Is.Empty);
+      Assert.That(_valStore.Result.LoreEntityValidationMessages, Is.Not.Empty);
 
       var multiValueDates = _parser.Nodes[0].Attributes[1].Values;
 

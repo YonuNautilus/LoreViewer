@@ -1,9 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using Avalonia.Input;
 using LoreViewer.Core.Validation;
+using LoreViewer.Presentation.ViewModels.Modes;
 using ReactiveUI;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reactive;
 
@@ -29,8 +29,12 @@ public partial class ValidationMessageListView : UserControl
     set => SetValue(OpenFileAtCommandProperty, value);
   }
 
+  public bool ListIsCollapsed { get => !ValidationList.IsVisible; }
+
   public ValidationMessageListView()
   {
     InitializeComponent();
   }
+
+  private void Button_Tapped(object? sender, TappedEventArgs args) { ValidationList.IsVisible = !ValidationList.IsVisible; }
 }

@@ -1,4 +1,6 @@
 ﻿using LoreViewer.Core.Parsing;
+using LoreViewer.Core.Stores;
+using LoreViewer.Core.Validation;
 using LoreViewer.Domain.Settings;
 
 namespace v0_7.PositivePicklistTests
@@ -7,18 +9,28 @@ namespace v0_7.PositivePicklistTests
   {
     public static LoreSettings _settings;
     public static ParserService _parser;
+    public static LoreRepository _repository;
+    public static ValidationService _validator;
+    public static ValidationStore _valStore;
     static string ValidFilesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "v0.7", "TestData", "PositivePickListData");
 
     [OneTimeSetUp]
     public void Setup()
     {
       _parser = new ParserService();
+      _validator = new ValidationService();
+      _valStore = new ValidationStore();
+      _repository = new LoreRepository();
 
       _parser.ParseSettingsFromFile(Path.Combine(ValidFilesFolder, "Lore_Settings.yaml"));
 
       _parser.BeginParsingFromFolder(ValidFilesFolder);
 
       _settings = _parser.Settings;
+
+      _repository.Set(_parser.GetParseResult());
+
+      _valStore.Set(_validator.Validate(_repository));
     }
 
     [Test]
@@ -37,7 +49,7 @@ namespace v0_7.PositivePicklistTests
 
       Assert.That(_parser.Nodes, Has.Count.EqualTo(9));
 
-      Assert.That(_parser.validator.ValidationResult.Errors, Has.Count.EqualTo(0));
+      Assert.That(_valStore.Result.Errors, Has.Count.EqualTo(0));
 
       Assert.That(_parser.Nodes.Where(node => node.Definition.name == "Red Crayon").ToList(), Has.Count.EqualTo(3));
       Assert.That(_parser.Nodes.Where(node => node.Definition.name == "Green Crayon").ToList(), Has.Count.EqualTo(3));

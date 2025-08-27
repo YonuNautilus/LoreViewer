@@ -1,4 +1,5 @@
 using LoreViewer.Core.Parsing;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
 using Markdig.Syntax;
 using NUnit.Framework.Internal;

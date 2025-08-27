@@ -28,14 +28,8 @@ namespace LoreViewer.Presentation.ViewModels.Modes
     private bool m_bIsErrorListExpanded = true;
     public bool IsErrorListExpanded
     {
-      get
-      {
-        return m_bIsErrorListExpanded;
-      }
-      set
-      {
-        this.RaiseAndSetIfChanged(ref m_bIsErrorListExpanded, value, nameof(IsErrorListExpanded));
-      }
+      get { return m_bIsErrorListExpanded; }
+      set { this.RaiseAndSetIfChanged(ref m_bIsErrorListExpanded, value, nameof(IsErrorListExpanded)); }
     }
 
     public GridLength RowHeight3 { get; } = new GridLength(3);
@@ -60,7 +54,6 @@ namespace LoreViewer.Presentation.ViewModels.Modes
     {
       get
       {
-        
         if (SelectedElement != null)
           return m_oValidationRepo.Result.GetValidationMessagesForOutline(SelectedElement.entity, this is LoreReadonlyViewModel);
         else return null;
