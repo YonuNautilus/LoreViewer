@@ -10,6 +10,30 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 
     public string ValueString { get => m_oAttrVal.ValueString; }
     public AttributeValueViewModel(LoreAttributeValue attrVal) { m_oAttrVal = attrVal; }
+
+    public static AttributeValueViewModel CreateValueVM(LoreAttributeValue attrVal)
+    {
+      switch(attrVal)
+      {
+        case StringAttributeValue sav:
+          return new StringAttributeValueViewModel(sav);
+        case ColorAttributeValue cav:
+          return new ColorAttributeValueViewModel(cav);
+        case PicklistAttributeValue pav:
+          return new PicklistAttributeValueViewModel(pav);
+        case ReferenceAttributeValue rav:
+          return new ReferenceAttributeValueViewModel(rav);
+        case NumberAttributeValue nav:
+          return new NumberAttributeValueViewModel(nav);
+        case QuantityAttributeValue qav:
+          return new QuantityAttributeValueViewModel(qav);
+        case DateTimeAttributeValue dtav:
+          return new DateTimeAttributeViewModel(dtav);
+        case DateRangeAttributeValue drav:
+          return new DateRangeAttributeViewModel(drav);
+      }
+      return null;
+    }
   }
 
   public class StringAttributeValueViewModel : AttributeValueViewModel

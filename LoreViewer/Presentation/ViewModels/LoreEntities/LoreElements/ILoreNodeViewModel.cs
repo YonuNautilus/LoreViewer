@@ -19,7 +19,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
       }
     }
 
-    public ILoreNodeViewModel(ILoreNode node) { m_oNode = node; }
+    public ILoreNodeViewModel(ILoreNode node) : base(node as LoreEntity) { m_oNode = node; }
 
   }
 }

@@ -40,8 +40,8 @@
       <ColumnDefinition Width="250"/>
       <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    
-    <controls:OulineItemListView x:Name="OutlineList" Grid.Row="0" Grid.Column="0"/>
+
+    <controls:LoreElementListView x:Name="ElementsList" Grid.Row="0" Grid.Column="0"/>
 
     <Grid Grid.Row="0" Grid.Column="1">
       <Grid.RowDefinitions>
@@ -49,9 +49,9 @@
         <RowDefinition Height="3"/>
         <RowDefinition Height="1*"/>
       </Grid.RowDefinitions>
-      <evs:NodeViewBasic Grid.Row="0" />
+      <evs:NodeViewBasic Grid.Row="0" DataContext="{Binding SelectedElement}"/>
       <GridSplitter Grid.Row="1" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows" />
-      <controls:ValidationMessageListView Grid.Row="2" Items="{Binding ValidationMessagesForCurrentOutline}"/>
+      <controls:ValidationMessageListView Grid.Row="2" Items="{Binding ValidationMessagesForCurrentElement}"/>
     </Grid>
     
     

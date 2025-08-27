@@ -6,7 +6,7 @@
              xmlns:local="using:LoreViewer.Presentation.Views"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
              x:Class="LoreViewer.Presentation.Views.AttributeView"
-             x:DataType="vm:AttributeViewModel">
+             x:DataType="vm:LoreAttributeViewModel">
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition/>

@@ -1,28 +1,25 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Selection;
-using LoreViewer.Core.Outline;
 using LoreViewer.Core.Stores;
 using LoreViewer.Core.Validation;
-using LoreViewer.Domain.Entities;
+using LoreViewer.Presentation.Services;
 using LoreViewer.Presentation.ViewModels.LoreEntities;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoreViewer.Presentation.ViewModels.Modes
 {
   public abstract class LoreModeViewModel : ViewModelBase
   {
-    protected IOutlineProvider m_oOutlineProvider;
+    protected EntityViewModelProvider m_oEntityVMProvider;
 
     protected LoreRepository m_oLoreRepo;
     protected ValidationStore m_oValidationRepo;
 
-    private Dictionary<LoreEntity, LoreEntityViewModel> m_dEntityVMCache = new();
+    public ObservableCollection<LoreEntityViewModel> Entities { get; protected set; } = new ObservableCollection<LoreEntityViewModel>();
 
     public ObservableCollection<ParseErrorViewModel> ParseErrors { get; protected set; } = new ObservableCollection<ParseErrorViewModel>();
 
@@ -45,54 +42,39 @@ namespace LoreViewer.Presentation.ViewModels.Modes
     public GridLength RowHeight1Star { get; } = new GridLength(200);
 
 
-    private HierarchicalTreeDataGridSource<OutlineItemViewModel> m_oOutlineTreeData;
-    public HierarchicalTreeDataGridSource<OutlineItemViewModel> OutlineTreeData
+    private HierarchicalTreeDataGridSource<LoreEntityViewModel> m_oEntityTreeData;
+    public HierarchicalTreeDataGridSource<LoreEntityViewModel> EntityTreeData
     {
       get
       {
-        return m_oOutlineTreeData;
+        return m_oEntityTreeData;
       }
       protected set
       {
-        this.RaiseAndSetIfChanged(ref m_oOutlineTreeData, value, nameof(OutlineTreeData));
+        this.RaiseAndSetIfChanged(ref m_oEntityTreeData, value, nameof(EntityTreeData));
       }
     }
 
-    public TreeDataGridRowSelectionModel<OutlineItemViewModel> RowSelection { get; protected set; }
-    public IEnumerable<LoreValidationMessage> ValidationMessagesForCurrentOutline
+    public TreeDataGridRowSelectionModel<LoreEntityViewModel> RowSelection { get; protected set; }
+    public IEnumerable<LoreValidationMessage> ValidationMessagesForCurrentElement
     {
       get
       {
         
-        if (SelectedOutlineItem != null)
-          return m_oValidationRepo.Result.GetValidationMessagesForOutline(SelectedOutlineItem.model, this is LoreReadonlyViewModel);
+        if (SelectedElement != null)
+          return m_oValidationRepo.Result.GetValidationMessagesForOutline(SelectedElement.entity, this is LoreReadonlyViewModel);
         else return null;
       }
     }
 
-    private OutlineItemViewModel m_oSelectedOutlineItem;
-    public OutlineItemViewModel SelectedOutlineItem
+    private LoreEntityViewModel m_oSelectedElement;
+    public LoreEntityViewModel SelectedElement
     {
-      get { return m_oSelectedOutlineItem; }
+      get { return m_oSelectedElement; }
       set
       {
-        this.RaiseAndSetIfChanged(ref m_oSelectedOutlineItem, value, nameof(SelectedOutlineItem));
-        this.RaisePropertyChanged(nameof(ValidationMessagesForCurrentOutline));
-
-        if (!m_dEntityVMCache.ContainsKey(m_oSelectedOutlineItem.model.entity))
-          m_dEntityVMCache[m_oSelectedOutlineItem.model.entity] = LoreEntityViewModel.CreateViewModel(m_oSelectedOutlineItem.model.entity);
-        
-        CurrentEntityVM = m_dEntityVMCache[m_oSelectedOutlineItem.model.entity];
-      }
-    }
-
-    private LoreEntityViewModel m_oCurrentEntityVM;
-    public LoreEntityViewModel CurrentEntityVM
-    {
-      get { return m_oCurrentEntityVM; }
-      set
-      {
-        this.RaiseAndSetIfChanged(ref m_oCurrentEntityVM, value, nameof(CurrentEntityVM));
+        this.RaiseAndSetIfChanged(ref m_oSelectedElement, value, nameof(SelectedElement));
+        this.RaisePropertyChanged(nameof(ValidationMessagesForCurrentElement));
       }
     }
 

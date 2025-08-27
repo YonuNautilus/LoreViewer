@@ -1,15 +1,25 @@
 ﻿using LoreViewer.Domain.Entities;
 using LoreViewer.Presentation.ViewModels;
+using LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements;
+using System.Collections.ObjectModel;
+using System.Dynamic;
 
 namespace LoreViewer.Presentation.ViewModels.LoreEntities
 {
-  public class LoreEntityViewModel : ViewModelBase
+  public abstract class LoreEntityViewModel : ViewModelBase
   {
     public bool IsDirty { get; set; } = false;
 
     internal LoreEntity entity;
 
+    internal LoreEntity trueEntity;
+
     public string ID { get => entity.ID; set => entity.SetID(value); }
+
+    protected LoreEntityViewModel(LoreEntity le)
+    {
+      entity = le;
+    }
 
     public static LoreEntityViewModel CreateViewModel(LoreEntity e)
     {
@@ -19,14 +29,20 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities
           return new LoreNodeViewModel(node);
         case LoreCompositeNode compositeNode:
           return new LoreCompositeNodeViewModel(compositeNode);
+        case LoreCollection col:
+          return new LoreCollectionViewModel(col);
         case LoreAttribute attr:
-        //return new LoreAttributeViewModel(attr);
+          return new LoreAttributeViewModel(attr);
         default:
           return null;
       }
     }
 
     public string Name { get => $"Editing: {entity.Name}"; }
+
+    public string DisplayName { get => entity.Name; }
+
+    public virtual ObservableCollection<LoreEntityViewModel> ShallowChildren { get; set; } = new();
 
     //public Dictionary<string, string> GetSaveContent()
     //{

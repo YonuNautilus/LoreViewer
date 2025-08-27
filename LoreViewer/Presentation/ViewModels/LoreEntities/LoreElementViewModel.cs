@@ -6,5 +6,10 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities
   {
     public string SourcePath { get => (entity as LoreElement).SourcePath; }
 
+    protected LoreElementViewModel(LoreElement le) : base(le)
+    {
+
+    }
+
   }
 }

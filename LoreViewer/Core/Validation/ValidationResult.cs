@@ -1,6 +1,4 @@
-﻿using LoreViewer.Core.Outline;
-using LoreViewer.Domain.Entities;
-using LoreViewer.Domain.Settings.Definitions;
+﻿using LoreViewer.Domain.Entities;
 using System.Collections.Generic;
 
 namespace LoreViewer.Core.Validation
@@ -47,26 +45,20 @@ namespace LoreViewer.Core.Validation
       return retList;
     }
 
-    public IReadOnlyList<LoreValidationMessage> GetValidationMessagesForOutline(OutlineItem item, bool bIncludeChildren = false)
+    public IReadOnlyList<LoreValidationMessage> GetValidationMessagesForOutline(LoreEntity item, bool bIncludeChildren = false)
     {
       if (!bIncludeChildren)
-        return GetMessagesForElement(item.entity);
+        return GetMessagesForElement(item);
       else
-        return GetMessagesForElementAndChildren(item.entity);
+        return GetMessagesForElementAndChildren(item);
     }
 
-    private EValidationState GetValidationStateForElement(LoreEntity element)
+    public EValidationState GetValidationStateForElement(LoreEntity element)
     {
       if (LoreEntityValidationStates.ContainsKey(element))
         return LoreEntityValidationStates[element];
       else return EValidationState.None;
     }
-
-    public EValidationState GetValidationStateForOutline(OutlineItem item)
-    {
-      return GetValidationStateForElement(item.entity);
-    }
-
 
     
     private void AddMessage(LoreEntity entity, LoreValidationMessage message)

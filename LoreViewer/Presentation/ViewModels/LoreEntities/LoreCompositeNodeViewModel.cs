@@ -9,9 +9,9 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities
 
     public ObservableCollection<LoreNodeViewModel> InternalNodes { get; } = new();
 
-    public LoreCompositeNodeViewModel(LoreCompositeNode oCompNode)
+    public LoreCompositeNodeViewModel(LoreCompositeNode oCompNode) : base(oCompNode)
     {
-      entity = oCompNode;
+
       foreach (LoreNode node in oCompNode.InternalNodes)
         InternalNodes.Add(CreateViewModel(node) as LoreNodeViewModel);
     }

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="LoreViewer.Presentation.Views.Controls.OulineItemListView"
+             x:Class="LoreViewer.Presentation.Views.Controls.LoreElementListView"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels.Modes"
              x:DataType="vm:LoreReadonlyViewModel">
   <Grid>
@@ -11,16 +11,7 @@
       <RowDefinition Height="30"/> 
       <RowDefinition /> 
     </Grid.RowDefinitions>
-    <!--TreeView VerticalAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding OutlineItems}" Background="AliceBlue">
-      <TreeView.ItemTemplate>
-        <TreeDataTemplate ItemsSource="{Binding Children}">
-          <Border Background="Green">
-            <TextBlock Text="{Binding DisplayName}"/>
-          </Border>
-        </TreeDataTemplate>
-      </TreeView.ItemTemplate>
-    </TreeView-->
-    <TreeDataGrid Grid.Row="1" x:Name="OutlineList" Source="{Binding OutlineTreeData}">
+    <TreeDataGrid Grid.Row="1" x:Name="OutlineList" Source="{Binding EntityTreeData}">
     </TreeDataGrid>
   </Grid>
 </UserControl>

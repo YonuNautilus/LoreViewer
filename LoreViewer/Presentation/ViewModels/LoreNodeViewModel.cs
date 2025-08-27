@@ -25,8 +25,12 @@ namespace LoreViewer.Presentation.ViewModels
       }
     }
 
-    private ObservableCollection<AttributeViewModel> m_oAttributes;
-    public ObservableCollection<AttributeViewModel> Attributes { get => m_oAttributes; }
+    private ObservableCollection<LoreAttributeViewModel> m_oAttributes;
+    public ObservableCollection<LoreAttributeViewModel> Attributes { get => m_oAttributes; }
+
+
+    private ObservableCollection<LoreSectionViewModel> m_oSections;
+    public ObservableCollection<LoreSectionViewModel> Sections { get => m_oSections; }
 
     private int m_iCursorIndex;
 
@@ -41,10 +45,10 @@ namespace LoreViewer.Presentation.ViewModels
 
     public void ClearModifications() => m_sModifiedContent = string.Empty;
 
-    public LoreNodeViewModel(ILoreNode node)
+    public LoreNodeViewModel(ILoreNode node) : base(node as LoreEntity)
     {
-      entity = node as LoreEntity;
-      m_oAttributes = new ObservableCollection<AttributeViewModel>(node.Attributes.Select(s => new AttributeViewModel(s)));
+      m_oAttributes = new ObservableCollection<LoreAttributeViewModel>(node.Attributes.Select(s => new LoreAttributeViewModel(s)));
+      m_oSections = new ObservableCollection<LoreSectionViewModel>(node.Sections.Select(s => new LoreSectionViewModel(s)));
     }
   }
 }

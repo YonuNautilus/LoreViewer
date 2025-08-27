@@ -217,7 +217,7 @@ namespace LoreViewer.Core.Validation
 
             if ((def.required) && !contains)
             {
-              result.LogError(entity, $"[{EntityToType(entity)} '{entity.Name}'] Missing required attribute '{def.name}'");
+              result.LogError(entity, $"[{EntityToType(entity)} '{entity.Name}'] Missing required attribute '{def.name}' ({def.contentType})");
               result.LoreEntityValidationStates[entity] = EValidationState.Failed;
             }
           }
@@ -384,7 +384,7 @@ namespace LoreViewer.Core.Validation
       {
         case LoreNode:
         case LoreCompositeNode:
-          return "Node";
+          return $"Node [{entity.Definition.name}]";
         case LoreCollection:
           return "Collection";
         case LoreAttribute:
