@@ -5,6 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
              xmlns:local="using:LoreViewer.Presentation.Views"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
+             xmlns:elemViews="using:LoreViewer.Presentation.Views.LoreElementViews"
              x:Class="LoreViewer.Presentation.Views.AttributeView"
              x:DataType="vm:LoreAttributeViewModel">
   <Grid>
@@ -18,7 +19,7 @@
     <ListBox Grid.Column="1" ItemsSource="{Binding AttributeValues}">
       <ListBox.ItemTemplate>
         <DataTemplate>
-          <local:AttributeValueView DataContext="{Binding .}"/>
+          <elemViews:AttributeValueView DataContext="{Binding}"/>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>

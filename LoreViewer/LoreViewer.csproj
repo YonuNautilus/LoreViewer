@@ -15,6 +15,9 @@
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Resources\**" />
+    <AvaloniaResource Update="Resources\Themes\TreeViewWithStructureLines.axaml">
+      <SubType>Designer</SubType>
+    </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="Resources\GlobalValues\CommonText.axaml" />

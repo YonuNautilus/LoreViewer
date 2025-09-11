@@ -5,7 +5,6 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
              xmlns:mvm="using:LoreViewer.Presentation.ViewModels.Modes"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels"
-             xmlns:p="using:LoreViewer.Parser"
              xmlns:win="using:LoreViewer"
              x:Class="LoreViewer.Presentation.Views.ParseErrorListView"
              x:Name="root"

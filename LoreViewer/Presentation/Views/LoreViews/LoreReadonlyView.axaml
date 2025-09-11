@@ -4,8 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels"
              xmlns:vmmodes="using:LoreViewer.Presentation.ViewModels.Modes"
-             xmlns:le="using:LoreViewer.LoreElements"
-             xmlns:val="using:LoreViewer.Validation"
              xmlns:local="using:LoreViewer.Presentation.Views"
              xmlns:evs="using:LoreViewer.Presentation.Views.LoreElementViews"
              xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
@@ -17,7 +15,7 @@
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="2*"/>
-      <RowDefinition Height="3">
+      <RowDefinition >
         <RowDefinition.Height>
           <MultiBinding Converter="{StaticResource HasErrorsCollapseConverter}" ConverterParameter="true" FallbackValue="3">
             <Binding Path="HasErrors"/>
@@ -38,28 +36,29 @@
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="250"/>
+      <ColumnDefinition Width="3"/>
       <ColumnDefinition/>
     </Grid.ColumnDefinitions>
 
     <controls:LoreElementListView x:Name="ElementsList" Grid.Row="0" Grid.Column="0"/>
-
-    <Grid Grid.Row="0" Grid.Column="1">
+    <GridSplitter Grid.Row="0" Grid.Column="1" ResizeBehavior="PreviousAndNext"></GridSplitter>    
+    <Grid Grid.Row="0" Grid.Column="2">
       <Grid.RowDefinitions>
         <RowDefinition Height="2*"/>
         <RowDefinition Height="3"/>
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
-      <evs:NodeViewBasic Grid.Row="0" DataContext="{Binding SelectedElement}"/>
+      <controls:ReadonlyLoreEntityView Grid.Row="0" DataContext="{Binding SelectedElement}"/>
       <GridSplitter Grid.Row="1" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows" />
       <controls:ValidationMessageListView Grid.Row="2" Items="{Binding ValidationMessagesForCurrentElement}" x:Name="ValidationList"/>
     </Grid>
     
     
-    <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows"
+    <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows"
                   Background="{StaticResource ThemeBorderLowBrush}"/>
 
     
-    <local:ParseErrorListView Grid.Row="2" Grid.ColumnSpan="2" ParseErrors="{Binding ParseErrors}" VerticalAlignment="Stretch"
+    <local:ParseErrorListView Grid.Row="2" Grid.ColumnSpan="3" ParseErrors="{Binding ParseErrors}" VerticalAlignment="Stretch"
                               IsVisible="{Binding HasErrors}" x:Name="ErrorsList"
                               BorderBrush="{StaticResource ThemeBorderHighBrush}" BorderThickness="0,1.5,0,1.5"/>
     

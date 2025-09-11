@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace LoreViewer.Presentation.ViewModels.LoreEntities
 {
-  internal class LoreCompositeNodeViewModel : ILoreNodeViewModel
+  internal class LoreCompositeNodeViewModel : LoreNodeViewModel
   {
     private LoreCompositeNode m_oCompNode => entity as LoreCompositeNode;
 
@@ -12,7 +12,6 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities
 
     public LoreCompositeNodeViewModel(LoreCompositeNode oCompNode) : base(oCompNode)
     {
-
       foreach (LoreNode node in oCompNode.InternalNodes)
         InternalNodes.Add(CreateViewModel(node) as LoreNodeViewModel);
     }

@@ -45,6 +45,7 @@ namespace LoreViewer.Domain.Entities
     const string HEX_COLOR_PATTERN = @"^((#[0-9A-Fa-f]{8})|(#[0-9A-Fa-f]{6}))(?= )";
     const string NAME_PATTERN = @"(?<=(^((#[0-9A-Fa-f]{8})|(#[0-9A-Fa-f]{6}))) )(.*)";
     static ColorConverter conv = new ColorConverter();
+    
     public ColorAttributeValue(string valueToParse, LoreAttribute owningAttribute) : base(valueToParse, owningAttribute)
     {
       // If there is a match in the string for a hex color code, grab it, parse it.
@@ -75,6 +76,11 @@ namespace LoreViewer.Domain.Entities
       public Color DefinedColor { get; set; }
 
       public Avalonia.Media.Color BrushColor { get; set; }
+      
+      public Avalonia.Media.Color InverseBrushColor { get => new Avalonia.Media.Color(DefinedColor.A,
+        (byte)(0xFF-DefinedColor.R), (byte)(255-DefinedColor.G), (byte)(255-DefinedColor.B)); }
+      
+      public string ColorHex { get => ColorTranslator.ToHtml(DefinedColor); }
 
       public ColorValue(Color color, string name)
       {
@@ -199,6 +205,8 @@ namespace LoreViewer.Domain.Entities
       Value = new QuantityValue(this, quantityToParse);
     }
 
+    public string GetQuantityString() => Value.GetQuantityString();
+
     public override string ToString() => Value.ToString();
 
     /// <summary>
@@ -221,6 +229,17 @@ namespace LoreViewer.Domain.Entities
       public UnitInfo Unit => m_oUnit;
       public string unitText = "";
       public double Magnitude => m_oQuantity.As(m_oQuantity.Unit);
+
+      public string GetQuantityString()
+      {
+        if (m_oQuantity is Length l && l.Unit is LengthUnit.Inch )
+        {
+          int feet = (int)m_dMagnitude / 12;
+          int inch = (int)m_dMagnitude % 12;
+          return $"{feet}'{inch}\"";
+        }
+        return m_oQuantity.Value.ToString() + UnitAbbreviationsCache.Default.GetDefaultAbbreviation(m_oUnit.Value);
+      }
 
       public QuantityValue(QuantityAttributeValue owner, string quantityToParse)
       {
@@ -368,6 +387,8 @@ namespace LoreViewer.Domain.Entities
         }
       }
 
+      
+      
       public override string ToString() => m_oQuantityInfo?.ToString();
     }
   }

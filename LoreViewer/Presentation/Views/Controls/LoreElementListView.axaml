@@ -8,7 +8,7 @@
              x:DataType="vm:LoreReadonlyViewModel">
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="30"/> 
+      <RowDefinition Height="0"/> <!--Not sure what this row was for, but it might have been for something later on... -->
       <RowDefinition /> 
     </Grid.RowDefinitions>
     <TreeDataGrid Grid.Row="1" x:Name="OutlineList" Source="{Binding EntityTreeData}">

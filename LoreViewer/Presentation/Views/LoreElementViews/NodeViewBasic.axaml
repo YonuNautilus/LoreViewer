@@ -3,67 +3,67 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
-             xmlns:le="using:LoreViewer.LoreElements"
-             xmlns:val="using:LoreViewer.Core.Validation"
-             xmlns:local="using:LoreViewer.Presentation.Views"
+             xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Presentation.Views.LoreElementViews.NodeViewBasic"
-             x:DataType="vm:LoreNodeViewModel">
+             x:DataType="vm:LoreNodeViewModel"
+             x:Name="nodeViewBasic">
   <DockPanel>
     <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition/>
-        <RowDefinition Height="Auto"/>
+        <RowDefinition />
+        <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
       <Grid x:Name="NodeInfoGrid" Grid.Row="0">
         <Grid.RowDefinitions>
-          <RowDefinition Height="30"/>
-          <RowDefinition/>
+          <RowDefinition Height="30" />
+          <RowDefinition />
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
           <DockPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" DockPanel.Dock="Right">
-            <TextBox Text="{Binding ID}" DockPanel.Dock="Right" Width="200"/>
-            <Label Content="ID:" DockPanel.Dock="Left"/>
+            <TextBox Text="{Binding ID}" DockPanel.Dock="Right" Width="200" />
+            <Label Content="ID:" DockPanel.Dock="Left" />
           </DockPanel>
           <Label Content="Node Info" DockPanel.Dock="Left" />
         </DockPanel>
-        <ListBox Grid.Row="1" BorderBrush="{StaticResource ThemeBorderMidBrush}" BorderThickness="1" DataContext="{Binding}">
-          <ListBoxItem>
-            <StackPanel Orientation="Vertical">
+        <ListBox Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
+          <ListBox.Styles>
+            <Style Selector="ListBoxItem /template/ ContentPresenter">
+              <Setter Property="Focusable" Value="False"/>
+              <Setter Property="Background" Value="Transparent"/>
+            </Style>
+            <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+              <Setter Property="Background" Value="Transparent"/>
+            </Style>
+            <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+              <Setter Property="Background" Value="Transparent"/>
+            </Style>
+            <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter">
+              <Setter Property="Background" Value="Transparent"/>
+            </Style>
+          </ListBox.Styles>
+          <ListBoxItem DataContext="{Binding}">
+              <Grid RowDefinitions="Auto,Auto">
 
-              <Label Content="Attributes" />
-              <ListBox ItemsSource="{Binding Attributes}">
-                <ListBox.ItemTemplate>
-                  <DataTemplate>
-
-                    <StackPanel Orientation="Horizontal">
-                      <Label Content="{Binding FieldName}"/>
-                      <ListBox ItemsSource="{Binding AttributeValues}">
-                        <ListBox.ItemTemplate>
-                          <DataTemplate>
-                            <Label Content="{Binding ValueString}"/>
-                          </DataTemplate>
-                        </ListBox.ItemTemplate>
-                      </ListBox>
-                    </StackPanel>
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
-            </StackPanel>
+                <TextBlock Text="Attributes" FontWeight="Bold"/>
+                <controls:AttributeListView Grid.Row="1" Attributes="{Binding Attributes, DataType=vm:LoreNodeViewModel}" />
+              </Grid>
           </ListBoxItem>
-          
           <ListBoxItem>
-            <StackPanel Orientation="Vertical">
-              <Label Content="Sections"/>
-              <ListBox ItemsSource="{Binding Sections}">
-                <ListBox.ItemTemplate>
-                  <DataTemplate>
-                    
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
-            </StackPanel>
+            
+            <Border BorderBrush="{StaticResource ThemeBorderMidBrush}" BorderThickness="1">
+              <StackPanel Orientation="Vertical">
+                <Label Content="Sections" />
+                <ListBox ItemsSource="{Binding Path=Sections, DataType=vm:LoreNodeViewModel}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </StackPanel>
+            </Border>
           </ListBoxItem>
         </ListBox>
       </Grid>

@@ -36,8 +36,6 @@ namespace LoreViewer.Presentation.ViewModels
     private ParserService _parser = new ParserService();
     private ValidationService _validator = new ValidationService();
 
-    private Dictionary<ILoreNode, ILoreNodeViewModel> m_cNodeVMCache = new Dictionary<ILoreNode, ILoreNodeViewModel>();
-
     private string m_sLoreLibraryFolderPath = string.Empty;
     public string LoreLibraryFolderPath { get => m_sLoreLibraryFolderPath; set => this.RaiseAndSetIfChanged(ref m_sLoreLibraryFolderPath, value); }
     public ObservableCollection<LoreTreeItem> Nodes { get; } = new();
@@ -61,15 +59,6 @@ namespace LoreViewer.Presentation.ViewModels
       }
     }
 
-    private ILoreNodeViewModel m_oCurrentlySelectedLoreNode;
-    public ILoreNodeViewModel CurrentlySelectedLoreNode
-    {
-      get => m_oCurrentlySelectedLoreNode;
-      set
-      {
-        this.RaiseAndSetIfChanged(ref m_oCurrentlySelectedLoreNode, value);
-      }
-    }
 
     public EStartupMode ViewMode { get; set; }
 
@@ -272,6 +261,8 @@ namespace LoreViewer.Presentation.ViewModels
 
     private async Task LoadLoreFromFolder()
     {
+      _parser.Clear();
+
       IsParsing = true;
 
       await RunParse();

@@ -24,7 +24,10 @@
       </StackPanel>
       <Label Content="Validation Messages" DockPanel.Dock="Left" VerticalAlignment="Center"/>
     </DockPanel>
-    <DataGrid ItemsSource="{Binding #root.Items}" Grid.Row="1" x:Name="ValidationList" VerticalAlignment="Stretch">
+    <DataGrid ItemsSource="{Binding #root.Items}" Grid.Row="1" x:Name="ValidationList"
+              VerticalAlignment="Stretch"
+              VerticalScrollBarVisibility="Visible"
+              HorizontalScrollBarVisibility="Auto">
       <DataGrid.Columns>
         <DataGridTemplateColumn Header="Message" Width="*">
           <DataGridTemplateColumn.CellTemplate>

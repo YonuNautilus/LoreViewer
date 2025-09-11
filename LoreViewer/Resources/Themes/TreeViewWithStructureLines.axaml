@@ -1,0 +1,99 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avConv="clr-namespace:Avalonia.Controls.Converters">
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ControlTheme x:Key="{x:Type TreeViewItem}" TargetType="TreeViewItem">
+        <Setter Property="Padding" Value="4, 0, 4, 0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="ClipToBounds" Value="False" />
+
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Grid RowDefinitions="Auto, *">
+              <Rectangle
+                x:Name="LineVert"
+                Grid.RowSpan="2"
+                Width="1"
+                Margin="{TemplateBinding Level,
+                                             Mode=OneWay,
+                                             Converter={StaticResource MarginMultiplierConverter}}"
+                HorizontalAlignment="Left"
+                Fill="{DynamicResource TreeViewItem/Line/Color}"
+                RenderTransform="TranslateX(9px)"
+                ZIndex="99" />
+              <Border
+                Name="PART_LayoutRoot"
+                MinHeight="{TemplateBinding MinHeight}"
+                Margin="4,2"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Classes="TreeViewItemLayoutRoot"
+                CornerRadius="{StaticResource ListBox/Item/CornerRadius}"
+                Focusable="True"
+                TemplatedControl.IsTemplateFocusTarget="True">
+                <Grid
+                  Name="PART_Header"
+                  Margin="{TemplateBinding Level,
+                                                 Mode=OneWay,
+                                                 Converter={StaticResource TreeViewItemLeftMarginConverter}}"
+                  ColumnDefinitions="Auto, *">
+                  <Panel Name="PART_ExpandCollapseChevronContainer" Width="36">
+                    <StackPanel Orientation="Horizontal">
+                      <Border
+                        Width="8"
+                        Height="16"
+                        Margin="0,0,4,0"
+                        VerticalAlignment="Top"
+                        BorderBrush="{DynamicResource TreeViewItem/Line/Color}"
+                        BorderThickness="1,0,0,1"
+                        CornerRadius="0, 0, 0, 8"
+                        IsVisible="True"
+                        RenderTransform="TranslateX(5px)" />
+                      <ToggleButton
+                        x:Name="PART_ExpandCollapseChevron"
+                        Width="20"
+                        Height="20"
+                        Focusable="False"
+                        IsChecked="{TemplateBinding IsExpanded,
+                                                                Mode=TwoWay}"
+                        Theme="{StaticResource ToggleButton/Theme/TreeExpander}" />
+                    </StackPanel>
+                  </Panel>
+
+                  <ContentPresenter
+                    Name="PART_HeaderPresenter"
+                    Grid.Column="1"
+                    Margin="{TemplateBinding Padding}"
+                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                    Background="Transparent"
+                    Content="{TemplateBinding Header}"
+                    ContentTemplate="{TemplateBinding HeaderTemplate}"
+                    Focusable="False" />
+                </Grid>
+              </Border>
+              <ItemsPresenter
+                Name="PART_ItemsPresenter"
+                Grid.Row="1"
+                IsVisible="{TemplateBinding IsExpanded}"
+                ItemsPanel="{TemplateBinding ItemsPanel}" />
+            </Grid>
+          </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^[IsEnabled=True] /template/ Rectangle#LineVert">
+          <Setter Property="Height" Value="8" />
+          <Setter Property="VerticalAlignment" Value="Top" />
+          <!--<Setter Property="Fill" Value="Red" />-->
+        </Style>
+
+        <!-- rest of styles -->
+      </ControlTheme>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+</Styles>

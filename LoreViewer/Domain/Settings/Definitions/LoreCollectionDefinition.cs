@@ -89,6 +89,14 @@ namespace LoreViewer.Domain.Settings.Definitions
     [DefaultValue(false)]
     public bool required { get; set; }
 
+    public string DisplayContainedTypeTag
+    {
+      get
+      {
+        if (!IsCollectionOfCollections) return entryTypeName;
+        else return "collection of " + (ContainedType as LoreCollectionDefinition).DisplayContainedTypeTag;
+      }
+    }
     public bool IsCollectionOfCollections => ContainedType is LoreCollectionDefinition;
 
     private bool MoreThanOneTrue(params bool[] booleans) => booleans.Where(b => b == true).Count() > 1;

@@ -5,6 +5,7 @@
              xmlns:svm="using:LoreViewer.Presentation.ViewModels.SettingsVMs"
              xmlns:conv="using:LoreViewer.Converters"
              xmlns:avconv="using:Avalonia.Markup.Xaml.Converters"
+             xmlns:avconv2="using:Avalonia.Controls.Converters"
              RequestedThemeVariant="Default">
   <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -14,6 +15,7 @@
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Simple.xaml" />
     <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Generic.axaml" />
     <StyleInclude Source="avares://LoreViewer/Resources/Themes/TreeDataGridTheme.axaml" />
+    <!--StyleInclude Source="avares://LoreViewer/Resources/Themes/TreeViewWithStructureLines.axaml" /-->
 
     <Style Selector="Button.rounded">
       <Setter Property="CornerRadius" Value="20"/>
@@ -46,6 +48,7 @@
       <conv:HasErrorsToHiddenGridLengthConverter x:Key="HasErrorsCollapseConverter"/>
       
       <avconv:ColorToBrushConverter x:Key="ColorToBrushConverter" />
+      <avconv2:MarginMultiplierConverter x:Key="MarginMultiplierConverter" />
 
     </ResourceDictionary>
   </Application.Resources>

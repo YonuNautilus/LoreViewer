@@ -1,5 +1,7 @@
-﻿using LoreViewer.Core.Parsing;
+﻿using DynamicData;
+using LoreViewer.Core.Parsing;
 using LoreViewer.Core.Stores;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Presentation.Services;
 using LoreViewer.Presentation.ViewModels.LoreEntities;
 using ReactiveUI;
@@ -51,6 +53,23 @@ namespace LoreViewer.Presentation.ViewModels.Modes
       this.RaisePropertyChanged(nameof(HasErrors));
     }
 
+    protected override void GoToEntity(LoreEntity entityToGoTo)
+    {
+      LoreEntityViewModel vmToSelect = null;
 
+      foreach(LoreEntityViewModel levm in Entities)
+      {
+        LoreEntityViewModel v = levm.GetChildVM(entityToGoTo);
+        if (v != null)
+        { 
+          vmToSelect = v;
+          break;
+        }
+      }
+
+      if (vmToSelect == null) return;
+
+      RowSelection.Select(EntityTreeData.Items.IndexOf(vmToSelect));
+    }
   }
 }

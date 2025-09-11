@@ -1,6 +1,8 @@
-﻿using LoreViewer.Domain.Entities;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Presentation.ViewModels;
 using LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 
@@ -43,6 +45,9 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities
     public string DisplayName { get => entity.Name; }
 
     public virtual ObservableCollection<LoreEntityViewModel> ShallowChildren { get; set; } = new();
+
+    public abstract LoreEntityViewModel GetChildVM(LoreEntity eToGet);
+
 
     //public Dictionary<string, string> GetSaveContent()
     //{

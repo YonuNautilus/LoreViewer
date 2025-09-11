@@ -1,0 +1,112 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vms="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
+             xmlns:elemviews="using:LoreViewer.Presentation.Views.LoreElementViews"
+             xmlns:controls="clr-namespace:LoreViewer.Presentation.Views.Controls"
+             xmlns:local="using:LoreViewer.Presentation.Views.Controls"
+             x:Class="LoreViewer.Presentation.Views.Controls.AttributeListView"
+             x:Name="AttrList">
+  <!-- Define the templates for each kind of attribute/value viewing case here
+  (And the converter that takes the LoreAttributeViewModel, checks how many values it has,
+  and returns the property datatemplate accordingly.)-->
+  <UserControl.Resources>
+    <DataTemplate x:Key="SingleValueTemplate" x:DataType="vms:LoreAttributeViewModel">
+      <Grid ColumnDefinitions="Auto, *" >
+        <Grid Grid.Column="0" ColumnDefinitions="Auto,Auto">
+          <Border Width="12"
+                  Height="5"
+                  Margin="-12,7,0,0"
+                  BorderThickness="1,0,0,1"
+                  CornerRadius="0,0,0,5"
+                  BorderBrush="{StaticResource ThemeBorderLowBrush}" 
+                  VerticalAlignment="Top"/>
+          <Label Grid.Column="1" Content="{Binding DisplayName}" FontWeight="Bold" />
+        </Grid>
+        <elemviews:AttributeValueView Grid.Column="1" DataContext="{Binding AttributeValues[0]}" />
+      </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="MultiValueTemplate" x:DataType="vms:LoreAttributeViewModel">
+      <Grid ColumnDefinitions="Auto, *">
+        <Grid Grid.Column="0" Grid.ColumnDefinitions="Auto,Auto">
+          <Border Width="12"
+                  Height="5"
+                  Margin="-12,7,0,0"
+                  BorderThickness="1,0,0,1"
+                  CornerRadius="0,0,0,5"
+                  BorderBrush="{StaticResource ThemeBorderLowBrush}"
+                  VerticalAlignment="Top"/>
+          <Label Grid.Column="1" Content="{Binding DisplayName}"
+                 VerticalAlignment="Top" FontWeight="Bold" />
+        </Grid>
+        <ItemsControl Grid.Column="1" HorizontalAlignment="Stretch"
+                      ItemsSource="{Binding AttributeValues}"
+                      BorderThickness="0">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <elemviews:AttributeValueView Grid.Column="1" DataContext="{Binding }" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="NestedTemplate" x:DataType="vms:LoreAttributeViewModel">
+      <Grid RowDefinitions="Auto, *">
+        <Grid Grid.Row="0" Grid.ColumnDefinitions="Auto,Auto">
+          <Border Width="12"
+                  Height="5"
+                  Margin="-12,7,0,0"
+                  BorderThickness="1,0,0,1"
+                  CornerRadius="0,0,0,5"
+                  BorderBrush="{StaticResource ThemeBorderLowBrush}" 
+                  VerticalAlignment="Top"/>
+          <Label Grid.Column="1" Content="{Binding DisplayName}" VerticalAlignment="Top" FontWeight="Bold" />
+        </Grid>
+        <local:AttributeListView Grid.Row="1" Attributes="{Binding NestedAttributes}" />
+      </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="ErrorTemplate" x:DataType="vms:LoreAttributeViewModel">
+      <TextBlock Text="Error On Attribute"/>
+    </DataTemplate>
+
+    <local:AttributeTemplateConverter x:Key="AttrTemplateConverter"
+                                      SingleValue="{StaticResource SingleValueTemplate}"
+                                      MultiValue="{StaticResource MultiValueTemplate}"
+                                      NestedAttrs="{StaticResource NestedTemplate}"
+                                      ErrorAttr="{StaticResource ErrorTemplate}"/>
+  </UserControl.Resources>
+
+  <Border Padding="-10,0,0,0"
+          Margin="5,0,0,0"
+          BorderThickness="1,0,0,0"
+          BorderBrush="{StaticResource ThemeBorderLowBrush}">
+
+    <TreeView ItemsSource="{Binding  Path=#AttrList.Attributes, DataType=controls:AttributeListView}"
+              BorderThickness="0"
+              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+              HorizontalAlignment="Stretch">
+      <TreeView.Styles>
+        <Style Selector="TreeViewItem /template/ ContentPresenter">
+          <Setter Property="Focusable" Value="False"/>
+          <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="TreeViewItem /template/ Border#SelectionBorder:pointerover">
+          <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="TreeViewItem:selected /template/ Border#SelectionBorder">
+          <Setter Property="Background" Value="Transparent"/>
+        </Style>
+      </TreeView.Styles>
+      <TreeView.ItemTemplate>
+        <TreeDataTemplate>
+          <ContentControl Content="{Binding}"
+                          ContentTemplate="{Binding
+                          Converter={StaticResource AttrTemplateConverter}}"
+                          ClipToBounds="False" />
+        </TreeDataTemplate>
+      </TreeView.ItemTemplate>
+    </TreeView>
+  </Border>
+</UserControl>

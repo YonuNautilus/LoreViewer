@@ -2,6 +2,7 @@
 using Avalonia.Controls.Selection;
 using LoreViewer.Core.Stores;
 using LoreViewer.Core.Validation;
+using LoreViewer.Domain.Entities;
 using LoreViewer.Presentation.Services;
 using LoreViewer.Presentation.ViewModels.LoreEntities;
 using ReactiveUI;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 
 namespace LoreViewer.Presentation.ViewModels.Modes
 {
@@ -18,6 +20,9 @@ namespace LoreViewer.Presentation.ViewModels.Modes
 
     protected LoreRepository m_oLoreRepo;
     protected ValidationStore m_oValidationRepo;
+
+
+    public ReactiveCommand<LoreEntity, Unit> GoToEntityCommand { get; }
 
     public ObservableCollection<LoreEntityViewModel> Entities { get; protected set; } = new ObservableCollection<LoreEntityViewModel>();
 
@@ -78,7 +83,11 @@ namespace LoreViewer.Presentation.ViewModels.Modes
 
       m_oValidationRepo = validationRepo;
       m_oValidationRepo.ValidationUpdated += ValidationRepoUpdated;
+
+      GoToEntityCommand = ReactiveCommand.Create<LoreEntity>(GoToEntity);
     }
+
+    protected abstract void GoToEntity(LoreEntity entityToGoTo);
 
     protected abstract void LoreRepoUpdated(object? sender, EventArgs e);
     protected abstract void ValidationRepoUpdated(object? sender, EventArgs e);

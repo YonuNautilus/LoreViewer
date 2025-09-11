@@ -2,7 +2,7 @@
 
 namespace LoreViewer.Presentation.ViewModels.LoreEntities
 {
-  public class LoreElementViewModel : LoreEntityViewModel
+  public abstract class LoreElementViewModel : LoreEntityViewModel
   {
     public string SourcePath { get => (entity as LoreElement).SourcePath; }
 

@@ -16,6 +16,20 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 
     public ObservableCollection<LoreAttributeViewModel> Attributes { get; set; }
 
+    public override LoreEntityViewModel GetChildVM(LoreEntity eToGet)
+    {
+      if (entity == eToGet) return this;
+     
+      if(Attributes != null && Attributes.Count > 0)
+        foreach(LoreAttributeViewModel a in Attributes)
+        {
+          LoreEntityViewModel evm = a.GetChildVM(eToGet);
+          if (evm != null) return evm;
+        }
+
+      return null;
+    }
+
     public LoreSectionViewModel(LoreSection sec) : base(sec)
     {
       if (sec.Attributes != null && sec.Attributes.Any()) Attributes = new(sec.Attributes.Select(a => new LoreAttributeViewModel(a)).ToList());

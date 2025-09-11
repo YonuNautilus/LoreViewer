@@ -1,6 +1,10 @@
-﻿using Avalonia.Media;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings.Definitions;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using Color = Avalonia.Media.Color;
 
 namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 {
@@ -44,6 +48,9 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
   public class ColorAttributeValueViewModel : AttributeValueViewModel
   {
     public Color Color { get => (m_oAttrVal as ColorAttributeValue).Value.BrushColor; }
+    public Color InverseColor { get => (m_oAttrVal as ColorAttributeValue).Value.InverseBrushColor; }
+    
+    public string ColorHex { get => (m_oAttrVal as ColorAttributeValue).Value.ColorHex; }
 
     public string ColorName { get => (m_oAttrVal as ColorAttributeValue).Value.Name; }
     public ColorAttributeValueViewModel(ColorAttributeValue attrVal) : base(attrVal) { }
@@ -51,6 +58,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 
   public class PicklistAttributeValueViewModel : AttributeValueViewModel
   {
+    public List<string> PicklistValues { get => m_oAttrVal.OwningAttribute.DefinitionAs<LoreFieldDefinition>().GetPicklistOptions(); }
     public PicklistAttributeValueViewModel(PicklistAttributeValue attrVal) : base(attrVal) { }
   }
 
@@ -58,6 +66,8 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
   {
     public string ReferencedID { get => (m_oAttrVal as ReferenceAttributeValue).ValueString; }
     public string NodeName { get => (m_oAttrVal as ReferenceAttributeValue).Value.Name; }
+
+    public ILoreNode ReferencedNode { get => (m_oAttrVal as ReferenceAttributeValue).Value; }
 
     public string DisplayText { get => $"{NodeName} [{ReferencedID}]"; }
     public ReferenceAttributeValueViewModel(ReferenceAttributeValue attrVal) : base(attrVal) { }
@@ -74,8 +84,13 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 
   public class QuantityAttributeValueViewModel : AttributeValueViewModel
   {
-    public string UnitString { get => (m_oAttrVal as QuantityAttributeValue).Value.Unit.BaseUnits.ToString(); }
+    public string UnitString { get => (m_oAttrVal as QuantityAttributeValue).Value.Unit.PluralName; }
     public string Magnitude { get => (m_oAttrVal as QuantityAttributeValue).Value.Magnitude.ToString(); }
+    
+    public string GetQuantityString
+    {
+      get => (m_oAttrVal as QuantityAttributeValue).GetQuantityString();
+    }
     public QuantityAttributeValueViewModel(QuantityAttributeValue attrVal) : base(attrVal) { }
   }
 

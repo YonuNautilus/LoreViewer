@@ -399,3 +399,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 LoreViewer.zip
+/.idea/.idea.LoreViewer/.idea

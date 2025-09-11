@@ -46,29 +46,40 @@ namespace LoreViewer.Presentation.Services
             {
               if(node == null) return new Panel();
               string imgPath = "";
+              string tooltipText = "";
               switch (valStore.Result.GetValidationStateForElement(node.entity))
               {
                 case Core.Validation.EValidationState.Warning:
                   imgPath = "avares://LoreViewer/Resources/warning.png";
+                  tooltipText = "Validation warning";
                   break;
                 case Core.Validation.EValidationState.Failed:
+                  imgPath = "avares://LoreViewer/Resources/delete.png";
+                  tooltipText = "Validation failure";
+                  break;
                 case Core.Validation.EValidationState.ChildFailed:
                   imgPath = "avares://LoreViewer/Resources/delete.png";
+                  tooltipText = "Child element had validation failure";
                   break;
                 case Core.Validation.EValidationState.Passed:
                   imgPath = "avares://LoreViewer/Resources/valid.png";
+                  tooltipText = "No validation issues found";
                   break;
                 case Core.Validation.EValidationState.ChildWarning:
                   imgPath = "avares://LoreViewer/Resources/childWarning.png";
+                  tooltipText = "Child element had validation warning";
                   break;
                 default: return new Panel();
               }
 
-              return new Image
+              Image retImg = new Image
               {
                 Source = new Bitmap(AssetLoader.Open(new Uri(imgPath))),
-                Width = 24
+                Width = 24,
               };
+              
+              ToolTip.SetTip(retImg, tooltipText);
+              return retImg;
             })
           ),
         }

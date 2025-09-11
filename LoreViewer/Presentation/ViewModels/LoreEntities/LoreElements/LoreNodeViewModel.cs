@@ -1,4 +1,5 @@
 ﻿using LoreViewer.Domain.Entities;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -23,12 +24,22 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
       }
     }
 
+
     private ObservableCollection<LoreAttributeViewModel> m_oAttributes;
     public ObservableCollection<LoreAttributeViewModel> Attributes { get => m_oAttributes; }
 
 
     private ObservableCollection<LoreSectionViewModel> m_oSections;
     public ObservableCollection<LoreSectionViewModel> Sections { get => m_oSections; }
+
+
+    private ObservableCollection<LoreCollectionViewModel> m_oCollections;
+    public ObservableCollection<LoreCollectionViewModel> Collection { get => m_oCollections; }
+
+
+    private ObservableCollection<LoreNodeViewModel> m_oEmbeddedNodes;
+    public ObservableCollection<LoreNodeViewModel> EmbeddedNodes { get => m_oEmbeddedNodes; }
+
 
     private int m_iCursorIndex;
 
@@ -41,12 +52,58 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
       }
     }
 
+    public override LoreEntityViewModel GetChildVM(LoreEntity eToGet)
+    {
+      if (entity == eToGet) return this;
+
+      if (m_oAttributes != null)
+      {
+        foreach (LoreAttributeViewModel a in m_oAttributes)
+        {
+          LoreEntityViewModel evm = a.GetChildVM(eToGet);
+          if (evm != null) return evm;
+        }
+      }
+
+      if(m_oSections != null)
+      {
+        foreach(LoreSectionViewModel s in m_oSections)
+        {
+          LoreEntityViewModel evm = s.GetChildVM(eToGet);
+          if (evm != null) return evm;
+        }
+      }
+
+      if(m_oCollections != null)
+      {
+        foreach(LoreCollectionViewModel c in m_oCollections)
+        {
+          LoreEntityViewModel evm = c.GetChildVM(eToGet);
+          if (evm != null) return evm;
+        }
+      }
+      
+
+      if(m_oEmbeddedNodes != null)
+      {
+        foreach(LoreNodeViewModel e in m_oEmbeddedNodes)
+        {
+          LoreEntityViewModel evm = e.GetChildVM(eToGet);
+          if (evm != null) return evm;
+        }
+      }
+
+      return null;
+    }
+
     public void ClearModifications() => m_sModifiedContent = string.Empty;
 
     public LoreNodeViewModel(ILoreNode node) : base(node as LoreEntity)
     {
       m_oAttributes = new ObservableCollection<LoreAttributeViewModel>(node.Attributes.Select(s => new LoreAttributeViewModel(s)));
       m_oSections = new ObservableCollection<LoreSectionViewModel>(node.Sections.Select(s => new LoreSectionViewModel(s)));
+      m_oCollections = new ObservableCollection<LoreCollectionViewModel>(node.Collections.Select(c => new LoreCollectionViewModel(c)));
+      m_oEmbeddedNodes = new ObservableCollection<LoreNodeViewModel>(node.Nodes.Select(n => new LoreNodeViewModel(n)));
     }
   }
 }
