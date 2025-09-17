@@ -12,9 +12,15 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
   {
     public string SectionTitle { get => entity.Name; }
     
-    public string SectionContent { get => (entity as LoreSection).Summary; }
+    public string SectionContent { get => (entity as LoreSection).Summary.Trim(); }
 
     public ObservableCollection<LoreAttributeViewModel> Attributes { get; set; }
+
+    public ObservableCollection<LoreSectionViewModel> Sections { get; set; }
+
+    public bool HasSections { get => (entity as ISectionContainer).HasSections; }
+    public bool HasAttributes { get => (entity as IAttributeContainer).HasAttributes; }
+    public bool HasContent { get => (entity as LoreSection).HasNarrativeText; }
 
     public override LoreEntityViewModel GetChildVM(LoreEntity eToGet)
     {
@@ -27,12 +33,20 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
           if (evm != null) return evm;
         }
 
+      if(Sections != null && Sections.Count > 0)
+        foreach(LoreSectionViewModel s in Sections)
+        {
+          LoreEntityViewModel evm = s.GetChildVM(eToGet);
+          if (evm != null) return evm;
+        }
+
       return null;
     }
 
     public LoreSectionViewModel(LoreSection sec) : base(sec)
     {
-      if (sec.Attributes != null && sec.Attributes.Any()) Attributes = new(sec.Attributes.Select(a => new LoreAttributeViewModel(a)).ToList());
+      if ((sec as IAttributeContainer).HasAttributes) Attributes = new(sec.Attributes.Select(a => new LoreAttributeViewModel(a)).ToList());
+      if ((sec as ISectionContainer).HasSections) Sections = new(sec.Sections.Select(s => new LoreSectionViewModel(s)).ToList());
     }
   }
 }

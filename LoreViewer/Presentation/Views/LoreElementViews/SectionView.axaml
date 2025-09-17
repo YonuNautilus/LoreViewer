@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
+             xmlns:elemViews="using:LoreViewer.Presentation.Views.LoreElementViews"
+             xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
+             x:Class="LoreViewer.Presentation.Views.LoreElementViews.SectionView"
+             x:DataType="vm:LoreSectionViewModel">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Label Grid.Column="1" FontWeight="Bold" Content="{Binding DisplayName}"/>
+    <Border 
+          Padding="5,0,0,0"
+          Margin="5,0,0,0"
+          BorderThickness="1,0,0,0"
+          BorderBrush="{StaticResource ThemeBorderLowBrush}"
+          Grid.Row="1"
+          IsVisible="{Binding HasContent}">
+      <Grid RowDefinitions="Auto,Auto,Auto">
+        <TextBlock Text="{Binding SectionContent}" Grid.Row="0" IsVisible="{Binding HasContent}"/>
+        <Expander Grid.Row="1" Header="Attributes" IsVisible="{Binding HasAttributes}" Theme="{StaticResource ResourceKey=SlimExpander}">
+          <controls:AttributeListView Attributes="{Binding Attributes}"/>
+        </Expander>
+        <Expander Grid.Row="2" Header="Sections" IsVisible="{Binding HasSections}" Theme="{StaticResource ResourceKey=SlimExpander}">
+          <controls:SectionListView Sections="{Binding Sections}"/>
+        </Expander>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

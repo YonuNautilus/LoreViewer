@@ -28,17 +28,22 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
     private ObservableCollection<LoreAttributeViewModel> m_oAttributes;
     public ObservableCollection<LoreAttributeViewModel> Attributes { get => m_oAttributes; }
 
+    public bool HasAttributes { get => m_oAttributes != null && m_oAttributes.Count > 0; }
+
 
     private ObservableCollection<LoreSectionViewModel> m_oSections;
     public ObservableCollection<LoreSectionViewModel> Sections { get => m_oSections; }
+    public bool HasSections { get => m_oSections != null && m_oSections.Count > 0; }
 
 
     private ObservableCollection<LoreCollectionViewModel> m_oCollections;
     public ObservableCollection<LoreCollectionViewModel> Collection { get => m_oCollections; }
+    public bool HasCollections { get => m_oCollections != null && m_oCollections.Count > 0; }
 
 
     private ObservableCollection<LoreNodeViewModel> m_oEmbeddedNodes;
     public ObservableCollection<LoreNodeViewModel> EmbeddedNodes { get => m_oEmbeddedNodes; }
+    public bool HasEmbeddedNodes { get => m_oEmbeddedNodes != null && m_oEmbeddedNodes.Count > 0; }
 
 
     private int m_iCursorIndex;

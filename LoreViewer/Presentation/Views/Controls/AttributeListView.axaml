@@ -53,18 +53,21 @@
       </Grid>
     </DataTemplate>
     <DataTemplate x:Key="NestedTemplate" x:DataType="vms:LoreAttributeViewModel">
-      <Grid RowDefinitions="Auto, *">
-        <Grid Grid.Row="0" Grid.ColumnDefinitions="Auto,Auto">
-          <Border Width="12"
-                  Height="5"
-                  Margin="-12,7,0,0"
-                  BorderThickness="1,0,0,1"
-                  CornerRadius="0,0,0,5"
-                  BorderBrush="{StaticResource ThemeBorderLowBrush}" 
-                  VerticalAlignment="Top"/>
-          <Label Grid.Column="1" Content="{Binding DisplayName}" VerticalAlignment="Top" FontWeight="Bold" />
-        </Grid>
-        <local:AttributeListView Grid.Row="1" Attributes="{Binding NestedAttributes}" />
+      <Grid Grid.ColumnDefinitions="Auto,Auto" x:Name="NestedGrid">
+        <Border Width="12"
+                Height="5"
+                Margin="-12,7,0,0"
+                BorderThickness="1,0,0,1"
+                CornerRadius="0,0,0,5"
+                BorderBrush="{StaticResource ThemeBorderLowBrush}"
+                VerticalAlignment="Top"
+                Grid.Column="0"/>
+        <Expander Theme="{StaticResource ResourceKey=SlimExpander}" Grid.Column="1">
+          <Expander.Header>
+            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Top" FontWeight="Bold" />
+          </Expander.Header>
+          <local:AttributeListView Grid.Row="1" Attributes="{Binding NestedAttributes}" />
+        </Expander>
       </Grid>
     </DataTemplate>
     <DataTemplate x:Key="ErrorTemplate" x:DataType="vms:LoreAttributeViewModel">
@@ -83,10 +86,13 @@
           BorderThickness="1,0,0,0"
           BorderBrush="{StaticResource ThemeBorderLowBrush}">
 
+    <!-- The source of items for the tree view is the StyledProperty "Attributes" on this very control,
+          which is an ObservableCollection<LoreAttributeViewModel> -->
     <TreeView ItemsSource="{Binding  Path=#AttrList.Attributes, DataType=controls:AttributeListView}"
               BorderThickness="0"
               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-              HorizontalAlignment="Stretch">
+              HorizontalAlignment="Stretch"
+              x:Name="AttrListTree">
       <TreeView.Styles>
         <Style Selector="TreeViewItem /template/ ContentPresenter">
           <Setter Property="Focusable" Value="False"/>
@@ -97,6 +103,9 @@
         </Style>
         <Style Selector="TreeViewItem:selected /template/ Border#SelectionBorder">
           <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="TreeViewItem /template/ Grid#PART_Header">
+          <Setter Property="Margin" Value="0,0,0,0"/>
         </Style>
       </TreeView.Styles>
       <TreeView.ItemTemplate>
