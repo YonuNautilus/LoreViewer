@@ -1,0 +1,99 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Design.PreviewWith>
+    <StackPanel Height="200" Width="200">
+
+      <ListBox Classes="with-lines">
+        <ListBox.Styles>
+          <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
+        </ListBox.Styles>
+        <ListBoxItem>
+          <Expander Header="1s" Theme="{StaticResource ResourceKey=SlimExpander}">
+            <ListBox>
+              <ListBox.Styles>
+                <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
+              </ListBox.Styles>
+              <ListBoxItem>1</ListBoxItem>
+              <ListBoxItem>1</ListBoxItem>
+              <ListBoxItem>1</ListBoxItem>
+              <ListBoxItem>1</ListBoxItem>
+              <ListBoxItem>1</ListBoxItem>
+              <ListBoxItem>1</ListBoxItem>
+              <ListBoxItem>1</ListBoxItem>
+              <ListBoxItem>1</ListBoxItem>
+            </ListBox>
+          </Expander>
+        </ListBoxItem>
+        <ListBoxItem></ListBoxItem>
+        <ListBoxItem></ListBoxItem>
+        <ListBoxItem></ListBoxItem>
+      </ListBox>
+    </StackPanel>
+  </Design.PreviewWith>
+
+  <ControlTheme x:Key="ListBoxWithItemLines"
+                TargetType="ListBoxItem">
+    <Setter Property="ClipToBounds" Value="False"/>
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="2 1" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid ColumnDefinitions="Auto,*" ClipToBounds="False">
+          <Border Name="LinkLine"
+                  x:Name="LinkLine"
+                  Width="12"
+                  Height="5"
+                  Margin="-4,7,0,0"
+                  BorderThickness="1,0,0,1"
+                  CornerRadius="0,0,0,5"
+                  BorderBrush="{StaticResource ThemeBorderLowBrush}"
+                  VerticalAlignment="Top"
+                  Grid.Column="0"/>
+          <ContentPresenter Grid.Column="1"
+                            Name="PART_ContentPresenter"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            CornerRadius="{TemplateBinding CornerRadius}" />
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+
+
+    <!--<Style Selector="^:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ThemeControlHighlightMidBrush}" />
+    </Style>
+
+    <Style Selector="^:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush4}" />
+    </Style>
+
+    <Style Selector="^:selected:focus /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
+    </Style>
+
+    <Style Selector="^:selected:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
+    </Style>
+
+    <Style Selector="^:selected:focus:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush2}" />
+    </Style>-->
+
+    <!--<Style Selector="ListBox:with-lines /template/ ScrollViewer#PART_ScrollViewer">
+      <Setter Property="ClipToBounds" Value="False"/>
+    </Style>
+
+    <Style Selector="ListBox:with-lines /template/ ListBoxItem">
+      <Setter Property="Theme" Value="{StaticResource ListBoxWithItemLines}" />
+    </Style>-->
+  </ControlTheme>
+</ResourceDictionary>

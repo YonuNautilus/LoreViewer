@@ -36,7 +36,7 @@
               <Expander.Header>
                 <TextBlock Text="Attributes" FontWeight="Bold"/>
               </Expander.Header>
-              <controls:AttributeListView Grid.Row="1" Attributes="{Binding Attributes, DataType=vm:LoreNodeViewModel}" />
+              <controls:AttributeListView Attributes="{Binding Attributes, DataType=vm:LoreNodeViewModel}" />
             </Expander>
           </ListBoxItem>
           <ListBoxItem>
@@ -44,7 +44,7 @@
               <Expander.Header>
                 <TextBlock Text="Sections" FontWeight="Bold"/>
               </Expander.Header>
-              <controls:SectionListView Grid.Row="1" Sections="{Binding Sections, DataType=vm:LoreNodeViewModel}" />
+              <controls:SectionListView Sections="{Binding Sections, DataType=vm:LoreNodeViewModel}" />
             </Expander>
           </ListBoxItem>
           <ListBoxItem>

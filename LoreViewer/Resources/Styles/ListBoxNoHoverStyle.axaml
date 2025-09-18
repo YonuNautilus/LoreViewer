@@ -6,6 +6,9 @@
     </Border>
   </Design.PreviewWith>
 
+  <Style Selector="ListBox">
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
   <Style Selector="ListBoxItem">
     <Setter Property="Padding" Value="0"/>
   </Style>

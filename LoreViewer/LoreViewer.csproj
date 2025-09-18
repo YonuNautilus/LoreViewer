@@ -18,6 +18,9 @@
     <AvaloniaResource Update="Resources\Styles\ListBoxNoHoverStyle.axaml">
       <SubType>Designer</SubType>
     </AvaloniaResource>
+    <AvaloniaResource Update="Resources\Themes\ListBoxItemWithSubitemLine.axaml">
+      <SubType>Designer</SubType>
+    </AvaloniaResource>
     <AvaloniaResource Update="Resources\Themes\SlimExpanderControlTheme.axaml">
       <SubType>Designer</SubType>
     </AvaloniaResource>
@@ -28,6 +31,7 @@
   <ItemGroup>
     <AvaloniaXaml Remove="Resources\GlobalValues\CommonText.axaml" />
     <AvaloniaXaml Remove="Resources\Styles\ListBoxNoHoverStyle.axaml" />
+    <AvaloniaXaml Remove="Resources\Themes\ListBoxItemWithSubitemLine.axaml" />
     <AvaloniaXaml Remove="Resources\Themes\TreeDataGridTheme.axaml" />
   </ItemGroup>
 

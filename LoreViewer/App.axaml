@@ -30,6 +30,7 @@
     <ResourceDictionary>
 
       <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://LoreViewer/Resources/Themes/ListBoxItemWithSubitemLine.axaml" />
         <ResourceInclude Source="avares://LoreViewer/Resources/Themes/SlimExpanderControlTheme.axaml" />
         <ResourceInclude Source="avares://LoreViewer/Resources/GlobalValues/CommonText.axaml" />
       </ResourceDictionary.MergedDictionaries>

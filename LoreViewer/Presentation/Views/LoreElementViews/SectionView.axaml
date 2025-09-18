@@ -14,21 +14,53 @@
       <RowDefinition/>
     </Grid.RowDefinitions>
     <Label Grid.Column="1" FontWeight="Bold" Content="{Binding DisplayName}"/>
-    <Border 
-          Padding="5,0,0,0"
+    <Border
+          Padding="3,0,0,0"
           Margin="5,0,0,0"
           BorderThickness="1,0,0,0"
           BorderBrush="{StaticResource ThemeBorderLowBrush}"
           Grid.Row="1"
           IsVisible="{Binding HasContent}">
-      <Grid RowDefinitions="Auto,Auto,Auto">
+      <Grid RowDefinitions="Auto,Auto,Auto" ClipToBounds="False">
         <TextBlock Text="{Binding SectionContent}" Grid.Row="0" IsVisible="{Binding HasContent}"/>
-        <Expander Grid.Row="1" Header="Attributes" IsVisible="{Binding HasAttributes}" Theme="{StaticResource ResourceKey=SlimExpander}">
-          <controls:AttributeListView Attributes="{Binding Attributes}"/>
-        </Expander>
-        <Expander Grid.Row="2" Header="Sections" IsVisible="{Binding HasSections}" Theme="{StaticResource ResourceKey=SlimExpander}">
-          <controls:SectionListView Sections="{Binding Sections}"/>
-        </Expander>
+
+        <Grid ColumnDefinitions="Auto,*" ClipToBounds="False" Grid.Row="1" IsVisible="{Binding HasAttributes}">
+          <Border x:Name="AttributesListLinkLine"
+                  Width="12"
+                  Height="5"
+                  Margin="-4,7,0,0"
+                  BorderThickness="1,0,0,1"
+                  CornerRadius="0,0,0,5"
+                  BorderBrush="{StaticResource ThemeBorderLowBrush}"
+                  VerticalAlignment="Top"
+                  Grid.Column="0"/>
+          <Expander Grid.Column="1" Theme="{StaticResource ResourceKey=SlimExpander}">
+            <Expander.Header>
+              <TextBlock Text="Attributes" VerticalAlignment="Top" FontWeight="Bold" />
+            </Expander.Header>
+            <controls:AttributeListView Attributes="{Binding Attributes}"/>
+          </Expander>
+
+        </Grid>
+
+        <Grid ColumnDefinitions="Auto,*" ClipToBounds="False" Grid.Row="2" IsVisible="{Binding HasSections}">
+          <Border x:Name="SectionsListLinkLine"
+                  Width="12"
+                  Height="5"
+                  Margin="-4,7,0,0"
+                  BorderThickness="1,0,0,1"
+                  CornerRadius="0,0,0,5"
+                  BorderBrush="{StaticResource ThemeBorderLowBrush}"
+                  VerticalAlignment="Top"
+                  Grid.Column="0"/>
+          <Expander Grid.Column="1" Theme="{StaticResource ResourceKey=SlimExpander}">
+            <Expander.Header>
+              <TextBlock Text="Sections" VerticalAlignment="Top" FontWeight="Bold" />
+            </Expander.Header>
+            <controls:AttributeListView Attributes="{Binding Sections}"/>
+          </Expander>
+
+        </Grid>
       </Grid>
     </Border>
   </Grid>

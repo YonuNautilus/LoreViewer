@@ -136,11 +136,11 @@
 
   <ControlTheme x:Key="SlimExpander"
                 TargetType="Expander">
-    <Setter Property="ContentTransition">
+    <!--<Setter Property="ContentTransition">
       <Setter.Value>
-        <CrossFade Duration="00:00:00.25" />
+        <PageSlide Duration="00:00:00.25" Orientation="Vertical"/>
       </Setter.Value>
-    </Setter>
+    </Setter>-->
     <Style Selector="^[ExpandDirection=Down]">
       <Setter Property="Template">
         <ControlTemplate>
@@ -157,14 +157,20 @@
                             IsChecked="{TemplateBinding IsExpanded,
                                                         Mode=TwoWay}"
                             Theme="{StaticResource SimpleSlimExpanderToggleButtonRightTheme}" />
-              <ContentPresenter Name="PART_ContentPresenter"
-                                Grid.Row="1"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                IsVisible="{TemplateBinding IsExpanded}" />
+              <Border Grid.Row="1"
+                      Padding="5,0,0,0"
+                      Margin="4,0,0,0"
+                      BorderThickness="1,0,0,0"
+                      BorderBrush="{StaticResource ThemeBorderLowBrush}">
+                <ContentPresenter Name="PART_ContentPresenter"
+                                  Padding="{TemplateBinding Padding}"
+                                  Margin="-5,0,0,0"
+                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  IsVisible="{TemplateBinding IsExpanded}" />
+              </Border>
             </Grid>
           </Border>
         </ControlTemplate>

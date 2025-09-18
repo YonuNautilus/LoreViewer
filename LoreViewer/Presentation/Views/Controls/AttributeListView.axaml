@@ -16,13 +16,6 @@
     <DataTemplate x:Key="SingleValueTemplate" x:DataType="vms:LoreAttributeViewModel">
       <Grid ColumnDefinitions="Auto, *" >
         <Grid Grid.Column="0" ColumnDefinitions="Auto,Auto">
-          <Border Width="12"
-                  Height="5"
-                  Margin="-12,7,0,0"
-                  BorderThickness="1,0,0,1"
-                  CornerRadius="0,0,0,5"
-                  BorderBrush="{StaticResource ThemeBorderLowBrush}" 
-                  VerticalAlignment="Top"/>
           <Label Grid.Column="1" Content="{Binding DisplayName}" FontWeight="Bold" />
         </Grid>
         <elemviews:AttributeValueView Grid.Column="1" DataContext="{Binding AttributeValues[0]}" />
@@ -31,13 +24,6 @@
     <DataTemplate x:Key="MultiValueTemplate" x:DataType="vms:LoreAttributeViewModel">
       <Grid ColumnDefinitions="Auto, *">
         <Grid Grid.Column="0" Grid.ColumnDefinitions="Auto,Auto">
-          <Border Width="12"
-                  Height="5"
-                  Margin="-12,7,0,0"
-                  BorderThickness="1,0,0,1"
-                  CornerRadius="0,0,0,5"
-                  BorderBrush="{StaticResource ThemeBorderLowBrush}"
-                  VerticalAlignment="Top"/>
           <Label Grid.Column="1" Content="{Binding DisplayName}"
                  VerticalAlignment="Top" FontWeight="Bold" />
         </Grid>
@@ -54,14 +40,6 @@
     </DataTemplate>
     <DataTemplate x:Key="NestedTemplate" x:DataType="vms:LoreAttributeViewModel">
       <Grid Grid.ColumnDefinitions="Auto,Auto" x:Name="NestedGrid">
-        <Border Width="12"
-                Height="5"
-                Margin="-12,7,0,0"
-                BorderThickness="1,0,0,1"
-                CornerRadius="0,0,0,5"
-                BorderBrush="{StaticResource ThemeBorderLowBrush}"
-                VerticalAlignment="Top"
-                Grid.Column="0"/>
         <Expander Theme="{StaticResource ResourceKey=SlimExpander}" Grid.Column="1">
           <Expander.Header>
             <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Top" FontWeight="Bold" />
@@ -81,41 +59,24 @@
                                       ErrorAttr="{StaticResource ErrorTemplate}"/>
   </UserControl.Resources>
 
-  <Border Padding="-10,0,0,0"
-          Margin="5,0,0,0"
-          BorderThickness="1,0,0,0"
-          BorderBrush="{StaticResource ThemeBorderLowBrush}">
-
-    <!-- The source of items for the tree view is the StyledProperty "Attributes" on this very control,
+  <!-- The source of items for the tree view is the StyledProperty "Attributes" on this very control,
           which is an ObservableCollection<LoreAttributeViewModel> -->
-    <TreeView ItemsSource="{Binding  Path=#AttrList.Attributes, DataType=controls:AttributeListView}"
-              BorderThickness="0"
-              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-              HorizontalAlignment="Stretch"
-              x:Name="AttrListTree">
-      <TreeView.Styles>
-        <Style Selector="TreeViewItem /template/ ContentPresenter">
-          <Setter Property="Focusable" Value="False"/>
-          <Setter Property="Background" Value="Transparent"/>
-        </Style>
-        <Style Selector="TreeViewItem /template/ Border#SelectionBorder:pointerover">
-          <Setter Property="Background" Value="Transparent"/>
-        </Style>
-        <Style Selector="TreeViewItem:selected /template/ Border#SelectionBorder">
-          <Setter Property="Background" Value="Transparent"/>
-        </Style>
-        <Style Selector="TreeViewItem /template/ Grid#PART_Header">
-          <Setter Property="Margin" Value="0,0,0,0"/>
-        </Style>
-      </TreeView.Styles>
-      <TreeView.ItemTemplate>
-        <TreeDataTemplate>
-          <ContentControl Content="{Binding}"
-                          ContentTemplate="{Binding
-                          Converter={StaticResource AttrTemplateConverter}}"
-                          ClipToBounds="False" />
-        </TreeDataTemplate>
-      </TreeView.ItemTemplate>
-    </TreeView>
-  </Border>
+  <ListBox ItemsSource="{Binding  Path=#AttrList.Attributes, DataType=controls:AttributeListView}"
+           BorderThickness="0"
+           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           HorizontalAlignment="Stretch"
+           x:Name="AttrListTree"
+           Classes="with-lines"
+           ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
+    <ListBox.Styles>
+      <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
+    </ListBox.Styles>
+    <ListBox.ItemTemplate>
+      <DataTemplate>
+        <ContentControl Content="{Binding}"
+                        ContentTemplate="{Binding Converter={StaticResource AttrTemplateConverter}}"
+                        ClipToBounds="False" />
+      </DataTemplate>
+    </ListBox.ItemTemplate>
+  </ListBox>
 </UserControl>

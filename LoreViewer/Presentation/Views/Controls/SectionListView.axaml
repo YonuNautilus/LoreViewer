@@ -10,49 +10,21 @@
              x:Class="LoreViewer.Presentation.Views.Controls.SectionListView"
              x:Name="SecList">
 
-  <Border Padding="-10,0,0,0"
-          Margin="5,0,0,0"
-          BorderThickness="1,0,0,0"
-          BorderBrush="{StaticResource ThemeBorderLowBrush}">
-
-    <!-- The source of items for the tree view is the StyledProperty "Attributes" on this very control,
+  <!-- The source of items for the tree view is the StyledProperty "Attributes" on this very control,
           which is an ObservableCollection<LoreAttributeViewModel> -->
-    <TreeView ItemsSource="{Binding  Path=#SecList.Sections, DataType=controls:SectionListView}"
-              BorderThickness="0"
-              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-              HorizontalAlignment="Stretch"
-              x:Name="SectionListTree">
-      <TreeView.Styles>
-        <Style Selector="TreeViewItem /template/ ContentPresenter">
-          <Setter Property="Focusable" Value="False"/>
-          <Setter Property="Background" Value="Transparent"/>
-        </Style>
-        <Style Selector="TreeViewItem /template/ Border#SelectionBorder:pointerover">
-          <Setter Property="Background" Value="Transparent"/>
-        </Style>
-        <Style Selector="TreeViewItem:selected /template/ Border#SelectionBorder">
-          <Setter Property="Background" Value="Transparent"/>
-        </Style>
-        <Style Selector="TreeViewItem /template/ Grid#PART_Header">
-          <Setter Property="Margin" Value="0,0,0,0"/>
-        </Style>
-      </TreeView.Styles>
-      <TreeView.ItemTemplate>
-        <TreeDataTemplate>
-          <Grid ColumnDefinitions="Auto,*">
-            <Border Width="12"
-                    Height="5"
-                    Margin="-12,7,0,0"
-                    BorderThickness="1,0,0,1"
-                    CornerRadius="0,0,0,5"
-                    BorderBrush="{StaticResource ThemeBorderLowBrush}"
-                    VerticalAlignment="Top"
-                    Grid.Column="0"/>
-
-            <elemviews:SectionView Grid.Column="1" DataContext="{Binding .}" />
-          </Grid>
-        </TreeDataTemplate>
-      </TreeView.ItemTemplate>
-    </TreeView>
-  </Border>
+  <ListBox ItemsSource="{Binding  Path=#SecList.Sections, DataType=controls:SectionListView}"
+            BorderThickness="0"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            HorizontalAlignment="Stretch"
+            x:Name="SectionListTree"
+            ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
+    <ListBox.Styles>
+      <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
+    </ListBox.Styles>
+    <ListBox.ItemTemplate>
+      <DataTemplate>
+        <elemviews:SectionView Grid.Column="1" DataContext="{Binding .}" />
+      </DataTemplate>
+    </ListBox.ItemTemplate>
+  </ListBox>
 </UserControl>
