@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:elemviews="using:LoreViewer.Presentation.Views.LoreElementViews"
+             xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
+             x:Class="LoreViewer.Presentation.Views.Controls.NodeListView"
+             x:Name="NodeList">
+  
+  <ListBox ItemsSource="{Binding  Path=#NodeList.Nodes, DataType=controls:NodeListView}"
+           BorderThickness="0"
+           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           HorizontalAlignment="Stretch"
+           x:Name="CollectionListBox"
+           Classes="with-lines"
+           ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
+    <ListBox.Styles>
+      <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
+    </ListBox.Styles>
+    <ListBox.ItemTemplate>
+      <DataTemplate>
+        <elemviews:SubNodeView Grid.Column="1" DataContext="{Binding .}" />
+      </DataTemplate>
+    </ListBox.ItemTemplate>
+  </ListBox>
+</UserControl>

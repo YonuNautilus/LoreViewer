@@ -22,7 +22,7 @@
           Grid.Row="1"
           IsVisible="{Binding HasContent}">
       <Grid RowDefinitions="Auto,Auto,Auto" ClipToBounds="False">
-        <TextBlock Text="{Binding SectionContent}" Grid.Row="0" IsVisible="{Binding HasContent}"/>
+        <TextBlock Text="{Binding SectionContent}" Grid.Row="0" IsVisible="{Binding HasContent}" TextWrapping="Wrap"/>
 
         <Grid ColumnDefinitions="Auto,*" ClipToBounds="False" Grid.Row="1" IsVisible="{Binding HasAttributes}">
           <Border x:Name="AttributesListLinkLine"
@@ -57,7 +57,7 @@
             <Expander.Header>
               <TextBlock Text="Sections" VerticalAlignment="Top" FontWeight="Bold" />
             </Expander.Header>
-            <controls:AttributeListView Attributes="{Binding Sections}"/>
+            <controls:SectionListView Sections="{Binding Sections}"/>
           </Expander>
 
         </Grid>

@@ -13,6 +13,11 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
   public class LoreCollectionViewModel : LoreElementViewModel
   {
     public LoreCollection trueEntity => entity as LoreCollection;
+
+    public bool HasNarrativeText
+    {
+      get => !string.IsNullOrEmpty(trueEntity.Summary);
+    }
     
     public string NarrativeText
     {
@@ -20,8 +25,15 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
     }
 
     public ObservableCollection<LoreEntityViewModel> ContainedItems { get; }
+    internal ObservableCollection<LoreNodeViewModel> ContainedNodes { get; }
+    internal ObservableCollection<LoreCollectionViewModel> ContainedCollections { get; }
 
     public string DisplayContainedType { get => trueEntity.DefinitionAs<LoreCollectionDefinition>().DisplayContainedTypeTag; }
+
+    public string ListDisplayName { get => $"{trueEntity.Count} Items (type: {trueEntity.DefinitionAs<LoreCollectionDefinition>().ContainedType.name})"; }
+
+    public bool ContainsCollections { get => trueEntity.ContainsCollections; }
+    public bool ContainsNodes { get => trueEntity.ContainsNodes; }
 
 
     public override LoreEntityViewModel GetChildVM(LoreEntity eToGet)
@@ -42,15 +54,16 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
     {
       if (lc.HasCollections)
       {
-        ShallowChildren = new ObservableCollection<LoreEntityViewModel>(lc.Collections.Select(c => new LoreCollectionViewModel(c)));
+        ShallowChildren = new ObservableCollection<LoreEntityViewModel>(lc.Collections.Select(c => CreateViewModel(c)));
+        ContainedCollections = new ObservableCollection<LoreCollectionViewModel>(ShallowChildren.Cast<LoreCollectionViewModel>());
       }
       else
       {
-        ShallowChildren = new ObservableCollection<LoreEntityViewModel>(lc.Nodes.Select(n => LoreEntityViewModel.CreateViewModel(n)));
+        ShallowChildren = new ObservableCollection<LoreEntityViewModel>(lc.Nodes.Select(n => CreateViewModel(n)));
+        ContainedNodes = new ObservableCollection<LoreNodeViewModel>(ShallowChildren.Cast<LoreNodeViewModel>());
       }
 
       ContainedItems = ShallowChildren;
-      
     }
   }
 }

@@ -37,7 +37,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 
 
     private ObservableCollection<LoreCollectionViewModel> m_oCollections;
-    public ObservableCollection<LoreCollectionViewModel> Collection { get => m_oCollections; }
+    public ObservableCollection<LoreCollectionViewModel> Collections { get => m_oCollections; }
     public bool HasCollections { get => m_oCollections != null && m_oCollections.Count > 0; }
 
 

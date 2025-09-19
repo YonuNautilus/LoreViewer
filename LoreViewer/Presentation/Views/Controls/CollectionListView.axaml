@@ -7,23 +7,22 @@
              xmlns:elemviews="using:LoreViewer.Presentation.Views.LoreElementViews"
              xmlns:controls="clr-namespace:LoreViewer.Presentation.Views.Controls"
              xmlns:local="using:LoreViewer.Presentation.Views.Controls"
-             x:Class="LoreViewer.Presentation.Views.Controls.SectionListView"
-             x:Name="SecList">
-
-  <!-- The source of items for the tree view is the StyledProperty "Attributes" on this very control,
-          which is an ObservableCollection<LoreAttributeViewModel> -->
-  <ListBox ItemsSource="{Binding  Path=#SecList.Sections, DataType=controls:SectionListView}"
-            BorderThickness="0"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            HorizontalAlignment="Stretch"
-            x:Name="SectionListBox"
-            ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
+             x:Class="LoreViewer.Presentation.Views.Controls.CollectionListView"
+             x:Name="ColList">
+  
+  <ListBox ItemsSource="{Binding  Path=#ColList.Collections, DataType=controls:CollectionListView}"
+           BorderThickness="0"
+           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           HorizontalAlignment="Stretch"
+           x:Name="CollectionListBox"
+           Classes="with-lines"
+           ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
     <ListBox.Styles>
       <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
     </ListBox.Styles>
     <ListBox.ItemTemplate>
       <DataTemplate>
-        <elemviews:SectionView Grid.Column="1" DataContext="{Binding .}" />
+        <elemviews:CollectionView Grid.Column="1" DataContext="{Binding .}" />
       </DataTemplate>
     </ListBox.ItemTemplate>
   </ListBox>

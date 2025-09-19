@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
              xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
+             xmlns:leviews="using:LoreViewer.Presentation.Views.LoreElementViews"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Presentation.Views.LoreElementViews.NodeViewBasic"
              x:DataType="vm:LoreNodeViewModel"
@@ -27,45 +28,7 @@
           </DockPanel>
           <Label Content="Node Info" DockPanel.Dock="Left" />
         </DockPanel>
-        <ListBox Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
-          <ListBox.Styles>
-            <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
-          </ListBox.Styles>
-          <ListBoxItem>
-            <Expander IsExpanded="True" IsVisible="{Binding HasAttributes}" Theme="{StaticResource ResourceKey=SlimExpander}">
-              <Expander.Header>
-                <TextBlock Text="Attributes" FontWeight="Bold"/>
-              </Expander.Header>
-              <controls:AttributeListView Attributes="{Binding Attributes, DataType=vm:LoreNodeViewModel}" />
-            </Expander>
-          </ListBoxItem>
-          <ListBoxItem>
-            <Expander IsExpanded="True" IsVisible="{Binding HasSections}" Theme="{StaticResource ResourceKey=SlimExpander}">
-              <Expander.Header>
-                <TextBlock Text="Sections" FontWeight="Bold"/>
-              </Expander.Header>
-              <controls:SectionListView Sections="{Binding Sections, DataType=vm:LoreNodeViewModel}" />
-            </Expander>
-          </ListBoxItem>
-          <ListBoxItem>
-            <Expander IsExpanded="True" IsVisible="{Binding HasEmbeddedNodes}" Theme="{StaticResource ResourceKey=SlimExpander}">
-              <Expander.Header>
-                <TextBlock Text="Embedded Nodes" FontWeight="Bold"/>
-              </Expander.Header>
-              <!--<controls:AttributeListView Grid.Row="1" Attributes="{Binding Attributes, DataType=vm:LoreNodeViewModel}" />-->
-              <TextBlock Text="EMBEDDED NODES TO GO HERE"/>
-            </Expander>
-          </ListBoxItem>
-          <ListBoxItem>
-            <Expander IsExpanded="True" IsVisible="{Binding HasCollections}" Theme="{StaticResource ResourceKey=SlimExpander}">
-              <Expander.Header>
-                <TextBlock Text="Collections" FontWeight="Bold"/>
-              </Expander.Header>
-              <!--<controls:AttributeListView Grid.Row="1" Attributes="{Binding Attributes, DataType=vm:LoreNodeViewModel}" />-->
-              <TextBlock Text="COLLECTIONS TO GO HERE"/>
-            </Expander>
-          </ListBoxItem>
-        </ListBox>
+        <leviews:SubNodeView Grid.Row="1" DataContext="{Binding}"/>
       </Grid>
     </Grid>
   </DockPanel>

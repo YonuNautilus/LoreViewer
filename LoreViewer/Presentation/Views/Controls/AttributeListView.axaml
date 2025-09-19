@@ -65,7 +65,7 @@
            BorderThickness="0"
            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
            HorizontalAlignment="Stretch"
-           x:Name="AttrListTree"
+           x:Name="AttributeListBox"
            Classes="with-lines"
            ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
     <ListBox.Styles>

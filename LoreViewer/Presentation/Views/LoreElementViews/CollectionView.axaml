@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LoreViewer.Presentation.Views.LoreElementViews.CollectionView"
+             xmlns:local="using:LoreViewer.Presentation.Views"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
+             xmlns:elemViews="using:LoreViewer.Presentation.Views.LoreElementViews"
+             xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
+             x:DataType="vm:LoreCollectionViewModel">
+  <!-- Define the templates for collection of nodes vs collection of collections
+  (And the converter that takes the LoreCollectionViewModel, checks if it contains
+  collections or nodes, and returns the property datatemplate accordingly.)-->
+  <UserControl.Resources>
+    <DataTemplate x:Key="CollectionOfNodesTemplate" x:DataType="vm:LoreCollectionViewModel">
+      <controls:NodeListView Nodes="{Binding ContainedNodes}" />
+    </DataTemplate>
+    <DataTemplate x:Key="CollectionOfCollections" x:DataType="vm:LoreCollectionViewModel">
+      <controls:CollectionListView Collections="{Binding ContainedCollections}" />
+    </DataTemplate>
+    <DataTemplate x:Key="ErrorTemplate" x:DataType="vm:LoreAttributeViewModel">
+      <TextBlock Text="Error On Item In Collection"/>
+    </DataTemplate>
+
+    <elemViews:CollectionTemplateConverter x:Key="ColTemplateConverter"
+                                       CollectionsTemplate="{StaticResource CollectionOfCollections}"
+                                       NodesTemplate="{StaticResource CollectionOfNodesTemplate}"
+                                       ErrorTemplate="{StaticResource ErrorTemplate}"/>
+  </UserControl.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Label Grid.Row="0" FontWeight="Bold" Content="{Binding DisplayName}"/>
+    <Grid RowDefinitions="Auto, Auto" Margin="8,0,0,0" Grid.Row="1">
+      <TextBlock Grid.Row="0" Text="{Binding NarrativeText}" IsVisible="{Binding HasNarrativeText}"/>
+      <Expander Grid.Row="1" Theme="{StaticResource ResourceKey=SlimExpander}" Margin="-8,0,0,0">
+        <Expander.Header>
+          <TextBlock Text="{Binding ListDisplayName}" />
+        </Expander.Header>
+        <Grid ColumnDefinitions="Auto,*">
+          <Border Name="LinkLine"
+                  x:Name="LinkLine"
+                  Width="12"
+                  Height="5"
+                  Margin="-4,7,0,0"
+                  BorderThickness="1,0,0,1"
+                  CornerRadius="0,0,0,5"
+                  BorderBrush="{StaticResource ThemeBorderLowBrush}"
+                  VerticalAlignment="Top"
+                  Grid.Column="0"/>
+          <ContentControl Content="{Binding}"
+                          Grid.Row="1"
+                          ContentTemplate="{Binding Converter={StaticResource ColTemplateConverter}}"
+                          ClipToBounds="False" />
+        </Grid>
+      </Expander>
+    </Grid>
+  </Grid>
+</UserControl>
