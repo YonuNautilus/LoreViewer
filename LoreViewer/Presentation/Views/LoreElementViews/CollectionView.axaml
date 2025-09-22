@@ -45,7 +45,7 @@
                   x:Name="LinkLine"
                   Width="12"
                   Height="5"
-                  Margin="-4,7,0,0"
+                  Margin="0,7,0,0"
                   BorderThickness="1,0,0,1"
                   CornerRadius="0,0,0,5"
                   BorderBrush="{StaticResource ThemeBorderLowBrush}"

@@ -11,11 +11,12 @@
              x:Name="ColList">
   
   <ListBox ItemsSource="{Binding  Path=#ColList.Collections, DataType=controls:CollectionListView}"
+           Theme="{StaticResource ResourceKey=ListBoxWithoutScrollviewer}"
            BorderThickness="0"
            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           ScrollViewer.VerticalScrollBarVisibility="Disabled"
            HorizontalAlignment="Stretch"
            x:Name="CollectionListBox"
-           Classes="with-lines"
            ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
     <ListBox.Styles>
       <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>

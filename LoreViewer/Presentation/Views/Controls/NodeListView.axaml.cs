@@ -13,8 +13,8 @@ public partial class NodeListView : UserControl
 
   internal ObservableCollection<LoreNodeViewModel> Nodes
   {
-    get => GetValue(NodesProperty);
-    set => SetValue(NodesProperty, value);
+    get { return GetValue(NodesProperty); }
+    set { SetValue(NodesProperty, value); }
   }
 
   public NodeListView()

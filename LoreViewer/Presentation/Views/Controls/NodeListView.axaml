@@ -9,18 +9,19 @@
              x:Name="NodeList">
   
   <ListBox ItemsSource="{Binding  Path=#NodeList.Nodes, DataType=controls:NodeListView}"
+           Theme="{StaticResource ResourceKey=ListBoxWithoutScrollviewer}"
            BorderThickness="0"
            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           ScrollViewer.VerticalScrollBarVisibility="Disabled"
            HorizontalAlignment="Stretch"
-           x:Name="CollectionListBox"
-           Classes="with-lines"
+           x:Name="NodeListBox"
            ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
     <ListBox.Styles>
       <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
     </ListBox.Styles>
     <ListBox.ItemTemplate>
       <DataTemplate>
-        <elemviews:SubNodeView Grid.Column="1" DataContext="{Binding .}" />
+        <elemviews:SubNodeView DataContext="{Binding .}" />
       </DataTemplate>
     </ListBox.ItemTemplate>
   </ListBox>

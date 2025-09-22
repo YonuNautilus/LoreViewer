@@ -15,6 +15,8 @@
   <ListBox ItemsSource="{Binding  Path=#SecList.Sections, DataType=controls:SectionListView}"
             BorderThickness="0"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Disabled"
+            Theme="{StaticResource ResourceKey=ListBoxWithoutScrollviewer}"
             HorizontalAlignment="Stretch"
             x:Name="SectionListBox"
             ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">

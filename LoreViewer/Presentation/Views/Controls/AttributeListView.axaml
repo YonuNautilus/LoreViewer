@@ -64,9 +64,10 @@
   <ListBox ItemsSource="{Binding  Path=#AttrList.Attributes, DataType=controls:AttributeListView}"
            BorderThickness="0"
            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           ScrollViewer.VerticalScrollBarVisibility="Disabled"
+           Theme="{StaticResource ResourceKey=ListBoxWithoutScrollviewer}"
            HorizontalAlignment="Stretch"
            x:Name="AttributeListBox"
-           Classes="with-lines"
            ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
     <ListBox.Styles>
       <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>

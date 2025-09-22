@@ -28,7 +28,9 @@
           </DockPanel>
           <Label Content="Node Info" DockPanel.Dock="Left" />
         </DockPanel>
-        <leviews:SubNodeView Grid.Row="1" DataContext="{Binding}"/>
+        <ScrollViewer Grid.Row="1">
+          <leviews:SubNodeView DataContext="{Binding}"/>
+        </ScrollViewer>
       </Grid>
     </Grid>
   </DockPanel>

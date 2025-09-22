@@ -2,9 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <Design.PreviewWith>
-    <StackPanel Height="200" Width="200">
+    <ScrollViewer Height="200" Width="200">
 
-      <ListBox Classes="with-lines">
+      <ListBox Theme="{StaticResource ResourceKey=ListBoxWithoutScrollviewer}"
+               ItemContainerTheme="{StaticResource ResourceKey=ListBoxWithItemLines}">
         <ListBox.Styles>
           <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
         </ListBox.Styles>
@@ -25,13 +26,24 @@
             </ListBox>
           </Expander>
         </ListBoxItem>
-        <ListBoxItem></ListBoxItem>
-        <ListBoxItem></ListBoxItem>
-        <ListBoxItem></ListBoxItem>
+        <ListBoxItem>2</ListBoxItem>
+        <ListBoxItem>3</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
+        <ListBoxItem>4</ListBoxItem>
       </ListBox>
-    </StackPanel>
+    </ScrollViewer>
   </Design.PreviewWith>
-
+  
   <ControlTheme x:Key="ListBoxWithItemLines"
                 TargetType="ListBoxItem">
     <Setter Property="ClipToBounds" Value="False"/>
@@ -46,7 +58,7 @@
                   x:Name="LinkLine"
                   Width="12"
                   Height="5"
-                  Margin="-4,7,0,0"
+                  Margin="0,7,0,0"
                   BorderThickness="1,0,0,1"
                   CornerRadius="0,0,0,5"
                   BorderBrush="{StaticResource ThemeBorderLowBrush}"
@@ -66,34 +78,5 @@
         </Grid>
       </ControlTemplate>
     </Setter>
-
-
-    <!--<Style Selector="^:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ThemeControlHighlightMidBrush}" />
-    </Style>
-
-    <Style Selector="^:selected /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush4}" />
-    </Style>
-
-    <Style Selector="^:selected:focus /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
-    </Style>
-
-    <Style Selector="^:selected:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
-    </Style>
-
-    <Style Selector="^:selected:focus:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush2}" />
-    </Style>-->
-
-    <!--<Style Selector="ListBox:with-lines /template/ ScrollViewer#PART_ScrollViewer">
-      <Setter Property="ClipToBounds" Value="False"/>
-    </Style>
-
-    <Style Selector="ListBox:with-lines /template/ ListBoxItem">
-      <Setter Property="Theme" Value="{StaticResource ListBoxWithItemLines}" />
-    </Style>-->
   </ControlTheme>
 </ResourceDictionary>

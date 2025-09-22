@@ -7,7 +7,13 @@
              xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
              x:Class="LoreViewer.Presentation.Views.LoreElementViews.SubNodeView"
              x:DataType="vm:LoreNodeViewModel">
-  <ListBox Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
+  <ListBox
+    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+    ScrollViewer.VerticalScrollBarVisibility="Disabled"
+    BorderThickness="0"
+    HorizontalAlignment="Stretch"
+    Theme="{StaticResource ResourceKey=ListBoxWithoutScrollviewer}"
+    x:Name="NodeElementsList">
     <ListBox.Styles>
       <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
     </ListBox.Styles>
@@ -32,8 +38,7 @@
         <Expander.Header>
           <TextBlock Text="Embedded Nodes" FontWeight="Bold"/>
         </Expander.Header>
-        <!--<controls:EmbeddedNodesListView Grid.Row="1" Attributes="{Binding EmbeddedNodes, DataType=vm:LoreNodeViewModel}" />-->
-        <TextBlock Text="EMBEDDED NODES TO GO HERE"/>
+        <controls:NodeListView Nodes="{Binding EmbeddedNodes}" />
       </Expander>
     </ListBoxItem>
     <ListBoxItem>
