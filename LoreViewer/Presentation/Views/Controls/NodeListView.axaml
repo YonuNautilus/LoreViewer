@@ -21,7 +21,7 @@
     </ListBox.Styles>
     <ListBox.ItemTemplate>
       <DataTemplate>
-        <elemviews:SubNodeView DataContext="{Binding .}" />
+        <elemviews:NodeView DataContext="{Binding .}" />
       </DataTemplate>
     </ListBox.ItemTemplate>
   </ListBox>

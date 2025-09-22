@@ -118,6 +118,14 @@ namespace LoreViewer.Domain.Entities
 
     public List<LoreNode> InternalNodes { get { return _internalNodes; } }
 
+    public string Summary
+    {
+      get
+      {
+        return string.Join("\n", InternalNodes.Where(n => n.HasNarrativeText).Select(n => n.Summary));
+      }
+    }
+
     public LoreCompositeNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
 
     public LoreCompositeNode(LoreNode newNode) : base(newNode.Name, newNode.Definition) { _internalNodes.Add(newNode); }

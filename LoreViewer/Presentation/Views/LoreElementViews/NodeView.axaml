@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
+             xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
+             xmlns:elemviews="using:LoreViewer.Presentation.Views.LoreElementViews"
+             x:Class="LoreViewer.Presentation.Views.LoreElementViews.NodeView"
+             x:DataType="vm:LoreNodeViewModel">
+  <Grid RowDefinitions="Auto,Auto">
+    <Label Content="{Binding DisplayName}" Grid.Row="0"/>
+    <elemviews:SubNodeView DataContext="{Binding .}" Grid.Row="1"/>
+  </Grid>
+</UserControl>

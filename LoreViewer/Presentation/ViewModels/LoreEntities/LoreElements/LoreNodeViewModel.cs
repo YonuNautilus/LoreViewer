@@ -24,6 +24,10 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
       }
     }
 
+    public string NarrativeText { get => Node.NarrativeContent; }
+
+    public bool HasNarrativeText { get => !string.IsNullOrWhiteSpace(NarrativeText); }
+
 
     private ObservableCollection<LoreAttributeViewModel> m_oAttributes;
     public ObservableCollection<LoreAttributeViewModel> Attributes { get => m_oAttributes; }

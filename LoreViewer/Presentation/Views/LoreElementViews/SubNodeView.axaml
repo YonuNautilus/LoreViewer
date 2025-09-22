@@ -18,6 +18,9 @@
       <StyleInclude Source="avares://LoreViewer/Resources/Styles/ListBoxNoHoverStyle.axaml"/>
     </ListBox.Styles>
     <ListBoxItem>
+      <TextBlock Text="{Binding NarrativeText}" IsVisible="{Binding HasNarrativeText}"/>
+    </ListBoxItem>
+    <ListBoxItem>
       <Expander IsExpanded="True" IsVisible="{Binding HasAttributes}" Theme="{StaticResource ResourceKey=SlimExpander}">
         <Expander.Header>
           <TextBlock Text="Attributes" FontWeight="Bold"/>

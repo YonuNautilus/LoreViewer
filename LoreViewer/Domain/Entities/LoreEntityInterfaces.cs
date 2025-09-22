@@ -69,6 +69,18 @@ namespace LoreViewer.Domain.Entities
   /// </summary>
   public interface ILoreNode : ILoreEntity, ISectionContainer, IAttributeContainer, IEmbeddedNodeContainer, ICollectionContainer
   {
+    string NarrativeContent
+    {
+      get
+      {
+        if (this is LoreCompositeNode lcn)
+        {
+          return lcn.Summary;
+        }
+        else return (this as LoreNode).Summary;
+      }
+    }
+
     ILoreNode MergeWith(LoreNode node);
     bool CanMergeWith(LoreNode node);
   }

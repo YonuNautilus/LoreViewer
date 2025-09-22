@@ -5,6 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:local="using:LoreViewer.Presentation.Views.Controls"
              xmlns:entityViews="using:LoreViewer.Presentation.Views.LoreElementViews"
+             xmlns:controls="using:LoreViewer.Presentation.Views.Controls"
              xmlns:vmel="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
              xmlns:vment="using:LoreViewer.Presentation.ViewModels.LoreEntities"
              x:Class="LoreViewer.Presentation.Views.Controls.ReadonlyLoreEntityView"
@@ -15,13 +16,7 @@
         <entityViews:NodeViewBasic/>
       </DataTemplate>
       <DataTemplate DataType="{x:Type vmel:LoreCollectionViewModel}">
-        <StackPanel Orientation="Vertical">
-          <StackPanel Orientation="Horizontal">
-            <Label Content="Type contained:"/>
-            <Label Content="{Binding DisplayContainedType}"/>
-          </StackPanel>
-          <TextBlock Text="{Binding NarrativeText}"/>
-        </StackPanel>
+        <entityViews:CollectionView/>
       </DataTemplate>
     </ContentControl.DataTemplates>
   </ContentControl>

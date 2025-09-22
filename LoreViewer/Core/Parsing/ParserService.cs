@@ -32,6 +32,9 @@ namespace LoreViewer.Core.Parsing
     public bool IsCollection => tagType == ETagType.collection;
     public bool IsNestedCollection => TypeName.Contains("collection") && TypeName.Split(":").Length > 1 && TypeName.Split(":")[0].Equals("collection");
 
+    public bool HasOrder => m_dAttributes != null && m_dAttributes.ContainsKey("order");
+    public int Order => HasOrder ? int.Parse(m_dAttributes["order"]) : -1;
+
     public bool HasID => m_dAttributes != null && m_dAttributes.ContainsKey("ID");
     public string ID => HasID ? m_dAttributes["ID"] : string.Empty;
 
@@ -50,15 +53,30 @@ namespace LoreViewer.Core.Parsing
       tagname = elem.Name.LocalName;
       m_dAttributes = elem.Attributes().ToDictionary(attr => attr.Name.LocalName, attr => attr.Value);
 
+      if(m_dAttributes.TryGetValue("order", out string sOrder))
+      {
+        if (int.TryParse(sOrder, out int o))
+          SetOrder(o);
+      }
+
       Enum.TryParse<ETagType>(tagname, out tagType);
     }
 
     public LoreTagInfo(HtmlInline html) => ParseHTML(html);
 
     public void SetID(string newID) => m_dAttributes["ID"] = newID;
+    public void SetOrder(int newOrder) => m_dAttributes["order"] = newOrder.ToString();
 
+    /// <summary>
+    /// Check equivalence of two LoreTagInfos. If true, they are equal and can either merge or are conflicting, depending on the calling method.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator ==(LoreTagInfo left, LoreTagInfo right)
     {
+      // The == needs to IGNORE the 
+
       // If no ID defined, NO MERGING is allowed
       if (!left.HasID || !right.HasID) return false;
 

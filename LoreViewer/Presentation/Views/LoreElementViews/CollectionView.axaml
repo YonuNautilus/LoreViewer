@@ -40,22 +40,10 @@
         <Expander.Header>
           <TextBlock Text="{Binding ListDisplayName}" />
         </Expander.Header>
-        <Grid ColumnDefinitions="Auto,*">
-          <Border Name="LinkLine"
-                  x:Name="LinkLine"
-                  Width="12"
-                  Height="5"
-                  Margin="0,7,0,0"
-                  BorderThickness="1,0,0,1"
-                  CornerRadius="0,0,0,5"
-                  BorderBrush="{StaticResource ThemeBorderLowBrush}"
-                  VerticalAlignment="Top"
-                  Grid.Column="0"/>
-          <ContentControl Content="{Binding}"
-                          Grid.Row="1"
-                          ContentTemplate="{Binding Converter={StaticResource ColTemplateConverter}}"
-                          ClipToBounds="False" />
-        </Grid>
+        <ContentControl Content="{Binding}"
+                        Grid.Row="1"
+                        ContentTemplate="{Binding Converter={StaticResource ColTemplateConverter}}"
+                        ClipToBounds="False" />
       </Expander>
     </Grid>
   </Grid>
