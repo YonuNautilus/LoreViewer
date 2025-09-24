@@ -754,7 +754,8 @@ namespace LoreViewer.Core.Parsing
 
             // freeform
             case ParagraphBlock pb:
-              newNode.AddNarrativeText(ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef, ctx));
+              newNode.AddNarrativeContent(ParseNarrativeBlock(pb));
+              //newNode.AddNarrativeText(ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef, ctx));
               //continue;
               break;
 
@@ -773,6 +774,7 @@ namespace LoreViewer.Core.Parsing
 
       return newNode;
     }
+
 
     // This creates on-the-fly 'locally-defined' collection definitions. So having OwningDefinition might be useful
     private LoreCollectionDefinition MakeNestedDefinitions(string innerTag, LoreParsingContext ctx)
@@ -1174,6 +1176,67 @@ namespace LoreViewer.Core.Parsing
 
 
       return attributeList;
+    }
+
+
+
+    private LoreNarrativeBlock ParseNarrativeBlock(Block block)
+    {
+      LoreNarrativeBlock newNarrativeBlock = new LoreNarrativeBlock();
+      
+      switch (block)
+      {
+        case ListBlock lb:
+
+          break;
+        case ParagraphBlock pb:
+          newNarrativeBlock.AddNarrativeLine(ParseNarrativeLine(pb.Inline));
+          break;
+
+        case QuoteBlock qb:
+
+          break;
+
+        default:
+          Trace.WriteLine($"ParseNarrativeBlock got: {block.GetType()}");
+          break;
+      }
+
+      return new LoreNarrativeBlock();
+    }
+
+    private LoreNarrativeLine ParseNarrativeLine(ContainerInline inlineContainer)
+    {
+      LoreNarrativeLine line = new LoreNarrativeLine();
+
+      foreach(Inline inline in inlineContainer)
+      {
+        line.AddNarrativeInline(ParseNarrativeInline(inline));
+      }
+
+      return line;
+    }
+
+    private LoreNarrativeInline ParseNarrativeInline(Inline inline)
+    {
+      switch (inline)
+      {
+        case EmphasisInline emph:
+          return new LoreNarrativeTextInline(emph.FirstChild.ToString());
+        case CodeInline code:
+          return new LoreNarrativeTextInline(code.Content);
+        case LiteralInline lit:
+          return new LoreNarrativeTextInline(lit.ToString());
+          break;
+        case HtmlInline hin:
+          return new LoreNarrativeTextInline("*** HTML ***");
+          break;
+        case LinkInline lin:
+          return new LoreNarrativeLinkInline { Label = lin.Label, Path = lin.Url };
+        default:
+          Trace.WriteLine($"ParseNarrativeInline got: {inline.GetType()}");
+          return new LoreNarrativeTextInline($"*** ParseNarrativeInline Unhandled Inline type: {inline.GetType()} ***");
+      }
     }
 
 

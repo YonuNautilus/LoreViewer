@@ -1,6 +1,8 @@
-﻿using LoreViewer.Core.Parsing;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using LoreViewer.Core.Parsing;
 using LoreViewer.Domain.Settings.Definitions;
 using System;
+using System.Collections.Generic;
 
 namespace LoreViewer.Domain.Entities
 {
@@ -41,11 +43,11 @@ namespace LoreViewer.Domain.Entities
   public abstract class LoreElement : LoreEntity
   {
     public LoreElement(string name, LoreDefinitionBase definition) : base(name, definition) { }
-    public LoreElement(string name, LoreDefinitionBase definition, string filePath, int blockIndex, int lineNUmber) : base(name, definition)
+    public LoreElement(string name, LoreDefinitionBase definition, string filePath, int blockIndex, int lineNumber) : base(name, definition)
     {
       SourcePath = filePath;
       BlockIndex = blockIndex;
-      LineNumber = lineNUmber;
+      LineNumber = lineNumber;
     }
     public string SourcePath { get; } = string.Empty;
     public int BlockIndex;
@@ -62,12 +64,18 @@ namespace LoreViewer.Domain.Entities
     public string Summary { get; set; } = string.Empty;
     public bool HasNarrativeText => Summary != string.Empty;
 
+
+    public List<LoreNarrativeBlock> NarrativeContent { get; set; } = new List<LoreNarrativeBlock>();
+
+
     public void AddNarrativeText(string textToAdd)
     {
       if (string.IsNullOrWhiteSpace(Summary))
         Summary = textToAdd;
       else Summary += "\r\n" + textToAdd;
     }
+
+    public void AddNarrativeContent(LoreNarrativeBlock contentBlock) => NarrativeContent.Add(contentBlock);
 
     public LoreNarrativeElement(string name, LoreDefinitionBase definition) : base(name, definition) { }
     public LoreNarrativeElement(string name, LoreDefinitionBase definition, string filePath, int blockIndex, int lineNumber) : base(name, definition, filePath, blockIndex, lineNumber) { }

@@ -28,6 +28,9 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 
     public bool HasNarrativeText { get => !string.IsNullOrWhiteSpace(NarrativeText); }
 
+    private ObservableCollection<NarrativeBlockViewModel> m_oNarrativeBlocks;
+    public ObservableCollection<NarrativeBlockViewModel> NarrativeBlocks { get => m_oNarrativeBlocks; }
+
 
     private ObservableCollection<LoreAttributeViewModel> m_oAttributes;
     public ObservableCollection<LoreAttributeViewModel> Attributes { get => m_oAttributes; }
@@ -113,6 +116,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
       m_oSections = new ObservableCollection<LoreSectionViewModel>(node.Sections.Select(s => new LoreSectionViewModel(s)));
       m_oCollections = new ObservableCollection<LoreCollectionViewModel>(node.Collections.Select(c => new LoreCollectionViewModel(c)));
       m_oEmbeddedNodes = new ObservableCollection<LoreNodeViewModel>(node.Nodes.Select(n => new LoreNodeViewModel(n)));
+      m_oNarrativeBlocks = new ObservableCollection<NarrativeBlockViewModel>(node.Na)
     }
   }
 }
