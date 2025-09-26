@@ -61,7 +61,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
     {
       get
       {
-        if (Node is LoreNode n) return n.LineNumber;
+        if (Node is LoreNode n) return n.Provenance[0].LineNumber;
         else return 0;
       }
     }

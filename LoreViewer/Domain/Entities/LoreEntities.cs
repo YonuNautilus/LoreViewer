@@ -48,13 +48,10 @@ namespace LoreViewer.Domain.Entities
     {
       Provenance.Add(new Provenance { BlockIndex = blockIndex, LineNumber = lineNumber, SourceFilePath = filePath });
     }
-    public string SourcePath { get; } = string.Empty;
-    public int BlockIndex;
-    public int LineNumber;
 
-    List<Provenance> Provenance { get; } = new List<Provenance>();
+    public virtual List<Provenance> Provenance { get; } = new List<Provenance>();
 
-    public override string ErrMsg => $"Go To: {SourcePath}:{LineNumber}";
+    public override string ErrMsg => $"Go To: {Provenance[0].SourceFilePath}:{Provenance[0].LineNumber}";
   }
 
   public sealed record Provenance

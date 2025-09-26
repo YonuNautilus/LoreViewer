@@ -60,7 +60,7 @@ namespace LoreViewer.Domain.Entities
       }
       else
       {
-        throw new ColorCannotParseException(owningAttribute.SourcePath, owningAttribute.BlockIndex, owningAttribute.LineNumber, this);
+        throw new ColorCannotParseException(owningAttribute.Provenance[0].SourceFilePath, owningAttribute.Provenance[0].BlockIndex, owningAttribute.Provenance[0].LineNumber, this);
       }
     }
 
@@ -653,7 +653,7 @@ namespace LoreViewer.Domain.Entities
       }
 
       if (foundNode == null)
-        throw new ReflistCannotResovleException(OwningAttribute.SourcePath, OwningAttribute.BlockIndex, OwningAttribute.LineNumber, this);
+        throw new ReflistCannotResovleException(OwningAttribute.Provenance[0].SourceFilePath, OwningAttribute.Provenance[0].BlockIndex, OwningAttribute.Provenance[0].LineNumber, this);
       else
         m_oNodeValue = foundNode;
     }

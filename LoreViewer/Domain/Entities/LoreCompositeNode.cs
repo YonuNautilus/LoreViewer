@@ -32,6 +32,8 @@ namespace LoreViewer.Domain.Entities
     public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreTypeDefinition; } }
     private LoreTypeDefinition _definition;
 
+    public override List<Provenance> Provenance => _internalNodes.SelectMany(n => n.Provenance).ToList();
+
     #region IFieldContainer Implementation
     public override List<LoreAttribute> Attributes => new List<LoreAttribute>(_internalNodes.SelectMany(ln => ln.Attributes));
     public override LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);

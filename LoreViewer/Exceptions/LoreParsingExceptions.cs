@@ -163,7 +163,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   {
     static string msgBase = "Invalid date format or keyword on Start Date of DateRange attribute: '{0}'";
     public DateRangeCannotParseStartDateException(DateRangeAttributeValue attrVal)
-      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
+      : base(attrVal.OwningAttribute.Provenance[0].SourceFilePath, attrVal.OwningAttribute.Provenance[0].BlockIndex, attrVal.OwningAttribute.Provenance[0].LineNumber,
           attrVal, string.Format(msgBase, attrVal.ValueString))
     { }
   }
@@ -172,7 +172,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   {
     static string msgBase = "Invalid date format or keyword on End Date of DateRange attribute: '{0}'";
     public DateRangeCannotParseEndDateException(DateRangeAttributeValue attrVal)
-      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
+      : base(attrVal.OwningAttribute.Provenance[0].SourceFilePath, attrVal.OwningAttribute.Provenance[0].BlockIndex, attrVal.OwningAttribute.Provenance[0].LineNumber,
           attrVal, string.Format(msgBase, attrVal.ValueString))
     { }
   }
@@ -181,7 +181,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   {
     static string msgBase = "No pipe character '|' found in value {0} - Need a pipe to separate start and end date!";
     public DateRangeNoPipeCharacterException(DateRangeAttributeValue attrVal)
-      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
+      : base(attrVal.OwningAttribute.Provenance[0].SourceFilePath, attrVal.OwningAttribute.Provenance[0].BlockIndex, attrVal.OwningAttribute.Provenance[0].LineNumber,
           attrVal, string.Format(msgBase, attrVal.ValueString))
     { }
   }
@@ -190,7 +190,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   {
     static string msgBase = "Too many pipe characters '|' fonud in value {0} - Only use ONE to separate start date from end date, couted {1}";
     public DateRangeTooManyPipeCharactersException(DateRangeAttributeValue attrVal)
-      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
+      : base(attrVal.OwningAttribute.Provenance[0].SourceFilePath, attrVal.OwningAttribute.Provenance[0].BlockIndex, attrVal.OwningAttribute.Provenance[0].LineNumber,
           attrVal, string.Format(msgBase, attrVal.ValueString, attrVal.ValueString.Count(p => p == '|')))
     { }
   }
@@ -198,7 +198,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   public class DateTimeCannotParseException : LoreAttributeParsingException
   {
     public DateTimeCannotParseException(DateTimeAttributeValue attrVal)
-      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber,
+      : base(attrVal.OwningAttribute.Provenance[0].SourceFilePath, attrVal.OwningAttribute.Provenance[0].BlockIndex, attrVal.OwningAttribute.Provenance[0].LineNumber,
           $"Could not parse date or keyword: {attrVal.ValueString}")
     { }
   }
@@ -207,7 +207,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   public class NumberCannotParseException : LoreAttributeParsingException
   {
     public NumberCannotParseException(NumberAttributeValue attrVal, string msg)
-      : base(attrVal.OwningAttribute.SourcePath, attrVal.OwningAttribute.BlockIndex, attrVal.OwningAttribute.LineNumber, msg)
+      : base(attrVal.OwningAttribute.Provenance[0].SourceFilePath, attrVal.OwningAttribute.Provenance[0].BlockIndex, attrVal.OwningAttribute.Provenance[0].LineNumber, msg)
     { }
   }
 
@@ -231,7 +231,7 @@ namespace LoreViewer.Exceptions.LoreParsingExceptions
   public class QuantityCannotParseException : LoreAttributeParsingException
   {
     public QuantityCannotParseException(QuantityAttributeValue attributeValue, string msg)
-      : base(attributeValue.OwningAttribute.SourcePath, attributeValue.OwningAttribute.BlockIndex, attributeValue.OwningAttribute.LineNumber, msg)
+      : base(attributeValue.OwningAttribute.Provenance[0].SourceFilePath, attributeValue.OwningAttribute.Provenance[0].BlockIndex, attributeValue.OwningAttribute.Provenance[0].LineNumber, msg)
     { }
   }
 

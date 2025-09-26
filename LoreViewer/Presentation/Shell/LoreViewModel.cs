@@ -186,7 +186,7 @@ namespace LoreViewer.Presentation.ViewModels
       if (e is LoreElement elem)
       {
         if (UseNPpp)
-          Process.Start(m_sPathToNPpp, $"{elem.SourcePath} -n{elem.LineNumber}");
+          Process.Start(m_sPathToNPpp, $"{elem.Provenance[0].SourceFilePath} -n{elem.Provenance[0].LineNumber}");
         else
         {
           var dialog = new EntityEditDialog(LoreEntityViewModel.CreateViewModel(e));

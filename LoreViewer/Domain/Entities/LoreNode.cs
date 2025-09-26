@@ -118,7 +118,7 @@ namespace LoreViewer.Domain.Entities
 
     public string FileContent
     {
-      get => string.IsNullOrWhiteSpace(m_sFileContent) ? System.IO.File.ReadAllText(SourcePath) : m_sFileContent;
+      get => string.IsNullOrWhiteSpace(m_sFileContent) ? System.IO.File.ReadAllText(Provenance[0].SourceFilePath) : m_sFileContent;
     }
 
 

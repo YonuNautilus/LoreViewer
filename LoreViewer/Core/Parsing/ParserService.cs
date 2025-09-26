@@ -580,7 +580,7 @@ namespace LoreViewer.Core.Parsing
 
       string title = ExtractTitle(heading);
       LoreNode newNode = new LoreNode(title, typeDef, ctx.FilePath, currentIndex, doc[currentIndex].Line + 1);
-      newNode.BlockIndex = currentIndex;
+      //newNode.Provenance[0].BlockIndex = currentIndex;
 
       // Even though we have the typeDef parameter, if this method is called from ParseCollection, the type of this node may not be typeDef,
       // it may actually be tagged with a derived type, so we need to check that.
