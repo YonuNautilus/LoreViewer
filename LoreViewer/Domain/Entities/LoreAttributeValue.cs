@@ -635,15 +635,15 @@ namespace LoreViewer.Domain.Entities
 
   public class ReferenceAttributeValue : LoreAttributeValue
   {
-    private ILoreNode m_oNodeValue;
-    public override ILoreNode Value { get => m_oNodeValue; }
+    private LoreNode m_oNodeValue;
+    public override LoreNode Value { get => m_oNodeValue; }
 
     public ReferenceAttributeValue(string value, LoreAttribute owningAttribute) : base(value, owningAttribute) { }
 
     public void ResolveReferenceToNode(ParserService parser)
     {
       // First, look for the node by ID
-      ILoreNode foundNode = parser.GetNodeByID(ValueString);
+      LoreNode foundNode = parser.GetNodeByID(ValueString);
       // If not found by ID...
       if (foundNode == null)
       {

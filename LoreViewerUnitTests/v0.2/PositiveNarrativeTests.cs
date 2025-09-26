@@ -35,7 +35,7 @@ namespace v0_2.PositiveTests
       Assert.That(_parser.Nodes, Has.Count.EqualTo(1));
       Assert.That(_parser.Nodes[0], Is.TypeOf(typeof(LoreNode)));
       Assert.That((_parser.Nodes[0] as LoreNode).Sections, Has.Count.EqualTo(4));
-      Assert.IsTrue((_parser.Nodes[0] as LoreNode).HasNarrativeText);
+      Assert.IsTrue((_parser.Nodes[0] as LoreNode).HasNarrativeContent);
     }
 
     [Test]

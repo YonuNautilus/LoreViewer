@@ -23,6 +23,7 @@ namespace LoreViewer.Domain.Entities
   public class LoreSection : LoreNarrativeElement, IAttributeContainer, ISectionContainer
   {
     public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreSectionDefinition; } }
+    public override LoreSectionDefinition GetDefinition() => _definition;
     private LoreSectionDefinition _definition;
 
     #region IFieldContainer Implementation

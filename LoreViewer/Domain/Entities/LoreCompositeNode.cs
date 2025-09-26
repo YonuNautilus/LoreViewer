@@ -27,30 +27,30 @@ namespace LoreViewer.Domain.Entities
   /// <item>Nodes</item>
   /// </list>
   /// </summary>
-  public class LoreCompositeNode : LoreEntity, ILoreNode
+  public class LoreCompositeNode : LoreNode
   {
     public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreTypeDefinition; } }
     private LoreTypeDefinition _definition;
 
     #region IFieldContainer Implementation
-    public List<LoreAttribute> Attributes => new List<LoreAttribute>(_internalNodes.SelectMany(ln => ln.Attributes));
-    public LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
-    public bool HasAttribute(string name) => Attributes.Any(a => a.Name == name);
+    public override List<LoreAttribute> Attributes => new List<LoreAttribute>(_internalNodes.SelectMany(ln => ln.Attributes));
+    public override LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
+    public override bool HasAttribute(string name) => Attributes.Any(a => a.Name == name);
     #endregion
 
     #region ISectionContainer Implementation
-    public List<LoreSection> Sections => new List<LoreSection>(_internalNodes.SelectMany(ln => ln.Sections));
-    public LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
-    public bool HasSection(string name) => Sections.Any(s => s.Name == name);
+    public override List<LoreSection> Sections => new List<LoreSection>(_internalNodes.SelectMany(ln => ln.Sections));
+    public override LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
+    public override bool HasSection(string name) => Sections.Any(s => s.Name == name);
     #endregion
 
     #region INodeContainer Implementation
-    public List<LoreNode> Nodes => new List<LoreNode>(_internalNodes.SelectMany(ln => ln.Nodes));
-    public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
-    public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
+    public override List<LoreNode> Nodes => new List<LoreNode>(_internalNodes.SelectMany(ln => ln.Nodes));
+    public override bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
+    public override LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
 
     // Check if the embedded node already exists.
-    public bool ContainsEmbeddedNode(LoreTypeDefinition embeddedNodeType, string embeddedNodeTitle)
+    public override bool ContainsEmbeddedNode(LoreTypeDefinition embeddedNodeType, string embeddedNodeTitle)
     {
       // titles of embedded nodes cannot be the same, do that check first, will be quicker than the other checks
       if (Nodes.Any(n => n.Name == embeddedNodeTitle)) return true;
@@ -104,21 +104,21 @@ namespace LoreViewer.Domain.Entities
     #endregion
 
     #region ICollectionContainer Implementation
-    public List<LoreCollection> Collections => new List<LoreCollection>(_internalNodes.SelectMany(ln => ln.Collections));
-    public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
-    public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
-    public bool HasCollections => Collections.Any();
-    public bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
-    public LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
-    public bool HasCollectionOfDefinedName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
-    public LoreCollection? GetCollectionWithDefinedName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
+    public override List<LoreCollection> Collections => new List<LoreCollection>(_internalNodes.SelectMany(ln => ln.Collections));
+    public override bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
+    public override LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
+    public override bool HasCollections => Collections.Any();
+    public override bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
+    public override LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
+    public override bool HasCollectionOfDefinedName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
+    public override LoreCollection? GetCollectionWithDefinedName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
     #endregion
 
     private List<LoreNode> _internalNodes = new List<LoreNode>();
 
     public List<LoreNode> InternalNodes { get { return _internalNodes; } }
 
-    public string Summary
+    public override string Summary
     {
       get
       {
@@ -126,9 +126,12 @@ namespace LoreViewer.Domain.Entities
       }
     }
 
+    public override List<LoreNarrativeBlock> NarrativeContent => _internalNodes.SelectMany(n => n.NarrativeContent).ToList();
+    public override bool HasNarrativeContent => _internalNodes.SelectMany(n => n.NarrativeContent).Any();
+
     public LoreCompositeNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
 
-    public LoreCompositeNode(LoreNode newNode) : base(newNode.Name, newNode.Definition) { _internalNodes.Add(newNode); }
+    public LoreCompositeNode(LoreNode newNode) : base(newNode.Name, newNode.GetDefinition()) { _internalNodes.Add(newNode); }
 
     /// <summary>
     /// The Merging constructor. Merged two LoreNodes into a new LoreCompositeNode. This assumes that the two nodes have equivalent LoreTagInfo.
@@ -141,13 +144,16 @@ namespace LoreViewer.Domain.Entities
       SetTag(original.CurrentTag.Value.CreateCompositeNodeTag(newNode.CurrentTag.Value));
     }
 
-    public ILoreNode MergeWith(LoreNode newNode)
+    public override LoreCompositeNode MergeWith(LoreNode newNode)
     {
-      _internalNodes.Add(newNode);
+      if (newNode is LoreCompositeNode lcn)
+        _internalNodes.AddRange(lcn._internalNodes);
+      else
+        _internalNodes.Add(newNode);
       return this;
     }
 
-    public bool CanMergeWith(LoreNode newNode)
+    public override bool CanMergeWith(LoreNode newNode)
     {
       if (!tag.HasValue || !newNode.CurrentTag.HasValue) return false;
       else return tag.Value.CanMergeWith(newNode.CurrentTag.Value);

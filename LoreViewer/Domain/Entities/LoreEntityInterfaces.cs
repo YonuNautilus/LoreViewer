@@ -13,7 +13,7 @@ namespace LoreViewer.Domain.Entities
     List<LoreAttribute> Attributes { get; }
     public bool HasAttribute(string attrName) => Attributes.Any(a => a.Name == attrName);
     public LoreAttribute? GetAttribute(string attrName) => Attributes.FirstOrDefault(a => a.Name == attrName);
-    public bool HasAttributes => Attributes.Any();
+    public virtual bool HasAttributes => Attributes.Any();
   }
 
 
@@ -62,36 +62,5 @@ namespace LoreViewer.Domain.Entities
 
     // Check if the embedded node already exists.
     public bool ContainsEmbeddedNode(LoreTypeDefinition embeddedNodeType, string embeddedNodeTitle);
-  }
-
-  /// <summary>
-  /// For any LoreEntity that needs to behave and display like a node (ie LoreNode and LoreCompositeNode)
-  /// </summary>
-  public interface ILoreNode : ILoreEntity, ISectionContainer, IAttributeContainer, IEmbeddedNodeContainer, ICollectionContainer
-  {
-    string NarrativeContent
-    {
-      get
-      {
-        if (this is LoreCompositeNode lcn)
-        {
-          return lcn.Summary;
-        }
-        else return (this as LoreNode).Summary;
-      }
-    }
-
-    ILoreNode MergeWith(LoreNode node);
-    bool CanMergeWith(LoreNode node);
-  }
-
-  /// <summary>
-  /// Top-Level interface implemented by LoreEntity - declares Name, ID, important stuff ALL LoreEntities will need.
-  /// </summary>
-  public interface ILoreEntity
-  {
-    string Name { get; set; }
-    LoreDefinitionBase Definition { get; set; }
-    public T DefinitionAs<T>() where T : LoreDefinitionBase { return Definition as T; }
   }
 }

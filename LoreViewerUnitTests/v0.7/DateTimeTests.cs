@@ -49,7 +49,7 @@ namespace v0_7.DateTimeTests
 
       Assert.That(_parser.Errors, Has.Count.EqualTo(0));
 
-      ILoreNode dateTester = _parser.Nodes[0];
+      LoreNode dateTester = _parser.Nodes[0];
 
       Assert.True(dateTester.HasAttributes);
       Assert.That(dateTester.Attributes, Has.Count.EqualTo(2));

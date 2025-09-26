@@ -1,8 +1,7 @@
-﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using LoreViewer.Core.Parsing;
+﻿using LoreViewer.Core.Parsing;
 using LoreViewer.Domain.Settings.Definitions;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LoreViewer.Domain.Entities
 {
@@ -10,10 +9,12 @@ namespace LoreViewer.Domain.Entities
   /// The root-level abstract class that all parsed lore information derives from.
   /// Holds a name, definition, and ID (which may be removed later)
   /// </summary>
-  public abstract class LoreEntity : ILoreEntity
+  public abstract class LoreEntity
   {
     public string Name { get; set; } = string.Empty;
     public abstract LoreDefinitionBase Definition { get; set; }
+
+    public abstract LoreDefinitionBase GetDefinition();
 
     public virtual T DefinitionAs<T>() where T : LoreDefinitionBase => Definition as T;
 
@@ -45,15 +46,23 @@ namespace LoreViewer.Domain.Entities
     public LoreElement(string name, LoreDefinitionBase definition) : base(name, definition) { }
     public LoreElement(string name, LoreDefinitionBase definition, string filePath, int blockIndex, int lineNumber) : base(name, definition)
     {
-      SourcePath = filePath;
-      BlockIndex = blockIndex;
-      LineNumber = lineNumber;
+      Provenance.Add(new Provenance { BlockIndex = blockIndex, LineNumber = lineNumber, SourceFilePath = filePath });
     }
     public string SourcePath { get; } = string.Empty;
     public int BlockIndex;
     public int LineNumber;
 
+    List<Provenance> Provenance { get; } = new List<Provenance>();
+
     public override string ErrMsg => $"Go To: {SourcePath}:{LineNumber}";
+  }
+
+  public sealed record Provenance
+  {
+    public string SourceFilePath = string.Empty;
+    public int BlockIndex = -1;
+    public int LineNumber = -1;
+
   }
 
   /// <summary>
@@ -61,12 +70,12 @@ namespace LoreViewer.Domain.Entities
   /// </summary>
   public abstract class LoreNarrativeElement : LoreElement
   {
-    public string Summary { get; set; } = string.Empty;
-    public bool HasNarrativeText => Summary != string.Empty;
+    public virtual string Summary { get; set; } = string.Empty;
+    public virtual bool HasNarrativeText => Summary != string.Empty;
 
 
-    public List<LoreNarrativeBlock> NarrativeContent { get; set; } = new List<LoreNarrativeBlock>();
-
+    public virtual List<LoreNarrativeBlock> NarrativeContent { get; set; } = new List<LoreNarrativeBlock>();
+    public virtual bool HasNarrativeContent => NarrativeContent.Any();
 
     public void AddNarrativeText(string textToAdd)
     {

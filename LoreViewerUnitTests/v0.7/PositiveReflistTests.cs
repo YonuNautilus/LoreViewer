@@ -74,9 +74,9 @@ namespace v0_7.PositiveReflistTests
     {
       Assert.That(_parser.Nodes, Has.Count.EqualTo(3));
 
-      ILoreNode firstNode = _parser.GetNodeByName("First Node");
-      ILoreNode secondNode = _parser.GetNodeByName("Second Node");
-      ILoreNode thirdNode = _parser.GetNodeByName("Third Node");
+      LoreNode firstNode = _parser.GetNodeByName("First Node");
+      LoreNode secondNode = _parser.GetNodeByName("Second Node");
+      LoreNode thirdNode = _parser.GetNodeByName("Third Node");
 
       Assert.That(firstNode.Attributes, Has.Count.EqualTo(1));
       Assert.That(thirdNode.Attributes, Has.Count.EqualTo(2));

@@ -23,6 +23,7 @@ namespace LoreViewer.Domain.Entities
   public class LoreCollection : LoreNarrativeElement, INodeContainer, ICollectionContainer
   {
     public override LoreDefinitionBase Definition { get; set; }
+    public override LoreCollectionDefinition GetDefinition() => Definition as LoreCollectionDefinition;
     #region INodeContainer Implementation
     public List<LoreNode> Nodes { get; set; } = new List<LoreNode>();
     public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);

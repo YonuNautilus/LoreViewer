@@ -383,7 +383,6 @@ namespace LoreViewer.Core.Validation
       switch (entity)
       {
         case LoreNode:
-        case LoreCompositeNode:
           return $"Node [{entity.Definition.name}]";
         case LoreCollection:
           return "Collection";

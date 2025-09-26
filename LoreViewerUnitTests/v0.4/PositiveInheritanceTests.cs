@@ -261,7 +261,7 @@ namespace v0_4.PositiveTests
     [Test]
     public void Parsed_InheritanceTest()
     {
-      ILoreNode grandmaINode = _parser.GetNodeByName("Grandparent");
+      LoreNode grandmaINode = _parser.GetNodeByName("Grandparent");
       Assert.NotNull(grandmaINode);
       Assert.That(grandmaINode, Is.TypeOf<LoreNode>());
       LoreNode grandma = grandmaINode as LoreNode;
@@ -269,7 +269,7 @@ namespace v0_4.PositiveTests
       Assert.That(grandma.DefinitionAs<LoreTypeDefinition>().name, Is.EqualTo("TypeBase"));
       Assert.That(grandma.DefinitionAs<LoreTypeDefinition>().ParentType, Is.Null);
 
-      ILoreNode parentINode = _parser.GetNodeByName("Parent");
+      LoreNode parentINode = _parser.GetNodeByName("Parent");
       Assert.NotNull(parentINode);
       Assert.That(parentINode, Is.TypeOf<LoreNode>());
       LoreNode parent = parentINode as LoreNode;
@@ -278,7 +278,7 @@ namespace v0_4.PositiveTests
       Assert.That(parent.DefinitionAs<LoreTypeDefinition>().ParentType, Is.Not.Null);
       Assert.That(parent.DefinitionAs<LoreTypeDefinition>().ParentType, Is.EqualTo(grandma.DefinitionAs<LoreTypeDefinition>()));
 
-      ILoreNode childINode = _parser.GetNodeByName("Daughter");
+      LoreNode childINode = _parser.GetNodeByName("Daughter");
       Assert.NotNull(childINode);
       Assert.That(childINode, Is.TypeOf<LoreNode>());
       LoreNode child = childINode as LoreNode;
@@ -288,7 +288,7 @@ namespace v0_4.PositiveTests
       Assert.That(child.DefinitionAs<LoreTypeDefinition>().ParentType, Is.EqualTo(parent.DefinitionAs<LoreTypeDefinition>()));
       Assert.That(child.DefinitionAs<LoreTypeDefinition>().ParentType.ParentType, Is.EqualTo(parent.DefinitionAs<LoreTypeDefinition>().ParentType));
 
-      ILoreNode uncleINode = _parser.GetNodeByName("Uncle");
+      LoreNode uncleINode = _parser.GetNodeByName("Uncle");
       Assert.NotNull(uncleINode);
       Assert.That(uncleINode, Is.TypeOf<LoreNode>());
       LoreNode uncle = uncleINode as LoreNode;

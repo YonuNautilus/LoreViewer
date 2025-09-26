@@ -52,9 +52,9 @@ namespace LoreViewer.Presentation.ViewModels
       if (e is ISectionContainer isc && isc.HasSections)
         Children.Add(CreateParentItem(isc.Sections, "Sections"));
 
-      if (e is ILoreNode)
+      if (e is LoreNode)
       {
-        ILoreNode ln = e as ILoreNode;
+        LoreNode ln = e as LoreNode;
         if (ln.Collections != null && ln.Collections.Count() > 0)
           foreach (LoreCollection childCollection in ln.Collections)
             Children.Add(new LoreTreeItem(childCollection));

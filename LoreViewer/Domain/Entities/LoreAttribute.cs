@@ -21,6 +21,7 @@ namespace LoreViewer.Domain.Entities
   public class LoreAttribute : LoreElement, IAttributeContainer
   {
     public override LoreDefinitionBase Definition { get => _definition as LoreFieldDefinition; set { _definition = value as LoreFieldDefinition; } }
+    public override LoreDefinitionBase GetDefinition() => _definition;
     private LoreFieldDefinition _definition;
 
     #region IFieldContainer Implementation

@@ -12,7 +12,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities
     private LoreEntity m_oEntity;
     public string DisplayName { get => m_oEntity.Name; }
 
-    public bool IsElementANode { get => m_oEntity is ILoreNode; }
+    public bool IsElementANode { get => m_oEntity is LoreNode; }
 
     public ObservableCollection<ItemOutlineViewModel> Items { get; } = new ObservableCollection<ItemOutlineViewModel>();
 

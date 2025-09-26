@@ -46,7 +46,7 @@ namespace v0_7.DateRangeTests
 
       Assert.That(_parser.Errors, Has.Count.EqualTo(0));
 
-      ILoreNode rangeTester = _parser.Nodes[0];
+      LoreNode rangeTester = _parser.Nodes[0];
 
       Assert.True(rangeTester.HasAttributes);
       Assert.That(rangeTester.Attributes, Has.Count.EqualTo(2));

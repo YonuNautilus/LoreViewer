@@ -67,7 +67,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
     public string ReferencedID { get => (m_oAttrVal as ReferenceAttributeValue).ValueString; }
     public string NodeName { get => (m_oAttrVal as ReferenceAttributeValue).Value.Name; }
 
-    public ILoreNode ReferencedNode { get => (m_oAttrVal as ReferenceAttributeValue).Value; }
+    public LoreNode ReferencedNode { get => (m_oAttrVal as ReferenceAttributeValue).Value; }
 
     public string DisplayText { get => $"{NodeName} [{ReferencedID}]"; }
     public ReferenceAttributeValueViewModel(ReferenceAttributeValue attrVal) : base(attrVal) { }

@@ -7,7 +7,9 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 {
   internal class LoreNodeViewModel : LoreEntityViewModel
   {
-    private ILoreNode Node => entity as ILoreNode;
+    private LoreNode Node => entity as LoreNode;
+
+    public bool IsCompositeNode => entity is LoreCompositeNode;
 
     private string m_sModifiedContent;
 
@@ -24,7 +26,7 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
       }
     }
 
-    public string NarrativeText { get => Node.NarrativeContent; }
+    public string NarrativeText { get => Node.Summary; }
 
     public bool HasNarrativeText { get => !string.IsNullOrWhiteSpace(NarrativeText); }
 
@@ -110,13 +112,13 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 
     public void ClearModifications() => m_sModifiedContent = string.Empty;
 
-    public LoreNodeViewModel(ILoreNode node) : base(node as LoreEntity)
+    public LoreNodeViewModel(LoreNode node) : base(node as LoreEntity)
     {
       m_oAttributes = new ObservableCollection<LoreAttributeViewModel>(node.Attributes.Select(s => new LoreAttributeViewModel(s)));
       m_oSections = new ObservableCollection<LoreSectionViewModel>(node.Sections.Select(s => new LoreSectionViewModel(s)));
       m_oCollections = new ObservableCollection<LoreCollectionViewModel>(node.Collections.Select(c => new LoreCollectionViewModel(c)));
       m_oEmbeddedNodes = new ObservableCollection<LoreNodeViewModel>(node.Nodes.Select(n => new LoreNodeViewModel(n)));
-      m_oNarrativeBlocks = new ObservableCollection<NarrativeBlockViewModel>(node.Na)
+      m_oNarrativeBlocks = new ObservableCollection<NarrativeBlockViewModel>(node.NarrativeContent.Select(nc => new NarrativeBlockViewModel(nc)));
     }
   }
 }

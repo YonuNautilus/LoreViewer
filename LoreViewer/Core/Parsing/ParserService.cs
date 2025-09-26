@@ -177,11 +177,11 @@ namespace LoreViewer.Core.Parsing
     public bool HadFatalError => _hadFatalError;
 
     private List<LoreCollection> _collections = new List<LoreCollection>();
-    private List<ILoreNode> _nodes = new List<ILoreNode>();
+    private List<LoreNode> _nodes = new List<LoreNode>();
     private List<ParseError> _errors = new();
     private List<string> _warnings = new List<string>();
 
-    public IReadOnlyList<ILoreNode> Nodes => _nodes.ToList();
+    public IReadOnlyList<LoreNode> Nodes => _nodes.ToList();
     public IReadOnlyList<LoreCollection> Collections => _collections.ToList();
     public IReadOnlyList<ParseError> Errors => _errors.ToList();
     public IReadOnlyList<string> Warnings => _warnings.ToList();
@@ -191,7 +191,7 @@ namespace LoreViewer.Core.Parsing
 
     public int m_iFileCount;
 
-    private readonly ConcurrentBag<ILoreNode> _parsedNodes = new();
+    private readonly ConcurrentBag<LoreNode> _parsedNodes = new();
     private readonly ConcurrentBag<LoreCollection> _parsedCollections = new();
     private readonly ConcurrentBag<ParseError> _parsedErrors = new();
     private readonly ConcurrentBag<string> _parsedWarnings = new();
@@ -214,8 +214,8 @@ namespace LoreViewer.Core.Parsing
       _settings = settings;
     }
 
-    public ILoreNode? GetNodeByName(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName));
-    public ILoreNode? GetNodeByID(string id) => _nodes.Cast<LoreEntity>().FirstOrDefault(node => node.ID.Equals(id)) as ILoreNode;
+    public LoreNode? GetNodeByName(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName));
+    public LoreNode? GetNodeByID(string id) => _nodes.FirstOrDefault(node => node.ID.Equals(id));
     public bool HasNode(string nodeName) => _nodes.Any(node => node.Name.Equals(nodeName));
 
 
@@ -338,7 +338,7 @@ namespace LoreViewer.Core.Parsing
       {
         if (e is LoreNode node)
         {
-          ILoreNode nodeWithSameIDAndType = _nodes.FirstOrDefault(existingNode => existingNode.CanMergeWith(node));
+          LoreNode nodeWithSameIDAndType = _nodes.FirstOrDefault(existingNode => existingNode.CanMergeWith(node));
 
           if (nodeWithSameIDAndType != null)
             _nodes.Replace(nodeWithSameIDAndType, nodeWithSameIDAndType.MergeWith(node));
@@ -356,7 +356,7 @@ namespace LoreViewer.Core.Parsing
 
     public void PerformReferenceResolution()
     {
-      foreach (ILoreNode n in _nodes)
+      foreach (LoreNode n in _nodes)
         foreach (LoreAttribute la in n.Attributes)
           la.ResolveNodeRefs(this);
 
@@ -364,7 +364,7 @@ namespace LoreViewer.Core.Parsing
       {
         if (c.ContainsNodes)
         {
-          foreach (ILoreNode n in c.Nodes)
+          foreach (LoreNode n in c.Nodes)
             foreach (LoreAttribute la in n.Attributes)
               la.ResolveNodeRefs(this);
         }

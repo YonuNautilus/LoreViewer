@@ -22,30 +22,32 @@ namespace LoreViewer.Domain.Entities
   /// <item>Nodes</item>
   /// </list>
   /// </summary>
-  public class LoreNode : LoreNarrativeElement, ILoreNode
+  public class LoreNode : LoreNarrativeElement, ISectionContainer, IAttributeContainer, IEmbeddedNodeContainer, ICollectionContainer
   {
     public override LoreDefinitionBase Definition { get => _definition; set { _definition = value as LoreTypeDefinition; } }
+    public override LoreTypeDefinition GetDefinition() => Definition as LoreTypeDefinition;
     private LoreTypeDefinition _definition;
 
     #region IFieldContainer Implementation
-    public List<LoreAttribute> Attributes { get; set; } = new List<LoreAttribute>();
-    public LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
-    public bool HasAttribute(string name) => Attributes.Any(a => a.Name == name);
+    public virtual List<LoreAttribute> Attributes { get; set; } = new List<LoreAttribute>();
+    public virtual LoreAttribute? GetAttribute(string name) => Attributes.FirstOrDefault(a => a.Name == name);
+    public virtual bool HasAttribute(string name) => Attributes.Any(a => a.Name == name);
+    public virtual bool HasAttributes => Attributes.Any();
     #endregion
     #region ISectionContainer Implementation
-    public List<LoreSection> Sections { get; set; } = new List<LoreSection>();
-    public LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
-    public bool HasSection(string name) => Sections.Any(s => s.Name == name);
+    public virtual List<LoreSection> Sections { get; set; } = new List<LoreSection>();
+    public virtual LoreSection? GetSection(string name) => Sections.FirstOrDefault(s => s.Name == name);
+    public virtual bool HasSection(string name) => Sections.Any(s => s.Name == name);
     #endregion
     #region INodeContainer Implementation
-    public List<LoreNode> Nodes { get; } = new List<LoreNode>();
+    public virtual List<LoreNode> Nodes { get; } = new List<LoreNode>();
 
-    public bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
+    public virtual bool HasNode(string NodeName) => Nodes.Any(n => n.Name == NodeName);
 
-    public LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
+    public virtual LoreNode? GetNode(string NodeName) => Nodes.FirstOrDefault(n => n.Name == NodeName);
 
     // Check if the embedded node already exists.
-    public bool ContainsEmbeddedNode(LoreTypeDefinition embeddedNodeType, string embeddedNodeTitle)
+    public virtual bool ContainsEmbeddedNode(LoreTypeDefinition embeddedNodeType, string embeddedNodeTitle)
     {
       // titles of embedded nodes cannot be the same, do that check first, will be quicker than the other checks
       if (Nodes.Any(n => n.Name == embeddedNodeTitle)) return true;
@@ -99,14 +101,14 @@ namespace LoreViewer.Domain.Entities
 
     #endregion
     #region ICollectionContainer Implementation
-    public List<LoreCollection> Collections { get; } = new List<LoreCollection>();
-    public bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
-    public LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
-    public bool HasCollections => Collections.Any();
-    public bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
-    public LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
-    public bool HasCollectionOfDefinedName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
-    public LoreCollection? GetCollectionWithDefinedName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
+    public virtual List<LoreCollection> Collections { get; } = new List<LoreCollection>();
+    public virtual bool HasCollection(string collectionName) => Collections.Any(c => c.Name == collectionName);
+    public virtual LoreCollection? GetCollection(string collectionName) => Collections.FirstOrDefault(c => c.Name == collectionName);
+    public virtual bool HasCollections => Collections.Any();
+    public virtual bool HasCollectionOfType(LoreDefinitionBase typeDef) => Collections.Any(c => c.Definition == typeDef);
+    public virtual LoreCollection? GetCollectionOfType(LoreDefinitionBase typeDef) => Collections.FirstOrDefault(c => c.Definition == typeDef);
+    public virtual bool HasCollectionOfDefinedName(string typeName) => Collections.Any(c => c.Definition.name.Equals(typeName));
+    public virtual LoreCollection? GetCollectionWithDefinedName(string typeName) => Collections.FirstOrDefault(c => c.Definition.name == typeName);
     #endregion
 
     public LoreNode(string name, LoreTypeDefinition definition) : base(name, definition) { }
@@ -135,9 +137,9 @@ namespace LoreViewer.Domain.Entities
         Collections.Add(lnc);
     }
 
-    public ILoreNode MergeWith(LoreNode node) => new LoreCompositeNode(this, node);
+    public virtual LoreCompositeNode MergeWith(LoreNode node) => new LoreCompositeNode(this, node);
 
-    public bool CanMergeWith(LoreNode newNode)
+    public virtual bool CanMergeWith(LoreNode newNode)
     {
       if (!tag.HasValue || !newNode.CurrentTag.HasValue) return false;
       else return tag.Value.CanMergeWith(newNode.CurrentTag.Value);
