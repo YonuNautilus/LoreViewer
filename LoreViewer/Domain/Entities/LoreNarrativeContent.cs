@@ -25,6 +25,7 @@ namespace LoreViewer.Domain.Entities
     public List<LoreNarrativeLine> Lines { get; set; } = new List<LoreNarrativeLine>();
 
     public void AddNarrativeLine(LoreNarrativeLine line) => Lines.Add(line);
+    public void AddNarrativeLines(LoreNarrativeLine[] lines) => Lines.AddRange(lines);
   }
 
   public class LoreNarrativeLine
@@ -32,6 +33,7 @@ namespace LoreViewer.Domain.Entities
     public List<LoreNarrativeInline> Inlines { get; set; } = new List<LoreNarrativeInline>();
 
     public void AddNarrativeInline(LoreNarrativeInline inline) => Inlines.Add(inline);
+    public void AddNarrativeInlines(LoreNarrativeInline[] inlines) => Inlines.AddRange(inlines);
   }
 
 
@@ -40,11 +42,18 @@ namespace LoreViewer.Domain.Entities
   {
   }
 
+  [Flags]
+  public enum ETextStyle { Normal = 0, Italics = 1, Oblique = 2, Bold = 4, Strike = 8, Code = 16, Sub = 32, Super = 64, Inserted = 128, Marked = 256 }
+
   public class LoreNarrativeTextInline : LoreNarrativeInline
   {
     public string Text { get; set; }
 
+    public ETextStyle TextStyle { get; set; }
+
     public LoreNarrativeTextInline(string content) { Text = content; }
+
+    public LoreNarrativeTextInline(string content, ETextStyle style) : this(content) { TextStyle = style; }
   }
 
   public class LoreNarrativeImageInline : LoreNarrativeInline

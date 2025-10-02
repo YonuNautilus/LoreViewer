@@ -22,7 +22,7 @@
           Grid.Row="1"
           IsVisible="{Binding HasContent}">
       <Grid RowDefinitions="Auto,Auto,Auto" ClipToBounds="False">
-        <TextBlock Text="{Binding SectionContent}" Grid.Row="0" IsVisible="{Binding HasContent}" TextWrapping="Wrap"/>
+        <controls:NarrativeView Blocks="{Binding NarrativeBlocks}" IsVisible="{Binding HasNarrativeContent}" Grid.Row="0"/>
 
         <Grid ColumnDefinitions="Auto,*" ClipToBounds="False" Grid.Row="1" IsVisible="{Binding HasAttributes}">
           <Border x:Name="AttributesListLinkLine"

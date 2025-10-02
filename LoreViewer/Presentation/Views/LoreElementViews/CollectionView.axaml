@@ -35,7 +35,7 @@
     </Grid.RowDefinitions>
     <Label Grid.Row="0" FontWeight="Bold" Content="{Binding DisplayName}"/>
     <Grid RowDefinitions="Auto, Auto" Margin="8,0,0,0" Grid.Row="1">
-      <TextBlock Grid.Row="0" Text="{Binding NarrativeText}" IsVisible="{Binding HasNarrativeText}"/>
+      <controls:NarrativeView Grid.Row="0" Blocks="{Binding NarrativeBlocks}" IsVisible="{Binding HasNarrativeContent}"/>
       <Expander Grid.Row="1" Theme="{StaticResource ResourceKey=SlimExpander}" Margin="-8,0,0,0">
         <Expander.Header>
           <TextBlock Text="{Binding ListDisplayName}" />

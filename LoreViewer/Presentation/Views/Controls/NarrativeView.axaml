@@ -10,9 +10,45 @@
     <ItemsControl.ItemTemplate>
       <DataTemplate x:DataType="vm:NarrativeBlockViewModel">
 
-        <StackPanel>
+        <StackPanel x:Name="NarrativeLinesContainer">
           <ItemsControl ItemsSource="{Binding Lines}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
 
+            <ItemsControl.ItemTemplate>
+
+              <DataTemplate x:DataType="vm:NarrativeLineViewModel">
+                <ItemsControl ItemsSource="{Binding Inlines}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel x:Name="NarrativeInlinesContainer"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <!--<ItemsControl.ItemContainerTheme>
+                    <Style Selector="ContentPresenter">
+                      <Setter Property="HorizontalAlignment" Value="Left"/>
+                      <Setter Property="Margin" Value="0"/>
+                    </Style>
+                  </ItemsControl.ItemContainerTheme>-->
+                  <ItemsControl.DataTemplates>
+                    <DataTemplate DataType="{x:Type vm:NarrativeInlineTextVM}">
+                      <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:NarrativeInlineLinkVM}">
+                      <Button>
+                        <Label Content="{Binding DisplayText}"/>
+                      </Button>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:NarrativeInlineImageVM}">
+                      <Image Source="{Binding Image}" MaxWidth="240"/>
+                    </DataTemplate>
+                  </ItemsControl.DataTemplates>
+                </ItemsControl>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
           </ItemsControl>
         </StackPanel>
       </DataTemplate>

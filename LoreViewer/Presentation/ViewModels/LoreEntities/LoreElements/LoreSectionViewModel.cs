@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 {
-  public class LoreSectionViewModel : LoreElementViewModel
+  public class LoreSectionViewModel : LoreNarrativeElementViewModel
   {
     public string SectionTitle { get => entity.Name; }
     

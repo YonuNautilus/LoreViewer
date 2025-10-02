@@ -1,4 +1,5 @@
-﻿using DynamicData;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using DynamicData;
 using LoreViewer.Domain.Entities;
 using LoreViewer.Domain.Settings;
 using LoreViewer.Domain.Settings.Definitions;
@@ -171,6 +172,7 @@ namespace LoreViewer.Core.Parsing
     const string NestedTypeTagRegex = "(?<=:).+";
 
     private LoreSettings _settings;
+    private MarkdownPipeline _pipeline = new MarkdownPipelineBuilder().UseEmphasisExtras().Build();
     private string _folderPath;
 
     private bool _hadFatalError = false;
@@ -208,11 +210,6 @@ namespace LoreViewer.Core.Parsing
     public LoreSettings Settings { get { return _settings; } }
 
     public ParserService() { }
-
-    public ParserService(LoreSettings settings)
-    {
-      _settings = settings;
-    }
 
     public LoreNode? GetNodeByName(string nodeName) => _nodes.FirstOrDefault(node => node.Name.Equals(nodeName));
     public LoreNode? GetNodeByID(string id) => _nodes.FirstOrDefault(node => node.ID.Equals(id));
@@ -476,7 +473,7 @@ namespace LoreViewer.Core.Parsing
     {
       int currentIndex = 0;
       string fileContent = File.ReadAllText(filePath);
-      MarkdownDocument document = Markdown.Parse(fileContent);
+      MarkdownDocument document = Markdown.Parse(fileContent, _pipeline);
 
       LoreParsingContext ctx = new LoreParsingContext(filePath);
 
@@ -754,7 +751,7 @@ namespace LoreViewer.Core.Parsing
 
             // freeform
             case ParagraphBlock pb:
-              newNode.AddNarrativeContent(ParseNarrativeBlock(pb));
+              newNode.AddNarrativeContent(ParseNarrativeBlock(pb, ctx));
               //newNode.AddNarrativeText(ParseParagraphBlocks(doc, ref currentIndex, pb, typeDef, ctx));
               //continue;
               break;
@@ -1180,7 +1177,7 @@ namespace LoreViewer.Core.Parsing
 
 
 
-    private LoreNarrativeBlock ParseNarrativeBlock(Block block)
+    private LoreNarrativeBlock ParseNarrativeBlock(Block block, LoreParsingContext ctx)
     {
       LoreNarrativeBlock newNarrativeBlock = new LoreNarrativeBlock();
       
@@ -1190,11 +1187,11 @@ namespace LoreViewer.Core.Parsing
 
           break;
         case ParagraphBlock pb:
-          newNarrativeBlock.AddNarrativeLine(ParseNarrativeLine(pb.Inline));
+          newNarrativeBlock.AddNarrativeLines(ParseNarrativeLines(pb.Inline, ctx));
           break;
 
-        case QuoteBlock qb:
-
+        case QuoteBlock qb:      
+          newNarrativeBlock.AddNarrativeLine(new LoreNarrativeLine());
           break;
 
         default:
@@ -1202,41 +1199,148 @@ namespace LoreViewer.Core.Parsing
           break;
       }
 
-      return new LoreNarrativeBlock();
+      return newNarrativeBlock;
     }
 
-    private LoreNarrativeLine ParseNarrativeLine(ContainerInline inlineContainer)
+    private LoreNarrativeLine ParseNarrativeLine(ContainerInline inlineContainer, LoreParsingContext ctx)
     {
       LoreNarrativeLine line = new LoreNarrativeLine();
 
       foreach(Inline inline in inlineContainer)
-      {
-        line.AddNarrativeInline(ParseNarrativeInline(inline));
-      }
+        line.AddNarrativeInlines(ParseNarrativeInline(inline, ctx));
 
       return line;
     }
 
-    private LoreNarrativeInline ParseNarrativeInline(Inline inline)
+    private LoreNarrativeLine[] ParseNarrativeLines(ContainerInline inlineContainer, LoreParsingContext ctx)
     {
+      List<LoreNarrativeLine> lines = new List<LoreNarrativeLine>();
+
+      LoreNarrativeLine currentLine = new LoreNarrativeLine();
+
+      foreach (Inline inline in inlineContainer)
+      {
+        if (inline is LineBreakInline lbin)
+        {
+          lines.Add(currentLine);
+          currentLine = new LoreNarrativeLine();
+        }
+        else
+        {
+          currentLine.AddNarrativeInlines(ParseNarrativeInline(inline, ctx));
+        }
+      }
+      lines.Add(currentLine);
+
+      return lines.ToArray();
+    }
+
+    private LoreNarrativeInline[] ParseNarrativeInline(Inline inline, LoreParsingContext ctx)
+    {
+      List<LoreNarrativeInline> ret = new();
       switch (inline)
       {
         case EmphasisInline emph:
-          return new LoreNarrativeTextInline(emph.FirstChild.ToString());
+          ret.AddRange(ParseNarrativeEmphasisInline(emph, ETextStyle.Normal, ctx));
+          break;
         case CodeInline code:
-          return new LoreNarrativeTextInline(code.Content);
+          ret.Add(new LoreNarrativeTextInline(code.Content, ETextStyle.Code));
+          break;
         case LiteralInline lit:
-          return new LoreNarrativeTextInline(lit.ToString());
+          ret.Add(new LoreNarrativeTextInline(lit.ToString()));
+          break;
           break;
         case HtmlInline hin:
-          return new LoreNarrativeTextInline("*** HTML ***");
+          ret.Add(new LoreNarrativeTextInline("*** HTML ***"));
           break;
         case LinkInline lin:
-          return new LoreNarrativeLinkInline { Label = lin.Label, Path = lin.Url };
+          string imageBasePath = Path.GetDirectoryName(ctx.FilePath);
+          string fullURL = Path.GetFullPath(lin.Url, imageBasePath);
+          if (lin.IsImage)
+          {
+            ret.Add(new LoreNarrativeImageInline { ImagePath = fullURL });
+          }
+          else
+            ret.Add(new LoreNarrativeLinkInline { Label = lin.Label, Path = fullURL });
+          break;
         default:
           Trace.WriteLine($"ParseNarrativeInline got: {inline.GetType()}");
-          return new LoreNarrativeTextInline($"*** ParseNarrativeInline Unhandled Inline type: {inline.GetType()} ***");
+          ret.Add(new LoreNarrativeTextInline($"*** ParseNarrativeInline Unhandled Inline type: {inline.GetType()} ***"));
+          break;
       }
+
+      return ret.ToArray();
+    }
+
+    /// <summary>
+    /// Recursive method for parsing EmphasisInlie, which can have some complex nesting.
+    /// </summary>
+    /// <param name="emph">The emphasis inline to be parsed.</param>
+    /// <param name="parentStyle">Style of the parent EmphasisInline (if the current inline is a child of a EmphasisInline)</param>
+    /// <param name="ctx">Parsing Context</param>
+    /// <returns></returns>
+    private LoreNarrativeInline[] ParseNarrativeEmphasisInline(EmphasisInline emph, ETextStyle parentStyle, LoreParsingContext ctx)
+    {
+      List<LoreNarrativeInline> ret = new();
+
+      // Start by getting text style based on the delimiting character and number of delimiting character.
+      ETextStyle currentStyle = ETextStyle.Normal;
+      char eChar = emph.DelimiterChar;
+      int eCharCount = emph.DelimiterCount;
+
+      string sDelimKey = $"{eCharCount}{eChar}";
+
+      switch (sDelimKey)
+      {
+        case "1*":
+        case "1_":
+          currentStyle = ETextStyle.Italics;
+          break;
+        case "2*":
+        case "2_":
+          currentStyle = ETextStyle.Bold;
+          break;
+        case "3*":
+        case "3_":
+          currentStyle = ETextStyle.Bold | ETextStyle.Italics;
+          break;
+        case "1~":
+          currentStyle = ETextStyle.Sub;
+          break;
+        case "2~":
+          currentStyle = ETextStyle.Strike;
+          break;
+        case "1^":
+          currentStyle = ETextStyle.Super;
+          break;
+        case "2+":
+          currentStyle = ETextStyle.Inserted;
+          break;
+        case "2=":
+          currentStyle = ETextStyle.Marked;
+          break;
+        default:
+          Trace.WriteLine($"ParseNarrativeEmphasisInline saw unfamiliar emphasis delimiter: {sDelimKey}");
+          break;
+      }
+
+      currentStyle |= parentStyle;
+
+      foreach (Inline i in emph)
+      {
+        if (i is EmphasisInline childEmph)
+        {
+          ret.AddRange(ParseNarrativeEmphasisInline(childEmph, currentStyle, ctx));
+        }
+        else if (i is LiteralInline lin)
+          ret.Add(new LoreNarrativeTextInline(lin.Content.ToString(), currentStyle));
+        else if (i is CodeInline cin)
+          ret.Add(new LoreNarrativeTextInline(cin.Content.ToString(), currentStyle | ETextStyle.Code));
+        else
+          ret.AddRange(ParseNarrativeInline(i, ctx));
+      }
+
+      return ret.ToArray();
     }
 
 

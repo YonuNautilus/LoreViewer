@@ -10,7 +10,7 @@ using LoreViewer.Domain.Settings.Definitions;
 
 namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
 {
-  public class LoreCollectionViewModel : LoreElementViewModel
+  public class LoreCollectionViewModel : LoreNarrativeElementViewModel
   {
     public LoreCollection trueEntity => entity as LoreCollection;
 

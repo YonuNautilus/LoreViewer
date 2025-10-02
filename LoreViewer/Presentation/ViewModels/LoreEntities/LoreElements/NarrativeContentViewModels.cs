@@ -1,4 +1,6 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Documents;
+using Avalonia.Media.Imaging;
 using LoreViewer.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -34,33 +36,48 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
     public NarrativeLineViewModel(LoreNarrativeLine line)
     {
       m_oLine = line;
-      m_oInlines = new ObservableCollection<NarrativeInlineViewModel>(line.Inlines.Select(i => new NarrativeInlineViewModel(i)));
+      m_oInlines = new ObservableCollection<NarrativeInlineViewModel>(line.Inlines.Select(i => NarrativeInlineViewModel.CreateVM(i)));
     }
   }
 
-  public class NarrativeInlineViewModel : ViewModelBase
+  public abstract class NarrativeInlineViewModel : ViewModelBase
   {
     public LoreNarrativeInline m_oInline;
+    public NarrativeInlineViewModel(LoreNarrativeInline inline) { m_oInline = inline; }
 
-    public Control InlineView;
-
-    public NarrativeInlineViewModel(LoreNarrativeInline inline)
+    public static NarrativeInlineViewModel CreateVM(LoreNarrativeInline inline)
     {
-      m_oInline = inline;
-
       switch (inline)
       {
         case LoreNarrativeTextInline t:
-          InlineView = new TextBlock()
-          {
-            Text = t.Text,
-            TextWrapping = Avalonia.Media.TextWrapping.Wrap
-          };
-          break;
+          return new NarrativeInlineTextVM(t);
+        case LoreNarrativeLinkInline l:
+          return new NarrativeInlineLinkVM(l);
+        case LoreNarrativeImageInline i:
+          return new NarrativeInlineImageVM(i);
+        default:
+          return null;
       }
-
     }
-
   }
 
+  public class NarrativeInlineTextVM : NarrativeInlineViewModel
+  {
+    public string Text { get => (m_oInline as LoreNarrativeTextInline).Text; }
+    public NarrativeInlineTextVM(LoreNarrativeTextInline inline) : base(inline) { }
+  }
+
+  public class NarrativeInlineImageVM : NarrativeInlineViewModel
+  {
+    public Bitmap Image { get => new Bitmap(ImagePath); }
+    public string ImagePath { get => (m_oInline as LoreNarrativeImageInline).ImagePath; }
+    public NarrativeInlineImageVM(LoreNarrativeImageInline inline) : base(inline) { }
+  }
+
+  public class NarrativeInlineLinkVM : NarrativeInlineViewModel
+  {
+    public string DisplayText { get => (m_oInline as LoreNarrativeLinkInline).Label; }
+    public string Path { get => (m_oInline as LoreNarrativeLinkInline).Path; }
+    public NarrativeInlineLinkVM(LoreNarrativeLinkInline inline) : base(inline) { }
+  }
 }

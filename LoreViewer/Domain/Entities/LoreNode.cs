@@ -1,4 +1,5 @@
-﻿using LoreViewer.Domain.Settings.Definitions;
+﻿using DocumentFormat.OpenXml.Drawing.Spreadsheet;
+using LoreViewer.Domain.Settings.Definitions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -135,6 +136,9 @@ namespace LoreViewer.Domain.Entities
 
       foreach (LoreCollection lnc in toMergeIn.Collections)
         Collections.Add(lnc);
+
+      foreach (LoreNarrativeBlock lnb in toMergeIn.NarrativeContent)
+        NarrativeContent.Add(lnb);
     }
 
     public virtual LoreCompositeNode MergeWith(LoreNode node) => new LoreCompositeNode(this, node);

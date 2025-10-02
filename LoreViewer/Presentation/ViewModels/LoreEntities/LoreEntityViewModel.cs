@@ -5,6 +5,7 @@ using LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
+using System.Linq;
 
 namespace LoreViewer.Presentation.ViewModels.LoreEntities
 {
@@ -75,5 +76,17 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities
     //  }
     //  return saveContent;
     //}
+  }
+
+  public abstract class LoreNarrativeElementViewModel : LoreEntityViewModel
+  {
+    protected ObservableCollection<NarrativeBlockViewModel> m_oNarrativeBlocks;
+    public ObservableCollection<NarrativeBlockViewModel> NarrativeBlocks { get => m_oNarrativeBlocks; }
+    public bool HasNarrativeContent { get => NarrativeBlocks != null && NarrativeBlocks.Any(); }
+
+    public LoreNarrativeElementViewModel(LoreNarrativeElement lne) : base(lne)
+    {
+      m_oNarrativeBlocks = new ObservableCollection<NarrativeBlockViewModel>(lne.NarrativeContent.Select(nc => new NarrativeBlockViewModel(nc)));
+    }
   }
 }

@@ -39,14 +39,12 @@
       </Grid>
     </DataTemplate>
     <DataTemplate x:Key="NestedTemplate" x:DataType="vms:LoreAttributeViewModel">
-      <Grid Grid.ColumnDefinitions="Auto,Auto" x:Name="NestedGrid">
-        <Expander Theme="{StaticResource ResourceKey=SlimExpander}" Grid.Column="1">
-          <Expander.Header>
-            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Top" FontWeight="Bold" />
-          </Expander.Header>
-          <local:AttributeListView Grid.Row="1" Attributes="{Binding NestedAttributes}" />
-        </Expander>
-      </Grid>
+      <Expander Theme="{StaticResource ResourceKey=SlimExpander}">
+        <Expander.Header>
+          <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Top" FontWeight="Bold" />
+        </Expander.Header>
+        <local:AttributeListView Attributes="{Binding NestedAttributes}" />
+      </Expander>
     </DataTemplate>
     <DataTemplate x:Key="ErrorTemplate" x:DataType="vms:LoreAttributeViewModel">
       <TextBlock Text="Error On Attribute"/>
