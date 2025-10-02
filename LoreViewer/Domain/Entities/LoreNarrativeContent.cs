@@ -42,7 +42,7 @@ namespace LoreViewer.Domain.Entities
 
   public class LoreNarrativeTextInline : LoreNarrativeInline
   {
-    string Text { get; set; }
+    public string Text { get; set; }
 
     public LoreNarrativeTextInline(string content) { Text = content; }
   }

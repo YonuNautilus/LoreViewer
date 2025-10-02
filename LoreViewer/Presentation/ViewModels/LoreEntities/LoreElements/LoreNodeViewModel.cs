@@ -33,6 +33,8 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
     private ObservableCollection<NarrativeBlockViewModel> m_oNarrativeBlocks;
     public ObservableCollection<NarrativeBlockViewModel> NarrativeBlocks { get => m_oNarrativeBlocks; }
 
+    public bool HasNarrativeContent { get => NarrativeBlocks != null && NarrativeBlocks.Any(); }
+
 
     private ObservableCollection<LoreAttributeViewModel> m_oAttributes;
     public ObservableCollection<LoreAttributeViewModel> Attributes { get => m_oAttributes; }
