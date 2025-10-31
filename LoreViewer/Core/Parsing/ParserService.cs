@@ -860,7 +860,7 @@ namespace LoreViewer.Core.Parsing
                   /* This case:
                     * # Departments of the FBSA <collection type="Organization" />
                     * 
-                    * ## Department of Containment (DOC) <node ID="FBSA.DOC />
+                    * ## Department of Containment (DOC) <node ID="FBSA.DOC" />
                     * 
                     * The above IS VALID. The tag on the level 2 heading is tricky because it has no type attribute, but we can infer that it is
                     * of type Organization because the owning collection contains nodes of type Organization
@@ -972,7 +972,7 @@ namespace LoreViewer.Core.Parsing
             break;
 
           case ParagraphBlock pb:
-            newSection.AddNarrativeText(GetStringFromParagraphBlock(pb) + "\r\n");
+            newSection.AddNarrativeContent(ParseNarrativeBlock(pb, ctx));
             break;
           case QuoteBlock qb:
             newSection.AddNarrativeText(GetStringFromQuoteBlock(qb) + "\r\n");
@@ -1176,7 +1176,12 @@ namespace LoreViewer.Core.Parsing
     }
 
 
-
+    /// <summary>
+    /// Takes some Markdig Block and parses it into a LoreNarrativeBlock, which contains LoreNarrativeLines containing LoreNarrativeInlines
+    /// </summary>
+    /// <param name="block">The markdown block to be parsed into a narrative block.</param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
     private LoreNarrativeBlock ParseNarrativeBlock(Block block, LoreParsingContext ctx)
     {
       LoreNarrativeBlock newNarrativeBlock = new LoreNarrativeBlock();
@@ -1212,6 +1217,13 @@ namespace LoreViewer.Core.Parsing
       return line;
     }
 
+    /// <summary>
+    /// Parses a ContainerInline into LoreNarrativeLines.
+    /// A single LineBreakInline indicates the end of one Line and start of a new Line within a LoreNarrativeBlock.
+    /// </summary>
+    /// <param name="inlineContainer">The ContainerInline to turn into a series of LoreNarrativeLines</param>
+    /// <param name="ctx">Parsing Context</param>
+    /// <returns></returns>
     private LoreNarrativeLine[] ParseNarrativeLines(ContainerInline inlineContainer, LoreParsingContext ctx)
     {
       List<LoreNarrativeLine> lines = new List<LoreNarrativeLine>();
@@ -1235,6 +1247,7 @@ namespace LoreViewer.Core.Parsing
       return lines.ToArray();
     }
 
+
     private LoreNarrativeInline[] ParseNarrativeInline(Inline inline, LoreParsingContext ctx)
     {
       List<LoreNarrativeInline> ret = new();
@@ -1257,9 +1270,7 @@ namespace LoreViewer.Core.Parsing
           string imageBasePath = Path.GetDirectoryName(ctx.FilePath);
           string fullURL = Path.GetFullPath(lin.Url, imageBasePath);
           if (lin.IsImage)
-          {
             ret.Add(new LoreNarrativeImageInline { ImagePath = fullURL });
-          }
           else
             ret.Add(new LoreNarrativeLinkInline { Label = lin.Label, Path = fullURL });
           break;
@@ -1285,6 +1296,7 @@ namespace LoreViewer.Core.Parsing
 
       // Start by getting text style based on the delimiting character and number of delimiting character.
       ETextStyle currentStyle = ETextStyle.Normal;
+      ETextAlignment currentAlignment = ETextAlignment.Base;
       char eChar = emph.DelimiterChar;
       int eCharCount = emph.DelimiterCount;
 
@@ -1305,13 +1317,13 @@ namespace LoreViewer.Core.Parsing
           currentStyle = ETextStyle.Bold | ETextStyle.Italics;
           break;
         case "1~":
-          currentStyle = ETextStyle.Sub;
+          currentAlignment = ETextAlignment.Subscript;
           break;
         case "2~":
           currentStyle = ETextStyle.Strike;
           break;
         case "1^":
-          currentStyle = ETextStyle.Super;
+          currentAlignment = ETextAlignment.Superscript;
           break;
         case "2+":
           currentStyle = ETextStyle.Inserted;
@@ -1333,9 +1345,9 @@ namespace LoreViewer.Core.Parsing
           ret.AddRange(ParseNarrativeEmphasisInline(childEmph, currentStyle, ctx));
         }
         else if (i is LiteralInline lin)
-          ret.Add(new LoreNarrativeTextInline(lin.Content.ToString(), currentStyle));
+          ret.Add(new LoreNarrativeTextInline(lin.Content.ToString(), currentStyle, currentAlignment));
         else if (i is CodeInline cin)
-          ret.Add(new LoreNarrativeTextInline(cin.Content.ToString(), currentStyle | ETextStyle.Code));
+          ret.Add(new LoreNarrativeTextInline(cin.Content.ToString(), currentStyle | ETextStyle.Code, currentAlignment));
         else
           ret.AddRange(ParseNarrativeInline(i, ctx));
       }

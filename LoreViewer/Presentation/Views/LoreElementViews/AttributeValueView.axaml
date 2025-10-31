@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
              xmlns:basevm="using:LoreViewer.Presentation.ViewModels"
+             xmlns:l="using:LoreViewer.Presentation.Views.LoreElementViews"
              xmlns:win="using:LoreViewer"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="LoreViewer.Presentation.Views.LoreElementViews.AttributeValueView"
@@ -21,10 +22,8 @@
       <DataTemplate DataType="{x:Type vm:ColorAttributeValueViewModel}">
         <StackPanel Orientation="Horizontal">
           <Label Content="{Binding ColorHex}"
-                 Background="{Binding Color,
-                     Converter={StaticResource ColorToBrushConverter}}"
-                 Foreground="{Binding InverseColor,
-                     Converter={StaticResource ColorToBrushConverter}}"/>
+                 Background="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
+                 Foreground="{Binding InverseColor, Converter={StaticResource ColorToBrushConverter}}"/>
           <Label Content="{Binding ColorName}" />
         </StackPanel>
       </DataTemplate>
@@ -60,12 +59,11 @@
       <DataTemplate DataType="{x:Type vm:PicklistAttributeValueViewModel}">
         <ComboBox SelectedValue="{Binding ValueString}"
                   ItemsSource="{Binding PicklistValues}"
-                  IsEnabled="{Binding #AttrValView.IsEditMode}"/>
+                  IsEnabled="{Binding Path=IsEditMode, RelativeSource={RelativeSource AncestorType=l:AttributeValueView}}"/>
       </DataTemplate>
 
       <DataTemplate DataType="{x:Type vm:ReferenceAttributeValueViewModel}">
-        <Button Command="{Binding Path=((basevm:LoreViewModel)DataContext).CurrentModeVM.GoToEntityCommand,
-                          RelativeSource={RelativeSource AncestorType=win:MainWindow}}"
+        <Button Command="{Binding Path=((basevm:LoreViewModel)DataContext).CurrentModeVM.GoToEntityCommand, RelativeSource={RelativeSource AncestorType=win:MainWindow}}"
                 CommandParameter="{Binding ReferencedNode}"
                 HorizontalAlignment="Left">
           <TextBlock Text="{Binding ReferencedID}" VerticalAlignment="Center"

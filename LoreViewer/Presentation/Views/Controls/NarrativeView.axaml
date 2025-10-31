@@ -1,57 +1,60 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
-             x:Class="LoreViewer.Presentation.Views.Controls.NarrativeView"
-             x:Name="NarV">
-  <ItemsControl ItemsSource="{Binding #NarV.Blocks}">
-    <ItemsControl.ItemTemplate>
-      <DataTemplate x:DataType="vm:NarrativeBlockViewModel">
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:vm="using:LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements"
+			 xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+			 x:Class="LoreViewer.Presentation.Views.Controls.NarrativeView"
+			 x:Name="NarV">
+	<Grid>
+		<ItemsControl ItemsSource="{Binding #NarV.Blocks}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="vm:NarrativeBlockViewModel">
 
-        <StackPanel x:Name="NarrativeLinesContainer">
-          <ItemsControl ItemsSource="{Binding Lines}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel/>
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+					<StackPanel x:Name="NarrativeLinesContainer">
+						<ItemsControl ItemsSource="{Binding Lines}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
 
-            <ItemsControl.ItemTemplate>
+							<ItemsControl.ItemTemplate>
 
-              <DataTemplate x:DataType="vm:NarrativeLineViewModel">
-                <ItemsControl ItemsSource="{Binding Inlines}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <WrapPanel x:Name="NarrativeInlinesContainer"/>
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-                  <!--<ItemsControl.ItemContainerTheme>
-                    <Style Selector="ContentPresenter">
-                      <Setter Property="HorizontalAlignment" Value="Left"/>
-                      <Setter Property="Margin" Value="0"/>
-                    </Style>
-                  </ItemsControl.ItemContainerTheme>-->
-                  <ItemsControl.DataTemplates>
-                    <DataTemplate DataType="{x:Type vm:NarrativeInlineTextVM}">
-                      <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:NarrativeInlineLinkVM}">
-                      <Button>
-                        <Label Content="{Binding DisplayText}"/>
-                      </Button>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:NarrativeInlineImageVM}">
-                      <Image Source="{Binding Image}" MaxWidth="240"/>
-                    </DataTemplate>
-                  </ItemsControl.DataTemplates>
-                </ItemsControl>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </StackPanel>
-      </DataTemplate>
-    </ItemsControl.ItemTemplate>
-  </ItemsControl>
+								<DataTemplate x:DataType="vm:NarrativeLineViewModel">
+									<ItemsControl ItemsSource="{Binding Inlines}">
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<WrapPanel x:Name="NarrativeInlinesContainer"/>
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
+										<!--<ItemsControl.ItemContainerTheme>
+										<Style Selector="ContentPresenter">
+										<Setter Property="HorizontalAlignment" Value="Left"/>
+										<Setter Property="Margin" Value="0"/>
+										</Style>
+										</ItemsControl.ItemContainerTheme>-->
+										<ItemsControl.DataTemplates>
+											<DataTemplate DataType="{x:Type vm:NarrativeInlineTextVM}">
+												<TextBlock Text="{Binding Text}" TextWrapping="Wrap" TextDecorations="{Binding TextDecs}" FontFamily="{Binding FontFam}"/>
+											</DataTemplate>
+											<DataTemplate DataType="{x:Type vm:NarrativeInlineLinkVM}">
+												<Button>
+													<Label Content="{Binding DisplayText}"/>
+												</Button>
+											</DataTemplate>
+											<DataTemplate DataType="{x:Type vm:NarrativeInlineImageVM}">
+												<Image Source="{Binding Image}" MaxWidth="240"/>
+											</DataTemplate>
+										</ItemsControl.DataTemplates>
+									</ItemsControl>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</Grid>
 </UserControl>

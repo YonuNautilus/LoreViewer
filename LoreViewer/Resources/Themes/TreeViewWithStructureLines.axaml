@@ -17,9 +17,7 @@
                 x:Name="LineVert"
                 Grid.RowSpan="2"
                 Width="1"
-                Margin="{TemplateBinding Level,
-                                             Mode=OneWay,
-                                             Converter={StaticResource MarginMultiplierConverter}}"
+                Margin="{TemplateBinding Level, Mode=OneWay, Converter={StaticResource MarginMultiplierConverter}}"
                 HorizontalAlignment="Left"
                 Fill="{DynamicResource TreeViewItem/Line/Color}"
                 RenderTransform="TranslateX(9px)"
@@ -37,9 +35,7 @@
                 TemplatedControl.IsTemplateFocusTarget="True">
                 <Grid
                   Name="PART_Header"
-                  Margin="{TemplateBinding Level,
-                                                 Mode=OneWay,
-                                                 Converter={StaticResource TreeViewItemLeftMarginConverter}}"
+                  Margin="{TemplateBinding Level, Mode=OneWay, Converter={StaticResource TreeViewItemLeftMarginConverter}}"
                   ColumnDefinitions="Auto, *">
                   <Panel Name="PART_ExpandCollapseChevronContainer" Width="36">
                     <StackPanel Orientation="Horizontal">
@@ -58,8 +54,7 @@
                         Width="20"
                         Height="20"
                         Focusable="False"
-                        IsChecked="{TemplateBinding IsExpanded,
-                                                                Mode=TwoWay}"
+                        IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
                         Theme="{StaticResource ToggleButton/Theme/TreeExpander}" />
                     </StackPanel>
                   </Panel>

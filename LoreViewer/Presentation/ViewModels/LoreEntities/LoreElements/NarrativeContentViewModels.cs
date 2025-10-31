@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Documents;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using LoreViewer.Domain.Entities;
 using System;
@@ -64,7 +65,30 @@ namespace LoreViewer.Presentation.ViewModels.LoreEntities.LoreElements
   public class NarrativeInlineTextVM : NarrativeInlineViewModel
   {
     public string Text { get => (m_oInline as LoreNarrativeTextInline).Text; }
-    public NarrativeInlineTextVM(LoreNarrativeTextInline inline) : base(inline) { }
+    public FontStyle FontStyle { get; set; } = FontStyle.Normal;
+    public FontWeight FontWeight { get; set; } = FontWeight.Normal;
+    public BaselineAlignment Alignment { get; set; } = BaselineAlignment.Baseline;
+    public FontFamily FontFam { get; set; } = FontFamily.Default;
+    public TextDecorationCollection TextDecs { get; set; } = new TextDecorationCollection();
+    public NarrativeInlineTextVM(LoreNarrativeTextInline inline) : base(inline)
+    {
+      if ((inline.TextStyle & ETextStyle.Italics) != 0)
+        FontStyle = FontStyle.Italic;
+
+      if((inline.TextStyle & ETextStyle.Bold) != 0)
+        FontWeight = FontWeight.Bold;
+
+      
+
+      if ((inline.TextStyle & ETextStyle.Strike) != 0)
+        TextDecs.AddRange(TextDecorations.Strikethrough);
+
+      if ((inline.TextStyle & ETextStyle.Code) != 0)
+        FontFam = new FontFamily("Consolas");
+
+      if (inline.TextAlignment == ETextAlignment.Subscript) Alignment = BaselineAlignment.Subscript;
+      else if (inline.TextAlignment == ETextAlignment.Superscript) Alignment = BaselineAlignment.Superscript;
+    }
   }
 
   public class NarrativeInlineImageVM : NarrativeInlineViewModel

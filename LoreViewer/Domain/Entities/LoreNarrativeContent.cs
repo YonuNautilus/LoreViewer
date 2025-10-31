@@ -43,7 +43,9 @@ namespace LoreViewer.Domain.Entities
   }
 
   [Flags]
-  public enum ETextStyle { Normal = 0, Italics = 1, Oblique = 2, Bold = 4, Strike = 8, Code = 16, Sub = 32, Super = 64, Inserted = 128, Marked = 256 }
+  public enum ETextStyle { Normal = 0, Italics = 1, Oblique = 2, Bold = 4, Strike = 8, Code = 16, Inserted = 32, Marked = 64 }
+
+  public enum ETextAlignment { Base, Subscript, Superscript }
 
   public class LoreNarrativeTextInline : LoreNarrativeInline
   {
@@ -51,9 +53,11 @@ namespace LoreViewer.Domain.Entities
 
     public ETextStyle TextStyle { get; set; }
 
+    public ETextAlignment TextAlignment { get; set; }
+
     public LoreNarrativeTextInline(string content) { Text = content; }
 
-    public LoreNarrativeTextInline(string content, ETextStyle style) : this(content) { TextStyle = style; }
+    public LoreNarrativeTextInline(string content, ETextStyle style, ETextAlignment alignment = ETextAlignment.Base) : this(content) { TextStyle = style; TextAlignment = alignment; }
   }
 
   public class LoreNarrativeImageInline : LoreNarrativeInline
